@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="IntelliGuard" name="Obfuscation">
+      <configuration>
+        <option name="yGuardJar" value="E:\yguard-2.7.1\lib\yguard.jar" />
+        <option name="inFile" value="C:\Users\Jirka\Desktop\test\out.jar" />
+        <option name="outFile" value="C:\Users\Jirka\Desktop\test\out-o.jar" />
+        <option name="mainclass" value="cz.Empatix.Main.Game" />
+        <option name="namingScheme" value="mix" />
+        <option name="jarConfig">
+          <JarConfig>
+            <option name="jarEntries">
+              <list>
+                <option value="E:\source\Game\out\production\Game" />
+              </list>
+            </option>
+          </JarConfig>
+        </option>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Resources" type="java-resource" />
+      <excludeFolder url="file://$MODULE_DIR$/Zalohy" />
+      <excludeFolder url="file://$MODULE_DIR$/src/cz/Empatix/Main/Multithreading" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" scope="PROVIDED" name="lib" level="project" />
+  </component>
+</module>

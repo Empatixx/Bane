@@ -29,9 +29,9 @@ public class Slime extends Enemy {
         width = 64;
         height = 48;
         cwidth = 64;
-        cheight = 64;
+        cheight = 48;
 
-        health = maxHealth = 15;
+        health = maxHealth = 7;
         damage = 1;
 
         type = melee;

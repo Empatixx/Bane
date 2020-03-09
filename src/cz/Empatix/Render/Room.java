@@ -1,9 +1,6 @@
 package cz.Empatix.Render;
 
-import cz.Empatix.Entity.Enemies.Slime;
 import cz.Empatix.Entity.EnemyManager;
-import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.InGame;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -240,15 +237,20 @@ public class Room {
         entered = true;
         if (type == Room.Classic){
 
-            int maxMobs = cz.Empatix.Java.Random.nextInt(3) + 1;
+            int maxMobs = cz.Empatix.Java.Random.nextInt(4) + 2;
 
 
             for (int i = 0; i < maxMobs;i++){
 
                 int x = getRandom(xMin+tileSize*2,xMax-tileSize*2);
                 int y = getRandom(yMin+tileSize*2,yMax-tileSize*2);
-                EnemyManager.addSlime(x,y);
 
+                int enemyType = cz.Empatix.Java.Random.nextInt(2);
+                if(enemyType == 1){
+                    EnemyManager.addBat(x,y);
+                } else {
+                    EnemyManager.addSlime(x,y);
+                }
             }
         }
     }

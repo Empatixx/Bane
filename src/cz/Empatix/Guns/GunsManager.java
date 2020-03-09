@@ -14,9 +14,10 @@ public class GunsManager {
     private int current;
 
     public GunsManager(TileMap tileMap){
-        current = 0;
+        current = PISTOL;
         weapons = new ArrayList<>();
         weapons.add(new Pistol(tileMap));
+        weapons.add(new Shotgun(tileMap));
     }
     public void shot(float x,float y,float px,float py){
         weapons.get(current).shot(x,y,px,py);

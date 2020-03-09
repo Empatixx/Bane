@@ -14,6 +14,7 @@ import cz.Empatix.Render.Lightning.LightPoint;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
@@ -67,7 +68,7 @@ public class Player extends MapObject {
         maxSpeed = 11.84f;
         stopSpeed = 1.6f;
 
-        health = maxHealth = 5;
+        health = maxHealth = 6;
         energy = maxEnergy = 100;
 
         shooting = false;
@@ -302,30 +303,30 @@ public class Player extends MapObject {
     }
 
     public void keyPressed(int key) {
-        if (key == 'W'){
+        if (key == GLFW.GLFW_KEY_W){
             setUp(true);
         }
-        if (key == 'D'){
+        if (key == GLFW.GLFW_KEY_D){
             setRight(true);
         }
-        if (key == 'A'){
+        if (key == GLFW.GLFW_KEY_A){
             setLeft(true);
         }
-        if (key == 'S'){
+        if (key == GLFW.GLFW_KEY_S){
             setDown(true);
         }
     }
     public void keyReleased(int key) {
-        if (key == 'W'){
+        if (key == GLFW.GLFW_KEY_W){
             setUp(false);
         }
-        if (key == 'D'){
+        if (key == GLFW.GLFW_KEY_D){
             setRight(false);
         }
-        if (key == 'A'){
+        if (key == GLFW.GLFW_KEY_A){
             setLeft(false);
         }
-        if (key == 'S'){
+        if (key == GLFW.GLFW_KEY_S){
             setDown(false);
         }
     }

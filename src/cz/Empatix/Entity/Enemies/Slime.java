@@ -144,8 +144,6 @@ public class Slime extends Enemy {
 
     public void draw(Camera camera) {
 
-        //if(notOnScreen()) return;
-
         setMapPosition();
 
         super.draw(camera);

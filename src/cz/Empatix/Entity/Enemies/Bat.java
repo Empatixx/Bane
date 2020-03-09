@@ -18,7 +18,7 @@ public class Bat extends Enemy {
         super(tm,player);
 
         moveSpeed = 1.4f;
-        maxSpeed = 3.2f;
+        maxSpeed = 5.2f;
         stopSpeed = 0.8f;
 
         width = 64;
@@ -27,7 +27,7 @@ public class Bat extends Enemy {
         cheight = 64;
 
         health = maxHealth = 5;
-        damage = 1;
+        damage = 2;
 
         type = melee;
         facingRight = true;
@@ -66,7 +66,7 @@ public class Bat extends Enemy {
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(175);
+        animation.setDelay(125);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){

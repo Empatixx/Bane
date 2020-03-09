@@ -138,7 +138,6 @@ public abstract class  Enemy extends MapObject {
 
                             PathNode temp;
                             // LEFT
-
                             temp = createNode(x - tileSize, y, px, py, theClosest, 10);
                             if (left && doesntContain(closed, temp) && doesntContain(opened, temp)) {
                                 opened.add(temp);
@@ -192,7 +191,6 @@ public abstract class  Enemy extends MapObject {
                 PathNode pathNode = path.getPathNode();
                 int x = pathNode.getX();
                 int y = pathNode.getY();
-                //                if (x == (int)position.x && y == (int)position.y) {
                 if (x == (int)position.x && y == (int)position.y) {
                     if (this.path.hasLastNode()) {
                         setLeft(false);

@@ -10,6 +10,7 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.lwjgl.openal.AL10.*;
 import static org.lwjgl.openal.ALC10.*;
@@ -20,7 +21,7 @@ import static org.lwjgl.system.libc.LibCStdlib.free;
 public class AudioManager {
 
     // array of sounds (ids)
-    private static ArrayList<Integer> buffers;
+    private static HashMap<String,Integer> buffers;
     private static ArrayList<Soundtrack> soundtracks;
 
     private static double lastVolume;
@@ -47,7 +48,7 @@ public class AudioManager {
         lastVolume = Settings.MUSIC * Settings.OVERALL;
 
         soundtracks = new ArrayList<>();
-        buffers = new ArrayList<>();
+        buffers = new HashMap<>();
         String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
 
         hasAudio = false;
@@ -80,6 +81,10 @@ public class AudioManager {
         soundtracks.add(soundtrack3);
     }
     public static int loadSound(String filename){
+        if(buffers.containsKey(filename)){
+            return buffers.get(filename);
+        }
+
         ShortBuffer rawAudioBuffer;
 
         int channels;
@@ -113,7 +118,7 @@ public class AudioManager {
     //Free the memory allocated by STB
         free(rawAudioBuffer);
 
-        buffers.add(bufferPointer);
+        buffers.put(filename,bufferPointer);
         return bufferPointer;
     }
     public static void setListenerData(float x, float y){
@@ -124,9 +129,8 @@ public class AudioManager {
 
     }
     public static void cleanUp(){
-        for(int buffer : buffers){
-            AL10.alDeleteSources(buffer);
-        }
+        buffers.forEach((k,v) -> AL10.alDeleteSources(v));
+
         ALC.destroy();
         AL.setCurrentProcess(null);
     }

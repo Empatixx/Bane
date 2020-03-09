@@ -3,6 +3,7 @@ package cz.Empatix.Gamestates;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
+import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Background;
@@ -52,6 +53,9 @@ public class MenuState extends GameState{
 
     private boolean settings;
     private int selectedSettings;
+
+    private Source source;
+    private int soundMenuClick;
 
     MenuState(GameStateManager gsm, Camera c){
         super(c);
@@ -170,9 +174,14 @@ public class MenuState extends GameState{
         sliderBar.setType(MUSIC);
         audioSliders[2] = sliderBar;
 
-
         settingsBg.setDimensions(1280,720);
         selectedSettings = GRAPHICS;
+
+
+        // sounds
+        source = new Source(Source.EFFECTS,1f);
+        soundMenuClick = AudioManager.loadSound("menuclick.ogg");
+
     }
 
     @Override
@@ -188,17 +197,13 @@ public class MenuState extends GameState{
                 MenuBar bar = settingsHuds[i];
                 if (bar.intersects(mouseX, mouseY)) {
                     int type = bar.getType();
+                    if(selectedSettings != type) {
+                        source.play(soundMenuClick);
+                    }
                     if(type == SETTINGSEXIT) {
                         settings = false;
                     } else {
-                        bar.setClick(true);
                         selectedSettings = type;
-                        for (int j = 0; j < settingsHuds.length; j++) {
-                            MenuBar bar2 = settingsHuds[i];
-                            if (bar2.getType() != type){
-                                bar2.setClick(false);
-                            }
-                        }
                     }
                 }
             }
@@ -206,10 +211,16 @@ public class MenuState extends GameState{
                 for(MenuBar hud : graphicsHuds){
                     int type = hud.getType();
                     if(type == LOWERRESOLUTION){
-                        if (hud.intersects(mouseX,mouseY)) Settings.lowerResolution();
+                        if (hud.intersects(mouseX,mouseY)){
+                            source.play(soundMenuClick);
+                            Settings.lowerResolution();
+                        }
                     }
                     else if(type == HIGHERRESOLUTION){
-                        if (hud.intersects(mouseX,mouseY)) Settings.higherResolution();
+                        if (hud.intersects(mouseX,mouseY)){
+                            source.play(soundMenuClick);
+                            Settings.higherResolution();
+                        }
                     }
                 }
             } else if (selectedSettings == AUDIO){
@@ -221,7 +232,10 @@ public class MenuState extends GameState{
 
             for (int i = 0; i < huds.length; i++) {
                 if (huds[i].intersects(mouseX, mouseY)) {
+                    source.play(soundMenuClick);
+
                     int type = huds[i].getType();
+                    source.play(soundMenuClick);
                     if (type == BEGIN) {
                         gsm.setState(GameStateManager.INGAME);
                     } else if (type == SETTINGS) {

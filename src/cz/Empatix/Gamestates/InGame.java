@@ -21,16 +21,15 @@ import org.lwjgl.glfw.GLFW;
 import java.awt.*;
 import java.util.ArrayList;
 
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11C.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11C.glClear;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.opengl.GL11.*;
 
 
 public class InGame extends GameState {
+    private boolean pause;
+
     // game state manager
     private Player player;
-
-    //private Background bg;
 
     private TileMap tileMap;
 
@@ -50,11 +49,13 @@ public class InGame extends GameState {
     InGame(GameStateManager gsm,Camera c){
         super(c);
         this.gsm = gsm;
-        //init();
     }
 
     @Override
     void mouseReleased(int button) {
+        if(pause) return;
+
+
         float px = player.getX();
         float py = player.getY();
         float mx = tileMap.getx();
@@ -71,6 +72,13 @@ public class InGame extends GameState {
 
     @Override
     void keyReleased(int k) {
+        if (k == GLFW_KEY_ESCAPE){
+            pause = !pause;
+        }
+
+        if(pause) return;
+
+
         player.keyReleased(k);
         if (k == 'R'){
             gunsManager.reload();
@@ -79,6 +87,7 @@ public class InGame extends GameState {
 
     @Override
     void keyPressed(int k) {
+
         player.keyPressed(k);
         if (k == GLFW.GLFW_KEY_F1){
             Game.displayCollisions = !Game.displayCollisions;
@@ -87,14 +96,17 @@ public class InGame extends GameState {
 
     @Override
     void init() {
+        pause = false;
+
         objectsFramebuffer = new Framebuffer();
         lightManager = new LightManager();
+
         Game.setCursor(Game.CROSSHAIR);
+
         // Tile map
         tileMap = new TileMap(64, camera);
         tileMap.loadTiles("Textures\\tileset64.tga");
         tileMap.loadMap();
-        //tileMap.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
         tileMap.setTween(0.10);
         // player
         player = new Player(tileMap, camera);
@@ -148,12 +160,15 @@ public class InGame extends GameState {
 
         healthBar.draw();
 
+
+
     }
 
 
 
     @Override
     void update() {
+        if(pause) return;
         ArrayList<Enemy> enemies = enemyManager.getEnemies();
 
         // loc of mouse

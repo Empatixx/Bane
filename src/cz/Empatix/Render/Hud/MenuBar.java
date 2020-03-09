@@ -178,4 +178,7 @@ public class MenuBar {
         this.click = click;
     }
 
+    public boolean isClick() {
+        return click;
+    }
 }

@@ -669,7 +669,6 @@ public class TileMap {
 				glEnableVertexAttribArray(0);
 				glEnableVertexAttribArray(1);
 
-
 				glBindBuffer(GL_ARRAY_BUFFER,vboVertexes);
 				glVertexAttribPointer(0,2,GL_INT,false,0,0);
 

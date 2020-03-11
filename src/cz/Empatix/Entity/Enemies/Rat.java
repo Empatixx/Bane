@@ -10,24 +10,24 @@ import cz.Empatix.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.TileMap;
 
-public class Bat extends Enemy {
+public class Rat extends Enemy {
     private static final int IDLE = 0;
 
-    public Bat(TileMap tm, Player player) {
+    public Rat(TileMap tm, Player player) {
 
         super(tm,player);
 
-        moveSpeed = 1.4f;
-        maxSpeed = 5.2f;
-        stopSpeed = 0.8f;
+        moveSpeed = 1.2f;
+        maxSpeed = 3.2f;
+        stopSpeed = 1f;
 
         width = 64;
-        height = 64;
+        height = 47;
         cwidth = 64;
-        cheight = 64;
+        cheight = 47;
 
-        health = maxHealth = 5;
-        damage = 2;
+        health = maxHealth = 7;
+        damage = 1;
 
         type = melee;
         facingRight = true;
@@ -36,11 +36,11 @@ public class Bat extends Enemy {
         spriteSheetRows = 1;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\bat.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\rat.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\bat.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\rat.tga");
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
                 double[] texCoords =
@@ -66,7 +66,7 @@ public class Bat extends Enemy {
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(125);
+        animation.setDelay(165);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){

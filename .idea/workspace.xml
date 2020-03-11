@@ -6,99 +6,43 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Sounds/guns/reloadshotgun.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Sounds/guns/shootshotgun.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Sounds/menuclick.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/META-INF/MANIFEST.MF" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/AudioManager/AudioManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/AudioManager/Soundtrack.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/AudioManager/Source.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Entity/AI/Path.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Entity/AI/PathNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Entity/Animation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Entity/Enemies/Slime.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Entity/Enemy.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Entity/EnemyManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Entity/MapObject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Entity/Player.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Gamestates/GameState.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Gamestates/GameStateManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Gamestates/InGame.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Gamestates/MenuState.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Graphics/ByteBufferImage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Graphics/Framebuffer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Graphics/Model/ModelManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Graphics/Shaders/Shader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Graphics/Shaders/ShaderManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Graphics/Sprites/Sprite.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Graphics/Sprites/Spritesheet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Graphics/Sprites/SpritesheetManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Guns/Bullet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Guns/GunsManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Guns/Pistol.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Guns/Weapon.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Java/Random.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Main/Game.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Main/KeyboardInput.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Main/MouseInput.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Main/Multithreading/ThreadPool.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Main/Settings.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Background.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Camera.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Hud/HUD.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Hud/HealthBar.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Hud/MenuBar.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Hud/SliderBar.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Lightning/LightManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Lightning/LightPoint.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Room.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Text/Font.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Text/FontChar.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Text/TextRender.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/Tile.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/070320/src/cz/Empatix/Render/TileMap.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/080320/Entity/AI/Path.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/080320/Entity/AI/PathNode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/080320/Entity/Animation.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/080320/Entity/Enemies/Bat.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/080320/Entity/Enemies/Slime.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/080320/Entity/Enemy.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/080320/Entity/EnemyManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/080320/Entity/MapObject.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Zalohy/080320/Entity/Player.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" afterDir="false" />
+    <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="0.22">
+      <change afterPath="$PROJECT_DIR$/Sounds/guns/switchgun.ogg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Textures/Sprites/Enemies/rat.tga" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Game.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Game.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Textures/Sprites/Enemies/bat.tga" beforeDir="false" afterPath="$PROJECT_DIR$/Textures/Sprites/Enemies/bat.tga" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Sounds/guns/wallhit.ogg" beforeDir="false" afterPath="$PROJECT_DIR$/Sounds/guns/wallhit.ogg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crashlog.log" beforeDir="false" afterPath="$PROJECT_DIR$/crashlog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/AudioManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/AudioManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/AI/Path.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/AI/Path.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/AI/PathNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/AI/PathNode.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/Source.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/Source.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemies/Slime.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemies/Slime.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/EnemyManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/EnemyManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/MapObject.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/MapObject.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Player.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/InGame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/InGame.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/MenuState.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/MenuState.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Bullet.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Bullet.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/GunsManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/GunsManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/MenuBar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/MenuBar.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Weapon.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Weapon.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HealthBar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HealthBar.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/TileMap.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/TileMap.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/settings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/AudioManager/AudioManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/AudioManager/AudioManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/AI/Path.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/AI/Path.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/AI/PathNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/AI/PathNode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/AudioManager/Source.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/AudioManager/Source.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MenuBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MenuBar.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -109,9 +53,11 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/Game$Main.ic" NAME="Main Coverage Results" MODIFIED="1582553025777" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/Game$Main.ic" NAME="Main Coverage Results" MODIFIED="1583919968222" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
   <component name="CoverageViewManager">
+    <option name="myFlattenPackages" value="true" />
+    <option name="myAutoScrollFromSource" value="true" />
     <option name="myElementSize" value="241" />
   </component>
   <component name="FavoritesManager">
@@ -122,8 +68,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1038">
-              <caret line="20" column="24" lean-forward="true" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
+            <state relative-caret-position="1998">
+              <caret line="118" column="13" selection-start-line="118" selection-start-column="13" selection-end-line="118" selection-end-column="13" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -132,98 +78,57 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="445">
-              <caret line="122" column="26" selection-start-line="122" selection-start-column="26" selection-end-line="122" selection-end-column="26" />
+            <state relative-caret-position="864">
+              <caret line="57" selection-start-line="57" selection-end-line="57" />
               <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/AudioManager/AudioManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="73">
-              <caret line="111" column="38" lean-forward="true" selection-start-line="111" selection-start-column="38" selection-end-line="111" selection-end-column="38" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="356">
-              <caret line="682" column="46" selection-start-line="682" selection-start-column="46" selection-end-line="682" selection-end-column="46" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="414">
-              <caret line="28" column="46" selection-start-line="28" selection-start-column="46" selection-end-line="28" selection-end-column="46" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="18">
-              <caret line="113" column="35" selection-start-line="113" selection-start-column="35" selection-end-line="113" selection-end-column="35" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="485">
-              <caret line="330" column="9" lean-forward="true" selection-start-line="330" selection-start-column="9" selection-end-line="330" selection-end-column="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="560">
-              <caret line="233" column="57" selection-start-line="233" selection-start-column="57" selection-end-line="233" selection-end-column="57" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MenuBar.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="658">
-              <caret line="180" column="19" selection-start-line="180" selection-start-column="19" selection-end-line="180" selection-end-column="19" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#5098#5099#0" expanded="true" />
-                <element signature="e#5171#5172#0" expanded="true" />
-                <element signature="e#5280#5281#0" expanded="true" />
-                <element signature="e#5308#5309#0" expanded="true" />
+                <element signature="e#1279#1280#0" expanded="true" />
+                <element signature="e#1311#1312#0" expanded="true" />
+                <element signature="e#1576#1577#0" expanded="true" />
+                <element signature="e#1608#1609#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="189">
+              <caret line="153" column="30" lean-forward="true" selection-start-line="153" selection-start-column="30" selection-end-line="153" selection-end-column="30" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1566">
+              <caret line="95" selection-start-line="95" selection-end-line="95" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="486">
-              <caret line="41" lean-forward="true" selection-start-line="41" selection-end-line="41" />
+            <state relative-caret-position="198">
+              <caret line="20" column="40" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1890">
+              <caret line="126" column="44" selection-start-line="126" selection-start-column="44" selection-end-line="126" selection-end-column="44" />
               <folding>
-                <element signature="e#582#583#0" expanded="true" />
-                <element signature="e#634#635#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -234,17 +139,15 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Singleton" />
         <option value="GLSL Shader" />
         <option value="Enum" />
+        <option value="Singleton" />
         <option value="Class" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>tr</find>
-      <find>GL.create</find>
       <find>mouseX</find>
       <find>Setti</find>
       <find>setPosition</find>
@@ -273,6 +176,8 @@
       <find>setPos</find>
       <find>play</find>
       <find>System</find>
+      <find>isnot</find>
+      <find>tileMap</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -281,14 +186,10 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Graphics/Model/ModelManager.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HUD.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameStateManager.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Empatix/Guns/Bullet.java" />
         <option value="$PROJECT_DIR$/src/Empatix/Guns/Bullet.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Background.java" />
-        <option value="$PROJECT_DIR$/settings.xml" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Main/Multithreading/ThreadPool.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Camera.java" />
         <option value="$PROJECT_DIR$/shaders/background-fs.glsl" />
@@ -306,32 +207,36 @@
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Slider.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Main/MouseInput.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/SliderBar.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/AudioManager/Source.java" />
         <option value="$PROJECT_DIR$/shaders/light-fs.glsl" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/AudioManager/Soundtrack.java" />
         <option value="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Main/KeyboardInput.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/AI/PathNode.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/AI/Path.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Entity/AI/Path.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MenuBar.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/AudioManager/AudioManager.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" />
+        <option value="$PROJECT_DIR$/settings.xml" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/AudioManager/AudioManager.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameStateManager.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/AudioManager/Source.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" />
       </list>
     </option>
   </component>
@@ -370,7 +275,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -465,6 +369,14 @@
               <item name="Empatix" type="462c0819:PsiDirectoryNode" />
               <item name="Entity" type="462c0819:PsiDirectoryNode" />
               <item name="AI" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Game" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
+              <item name="Entity" type="462c0819:PsiDirectoryNode" />
+              <item name="Enemies" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Game" type="b2602c69:ProjectViewProjectNode" />
@@ -650,6 +562,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -657,7 +570,7 @@
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="GenerateAntBuildDialog.outputFileNameProperty" value="game" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1583772384224" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1583920823116" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/nativelib/joml-1.9.20.jar!/" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.16894531" />
@@ -667,24 +580,24 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="E:\source\Game\Sounds" />
-      <recent name="E:\source\Game\Sounds\guns" />
-      <recent name="E:\source\Game\src\cz\Empatix" />
-      <recent name="E:\source\Game\src\cz\Empatix\Entity" />
-      <recent name="E:\source\Game\Zalohy\080320" />
-    </key>
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="cz.Empatix.Guns" />
-      <recent name="cz.Empatix.Entity" />
-      <recent name="cz.Empatix.Enemies" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\source\Game\shaders" />
       <recent name="E:\source\Game\Textures\Menu" />
       <recent name="E:\source\Game\Textures\Zalohy" />
       <recent name="E:\source\Game\Textures" />
       <recent name="E:\source\Game\Resources\Map" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="cz.Empatix.Guns" />
+      <recent name="cz.Empatix.Entity" />
+      <recent name="cz.Empatix.Enemies" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\source\Game\Sounds\guns" />
+      <recent name="E:\source\Game\Sounds" />
+      <recent name="E:\source\Game\Textures\Sprites\Enemies" />
+      <recent name="E:\source\Game\src\cz\Empatix" />
+      <recent name="E:\source\Game\src\cz\Empatix\Entity" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -753,7 +666,14 @@
       <option name="project" value="LOCAL" />
       <updated>1583615214328</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="0.22">
+      <created>1583772424910</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1583772424910</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TodoView">
@@ -774,18 +694,50 @@
       <window_info id="Image Layers" order="2" />
       <window_info id="Capture Tool" order="3" />
       <window_info id="UI Designer" order="4" />
-      <window_info id="Favorites" order="5" sideWeight="0.49642006" side_tool="true" weight="0.17270789" />
-      <window_info active="true" content_ui="combo" id="Project" order="6" sideWeight="0.50358" visible="true" weight="0.2238806" />
+      <window_info id="Favorites" order="5" sideWeight="0.4980695" side_tool="true" weight="0.2260128" />
+      <window_info content_ui="combo" id="Project" order="6" sideWeight="0.5019305" visible="true" weight="0.2260128" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.804811" visible="true" weight="0.06933911" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.804811" visible="true" weight="0.15817985" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.7905117" weight="0.0780065" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.8054371" weight="0.32936078" />
       <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49946696" weight="0.21235102" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="Messages" order="9" weight="0.032502707" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32936078" />
+      <window_info anchor="bottom" id="Messages" order="9" weight="0.47562298" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.195189" side_tool="true" weight="0.11618257" />
+      <window_info anchor="bottom" id="Inspection Results" order="11" weight="0.42361864" />
+      <window_info anchor="bottom" id="IntelliGuard" order="12" weight="0.5222102" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="1" weight="0.24946696" />
+      <window_info anchor="right" id="Palette" order="2" />
+      <window_info anchor="right" id="Theme Preview" order="3" />
+      <window_info anchor="right" id="Palette&#9;" order="4" />
+      <window_info anchor="right" id="Capture Analysis" order="5" />
+      <window_info anchor="right" id="Maven" order="6" weight="0.32889125" />
+      <window_info anchor="right" id="Coverage" order="7" side_tool="true" weight="0.32995737" />
+      <window_info anchor="right" id="Ant Build" order="8" side_tool="true" weight="0.09488273" />
+      <window_info anchor="right" id="Maven-2 Build" order="9" weight="0.3272921" />
+    </layout>
+    <layout-to-restore>
+      <window_info id="Structure" order="0" sideWeight="0.3808948" side_tool="true" weight="0.112" />
+      <window_info id="Designer" order="1" />
+      <window_info id="Image Layers" order="2" />
+      <window_info id="Capture Tool" order="3" />
+      <window_info id="UI Designer" order="4" />
+      <window_info id="Favorites" order="5" sideWeight="0.49642006" side_tool="true" weight="0.17270789" />
+      <window_info content_ui="combo" id="Project" order="6" sideWeight="0.50358" visible="true" weight="0.2228145" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.804811" visible="true" weight="0.26435536" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.7905117" weight="0.0780065" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.8054371" weight="0.32936078" />
+      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49946696" weight="0.21235102" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32936078" />
+      <window_info anchor="bottom" id="Messages" order="9" weight="0.5135428" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.195189" side_tool="true" weight="0.11618257" />
       <window_info anchor="bottom" id="Inspection Results" order="11" weight="0.42361864" />
       <window_info anchor="bottom" id="IntelliGuard" order="12" weight="0.5222102" />
@@ -799,45 +751,16 @@
       <window_info anchor="right" id="Coverage" order="7" side_tool="true" weight="0.32995737" />
       <window_info anchor="right" id="Ant Build" order="8" side_tool="true" weight="0.09488273" />
       <window_info anchor="right" id="Maven-2 Build" order="9" weight="0.32746667" />
-    </layout>
-    <layout-to-restore>
-      <window_info id="Structure" order="0" sideWeight="0.3808948" side_tool="true" weight="0.112" />
-      <window_info id="Designer" order="1" />
-      <window_info id="Image Layers" order="2" />
-      <window_info id="Capture Tool" order="3" />
-      <window_info id="UI Designer" order="4" />
-      <window_info id="Favorites" order="5" sideWeight="0.49642006" side_tool="true" weight="0.17270789" />
-      <window_info content_ui="combo" id="Project" order="6" sideWeight="0.50358" visible="true" weight="0.22707888" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.804811" visible="true" weight="0.2751896" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.7905117" weight="0.0780065" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.8054371" weight="0.32936078" />
-      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49946696" weight="0.21235102" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
-      <window_info anchor="bottom" id="Messages" order="9" weight="0.032502707" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.195189" side_tool="true" weight="0.11618257" />
-      <window_info anchor="bottom" id="Inspection Results" order="11" weight="0.42361864" />
-      <window_info anchor="bottom" id="IntelliGuard" order="12" weight="0.5222102" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="1" weight="0.24946696" />
-      <window_info anchor="right" id="Palette" order="2" />
-      <window_info anchor="right" id="Theme Preview" order="3" />
-      <window_info anchor="right" id="Palette&#9;" order="4" />
-      <window_info anchor="right" id="Capture Analysis" order="5" />
-      <window_info anchor="right" id="Maven" order="6" weight="0.32889125" />
-      <window_info anchor="right" id="Coverage" order="7" side_tool="true" weight="0.32995737" />
-      <window_info anchor="right" id="Ant Build" order="8" side_tool="true" weight="0.09488273" />
-      <window_info anchor="right" id="Maven-2 Build" order="9" weight="0.32782516" />
     </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <MESSAGE value="Adding bat" />
     <MESSAGE value="fixing size of slimes" />
     <MESSAGE value="adding txt of bats" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding txt of bats" />
+    <MESSAGE value="0.22" />
+    <option name="LAST_COMMIT_MESSAGE" value="0.22" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -872,31 +795,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/java/lang/Runnable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="754">
-          <caret line="67" column="25" selection-start-line="67" selection-start-column="25" selection-end-line="67" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Slider.java" />
-    <entry file="jar://$PROJECT_DIR$/lib/joml-1.9.19.jar!/org/joml/Matrix4f.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="35280">
-          <caret line="2112" column="20" selection-start-line="2112" selection-start-column="20" selection-end-line="2112" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameState.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="18" selection-start-line="8" selection-start-column="18" selection-end-line="8" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Textures/Menu/volume_slider_rail.tga">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/Textures/Menu/volume_slider.tga">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -904,13 +802,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="396">
           <caret line="27" selection-start-line="27" selection-end-line="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/settings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
         </state>
       </provider>
     </entry>
@@ -961,16 +852,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="36">
           <caret line="2" selection-start-line="2" selection-end-line="2" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/AudioManager/Source.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="35" column="5" selection-start-line="35" selection-start-column="5" selection-end-line="35" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1083,154 +964,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="662">
-          <caret line="150" lean-forward="true" selection-start-line="150" selection-end-line="150" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Entity/AI/Path.java" />
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/AI/Path.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="40" column="5" selection-start-line="40" selection-start-column="5" selection-end-line="40" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/AI/PathNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="44" column="19" selection-start-line="44" selection-start-column="19" selection-end-line="44" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameStateManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="753">
-          <caret line="60" column="27" selection-start-line="60" selection-start-column="27" selection-end-line="60" selection-end-column="27" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1436#1437#0" expanded="true" />
-            <element signature="e#1502#1503#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="376">
-          <caret line="96" lean-forward="true" selection-start-line="96" selection-end-line="96" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Room.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3780">
-          <caret line="238" column="19" selection-start-line="238" selection-start-column="19" selection-end-line="238" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="13" column="25" selection-start-line="13" selection-start-column="25" selection-end-line="13" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="936">
-          <caret line="59" column="104" selection-start-line="59" selection-start-column="104" selection-end-line="59" selection-end-column="104" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="10" column="17" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="445">
-          <caret line="122" column="26" selection-start-line="122" selection-start-column="26" selection-end-line="122" selection-end-column="26" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1038">
-          <caret line="20" column="24" lean-forward="true" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="113" column="35" selection-start-line="113" selection-start-column="35" selection-end-line="113" selection-end-column="35" />
-        </state>
-      </provider>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="485">
-          <caret line="330" column="9" lean-forward="true" selection-start-line="330" selection-start-column="9" selection-end-line="330" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/AudioManager/AudioManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="73">
-          <caret line="111" column="38" lean-forward="true" selection-start-line="111" selection-start-column="38" selection-end-line="111" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="356">
-          <caret line="682" column="46" selection-start-line="682" selection-start-column="46" selection-end-line="682" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="28" column="46" selection-start-line="28" selection-start-column="46" selection-end-line="28" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="560">
-          <caret line="233" column="57" selection-start-line="233" selection-start-column="57" selection-end-line="233" selection-end-column="57" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="125">
+          <caret line="310" column="9" selection-start-line="310" selection-start-column="9" selection-end-line="310" selection-end-column="9" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MenuBar.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="658">
-          <caret line="180" column="19" selection-start-line="180" selection-start-column="19" selection-end-line="180" selection-end-column="19" />
+        <state relative-caret-position="83">
+          <caret line="140" selection-start-line="140" selection-end-line="140" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#5098#5099#0" expanded="true" />
@@ -1241,13 +989,206 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/test.java" />
+    <entry file="file://$PROJECT_DIR$/settings.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="8" column="21" selection-start-line="8" selection-start-column="21" selection-end-line="8" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="383">
+          <caret line="33" column="31" selection-start-line="33" selection-start-column="31" selection-end-line="33" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1098">
+          <caret line="67" column="102" selection-start-line="67" selection-start-column="102" selection-end-line="67" selection-end-column="102" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/AI/PathNode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="684">
+          <caret line="44" column="19" selection-start-line="44" selection-start-column="19" selection-end-line="44" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="11" selection-start-line="11" selection-end-line="11" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="520">
+          <caret line="65" column="29" lean-forward="true" selection-start-line="65" selection-start-column="29" selection-end-line="65" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Room.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="731">
+          <caret line="246" column="44" selection-start-line="246" selection-start-column="44" selection-end-line="246" selection-end-column="44" />
+          <folding>
+            <element signature="e#6895#6896#0" expanded="true" />
+            <element signature="e#6977#6978#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="36" column="9" selection-start-line="36" selection-start-column="9" selection-end-line="36" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/AI/Path.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="583">
+          <caret line="40" column="5" selection-start-line="40" selection-start-column="5" selection-end-line="40" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="335">
+          <caret line="151" column="10" selection-start-line="151" selection-start-column="10" selection-end-line="151" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1194">
+          <caret line="682" column="46" selection-start-line="682" selection-start-column="46" selection-end-line="682" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="193" column="43" selection-start-line="193" selection-start-column="43" selection-end-line="193" selection-end-column="43" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-59">
+          <caret line="25" column="20" lean-forward="true" selection-start-line="25" selection-start-column="20" selection-end-line="25" selection-end-column="20" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="5" column="15" selection-start-line="5" selection-start-column="15" selection-end-line="5" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/AudioManager/AudioManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="116" lean-forward="true" selection-start-line="116" selection-end-line="116" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameStateManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="308">
+          <caret line="22" column="42" lean-forward="true" selection-start-line="22" selection-start-column="42" selection-end-line="22" selection-end-column="42" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1436#1437#0" expanded="true" />
+            <element signature="e#1502#1503#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/AudioManager/Source.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="695">
+          <caret line="57" column="54" lean-forward="true" selection-start-line="57" selection-start-column="54" selection-end-line="57" selection-end-column="55" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1434#1435#0" expanded="true" />
+            <element signature="e#1478#1479#0" expanded="true" />
+            <element signature="e#1504#1505#0" expanded="true" />
+            <element signature="e#1547#1548#0" expanded="true" />
+            <element signature="e#1661#1662#0" expanded="true" />
+            <element signature="e#1725#1726#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1998">
+          <caret line="118" column="13" selection-start-line="118" selection-start-column="13" selection-end-line="118" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="864">
+          <caret line="57" selection-start-line="57" selection-end-line="57" />
+          <folding>
+            <element signature="e#1279#1280#0" expanded="true" />
+            <element signature="e#1311#1312#0" expanded="true" />
+            <element signature="e#1576#1577#0" expanded="true" />
+            <element signature="e#1608#1609#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1566">
+          <caret line="95" selection-start-line="95" selection-end-line="95" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="486">
-          <caret line="41" lean-forward="true" selection-start-line="41" selection-end-line="41" />
+        <state relative-caret-position="198">
+          <caret line="20" column="40" selection-start-line="20" selection-start-column="40" selection-end-line="20" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1890">
+          <caret line="126" column="44" selection-start-line="126" selection-start-column="44" selection-end-line="126" selection-end-column="44" />
           <folding>
-            <element signature="e#582#583#0" expanded="true" />
-            <element signature="e#634#635#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="153" column="30" lean-forward="true" selection-start-line="153" selection-start-column="30" selection-end-line="153" selection-end-column="30" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

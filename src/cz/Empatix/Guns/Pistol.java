@@ -2,6 +2,7 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
@@ -54,15 +55,12 @@ public class Pistol extends Weapon {
             // delta - time between shoots
             long delta = System.currentTimeMillis() - delay;
             if (delta > 250){
-                int xAccuracy = 0;
-                int yAccuracy = 0;
+                double inaccuracy = 0;
                 if (delta < 400){
-                    xAccuracy = (int)((400-delta)* inaccuracy) * (cz.Empatix.Java.Random.nextInt(2)*2-1);
-                    yAccuracy = (int)((400-delta)* inaccuracy) * (cz.Empatix.Java.Random.nextInt(2)*2-1);
-
+                    inaccuracy = 0.055 * 400/delta * (Random.nextInt(2)*2-1);
                 }
                 delay = System.currentTimeMillis();
-                Bullet bullet = new Bullet(tm,x+yAccuracy,y+xAccuracy);
+                Bullet bullet = new Bullet(tm,x,y,inaccuracy);
                 bullet.setPosition(px,py);
                 bullets.add(bullet);
                 currentMagazineAmmo--;
@@ -76,10 +74,14 @@ public class Pistol extends Weapon {
     }
 
     @Override
-    public void draw(Camera c) {
-        for(Bullet bullet:bullets){
+    public void drawAmmo(Camera c) {
+        for (Bullet bullet : bullets) {
             bullet.draw(c);
         }
+    }
+
+    @Override
+    public void draw(Camera c) {
         if(reloading){
             TextRender.renderText(c,"Reloading...",new Vector3f(1650,1000,0),3,new Vector3f(1.0f,1.0f,1.0f));
 
@@ -90,13 +92,6 @@ public class Pistol extends Weapon {
 
     @Override
     public void update() {
-        for(int i = 0; i < bullets.size(); i++) {
-            bullets.get(i).update();
-            if(bullets.get(i).shouldRemove()) {
-                bullets.remove(i);
-                i--;
-            }
-        }
         if(reloading && (float)(System.currentTimeMillis()-reloadDelay)/1000 > 0.7f) {
 
             if (currentAmmo - maxMagazineAmmo < 0) {
@@ -107,6 +102,17 @@ public class Pistol extends Weapon {
                 currentMagazineAmmo = maxMagazineAmmo;
             }
             reloading = false;
+        }
+    }
+
+    @Override
+    public void updateAmmo() {
+        for(int i = 0; i < bullets.size(); i++) {
+            bullets.get(i).update();
+            if(bullets.get(i).shouldRemove()) {
+                bullets.remove(i);
+                i--;
+            }
         }
     }
 

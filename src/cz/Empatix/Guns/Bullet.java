@@ -31,7 +31,7 @@ public class Bullet extends MapObject {
     private LightPoint light;
 
 
-    public Bullet(TileMap tm, double x, double y) {
+    public Bullet(TileMap tm, double x, double y,double inaccuracy) {
 
         super(tm);
         facingRight = true;
@@ -47,8 +47,8 @@ public class Bullet extends MapObject {
         spriteSheetCols = 4;
         spriteSheetRows = 2;
 
-        double atan = Math.atan2(y,x);
-        // 20 - speed of bullet
+        double atan = Math.atan2(y,x) + inaccuracy;
+        // 30 - speed of bullet
         speed.x = (float)(Math.cos(atan) * 30);
         speed.y = (float)(Math.sin(atan) * 30);
 
@@ -99,9 +99,9 @@ public class Bullet extends MapObject {
             spritesheet.addSprites(images);
         }
 
-        vboVertexes = ModelManager.getModel(width,height);
-        if (vboVertexes == -1){
-            vboVertexes = ModelManager.createModel(width,height);
+        vboVerticles = ModelManager.getModel(width,height);
+        if (vboVerticles == -1){
+            vboVerticles = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();
@@ -172,5 +172,8 @@ public class Bullet extends MapObject {
     public void playEnemyHit(){
         source.play(soundEnemyhit);
     }
-
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+    }
 }

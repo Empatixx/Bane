@@ -61,6 +61,12 @@ public abstract class Weapon {
     }
     public abstract void draw(Camera c);
     public abstract void update();
+    public abstract void drawAmmo(Camera c);
+    public abstract void updateAmmo();
 
     public abstract void checkCollisions(ArrayList<Enemy> enemies);
+
+    public boolean isReloading() {
+        return reloading;
+    }
 }

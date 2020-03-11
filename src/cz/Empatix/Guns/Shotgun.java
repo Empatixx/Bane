@@ -24,7 +24,7 @@ public class Shotgun extends Weapon {
         maxdamage = 1;
         inaccuracy = 0.7f;
         maxAmmo = 18;
-        maxMagazineAmmo = 2;
+        maxMagazineAmmo = 222;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         bullets = new ArrayList<>();
@@ -56,10 +56,9 @@ public class Shotgun extends Weapon {
                 for(int i = 0; i < 6;i++){
                     int coef = i % 2 == 1 ? -1 : 1;
 
-                    int xAccuracy = (int)(12*Math.pow(i,1.2)) * coef;
-                    int yAccuracy = (int)(12*Math.pow(i,1.2)) * coef;
+                    double inaccuracy = 0.035 * i * coef;
 
-                    Bullet bullet = new Bullet(tm,x+yAccuracy,y+xAccuracy);
+                    Bullet bullet = new Bullet(tm,x,y,inaccuracy);
                     bullet.setPosition(px,py);
                     bullets.add(bullet);
                 }
@@ -76,9 +75,6 @@ public class Shotgun extends Weapon {
 
     @Override
     public void draw(Camera c) {
-        for(Bullet bullet:bullets){
-            bullet.draw(c);
-        }
         if(reloading){
             TextRender.renderText(c,"Reloading...",new Vector3f(1650,1000,0),3,new Vector3f(1.0f,1.0f,1.0f));
 
@@ -88,14 +84,14 @@ public class Shotgun extends Weapon {
     }
 
     @Override
-    public void update() {
-        for(int i = 0; i < bullets.size(); i++) {
-            bullets.get(i).update();
-            if(bullets.get(i).shouldRemove()) {
-                bullets.remove(i);
-                i--;
-            }
+    public void drawAmmo(Camera c) {
+        for(Bullet bullet:bullets){
+            bullet.draw(c);
         }
+    }
+
+    @Override
+    public void update() {
         if(reloading && (float)(System.currentTimeMillis()-reloadDelay)/1000 > 0.7f) {
 
             if (currentAmmo - maxMagazineAmmo < 0) {
@@ -106,6 +102,17 @@ public class Shotgun extends Weapon {
                 currentMagazineAmmo = maxMagazineAmmo;
             }
             reloading = false;
+        }
+    }
+
+    @Override
+    public void updateAmmo() {
+        for(int i = 0; i < bullets.size(); i++) {
+            bullets.get(i).update();
+            if(bullets.get(i).shouldRemove()) {
+                bullets.remove(i);
+                i--;
+            }
         }
     }
 
@@ -121,4 +128,5 @@ public class Shotgun extends Weapon {
             }
         }
     }
+
 }

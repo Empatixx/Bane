@@ -87,8 +87,10 @@ public class InGame extends GameState {
 
     @Override
     void keyPressed(int k) {
+        gunsManager.keyPressed(k);
 
         player.keyPressed(k);
+
         if (k == GLFW.GLFW_KEY_F1){
             Game.displayCollisions = !Game.displayCollisions;
         }

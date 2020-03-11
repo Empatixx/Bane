@@ -1,6 +1,7 @@
 package cz.Empatix.Entity;
 
 import cz.Empatix.Entity.Enemies.Bat;
+import cz.Empatix.Entity.Enemies.Rat;
 import cz.Empatix.Entity.Enemies.Slime;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.TileMap;
@@ -46,12 +47,17 @@ public class EnemyManager {
         }
     }
     public static void addSlime(float x, float y){
-        Slime slime = new Slime(tileMap,player);
+        Enemy slime = new Slime(tileMap,player);
         slime.setPosition(x,y);
         enemies.add(slime);
     }
     public static void addBat(float x, float y){
-        Bat bat = new Bat(tileMap,player);
+        Enemy bat = new Bat(tileMap,player);
+        bat.setPosition(x,y);
+        enemies.add(bat);
+    }
+    public static void addRat(float x, float y){
+        Enemy bat = new Rat(tileMap,player);
         bat.setPosition(x,y);
         enemies.add(bat);
     }

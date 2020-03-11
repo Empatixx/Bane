@@ -129,7 +129,7 @@ public class AudioManager {
 
     }
     public static void cleanUp(){
-        buffers.forEach((k,v) -> AL10.alDeleteSources(v));
+        buffers.forEach((k,v) -> alDeleteSources(v));
 
         ALC.destroy();
         AL.setCurrentProcess(null);

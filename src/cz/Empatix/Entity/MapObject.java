@@ -1,7 +1,6 @@
 package cz.Empatix.Entity;
 
 
-
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Graphics.Shaders.Shader;
 import cz.Empatix.Graphics.Sprites.Spritesheet;
@@ -12,7 +11,6 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-
 
 import java.awt.*;
 
@@ -73,7 +71,7 @@ public abstract class MapObject {
 	protected boolean flinching;
 	protected long flinchingTimer;
 	// 3.0 modern opengl
-	protected int vboVertexes;
+	protected int vboVerticles;
 	protected Shader shader;
 	protected Spritesheet spritesheet;
 
@@ -274,7 +272,7 @@ public abstract class MapObject {
 		glEnableVertexAttribArray(1);
 
 
-		glBindBuffer(GL_ARRAY_BUFFER,vboVertexes);
+		glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
 		glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
 		glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
@@ -313,6 +311,12 @@ public abstract class MapObject {
 		}
 	}
 
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		// deleting sound source of map object
+		source.delete();
+	}
 }
 
 

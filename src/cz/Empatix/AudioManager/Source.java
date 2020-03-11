@@ -25,8 +25,8 @@ public class Source {
 
     public void play(int buffer){
         stop();
-        AL10.alSourcei(sourceId,AL10.AL_BUFFER,buffer);
         setVolume(volume);
+        AL10.alSourcei(sourceId,AL10.AL_BUFFER,buffer);
         resume();
     }
 
@@ -57,4 +57,5 @@ public class Source {
     public void setPosition(float x, float y){
         AL10.alSource3f(sourceId,AL10.AL_POSITION,x,y,0);
     }
+
 }

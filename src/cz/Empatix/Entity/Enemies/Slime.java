@@ -31,7 +31,7 @@ public class Slime extends Enemy {
         cwidth = 64;
         cheight = 48;
 
-        health = maxHealth = 7;
+        health = maxHealth = 10;
         damage = 1;
 
         type = melee;
@@ -64,9 +64,9 @@ public class Slime extends Enemy {
             }
             spritesheet.addSprites(sprites);
         }
-        vboVertexes = ModelManager.getModel(width,height);
-        if (vboVertexes == -1){
-            vboVertexes = ModelManager.createModel(width,height);
+        vboVerticles = ModelManager.getModel(width,height);
+        if (vboVerticles == -1){
+            vboVerticles = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();

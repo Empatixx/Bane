@@ -123,9 +123,9 @@ public class Player extends MapObject {
         animation.setFrames(spritesheet.getSprites(IDLE));
         animation.setDelay(100);
 
-        vboVertexes = ModelManager.getModel(width,height);
-        if (vboVertexes == -1){
-            vboVertexes = ModelManager.createModel(width,height);
+        vboVerticles = ModelManager.getModel(width,height);
+        if (vboVerticles == -1){
+            vboVerticles = ModelManager.createModel(width,height);
         }
 
         shader = ShaderManager.getShader("shaders\\blur");

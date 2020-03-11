@@ -58,6 +58,7 @@ public class HealthBar extends HUD{
         vboVerticesBar = vbo;
 
         pos.x+=44;
+        pos.y+=4;
         matrixPos = new Matrix4f().translate(pos).scale(scale);
         camera.hardProjection().mul(matrixPos,matrixPos);
 

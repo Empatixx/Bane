@@ -245,11 +245,13 @@ public class Room {
                 int x = getRandom(xMin+tileSize*2,xMax-tileSize*2);
                 int y = getRandom(yMin+tileSize*2,yMax-tileSize*2);
 
-                int enemyType = cz.Empatix.Java.Random.nextInt(2);
+                int enemyType = cz.Empatix.Java.Random.nextInt(3);
                 if(enemyType == 1){
                     EnemyManager.addBat(x,y);
-                } else {
+                } else if(enemyType == 2){
                     EnemyManager.addSlime(x,y);
+                } else {
+                    EnemyManager.addRat(x,y);
                 }
             }
         }

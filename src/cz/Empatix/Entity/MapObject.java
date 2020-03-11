@@ -229,8 +229,8 @@ public abstract class MapObject {
 	 * Getting shifts of tilemap
 	 */
 	public void setMapPosition() {
-		xmap = tileMap.getx();
-		ymap = tileMap.gety();
+		xmap = tileMap.getX();
+		ymap = tileMap.getY();
 	}
 	
 	void setLeft(boolean b) { left = b; }

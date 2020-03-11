@@ -25,19 +25,19 @@ void main()
     vec2 uv = gl_FragCoord.xy;
 
     // darkness
-    vec4 outc = vec4(0.5);
+    vec3 outc = vec3(0.5);
 
     for (int i = 0; i < lightCount; i++)
     {
         vec2 lightPos = vec2(lights[i].position.x,size.y - lights[i].position.y);
         float dist = distance(lightPos, uv);
         float att = 1.0 / (lAtt.y * dist + lAtt.x + lAtt.z * dist * dist);
-        outc+=vec4(vec3(att),1) * lights[i].intensity * vec4(lights[i].color,1);
+        outc+=vec3(vec3(att)) * lights[i].intensity * vec3(lights[i].color);
     }
 
     vec4 pixel = texture2D(texture, uv / size);
 
-    gl_FragColor = pixel * outc;
+    gl_FragColor = pixel * vec4(outc,1);
 
 
 }

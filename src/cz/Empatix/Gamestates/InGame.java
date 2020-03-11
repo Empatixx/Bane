@@ -58,8 +58,8 @@ public class InGame extends GameState {
 
         float px = player.getX();
         float py = player.getY();
-        float mx = tileMap.getx();
-        float my = tileMap.gety();
+        float mx = tileMap.getX();
+        float my = tileMap.getY();
         gunsManager.shot(mouseX-mx-px,
                 mouseY-my-py,
                 px,
@@ -158,6 +158,8 @@ public class InGame extends GameState {
             TextRender.renderText(camera,"Y: "+(int)player.getY(),new Vector3f(1650,300,0),3,new Vector3f(1.0f,1.0f,1.0f));
         }
 
+        gunsManager.drawHud(camera);
+
         player.drawVignette();
 
         healthBar.draw();
@@ -196,8 +198,8 @@ public class InGame extends GameState {
 
         // mouse location-moving direction of mouse of tilemap
         tileMap.setPosition(
-                tileMap.getx()-(mouseX-960)/30,
-                tileMap.gety()-(mouseY- 540)/30);
+                tileMap.getX()-(mouseX-960)/30,
+                tileMap.getY()-(mouseY- 540)/30);
 
 
         // updating bullets(ammo)

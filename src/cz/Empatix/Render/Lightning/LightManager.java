@@ -4,7 +4,6 @@ import cz.Empatix.Graphics.Framebuffer;
 import cz.Empatix.Graphics.Shaders.Shader;
 import cz.Empatix.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Main.Settings;
-import cz.Empatix.Render.Camera;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -13,10 +12,7 @@ import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
 
 public class LightManager {
     private static ArrayList<LightPoint> lights;
@@ -71,14 +67,22 @@ public class LightManager {
     }
 
     public void draw(Framebuffer framebuffer){
+        ArrayList<LightPoint> lights = new ArrayList<>(LightManager.lights);
+        for(int i = 0;i<lights.size();i++){
+            LightPoint light = lights.get(i);
+            if(light.isNotOnScreen()){
+                lights.remove(light);
+                i--;
+            }
+        }
+
+
         shader.bind();
 
         shader.setUniformi("texture",0);
         shader.setUniformi("lightCount",lights.size());
         shader.setUniform2f("size",new Vector2f(Settings.WIDTH, Settings.HEIGHT));
         shader.setUniformLights(lights.toArray());
-
-       //shader.setUniformm4f("projection",c.hardProjection());
 
         glActiveTexture(GL_TEXTURE0);
         framebuffer.bindTexture();
@@ -120,5 +124,6 @@ public class LightManager {
                 i--;
             }
         }
+
     }
 }

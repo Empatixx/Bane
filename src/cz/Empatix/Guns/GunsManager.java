@@ -48,6 +48,8 @@ public class GunsManager {
         for(Weapon weapon : weapons){
             weapon.drawAmmo(c);
         }
+    }
+    public void drawHud(Camera c){
         weapons.get(current).draw(c);
     }
 

@@ -583,8 +583,8 @@ public class TileMap {
 
 
 	public int getTileSize() { return tileSize; }
-	public float getx() { return position.x; }
-	public float gety() { return position.y; }
+	public float getX() { return position.x; }
+	public float getY() { return position.y; }
 
 	/**
 	 * rc = number of tile in tileset

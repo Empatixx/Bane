@@ -1,6 +1,7 @@
 package cz.Empatix.Render.Lightning;
 
 import cz.Empatix.Main.Settings;
+import cz.Empatix.Render.Camera;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -9,6 +10,7 @@ public class LightPoint {
     private Vector2f pos;
     private Vector3f color;
     private float intensity;
+
 
     public LightPoint(Vector2f pos, Vector3f color, float intensity){
 
@@ -34,6 +36,7 @@ public class LightPoint {
         // resolution scaling
         pos.x = x * Settings.WIDTH/1920f;
         pos.y = y * Settings.HEIGHT/1080f;
+
     }
 
     public void remove() {
@@ -48,4 +51,11 @@ public class LightPoint {
         this.intensity = intensity;
     }
 
+    public boolean isNotOnScreen(){
+        return (
+                pos.x > Camera.getWIDTH() + 100 * intensity || pos.x < 0 - 100 * intensity
+                        ||
+                pos.y > Camera.getHEIGHT() + 100 * intensity|| pos.y < 0 - 100 * intensity
+        );
+    }
 }

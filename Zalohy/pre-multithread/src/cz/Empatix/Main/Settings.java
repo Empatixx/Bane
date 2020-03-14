@@ -55,8 +55,17 @@ public class Settings {
         try {
             Props.loadFromXML(new FileInputStream("settings.xml"));
 
-            WIDTH = Integer.valueOf(Props.getProperty("width"));
-            HEIGHT = Integer.valueOf(Props.getProperty("height"));
+            int width = Integer.valueOf(Props.getProperty("width"));
+            int height = Integer.valueOf(Props.getProperty("height"));
+
+            WIDTH = 1024;
+            HEIGHT = 768;
+            for (int i = 0; i < supportedDimensions.length - 1; i++) {
+                if (width == supportedDimensions[i] && height == supportedDimensions[i + 1]) {
+                    WIDTH = width;
+                    HEIGHT = height;
+                }
+            }
 
             OVERALL = Float.valueOf(Props.getProperty("overall"));
             EFFECTS = Float.valueOf(Props.getProperty("effects"));
@@ -69,9 +78,9 @@ public class Settings {
                 HEIGHT = 768;
 
                 for (int i = 0; i < supportedDimensions.length - 1; i++) {
-                    if (maxWIDTH >= supportedDimensions[i] && maxHEIGHT >= supportedDimensions[i + 1]) {
-                        WIDTH = supportedDimensions[i];
-                        HEIGHT = supportedDimensions[i + 1];
+                    if (maxWIDTH == supportedDimensions[i] && maxHEIGHT == supportedDimensions[i + 1]) {
+                        WIDTH = maxWIDTH;
+                        HEIGHT = maxHEIGHT;
                     }
                 }
 
@@ -151,6 +160,8 @@ public class Settings {
                 fixedCameraSize = true;
             }
         }
+        fixedCameraSize = true;
+
         GL12.glViewport(0, 0, WIDTH, HEIGHT);
         glfwSetWindowSize(Game.window, WIDTH, HEIGHT);
     }
@@ -191,22 +202,5 @@ public class Settings {
         }
         GL12.glViewport(0, 0, WIDTH, HEIGHT);
         glfwSetWindowSize(Game.window, WIDTH, HEIGHT);
-    }
-    public static void save(){
-        Properties Props = new Properties();
-        Props.setProperty("width", Integer.toString(WIDTH));
-        Props.setProperty("height", Integer.toString(HEIGHT));
-
-        Props.setProperty("overall", Float.toString(OVERALL));
-        Props.setProperty("effects", Float.toString(EFFECTS));
-        Props.setProperty("music", Float.toString(MUSIC));
-
-        try{
-            Props.storeToXML(new FileOutputStream("settings.xml"), "");
-
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
     }
 }

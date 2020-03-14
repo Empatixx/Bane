@@ -25,17 +25,28 @@
 [LWJGL] 	Loaded from org.lwjgl.librarypath: C:\Users\Jirka\AppData\Local\Temp\lwjglJirka\3.2.3-build-13\OpenAL.dll
 OpenGL version: 4.6.0 NVIDIA 442.19
 GLSL version: 4.60 NVIDIA
-UPS: 223   FPS: 1
-UPS: 16   FPS: 1
+UPS: 245   FPS: 1
+UPS: 17   FPS: 1
 UPS: 1   FPS: 1
-UPS: 5   FPS: 1
-UPS: 54   FPS: 52
-UPS: 60   FPS: 51
-UPS: 60   FPS: 60
+UPS: 3   FPS: 1
+UPS: 26   FPS: 28
+UPS: 67   FPS: 59
 UPS: 60   FPS: 59
+UPS: 60   FPS: 55
 UPS: 60   FPS: 60
 UPS: 60   FPS: 60
-[LWJGL] 16 bytes leaked, thread 11 (Game), address: 0x2B90000
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+[LWJGL] 16 bytes leaked, thread 11 (Game), address: 0x2D70000
 	at org.lwjgl.system.Callback.create(Callback.java:136)
 	at org.lwjgl.system.Callback.<init>(Callback.java:86)
 	at org.lwjgl.glfw.GLFWErrorCallback.<init>(GLFWErrorCallback.java:60)

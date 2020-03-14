@@ -4,7 +4,6 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Graphics.ByteBufferImage;
 import cz.Empatix.Java.Random;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.stb.STBImage;
@@ -251,7 +250,6 @@ public class Game implements Runnable {
                 updates = 0;
             }
         }
-        Settings.save();
         keyCallback.free();
         mouseButtonCallback.free();
         GL.setCapabilities(null);

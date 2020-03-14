@@ -249,8 +249,7 @@ public class TileMap {
 		boolean mapCompleted = false;
 
 		// room xy map
-		roomY = roomX = 20;
-		roomMap = new int[roomX][roomY];
+		roomMap = new int[30][30];
 
 		//arraylist filled with rooms
 		roomArrayList = new Room[maxRooms];
@@ -260,13 +259,10 @@ public class TileMap {
 				// starting room
 				int id = getIdGen();
 
-				int x = roomX/2;
-				int y = roomY/2;
-
-				Room mistnost = new Room(Room.Classic,id,x,y,tileSize);
+				Room mistnost = new Room(Room.Classic,id,15,15,tileSize);
 
 				roomArrayList[currentRooms] = mistnost;
-				roomMap[y][x] = id;
+				roomMap[15][15] = id;
 
 
 				// counting how many rooms are already created.
@@ -277,26 +273,25 @@ public class TileMap {
 				for(int i = 0;i < currentRooms;i++){
 
 					// get number of paths currently coming from that room
-					//int paths = roomArrayList[i].countPaths();
-
-					int roomX = roomArrayList[i].getX();
-					int roomY = roomArrayList[i].getY();
-					boolean[] blockedPaths = new boolean[4];//roomArrayList[i].getPaths();
-					blockedPaths[0] = roomMap[roomY-1][roomX] != 0;
-					blockedPaths[1] = roomMap[roomY+1][roomX] != 0;
-					blockedPaths[2] = roomMap[roomY][roomX-1] != 0;
-					blockedPaths[3] = roomMap[roomY][roomX+1] != 0;
-
-					int paths = 0;
-					// get number of paths currently coming from that room
-					for(boolean path:blockedPaths){
-						if(path) paths++;
-					}
+					int paths = roomArrayList[i].countPaths();
 
 					double chance = Random.nextDouble();
 
 					// Creates a new path from old to new room, less chance for rooms with more paths
 					if (chance > 0.2+0.2*paths){
+
+						int roomX = roomArrayList[i].getX();
+						int roomY = roomArrayList[i].getY();
+
+
+						// checking each side if there's already room
+						boolean[] blockedPaths = new boolean[4];//roomArrayList[i].getPaths();
+						blockedPaths[0] = roomMap[roomY-1][roomX] != 0;
+						blockedPaths[1] = roomMap[roomY+1][roomX] != 0;
+						blockedPaths[2] = roomMap[roomY][roomX-1] != 0;
+						blockedPaths[3] = roomMap[roomY][roomX+1] != 0;
+
+
 						// random between <0,4)
 						int rndDirection = Random.nextInt(4);
 
@@ -528,13 +523,16 @@ public class TileMap {
 
 
 	private void decreaseSizeOfMap(){
+		// zkracovani mapy
+		roomX = 30;
+		roomY = 30;
 		int right = 0;
 		int left = 0;
 		int top = 0;
 		int bottom = 0;
 		// radky od shora dolu
-		A: for (int i = 0;i < roomY;i++){
-			for (int j = 0;j < roomX;j++){
+		A: for (int i = 0;i < 30;i++){
+			for (int j = 0;j < 30;j++){
 				if (roomMap[i][j] != 0){
 					break A;
 				}
@@ -542,8 +540,8 @@ public class TileMap {
 			top++;
 		}
 		// radky od dola nahoru
-		A: for (int i = roomY-1;i >= 0;i--){
-			for (int j = roomX-1;j >= 0;j--){
+		A: for (int i = 29;i >= 0;i--){
+			for (int j = 29;j >= 0;j--){
 				if (roomMap[i][j] != 0){
 					break A;
 				}
@@ -551,8 +549,8 @@ public class TileMap {
 			bottom++;
 		}
 		// sloupce od leva do prava
-		A: for (int i = 0;i < roomY;i++){
-			for (int j = 0;j < roomX;j++){
+		A: for (int i = 0;i < 30;i++){
+			for (int j = 0;j < 30;j++){
 				if (roomMap[j][i] != 0){
 					break A;
 				}
@@ -560,8 +558,8 @@ public class TileMap {
 			left++;
 		}
 		// sloupce od prava do leva
-		A: for (int i = roomY-1;i >= 0;i--){
-			for (int j = roomX-1;j >= 0;j--){
+		A: for (int i = 29;i >= 0;i--){
+			for (int j = 29;j >= 0;j--){
 				if (roomMap[j][i] != 0){
 					break A;
 				}

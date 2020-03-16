@@ -66,7 +66,7 @@ public class Rat extends Enemy {
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(165);
+        animation.setDelay(90);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){

@@ -146,7 +146,6 @@ public class SliderBar {
         pos.x += (x-pos.x) * .3f;
         if(pos.x>sliderMaxX) pos.x = sliderMaxX;
         if(pos.x<sliderMinX) pos.x = sliderMinX;
-        //TODO: otestovat
         value = (pos.x-sliderMinX)/(sliderMaxX-sliderMinX);
         System.out.print("value: "+value+"\n");
     }

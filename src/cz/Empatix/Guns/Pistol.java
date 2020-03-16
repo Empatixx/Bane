@@ -2,6 +2,7 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Text.TextRender;
@@ -42,7 +43,7 @@ public class Pistol extends Weapon {
     @Override
     public void reload() {
         if (!reloading && currentAmmo != 0 && currentMagazineAmmo != maxMagazineAmmo){
-            reloadDelay = System.currentTimeMillis();
+            reloadDelay = System.currentTimeMillis() - InGame.deltaPauseTime();
             reloadsource.play(soundReload);
             reloading = true;
         }
@@ -53,13 +54,15 @@ public class Pistol extends Weapon {
         if (currentMagazineAmmo != 0) {
             if (reloading) return;
             // delta - time between shoots
-            long delta = System.currentTimeMillis() - delay;
+            // InGame.deltaPauseTime(); returns delayed time because of pause time
+            long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
+            System.out.println("delta"+delta);
             if (delta > 250){
                 double inaccuracy = 0;
                 if (delta < 400){
                     inaccuracy = 0.055 * 400/delta * (Random.nextInt(2)*2-1);
                 }
-                delay = System.currentTimeMillis();
+                delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                 Bullet bullet = new Bullet(tm,x,y,inaccuracy);
                 bullet.setPosition(px,py);
                 bullets.add(bullet);
@@ -92,7 +95,7 @@ public class Pistol extends Weapon {
 
     @Override
     public void update() {
-        if(reloading && (float)(System.currentTimeMillis()-reloadDelay)/1000 > 0.7f) {
+        if(reloading && (float)(System.currentTimeMillis()-reloadDelay-InGame.deltaPauseTime())/1000 > 0.7f) {
 
             if (currentAmmo - maxMagazineAmmo < 0) {
                 currentMagazineAmmo = currentAmmo;

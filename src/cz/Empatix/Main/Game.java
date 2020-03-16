@@ -223,6 +223,7 @@ public class Game implements Runnable {
 
         System.out.print("OpenGL version: "+glGetString(GL_VERSION)+"\n");
         System.out.print("GLSL version: "+glGetString(GL_SHADING_LANGUAGE_VERSION)+"\n");
+        System.out.print("GLFW version: "+glfwGetVersionString()+"\n");
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

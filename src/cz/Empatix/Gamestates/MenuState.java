@@ -8,6 +8,7 @@ import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Hud.MenuBar;
 import cz.Empatix.Render.Hud.SliderBar;
 import cz.Empatix.Render.Text.TextRender;
@@ -35,8 +36,10 @@ public class MenuState extends GameState{
     private final static int MUSIC = 2;
 
 
-
+    // main menu
     private MenuBar[] huds;
+    private Image title;
+
     private MenuBar[] settingsHuds;
     //   graphics
     private MenuBar[] graphicsHuds;
@@ -101,6 +104,7 @@ public class MenuState extends GameState{
             for(int i = 0; i < huds.length; i++) {
                 huds[i].draw();
             }
+            title.draw();
         }
     }
 
@@ -111,16 +115,17 @@ public class MenuState extends GameState{
         huds = new MenuBar[3];
         graphicsHuds = new MenuBar[2];
         audioSliders = new SliderBar[3];
+        title = new Image("Textures\\Menu\\logo.tga",new Vector3f(960,150,0),7,camera);
         // the main menu
-        MenuBar bar = new MenuBar("Textures\\Menu\\menu_bar_start.tga",new Vector3f(960,150,0),2,camera,200,100,true);
+        MenuBar bar = new MenuBar("Textures\\Menu\\menu_bar_start.tga",new Vector3f(960,400,0),1.8f,camera,200,100,true);
         bar.setType(BEGIN);
         huds[0] = bar;
 
-        bar = new MenuBar("Textures\\Menu\\menu_bar_settings.tga",new Vector3f(960,450,0),2,camera,200,100,true);
+        bar = new MenuBar("Textures\\Menu\\menu_bar_settings.tga",new Vector3f(960,625,0),1.8f,camera,200,100,true);
         bar.setType(SETTINGS);
         huds[1] = bar;
 
-        bar = new MenuBar("Textures\\Menu\\menu_bar_exit.tga",new Vector3f(960,750,0),2,camera,200,100,true);
+        bar = new MenuBar("Textures\\Menu\\menu_bar_exit.tga",new Vector3f(960,850,0),1.8f,camera,200,100,true);
         bar.setType(EXIT);
         huds[2] = bar;
 

@@ -2,6 +2,7 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
@@ -10,6 +11,10 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 
 public class Shotgun extends Weapon {
+    // map push when player shoot
+    private int push;
+    private double pushX;
+    private double pushY;
     // audio
     private final int soundShoot;
     private final int soundEmptyShoot;
@@ -24,7 +29,7 @@ public class Shotgun extends Weapon {
         maxdamage = 1;
         inaccuracy = 0.7f;
         maxAmmo = 18;
-        maxMagazineAmmo = 222;
+        maxMagazineAmmo = 2;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         bullets = new ArrayList<>();
@@ -39,7 +44,7 @@ public class Shotgun extends Weapon {
     @Override
     public void reload() {
         if (!reloading && currentAmmo != 0 && currentMagazineAmmo != maxMagazineAmmo){
-            reloadDelay = System.currentTimeMillis();
+            reloadDelay = System.currentTimeMillis() - InGame.deltaPauseTime();
             reloadsource.play(soundReload);
             reloading = true;
         }
@@ -50,7 +55,7 @@ public class Shotgun extends Weapon {
         if (currentMagazineAmmo != 0) {
             if (reloading) return;
             // delta - time between shoots
-            long delta = System.currentTimeMillis() - delay;
+            long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
             if (delta > 450){
                 source.play(soundShoot);
                 for(int i = 0; i < 6;i++){
@@ -63,7 +68,12 @@ public class Shotgun extends Weapon {
                     bullets.add(bullet);
                 }
                 currentMagazineAmmo--;
-                delay = System.currentTimeMillis();
+                delay = System.currentTimeMillis() - InGame.deltaPauseTime();
+
+                double atan = Math.atan2(y,x);
+                push = 60;
+                pushX = Math.cos(atan);
+                pushY = Math.sin(atan);
 
             }
         } else if (currentAmmo != 0){
@@ -92,7 +102,7 @@ public class Shotgun extends Weapon {
 
     @Override
     public void update() {
-        if(reloading && (float)(System.currentTimeMillis()-reloadDelay)/1000 > 0.7f) {
+        if(reloading && (float)(System.currentTimeMillis()-reloadDelay- InGame.deltaPauseTime())/1000 > 0.7f) {
 
             if (currentAmmo - maxMagazineAmmo < 0) {
                 currentMagazineAmmo = currentAmmo;
@@ -103,6 +113,10 @@ public class Shotgun extends Weapon {
             }
             reloading = false;
         }
+        if (push > 0) push-=5;
+        if (push < 0) push+=5;
+        push = -push;
+        tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
     }
 
     @Override

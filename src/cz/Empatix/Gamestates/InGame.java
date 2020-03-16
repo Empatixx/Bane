@@ -64,7 +64,9 @@ public class InGame extends GameState {
     private int soundMenuClick;
     private Source source;
 
-
+    // pause time deltas
+    private static long pauseTimeStarted;
+    private static long pauseTimeEnded;
 
 
 
@@ -81,9 +83,11 @@ public class InGame extends GameState {
                     int type = bar.getType();
                     source.play(soundMenuClick);
                     if(type == PAUSEEXIT){
+                        player.cleanUp();
                         gsm.setState(GameStateManager.MENU);
                     } else if (type == PAUSERESUME){
                         pause = false;
+                        Game.setCursor(Game.CROSSHAIR);
                     } else{
                         // TODO: save menu
                     }
@@ -112,8 +116,10 @@ public class InGame extends GameState {
             pause = !pause;
             if(pause){
                 Game.setCursor(Game.ARROW);
+                pauseTimeStarted = System.currentTimeMillis();
             } else {
                 Game.setCursor(Game.CROSSHAIR);
+                pauseTimeEnded += System.currentTimeMillis() - pauseTimeStarted;
             }
         }
         player.keyReleased(k);
@@ -295,6 +301,14 @@ public class InGame extends GameState {
             healthBar.update(player.getHealth(), player.getMaxHealth());
         }
 
+    }
+
+    /**
+     *
+     * @return returns time delta in ms
+     */
+    public static long deltaPauseTime(){
+        return pauseTimeEnded ;
     }
 
 }

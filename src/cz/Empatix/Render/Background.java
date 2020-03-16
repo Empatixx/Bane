@@ -1,6 +1,7 @@
 package cz.Empatix.Render;
 
 
+import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Graphics.ByteBufferImage;
 import cz.Empatix.Graphics.Model.ModelManager;
 import cz.Empatix.Graphics.Shaders.Shader;
@@ -127,12 +128,12 @@ public class Background {
     }
     public void update() {
         if (fadeEffect){
-            long currentTime = System.currentTimeMillis();
-            alpha = 1 - (float) (currentTime-time) / 1000 / 1.6f;
+            long currentTime = System.currentTimeMillis()- InGame.deltaPauseTime();
+            alpha = 1 - (float) (currentTime-time ) / 1000 / 1.6f;
             if (alpha < 0) alpha = 0;
         }
     }
     public void updateFadeTime(){
-        time = System.currentTimeMillis();
+        time = System.currentTimeMillis()- InGame.deltaPauseTime();
     }
 }

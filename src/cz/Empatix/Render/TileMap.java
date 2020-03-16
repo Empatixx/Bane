@@ -252,6 +252,7 @@ public class TileMap {
 		roomY = roomX = 20;
 		roomMap = new int[roomX][roomY];
 
+
 		//arraylist filled with rooms
 		roomArrayList = new Room[maxRooms];
 

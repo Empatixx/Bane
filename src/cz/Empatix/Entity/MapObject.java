@@ -243,7 +243,7 @@ public abstract class MapObject {
 		if (isNotOnScrean()){
 			return;
 		}
-		// bl	ikání - po hitu - hráč
+		// blikání - po hitu - hráč
 		if (flinching){
 			long elapsed = (System.nanoTime() - flinchingTimer) / 1000000;
 			if (elapsed / 100 % 2 == 0){
@@ -311,12 +311,6 @@ public abstract class MapObject {
 		}
 	}
 
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-		// deleting sound source of map object
-		source.delete();
-	}
 }
 
 

@@ -2,6 +2,7 @@ package cz.Empatix.Entity;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
+import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Graphics.Model.ModelManager;
 import cz.Empatix.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Graphics.Sprites.Sprite;
@@ -172,8 +173,8 @@ public class Player extends MapObject {
             sourcehealth.stop();
         }
 
-        if (lowHealth && (float)(System.currentTimeMillis()-heartBeat)/1000 > 0.85f){
-            heartBeat = System.currentTimeMillis();
+        if (lowHealth && (float)(System.currentTimeMillis()-heartBeat-InGame.deltaPauseTime())/1000 > 0.85f){
+            heartBeat = System.currentTimeMillis()-InGame.deltaPauseTime();
             hitVignette.updateFadeTime();
         }
             /*
@@ -226,7 +227,7 @@ public class Player extends MapObject {
 
         //  NESMRTELNOST PO DOSTANI HITU
         if (flinching){
-            if ((float)(System.nanoTime()-flinchingTimer)/ 1000000000 > 1.5) {
+            if ((float)(System.currentTimeMillis() - flinchingTimer - InGame.deltaPauseTime())/ 1000 > 1.5) {
                 flinching = false;
             }
         }
@@ -344,7 +345,7 @@ public class Player extends MapObject {
         if (health < 0) health = 0;
         if (health == 0) dead = true;
         flinching = true;
-        flinchingTimer = System.nanoTime();
+        flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
         hitVignette.updateFadeTime();
         source.play(soundPlayerhurt[Random.nextInt(2)]);
 
@@ -356,5 +357,10 @@ public class Player extends MapObject {
 
     public int getMaxHealth() {
         return maxHealth;
+    }
+
+    public void cleanUp(){
+        sourcehealth.delete();
+        source.delete();
     }
 }

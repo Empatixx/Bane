@@ -65,13 +65,12 @@ public class Settings {
         } catch (Exception e) {
             try {
 
-                WIDTH = 1024;
-                HEIGHT = 768;
-
+                System.out.println("max "+maxWIDTH+" / "+maxHEIGHT);
                 for (int i = 0; i < supportedDimensions.length - 1; i++) {
                     if (maxWIDTH >= supportedDimensions[i] && maxHEIGHT >= supportedDimensions[i + 1]) {
                         WIDTH = supportedDimensions[i];
                         HEIGHT = supportedDimensions[i + 1];
+                        break;
                     }
                 }
 
@@ -79,8 +78,8 @@ public class Settings {
                 EFFECTS = 1f;
                 MUSIC = 1f;
 
-                Props.setProperty("width", Integer.toString(maxWIDTH));
-                Props.setProperty("height", Integer.toString(maxHEIGHT));
+                Props.setProperty("width", Integer.toString(WIDTH));
+                Props.setProperty("height", Integer.toString(HEIGHT));
 
                 Props.setProperty("overall", Float.toString(1f));
                 Props.setProperty("effects", Float.toString(1f));

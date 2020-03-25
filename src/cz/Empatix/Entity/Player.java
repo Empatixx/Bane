@@ -11,7 +11,6 @@ import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Lightning.LightManager;
-import cz.Empatix.Render.Lightning.LightPoint;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -50,8 +49,6 @@ public class Player extends MapObject {
     private final Source sourcehealth;
     private final int soundLowHealth;
 
-    private LightPoint light;
-
 
     public Player(TileMap tm, Camera camera) {
         super(tm);
@@ -64,6 +61,7 @@ public class Player extends MapObject {
         // COLLISION WIDTH/HEIGHT
         cwidth = 32;
         cheight = 76;
+        scale = 2;
 
         moveSpeed = 0.68f;
         maxSpeed = 11.84f;
@@ -129,9 +127,9 @@ public class Player extends MapObject {
             vboVerticles = ModelManager.createModel(width,height);
         }
 
-        shader = ShaderManager.getShader("shaders\\blur");
+        shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
-            shader = ShaderManager.createShader("shaders\\blur");
+            shader = ShaderManager.createShader("shaders\\shader");
         }
 
         // because of scaling image by 2x
@@ -155,7 +153,7 @@ public class Player extends MapObject {
         soundLowHealth = AudioManager.loadSound("lowhealth.ogg");
         sourcehealth.setLooping(true);
 
-        light = LightManager.createLight(new Vector3f(1.0f,1.0f,1.0f),new Vector2f(0,0),5f);
+        light = LightManager.createLight(new Vector3f(1.0f,1.0f,1.0f),new Vector2f(0,0),5f,this);
 
     }
 
@@ -177,16 +175,6 @@ public class Player extends MapObject {
             heartBeat = System.currentTimeMillis()-InGame.deltaPauseTime();
             hitVignette.updateFadeTime();
         }
-            /*
-        } else if (health < 3 && !sourcehealth.isPlaying()){
-            sourcehealth.play(soundLowHealth);
-        } else if (health > 3 && sourcehealth.isPlaying()){
-            sourcehealth.stop();
-        }
-        System.out.print((float)(System.currentTimeMillis()-heartBeat)/1000+"\n");
-        heartBeat = System.currentTimeMillis();
-        hitVignette.updateFadeTime();
-*/
 
         getMovementSpeed();
         checkTileMapCollision();
@@ -233,12 +221,11 @@ public class Player extends MapObject {
         }
         hitVignette.update();
 
-        light.setPos(position.x+xmap,position.y+ymap);
     }
     public void checkCollision(ArrayList<Enemy> enemies){
         for (Enemy currentEnemy:enemies){
             // check player X enemy collision
-            if (intersects(currentEnemy)){
+            if (intersects(currentEnemy) && !currentEnemy.isDead()){
                 hit(currentEnemy.getDamage());
             }
         }

@@ -133,6 +133,7 @@ public class InGame extends GameState {
 
     @Override
     void keyPressed(int k) {
+        if(pause) return;
 
         gunsManager.keyPressed(k);
 
@@ -153,10 +154,12 @@ public class InGame extends GameState {
         Game.setCursor(Game.CROSSHAIR);
 
         // Tile map
-        tileMap = new TileMap(64, camera);
-        tileMap.loadTiles("Textures\\tileset64.tga");
-        tileMap.loadMap();
-        tileMap.setTween(0.10);
+        for(int i = 0;i<10;i++){
+            tileMap = new TileMap(64, camera);
+            tileMap.loadTiles("Textures\\tileset64.tga");
+            tileMap.loadMap();
+            tileMap.setTween(0.10);
+        }
         // player
         player = new Player(tileMap, camera);
         player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
@@ -164,7 +167,7 @@ public class InGame extends GameState {
         //bg = new Background("/testing.jpg/");
 
         // weapons
-        gunsManager = new GunsManager(tileMap);
+        gunsManager = new GunsManager(tileMap,camera);
 
 
         //health bar
@@ -203,7 +206,6 @@ public class InGame extends GameState {
     @Override
     void draw() {
         //bg.draw(g);
-
         objectsFramebuffer.bindFBO();
         // clear framebuffer
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -269,6 +271,9 @@ public class InGame extends GameState {
                 Camera.getWIDTH() / 2f - player.getX(),
                 Camera.getHEIGHT() / 2f - player.getY()
         );
+
+        lightManager.update();
+
         if(pause){
             for(MenuBar hud:pauseBars){
                 hud.setClick(false);
@@ -281,7 +286,6 @@ public class InGame extends GameState {
             ArrayList<Enemy> enemies = enemyManager.getEnemies();
 
             player.update();
-            lightManager.update();
 
             // updating if player entered some another room
             tileMap.updateCurrentRoom(

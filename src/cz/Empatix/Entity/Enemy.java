@@ -12,7 +12,7 @@ public abstract class  Enemy extends MapObject {
 
     protected int health;
     protected int maxHealth;
-    boolean dead;
+    protected boolean dead;
     protected int damage;
 
     // AI vars
@@ -278,5 +278,8 @@ public abstract class  Enemy extends MapObject {
     private void updatePlayerCords(){
         px = player.getx();
         py = player.gety();
+    }
+    public boolean shouldRemove(){
+        return animation.hasPlayedOnce() && isDead();
     }
 }

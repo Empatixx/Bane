@@ -4,6 +4,7 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Graphics.ByteBufferImage;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Render.LoadingScreen;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
@@ -17,7 +18,6 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.GL_SHADING_LANGUAGE_VERSION;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -163,10 +163,6 @@ public class Game implements Runnable {
         // Enable v-sync
         glfwSwapInterval(1);
 
-        // Make the window visible
-        glfwShowWindow(window);
-        //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN); // hide cursor
-
 
 
     }
@@ -207,6 +203,9 @@ public class Game implements Runnable {
 
         // Without this won't opengl work
         GL.createCapabilities();
+
+        loading();
+
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glOrtho(0,1920,1080,0,1,-1);
@@ -221,9 +220,6 @@ public class Game implements Runnable {
         // GAMESTATE / RUNNING
         initGame();
 
-        System.out.print("OpenGL version: "+glGetString(GL_VERSION)+"\n");
-        System.out.print("GLSL version: "+glGetString(GL_SHADING_LANGUAGE_VERSION)+"\n");
-        System.out.print("GLFW version: "+glfwGetVersionString()+"\n");
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -306,5 +302,12 @@ public class Game implements Runnable {
 
 
     }
+    public void loading(){
+        LoadingScreen loadingScreen = new LoadingScreen();
+        loadingScreen.draw();
+        glfwSwapBuffers(window);
 
+        // Make the window visible
+        glfwShowWindow(window);
+    }
 }

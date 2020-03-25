@@ -2,6 +2,7 @@ package cz.Empatix.Entity;
 
 import cz.Empatix.Entity.Enemies.Bat;
 import cz.Empatix.Entity.Enemies.Rat;
+import cz.Empatix.Entity.Enemies.Skeleton;
 import cz.Empatix.Entity.Enemies.Slime;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.TileMap;
@@ -30,7 +31,7 @@ public class EnemyManager {
         for(int i = 0;i < enemies.size();i++){
             enemies.get(i).update();
             // checking if enemy is dead
-            if (enemies.get(i).isDead()){
+            if (enemies.get(i).shouldRemove()){
                 enemies.remove(i);
                 i--;
             }
@@ -58,6 +59,11 @@ public class EnemyManager {
     }
     public static void addRat(float x, float y){
         Enemy bat = new Rat(tileMap,player);
+        bat.setPosition(x,y);
+        enemies.add(bat);
+    }
+    public static void addSkeleton(float x, float y){
+        Enemy bat = new Skeleton(tileMap,player);
         bat.setPosition(x,y);
         enemies.add(bat);
     }

@@ -6,6 +6,7 @@ import cz.Empatix.Graphics.Shaders.Shader;
 import cz.Empatix.Graphics.Sprites.Spritesheet;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Lightning.LightPoint;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
@@ -74,9 +75,14 @@ public abstract class MapObject {
 	protected int vboVerticles;
 	protected Shader shader;
 	protected Spritesheet spritesheet;
+	public float scale;
 
 	// audio
 	protected Source source;
+
+	// lightning
+	public LightPoint light;
+
 
 
 	// constructor
@@ -253,10 +259,10 @@ public abstract class MapObject {
 		Matrix4f target;
 		if (facingRight) {
 			target = new Matrix4f().translate(position)
-					.scale(2);
+					.scale(scale);
 		} else {
 			target = new Matrix4f().translate(position)
-					.scale(2)
+					.scale(scale)
 					.rotateY(3.14f);
 
 		}
@@ -311,6 +317,9 @@ public abstract class MapObject {
 		}
 	}
 
+	public void updateLight(){
+		light.setPos(position.x+xmap,position.y+ymap);
+	}
 }
 
 

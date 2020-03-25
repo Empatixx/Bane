@@ -56,7 +56,6 @@ public class Pistol extends Weapon {
             // delta - time between shoots
             // InGame.deltaPauseTime(); returns delayed time because of pause time
             long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-            System.out.println("delta"+delta);
             if (delta > 250){
                 double inaccuracy = 0;
                 if (delta < 400){
@@ -86,10 +85,10 @@ public class Pistol extends Weapon {
     @Override
     public void draw(Camera c) {
         if(reloading){
-            TextRender.renderText(c,"Reloading...",new Vector3f(1650,1000,0),3,new Vector3f(1.0f,1.0f,1.0f));
+            TextRender.renderText(c,"Reloading...",new Vector3f(1740,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
 
         } else {
-            TextRender.renderText(c,currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1650,1000,0),3,new Vector3f(1.0f,1.0f,1.0f));
+            TextRender.renderText(c,currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1740,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
         }
     }
 
@@ -123,7 +122,7 @@ public class Pistol extends Weapon {
     public void checkCollisions(ArrayList<Enemy> enemies) {
         for(Bullet bullet:bullets){
             for(Enemy enemy:enemies){
-                if (bullet.intersects(enemy) && !bullet.isHit()) {
+                if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead()) {
                     enemy.hit(1);
                     bullet.playEnemyHit();
                     bullet.setHit();

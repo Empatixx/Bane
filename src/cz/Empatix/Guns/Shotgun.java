@@ -58,8 +58,8 @@ public class Shotgun extends Weapon {
             long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
             if (delta > 450){
                 source.play(soundShoot);
-                for(int i = 0; i < 6;i++){
-                    int coef = i % 2 == 1 ? -1 : 1;
+                for(int i = 0; i < 4;i++){
+                    int coef = (i+1) % 2 == 1 ? -1 : 1;
 
                     double inaccuracy = 0.035 * i * coef;
 
@@ -86,10 +86,10 @@ public class Shotgun extends Weapon {
     @Override
     public void draw(Camera c) {
         if(reloading){
-            TextRender.renderText(c,"Reloading...",new Vector3f(1650,1000,0),3,new Vector3f(1.0f,1.0f,1.0f));
+            TextRender.renderText(c,"Reloading...",new Vector3f(1740,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
 
         } else {
-            TextRender.renderText(c,currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1650,1000,0),3,new Vector3f(1.0f,1.0f,1.0f));
+            TextRender.renderText(c,currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1740,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
         }
     }
 
@@ -134,7 +134,7 @@ public class Shotgun extends Weapon {
     public void checkCollisions(ArrayList<Enemy> enemies) {
         for(Bullet bullet:bullets){
             for(Enemy enemy:enemies){
-                if (bullet.intersects(enemy) && !bullet.isHit()) {
+                if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead()) {
                     enemy.hit(1);
                     bullet.playEnemyHit();
                     bullet.setHit();

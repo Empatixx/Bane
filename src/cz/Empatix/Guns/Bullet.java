@@ -9,7 +9,6 @@ import cz.Empatix.Graphics.Sprites.Sprite;
 import cz.Empatix.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Lightning.LightManager;
-import cz.Empatix.Render.Lightning.LightPoint;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -28,9 +27,6 @@ public class Bullet extends MapObject {
     private final int soundWallhit;
     private final int soundEnemyhit;
 
-    private LightPoint light;
-
-
     public Bullet(TileMap tm, double x, double y,double inaccuracy) {
 
         super(tm);
@@ -42,6 +38,8 @@ public class Bullet extends MapObject {
 
         cwidth = 16;
         cheight = 16;
+
+        scale = 2;
 
         // load sprites
         spriteSheetCols = 4;
@@ -123,7 +121,7 @@ public class Bullet extends MapObject {
         soundWallhit = AudioManager.loadSound("guns\\wallhit.ogg");
         soundEnemyhit = AudioManager.loadSound("guns\\enemyhit.ogg");
 
-        light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f((float)x+xmap,(float)y+ymap), 1.75f);
+        light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f((float)x+xmap,(float)y+ymap), 1.75f,this);
     }
 
     public void setHit() {
@@ -140,8 +138,6 @@ public class Bullet extends MapObject {
     public void update() {
         checkTileMapCollision();
         setPosition(temp.x, temp.y);
-
-        light.setPos(position.x+xmap,position.y+ymap);
 
         if((speed.x == 0 || speed.y == 0) && !hit) {
             source.play(soundWallhit);

@@ -1,5 +1,4 @@
 #version 330
-
 struct Light
 {
     vec2 position;
@@ -10,11 +9,13 @@ struct Light
 uniform int lightCount;
 uniform Light lights[256];
 uniform sampler2D texture;
+uniform sampler2D noise;
 uniform vec2 size;
 
 in vec2 tex_coords;
 
 out vec4 gl_FragColor;
+
 
 void main()
 {
@@ -39,5 +40,8 @@ void main()
 
     gl_FragColor = pixel * vec4(outc,1);
 
+    float noise = texture2D(noise, uv/size).r;
+
+    gl_FragColor.rgb += mix(-0.5/255.0, 0.5/255.0, noise);
 
 }

@@ -4,7 +4,9 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -22,11 +24,21 @@ public class GunsManager {
 
     private int current;
 
-    public GunsManager(TileMap tileMap){
+    private Image weaponBorder_hud;
+    private Image weapon;
+    private Image weaponAmmo;
+
+
+    public GunsManager(TileMap tileMap, Camera c){
         current = PISTOL;
         weapons = new ArrayList<>();
         weapons.add(new Pistol(tileMap));
         weapons.add(new Shotgun(tileMap));
+
+        weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f,c);
+        weapon = new Image("Textures\\shotgun.png",new Vector3f(1600,975,0),2f,c);
+        weaponAmmo = new Image("Textures\\shotgun_bullet.tga",new Vector3f(1800,975,0),1f,c);
+
 
         soundSwitchingGun = AudioManager.loadSound("guns\\switchgun.ogg");
         source = new Source(Source.EFFECTS,0.35f);
@@ -51,6 +63,11 @@ public class GunsManager {
     }
     public void drawHud(Camera c){
         weapons.get(current).draw(c);
+
+        weaponBorder_hud.draw();
+
+        weapon.draw();
+        weaponAmmo.draw();
     }
 
     private void setCurrentWeapon(int current) {

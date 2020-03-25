@@ -62,7 +62,7 @@ public class Room {
 
     void loadMap(){
         try {
-            InputStream in = getClass().getResourceAsStream("/Map/test"+(new Random().nextInt(1)+1)+".map");
+            InputStream in = getClass().getResourceAsStream("/Map/currentmap"+(new Random().nextInt(2)+1)+".map");
             BufferedReader br = new BufferedReader(
                     new InputStreamReader(in)
             );
@@ -79,17 +79,18 @@ public class Room {
                 for(int col = 0; col < numCols; col++) {
                     char letter = tokens[col].charAt(0);
                     if (Character.isLetter(letter)){
-                        if (letter == 'R' && (!right)) {
-                            roomMap[row][col] = 25;
-                        } else if (letter == 'L' && (!left)) {
-                            roomMap[row][col] = 26;
-                        } else if (letter == 'T' && (!top)) {
-                            roomMap[row][col] = 21;
-                        } else if (letter == 'B' && (!bottom)) {
-                            roomMap[row][col] = 30;
+                        if (letter == 'R' && (right)) {
+                            roomMap[row][col] = 0;
+                        } else if (letter == 'L' && (left)) {
+                            roomMap[row][col] = 0;
+                        } else if (letter == 'T' && (top)) {
+                            roomMap[row][col] = 0;
+                        } else if (letter == 'B' && (bottom)) {
+                            roomMap[row][col] = 0;
                         } else {
-                            roomMap[row][col] = 6;
+                            roomMap[row][col] = 1;
                         }
+
                     }  else {
                         roomMap[row][col] = Integer.parseInt(tokens[col]);
                     }
@@ -242,21 +243,43 @@ public class Room {
 
             for (int i = 0; i < maxMobs;i++){
 
-                int x = getRandom(xMin+tileSize*2,xMax-tileSize*2);
-                int y = getRandom(yMin+tileSize*2,yMax-tileSize*2);
+                int x = getRandom(xMin+tileSize,xMax-tileSize);
+                int y = getRandom(yMin+tileSize,yMax-tileSize);
+
+
 
                 int enemyType = cz.Empatix.Java.Random.nextInt(3);
                 if(enemyType == 1){
                     EnemyManager.addBat(x,y);
                 } else if(enemyType == 2){
                     EnemyManager.addSlime(x,y);
-                } else {
-                    EnemyManager.addRat(x,y);
+                } else if (enemyType == 0) {
+                    EnemyManager.addRat(x, y);
                 }
             }
         }
     }
     private int getRandom(int lower, int upper) {
         return cz.Empatix.Java.Random.nextInt((upper - lower) + 1) + lower;
+    }
+
+    public boolean isRight() {
+        return right;
+    }
+
+    public boolean isBottom() {
+        return bottom;
+    }
+
+    public boolean isLeft() {
+        return left;
+    }
+
+    public boolean isTop() {
+        return top;
+    }
+
+    public void unload(){
+        roomMap = null;
     }
 }

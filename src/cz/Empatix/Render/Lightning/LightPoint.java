@@ -1,5 +1,6 @@
 package cz.Empatix.Render.Lightning;
 
+import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Camera;
 import org.joml.Vector2f;
@@ -11,13 +12,19 @@ public class LightPoint {
     private Vector3f color;
     private float intensity;
 
+    private final MapObject object;
 
-    public LightPoint(Vector2f pos, Vector3f color, float intensity){
+
+    public LightPoint(Vector2f pos, Vector3f color, float intensity, MapObject object){
 
         this.pos = pos;
         this.color = color;
         this.intensity = intensity;
+        this.object = object;
 
+    }
+    public void update(){
+        object.updateLight();
     }
 
     public float getIntensity() {

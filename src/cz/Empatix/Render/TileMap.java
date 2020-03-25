@@ -2,8 +2,6 @@ package cz.Empatix.Render;
 
 
 
-// knihovny
-
 import cz.Empatix.Graphics.ByteBufferImage;
 import cz.Empatix.Graphics.Shaders.Shader;
 import cz.Empatix.Graphics.Shaders.ShaderManager;
@@ -100,7 +98,7 @@ public class TileMap {
 
 		glBindTexture(GL_TEXTURE_2D, tilesetId);
 
-		glTexStorage2D(GL_TEXTURE_2D, 5, GL_RGBA8, decoder.getWidth(), decoder.getHeight());
+		glTexStorage2D(GL_TEXTURE_2D, 5, GL_RGBA12, decoder.getWidth(), decoder.getHeight());
 		glTexSubImage2D(GL_TEXTURE_2D,0,0,0,decoder.getWidth(),decoder.getHeight(),GL_RGBA,GL_UNSIGNED_BYTE,tileset);
 		glGenerateMipmap(GL_TEXTURE_2D);  //Generate num_mipmaps number of mipmaps here.
 
@@ -178,6 +176,17 @@ public class TileMap {
 		// converting rooms into 1 big tile map
 		formatMap();
 
+		for(int i = 0;i<numRows;i++){
+			for(int j = 0;j<numCols;j++){
+				System.out.print(map[i][j]+" ");
+			}
+			System.out.print("\n");
+		}
+		System.out.println("\n");
+
+		// converting 1 and 0 into tiles id textures
+		autoTile();
+
 		// getting XY max/min
 		for (Room room : roomArrayList){
 			// getting X max/min of room
@@ -199,11 +208,13 @@ public class TileMap {
 					ymin += Camera.getHEIGHT() - yMax - ymin;
 					ymax += -yMin - ymax;
 
-					setPosition(Camera.getWIDTH() / 2f - playerStartX,Camera.getHEIGHT() / 2f - playerStartY);
 					break;
 				}
 			}
+
 		}
+		setPosition(Camera.getWIDTH() / 2f - playerStartX,Camera.getHEIGHT() / 2f - playerStartY);
+
 
 	}
 
@@ -376,15 +387,15 @@ public class TileMap {
 		int[] maxCols;
 		maxCols = new int[roomX];
 
-		for(int loop = 0;loop < 4;loop++) {
+		for(int loop = 0;loop < 5;loop++) {
 			// load every room maps
 			if (loop == 0){
 				for(Room room : roomArrayList){
 					room.loadMap();
 				}
 			}
-			// getting max collumns in collumn of room
-			if (loop == 1){
+				// getting max collumns in collumn of room
+			else if (loop == 1){
 				for (int x = 0; x < roomX; x++) {
 					for (int y = 0; y < roomY; y++) {
 
@@ -394,6 +405,9 @@ public class TileMap {
 						// room must be created there
 						if (mistnost != null) {
 							int cols = mistnost.getNumCols();
+
+							cols+=2;
+
 							if (maxCols[x] < cols){
 								maxCols[x] = cols;
 							}
@@ -425,6 +439,11 @@ public class TileMap {
 							int cols = mistnost.getNumCols();
 							int rows = mistnost.getNumRows();
 
+							cols+=2;
+
+
+
+
 							if (previousMaxRows < rows) {
 								previousMaxRows = rows;
 							}
@@ -432,6 +451,8 @@ public class TileMap {
 						}
 					}
 					numRows += previousMaxRows;
+
+					numRows+=2;
 
 					if (previousMaxCols > numCols) {
 						numCols = previousMaxCols;
@@ -444,18 +465,24 @@ public class TileMap {
 				int shiftRows = 0;
 				int shiftCols;
 
+				boolean bottom;
+				boolean right;
+
 				// final tilemap
 				map = new int[numRows][numCols];
 
 				//fill array all indexes with -1
 				for (int x2 = 0; x2 < numRows;x2++){
 					for (int y2 = 0; y2 < numCols;y2++){
-						map[x2][y2] = -1;
+						map[x2][y2] = 1;
 					}
 				}
 
 				for (int y = 0; y < roomY; y++) {
 
+					// bottom if we should offset all rooms on new row of roomMap by 2 rows
+					bottom = false;
+					right = false;
 					shiftCols = 0;
 					nextShiftRows = 0;
 
@@ -473,12 +500,23 @@ public class TileMap {
 							int cols = mistnost.getNumCols();
 							int rows = mistnost.getNumRows();
 
-							if (nextShiftRows < rows){
-								nextShiftRows = rows;
+							if(!bottom){
+								if(mistnost.isBottom()) bottom=true;
 							}
 
-							int[][] roomMap = mistnost.getRoomMap();
+							if(right){
+								shiftCols+=2;
 
+								if(maxCols[x] - 2 > cols ){
+									shiftCols+=2;
+								}
+
+							} else {
+								right = true;
+							}
+
+
+							int[][] roomMap = mistnost.getRoomMap();
 							for(int xtile = 0;xtile < rows;xtile++){
 
 								if (cols >= 0)
@@ -507,11 +545,19 @@ public class TileMap {
 
 							}
 
+							if (nextShiftRows < rows){
+								nextShiftRows = rows;
+							}
 
 							shiftCols+=cols;
 						}
 					}
 					shiftRows+=nextShiftRows;
+					if(bottom) shiftRows+=2;
+				}
+			} else{
+				for(Room room : roomArrayList){
+					room.unload();
 				}
 			}
 		}
@@ -699,6 +745,116 @@ public class TileMap {
 	public float getPlayerStartX() { return playerStartX; }
 
 	public float getPlayerStartY(){ return playerStartY; }
+
+	public void autoTile(){
+		int[][] newMap = new int[numRows][numCols];
+
+		for(int i = 0;i < numRows;i++){
+			for(int j = 0;j<numCols;j++){
+				int tile = map[i][j];
+				int topTile,bottomTile,rightTile,leftTile;
+				// diagonal tiles
+				int bottomRightTile,bottomLeftTile;
+				int topRightTile,topLeftTile;
+
+
+				if(i-1 < 0) topTile = 1;
+				else topTile = map[i-1][j];
+
+				if(i+1 >= numRows) bottomTile = 1;
+				else bottomTile = map[i+1][j];
+
+				if(j-1 < 0) leftTile = 1;
+				else leftTile = map[i][j-1];
+
+
+				if(j+1 >= numCols) rightTile = 1;
+				else rightTile = map[i][j+1];
+
+				// diagnonals
+				if(i+1 >= numRows || j-1 < 0)  bottomLeftTile = 1;
+				else bottomLeftTile = map[i+1][j-1];
+
+				if(i+1 >= numRows || j+1 >= numCols)  bottomRightTile = 1;
+				else bottomRightTile = map[i+1][j+1];
+
+				if(i-1 < 0 || j-1 < 0)  topLeftTile = 1;
+				else topLeftTile = map[i-1][j-1];
+
+				if(i-1 < 0 || j+1 >= numCols)  topRightTile = 1;
+				else topRightTile = map[i-1][j+1];
+
+				if(tile == 1 && topTile == 1 && bottomTile == 1 && leftTile == 1 && rightTile == 0) {
+					int random = Random.nextInt(2);
+					if(random == 1) newMap[i][j] = 27;
+					else newMap[i][j] = 39;
+				} else if (tile == 1 && topTile == 1 && bottomTile == 1 && leftTile == 0 && rightTile == 1){
+					int random = Random.nextInt(2);
+					if(random == 1)newMap[i][j] = 28;
+					else newMap[i][j] = 40;
+				} else if (tile == 1 && topTile == 1 && bottomTile == 0 && leftTile == 1 && rightTile == 1){
+					newMap[i][j] = 22;
+				} else if (tile == 1 && topTile == 0 && bottomTile == 1 && leftTile == 1 && rightTile == 1) {
+					int random = Random.nextInt(3);
+					if(random == 1)newMap[i][j] = 31;
+					else newMap[i][j] = 30;
+				} else if(tile == 1 && topTile == 0 && bottomTile == 1 && leftTile == 1 && rightTile == 0) {
+					newMap[i][j] = 38;
+				} else if(tile == 1 && topTile == 0 && bottomTile == 1 && leftTile == 0 && rightTile == 1) {
+					newMap[i][j] = 35;
+				} else if(tile == 1 && topTile == 1 && bottomTile == 0) {
+					newMap[i][j] = 22;
+				} else if (tile == 1 && topTile == 1 && bottomTile == 1 && leftTile == 1 && rightTile == 1
+						&& bottomLeftTile == 1 && bottomRightTile == 1 && topRightTile == 0 && topLeftTile == 1) {
+					newMap[i][j] = 29;
+				} else if (tile == 1 && topTile == 1 && bottomTile == 1 && leftTile == 1 && rightTile == 1
+						&& bottomLeftTile == 1 && bottomRightTile == 1 && topRightTile == 1 && topLeftTile == 0) {
+					newMap[i][j] = 34;
+				} else if (tile == 1 && topTile == 1 && bottomTile == 1 && leftTile == 1 && rightTile == 1
+						&& bottomLeftTile == 1 && bottomRightTile == 0 && topRightTile == 1 && topLeftTile == 1) {
+					newMap[i][j] = 21;
+				} else if (tile == 1 && topTile == 1 && bottomTile == 1 && leftTile == 1 && rightTile == 1
+						&& bottomLeftTile == 0 && bottomRightTile == 1 && topRightTile == 1 && topLeftTile == 1) {
+					newMap[i][j] = 26;
+				} else if(tile == 1 && topTile == 1 && bottomTile == 1 && leftTile == 1 && rightTile == 1) {
+					newMap[i][j] = 41;
+				}
+				else if (tile == 0 && topTile == 0 && bottomTile == 0 && leftTile == 1 && rightTile == 0){
+					newMap[i][j] = 4;
+				}
+				else if (tile == 0 && topTile == 0 && bottomTile == 1 && leftTile == 1 && rightTile == 0){
+					newMap[i][j] = 8;
+				} else if (tile == 0 && topTile == 1 && bottomTile == 0 && leftTile == 0 && rightTile == 1){
+					newMap[i][j] = 3;
+				} else if (tile == 0 && topTile == 1 && bottomTile == 0 && leftTile == 0 && rightTile == 0){
+					int random = Random.nextInt(2);
+					if(random == 1) newMap[i][j] = 1;
+					else newMap[i][j] = 2;
+				} else if (tile == 0 && topTile == 0 && bottomTile == 0 && leftTile == 0 && rightTile == 1){
+					newMap[i][j] = 7;
+				} else if (tile == 0 && topTile == 0 && bottomTile == 1 && leftTile == 0 && rightTile == 0){
+					int random = Random.nextInt(2);
+					if(random == 1) newMap[i][j] = 9;
+					else newMap[i][j] = 10;
+				} else if (tile == 0 && topTile == 0 && bottomTile == 1 && leftTile == 0 && rightTile == 1){
+					newMap[i][j] = 11;
+				} else if (tile == 0 && topTile == 0 && bottomTile == 0 && leftTile == 0 && rightTile == 0){
+					int random = Random.nextInt(14);
+					if(random == 1) newMap[i][j] = 5;
+					else if(random == 2) newMap[i][j] = 12;
+					else if(random == 3) newMap[i][j] = 13;
+					else if(random == 4) newMap[i][j] = 14;
+					else if(random == 5) newMap[i][j] = 15;
+					else if(random == 6) newMap[i][j] = 16;
+					else if(random == 7) newMap[i][j] = 17;
+					else if(random == 8) newMap[i][j] = 18;
+					else newMap[i][j] = 6;
+				}
+
+			}
+		}
+		this.map = newMap;
+	}
 }
 
 

@@ -12,6 +12,7 @@ import cz.Empatix.Render.TileMap;
 
 public class Bat extends Enemy {
     private static final int IDLE = 0;
+    private static final int DEAD = 1;
 
     public Bat(TileMap tm, Player player) {
 
@@ -25,6 +26,8 @@ public class Bat extends Enemy {
         height = 64;
         cwidth = 64;
         cheight = 64;
+        scale = 2;
+
 
         health = maxHealth = 5;
         damage = 2;
@@ -47,11 +50,29 @@ public class Bat extends Enemy {
                         {
                                 (double) i/spriteSheetCols,0,
 
+                                (double)i/spriteSheetCols,0.5,
+
+                                (1.0+i)/spriteSheetCols,0.5,
+
+                                (1.0+i)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                double[] texCoords =
+                        {
+                                (double) i/spriteSheetCols,0.5,
+
                                 (double)i/spriteSheetCols,1,
 
                                 (1.0+i)/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,0
+                                (1.0+i)/spriteSheetCols,0.5
                         };
                 Sprite sprite = new Sprite(texCoords);
                 sprites[i] = sprite;
@@ -125,6 +146,11 @@ public class Bat extends Enemy {
     }
 
     public void update() {
+        // update animation
+        animation.update();
+
+        if(dead) return;
+
         // ENEMY AI
         EnemyAI();
 
@@ -132,9 +158,6 @@ public class Bat extends Enemy {
         getNextPosition();
         checkTileMapCollision();
         setPosition(temp.x, temp.y);
-
-        // update animation
-        animation.update();
     }
 
     public void draw(Camera camera) {
@@ -145,5 +168,17 @@ public class Bat extends Enemy {
         super.draw(camera);
 
     }
-
+    @Override
+    public void hit(int damage) {
+        if(dead) return;
+        health -= damage;
+        if(health < 0) health = 0;
+        if(health == 0){
+            animation.setDelay(100);
+            animation.setFrames(spritesheet.getSprites(DEAD));
+            speed.x = 0;
+            speed.y = 0;
+            dead = true;
+        }
+    }
 }

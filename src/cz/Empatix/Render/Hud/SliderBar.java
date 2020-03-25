@@ -147,7 +147,6 @@ public class SliderBar {
         if(pos.x>sliderMaxX) pos.x = sliderMaxX;
         if(pos.x<sliderMinX) pos.x = sliderMinX;
         value = (pos.x-sliderMinX)/(sliderMaxX-sliderMinX);
-        System.out.print("value: "+value+"\n");
     }
     public void draw(Camera c){
 

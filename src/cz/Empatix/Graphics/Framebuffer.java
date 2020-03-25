@@ -16,9 +16,9 @@ public class Framebuffer {
         // generate texture
         textureID = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Settings.WIDTH, Settings.HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE,(ByteBuffer)null);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA12, Settings.WIDTH, Settings.HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE,(ByteBuffer)null);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glBindTexture(GL_TEXTURE_2D, 0);
 
         // attach it to currently bound framebuffer object

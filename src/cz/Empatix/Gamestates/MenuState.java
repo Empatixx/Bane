@@ -187,6 +187,7 @@ public class MenuState extends GameState{
         source = new Source(Source.EFFECTS,1f);
         soundMenuClick = AudioManager.loadSound("menuclick.ogg");
 
+
     }
 
     @Override

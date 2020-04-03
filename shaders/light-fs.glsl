@@ -40,8 +40,11 @@ void main()
 
     gl_FragColor = pixel * vec4(outc,1);
 
-    float noise = texture2D(noise, uv/size).r;
+    // color banding fix
+    if(lightCount != 0){
 
-    gl_FragColor.rgb += mix(-0.5/255.0, 0.5/255.0, noise);
+        float noise = texture2D(noise, uv/size).r;
+        gl_FragColor.rgb += mix(-0.5/255.0, 0.5/255.0, noise);
+    }
 
 }

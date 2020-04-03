@@ -154,12 +154,11 @@ public class InGame extends GameState {
         Game.setCursor(Game.CROSSHAIR);
 
         // Tile map
-        for(int i = 0;i<10;i++){
-            tileMap = new TileMap(64, camera);
-            tileMap.loadTiles("Textures\\tileset64.tga");
-            tileMap.loadMap();
-            tileMap.setTween(0.10);
-        }
+        tileMap = new TileMap(64, camera);
+        tileMap.loadTiles("Textures\\tileset64.tga");
+        tileMap.loadMap();
+        tileMap.setTween(0.10);
+
         // player
         player = new Player(tileMap, camera);
         player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());

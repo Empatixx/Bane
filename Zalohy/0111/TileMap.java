@@ -638,25 +638,16 @@ public class TileMap {
 
 
 				// BINDING TEXTURE
-				tiles[r][c].bind();
 
 				glBegin(GL_QUADS);
 
-				glTexCoord2i(0,1);
 				glVertex2i((int)x + col * tileSize,(int)y + (row+1) * tileSize);
 
-				glTexCoord2i(1,1);
 				glVertex2i((int)x + (col+1) * tileSize,(int)y + (row+1) * tileSize);
 
-				glTexCoord2i(1,0);
-				glVertex2i((int)x + (col+1) * tileSize,(int)y + row * tileSize);
+ 				glVertex2i((int)x + (col+1) * tileSize,(int)y + row * tileSize);
 
-
-				glTexCoord2i(0, 0);
 				glVertex2i((int)x + col * tileSize,(int)y + row * tileSize);
-
-				
-
 
 				glEnd();
 			}

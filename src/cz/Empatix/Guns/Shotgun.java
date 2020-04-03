@@ -58,14 +58,16 @@ public class Shotgun extends Weapon {
             long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
             if (delta > 450){
                 source.play(soundShoot);
-                for(int i = 0; i < 4;i++){
-                    int coef = (i+1) % 2 == 1 ? -1 : 1;
-
-                    double inaccuracy = 0.035 * i * coef;
+                for(int i = 0; i < 4;){
+                    double inaccuracy = 0.055 * i;
 
                     Bullet bullet = new Bullet(tm,x,y,inaccuracy);
                     bullet.setPosition(px,py);
                     bullets.add(bullet);
+                    if(i >= 0)i++;
+                    else i--;
+                    i=-i;
+
                 }
                 currentMagazineAmmo--;
                 delay = System.currentTimeMillis() - InGame.deltaPauseTime();

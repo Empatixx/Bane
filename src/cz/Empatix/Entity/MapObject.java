@@ -320,6 +320,14 @@ public abstract class MapObject {
 	public void updateLight(){
 		light.setPos(position.x+xmap,position.y+ymap);
 	}
+
+	public int getCheight() {
+		return cheight;
+	}
+
+	public int getCwidth() {
+		return cwidth;
+	}
 }
 
 

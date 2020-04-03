@@ -26,6 +26,8 @@ public class Room {
     public final static int Loot = 1;
     public final static int Shop = 2;
     public final static int Boss = 3;
+    public final static int Path = 4;
+
 
     // orientation about paths
     private boolean bottom;
@@ -44,7 +46,7 @@ public class Room {
 
     private int tileSize;
 
-
+    private RoomPath[] roomPaths;
 
     Room(int type, int id, int x, int y, int tileSize){
         entered = false;
@@ -57,6 +59,8 @@ public class Room {
         this.type = type;
 
         this.tileSize = tileSize;
+
+        roomPaths = new RoomPath[4];
 
     }
 
@@ -243,43 +247,44 @@ public class Room {
 
             for (int i = 0; i < maxMobs;i++){
 
-                int x = getRandom(xMin+tileSize,xMax-tileSize);
-                int y = getRandom(yMin+tileSize,yMax-tileSize);
-
-
-
-                int enemyType = cz.Empatix.Java.Random.nextInt(3);
-                if(enemyType == 1){
-                    EnemyManager.addBat(x,y);
-                } else if(enemyType == 2){
-                    EnemyManager.addSlime(x,y);
-                } else if (enemyType == 0) {
-                    EnemyManager.addRat(x, y);
-                }
+                EnemyManager.addEnemy(xMin,xMax,yMin,yMax);
             }
         }
     }
-    private int getRandom(int lower, int upper) {
-        return cz.Empatix.Java.Random.nextInt((upper - lower) + 1) + lower;
-    }
 
-    public boolean isRight() {
+    boolean isRight() {
         return right;
     }
 
-    public boolean isBottom() {
+    boolean isBottom() {
         return bottom;
     }
 
-    public boolean isLeft() {
+    boolean isLeft() {
         return left;
     }
 
-    public boolean isTop() {
+    boolean isTop() {
         return top;
     }
 
-    public void unload(){
+    void unload(){
         roomMap = null;
+    }
+
+    RoomPath[] getRoomPaths() {
+        return roomPaths;
+    }
+    void setTopRoomPath(RoomPath roomPath){
+        roomPaths[0] = roomPath;
+    }
+    void setBottomRoomPath(RoomPath roomPath){
+        roomPaths[1] = roomPath;
+    }
+    void setLeftRoomPath(RoomPath roomPath){
+        roomPaths[2] = roomPath;
+    }
+    void setRightRoomPath(RoomPath roomPath){
+        roomPaths[3] = roomPath;
     }
 }

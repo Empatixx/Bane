@@ -56,6 +56,7 @@ public class TileMap {
 
 	// rooms
 	private Room[] roomArrayList;
+	private Room currentRoom;
 	private int[][] roomMap;
 	private int idGen;
 
@@ -98,7 +99,7 @@ public class TileMap {
 
 		glBindTexture(GL_TEXTURE_2D, tilesetId);
 
-		glTexStorage2D(GL_TEXTURE_2D, 5, GL_RGBA12, decoder.getWidth(), decoder.getHeight());
+		glTexStorage2D(GL_TEXTURE_2D, 5, GL_RGBA8, decoder.getWidth(), decoder.getHeight());
 		glTexSubImage2D(GL_TEXTURE_2D,0,0,0,decoder.getWidth(),decoder.getHeight(),GL_RGBA,GL_UNSIGNED_BYTE,tileset);
 		glGenerateMipmap(GL_TEXTURE_2D);  //Generate num_mipmaps number of mipmaps here.
 
@@ -219,17 +220,24 @@ public class TileMap {
 	}
 
 	public void updateCurrentRoom(int x, int y){
-		for (Room room : roomArrayList){
+		boolean foundRoom = false;
+		for (RoomPath room : currentRoom.getRoomPaths()){
+			if(room == null) continue;
 			// getting X max/min of room
-			int xMax = room.getxMax();
-			int xMin = room.getxMin();
-
+			int xMax = room.getRealXMax();
+			int xMin = room.getRealXMin();
 			// getting Y max/min of room
-			int yMax = room.getyMax();
-			int yMin = room.getyMin();
+			int yMax = room.getRealYMax();
+			int yMin = room.getRealYMin();
 
 			if (x > xMin && x < xMax){
 				if (y > yMin && y < yMax){
+					xMax = room.getxMax();
+					xMin = room.getxMin();
+
+					// getting Y max/min of room
+					yMax = room.getyMax();
+					yMin = room.getyMin();
 
 					// CORNERS OF MAP ( ROOM ) + tween to make it more sync (plus max = min; min = max) bcs of x / y of tilemap is negative
 
@@ -238,12 +246,40 @@ public class TileMap {
 
 					ymin += (Camera.getHEIGHT() - yMax - ymin) * tween;
 					ymax += (-yMin - ymax) * tween;
-
-					if (!room.hasEntered()){
-						// event trigger on entering a new room
-						room.entered();
-					}
+					//foundRoom = true;
 					break;
+				}
+			}
+		}
+
+		if(!foundRoom) {
+			for (Room room : roomArrayList) {
+				// getting X max/min of room
+				int xMax = room.getxMax();
+				int xMin = room.getxMin();
+
+				// getting Y max/min of room
+				int yMax = room.getyMax();
+				int yMin = room.getyMin();
+
+				if (x > xMin && x < xMax) {
+					if (y > yMin && y < yMax) {
+
+						// CORNERS OF MAP ( ROOM ) + tween to make it more sync (plus max = min; min = max) bcs of x / y of tilemap is negative
+
+						xmin += (Camera.getWIDTH() - xMax - xmin) * tween;
+						xmax += (-xMin - xmax) * tween;
+
+						ymin += (Camera.getHEIGHT() - yMax - ymin) * tween;
+						ymax += (-yMin - ymax) * tween;
+
+						if (!room.hasEntered()) {
+							// event trigger on entering a new room
+							room.entered();
+						}
+						currentRoom = room;
+						break;
+					}
 				}
 			}
 		}
@@ -253,7 +289,7 @@ public class TileMap {
 		// id generator
 		idGen = 0;
 
-		int maxRooms = 8;
+		int maxRooms = 7;
 		int currentRooms = 0;
 
 		// boolean loop
@@ -384,10 +420,12 @@ public class TileMap {
 
 	private void formatMap() {
 		// max collumns in collumn of room
-		int[] maxCols;
-		maxCols = new int[roomX];
+		int[] maxCols = new int[roomX];
 
-		for(int loop = 0;loop < 5;loop++) {
+		// paths informations
+		int[] shiftsCols = new int[roomX*roomY];
+
+		for(int loop = 0;loop < 6;loop++) {
 			// load every room maps
 			if (loop == 0){
 				for(Room room : roomArrayList){
@@ -458,8 +496,7 @@ public class TileMap {
 						numCols = previousMaxCols;
 					}
 				}
-			}
-			else if (loop == 3){
+			} else if (loop == 3) {
 				// posuny behem loopu
 				int nextShiftRows;
 				int shiftRows = 0;
@@ -471,9 +508,9 @@ public class TileMap {
 				// final tilemap
 				map = new int[numRows][numCols];
 
-				//fill array all indexes with -1
-				for (int x2 = 0; x2 < numRows;x2++){
-					for (int y2 = 0; y2 < numCols;y2++){
+				//fill array all indexes with 1
+				for (int x2 = 0; x2 < numRows; x2++) {
+					for (int y2 = 0; y2 < numCols; y2++) {
 						map[x2][y2] = 1;
 					}
 				}
@@ -490,26 +527,22 @@ public class TileMap {
 
 						Room mistnost = getRoom(roomMap[y][x]);
 						// POKUD ZDE ZADNA MISTNOST NENI
-						if (mistnost == null){
+						if (mistnost == null) {
 
 							// getting max cols of current collumn (roomX) of rooms
 							int cols = maxCols[x];
-							shiftCols+=cols;
+							shiftCols += cols;
 						} else {
 
 							int cols = mistnost.getNumCols();
 							int rows = mistnost.getNumRows();
 
-							if(!bottom){
-								if(mistnost.isBottom()) bottom=true;
+							if (!bottom) {
+								if (mistnost.isBottom()) bottom = true;
 							}
 
-							if(right){
-								shiftCols+=2;
-
-								if(maxCols[x] - 2 > cols ){
-									shiftCols+=2;
-								}
+							if (right) {
+								shiftCols += 2;
 
 							} else {
 								right = true;
@@ -517,16 +550,19 @@ public class TileMap {
 
 
 							int[][] roomMap = mistnost.getRoomMap();
-							for(int xtile = 0;xtile < rows;xtile++){
+
+							shiftsCols[y*roomX+x] = shiftCols;
+
+							for (int xtile = 0; xtile < rows; xtile++) {
 
 								if (cols >= 0)
 									System.arraycopy(roomMap[xtile], 0, map[xtile + shiftRows], shiftCols, cols);
 							}
 
-							int xMin = shiftCols*tileSize;
-							int xMax = (shiftCols+cols)*tileSize;
-							int yMin = shiftRows*tileSize;
-							int yMax = (shiftRows+rows)*tileSize;
+							int xMin = shiftCols * tileSize;
+							int xMax = (shiftCols + cols) * tileSize;
+							int yMin = shiftRows * tileSize;
+							int yMax = (shiftRows + rows) * tileSize;
 
 							//Setting corners of room
 							mistnost.setCorners(
@@ -537,23 +573,142 @@ public class TileMap {
 							);
 
 							// starting room
-							if (mistnost.getId() == 1){
+							if (mistnost.getId() == 1) {
 
-								playerStartX = xMin+(float)(xMax-xMin)/2;
-								playerStartY = yMin+(float)(yMax-yMin)/2;
+								playerStartX = xMin + (float) (xMax - xMin) / 2;
+								playerStartY = yMin + (float) (yMax - yMin) / 2;
 
-
+								currentRoom = mistnost;
 							}
 
-							if (nextShiftRows < rows){
+							if (nextShiftRows < rows) {
 								nextShiftRows = rows;
 							}
 
-							shiftCols+=cols;
+							shiftCols += cols;
 						}
 					}
-					shiftRows+=nextShiftRows;
-					if(bottom) shiftRows+=2;
+					shiftRows += nextShiftRows;
+					if (bottom) shiftRows += 2;
+				}
+			} else if (loop == 4) {
+				// posuny behem loopu
+				int nextShiftRows;
+				int shiftRows = 0;
+				int shiftCols;
+				int totalPaths = 0;
+
+
+				for (int y = 0; y < roomY; y++) {
+
+					shiftCols = 0;
+					nextShiftRows = 0;
+
+					for (int x = 0; x < roomX; x++) {
+
+						Room mistnost = getRoom(roomMap[y][x]);
+						// POKUD ZDE ZADNA MISTNOST NENI
+						if (mistnost == null) {
+
+							// getting max cols of current collumn (roomX) of rooms
+							int cols = maxCols[x];
+							shiftCols += cols;
+						} else {
+
+							int cols = mistnost.getNumCols();
+							int rows = mistnost.getNumRows();
+
+
+							Room bottomRoom = null;
+							if(roomY > y+1) bottomRoom = getRoom(roomMap[y+1][x]);
+
+							// bottom direction
+							if(bottomRoom != null && mistnost.isBottom()){
+								int paths = 0;
+								// if bottom room cols starts on another cols
+								int fixX = shiftsCols[(y+1)*roomX+x]-shiftCols > 0 ? shiftsCols[(y+1)*roomX+x]-shiftCols : 0;
+								int fixXMax = cols-bottomRoom.getNumCols()-(shiftsCols[(y+1)*roomX+x]-shiftCols)> 0 ? cols-bottomRoom.getNumCols()-(shiftsCols[(y+1)*roomX+x]-shiftCols) : 0;
+								B:for(int j = 1+shiftCols+fixX+(cols-fixXMax-2-fixX)/2;j<cols+shiftCols-1-fixXMax;j++){
+									for(int i = rows-1+shiftRows;i<numRows;i++){
+								 		if(paths >= 2) break B;
+										if(map[i][j] == Tile.NORMAL) break;
+										map[i][j] = Tile.NORMAL;
+									}
+									 paths++;
+								}
+								RoomPath bottomPath = new RoomPath();
+
+								bottomPath.setCorners(
+										mistnost.getxMin(),
+										mistnost.getxMax(),
+										mistnost.getyMin(),
+										bottomRoom.getyMax()
+								);
+
+								bottomPath.setRealCorners(
+										mistnost.getxMin(),
+										mistnost.getxMax(),
+										mistnost.getyMax()-tileSize,
+										bottomRoom.getyMin()+tileSize
+								);
+
+								mistnost.setBottomRoomPath(bottomPath);
+								bottomRoom.setTopRoomPath(bottomPath);
+
+
+							}
+							// right direction
+							Room sideRoom = null;
+							if(roomX > x+1) sideRoom = getRoom(roomMap[y][x+1]);
+
+							if(sideRoom != null && mistnost.isRight()) {
+								int paths = 0;
+								B:for (int j = 1 + shiftRows + (sideRoom.getNumRows()) / 2 - 2; j < sideRoom.getNumRows() - 1 + shiftRows; j++) {
+									for (int i = cols - 1 + shiftCols; i < numCols; i++) {
+										if (paths >= 2) break B;
+										if (map[j][i] == Tile.NORMAL) {
+											break;
+										}
+										map[j][i] = Tile.NORMAL;
+									}
+									paths++;
+								}
+								RoomPath sidePath = new RoomPath();
+
+								sidePath.setCorners(
+										mistnost.getxMin(),
+										sideRoom.getxMax(),
+										mistnost.getyMin(),
+										mistnost.getyMax()
+								);
+
+								sidePath.setRealCorners(
+										mistnost.getxMax()-tileSize,
+										sideRoom.getxMin()+tileSize,
+										mistnost.getyMin(),
+										mistnost.getyMax()
+								);
+
+								mistnost.setRightRoomPath(sidePath);
+								sideRoom.setLeftRoomPath(sidePath);
+
+							}
+
+
+							shiftCols += 2;
+
+
+
+
+							if (nextShiftRows < rows) {
+								nextShiftRows = rows;
+							}
+
+							shiftCols += cols;
+						}
+					}
+					shiftRows += nextShiftRows;
+					shiftRows += 2;
 				}
 			} else{
 				for(Room room : roomArrayList){
@@ -627,9 +782,6 @@ public class TileMap {
 		roomMap = newRoomMap;
 
 	}
-
-
-
 
 	public int getTileSize() { return tileSize; }
 	public float getX() { return position.x; }
@@ -856,12 +1008,3 @@ public class TileMap {
 		this.map = newMap;
 	}
 }
-
-
-
-
-
-
-
-
-

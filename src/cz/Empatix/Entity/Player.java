@@ -36,6 +36,11 @@ public class Player extends MapObject {
     private int energy;
     private int maxEnergy;
 
+    private int maxArmor;
+    private int armor;
+
+    private int coins;
+
 
     // animations
     private static final int IDLE = 0;
@@ -69,6 +74,10 @@ public class Player extends MapObject {
 
         health = maxHealth = 6;
         energy = maxEnergy = 100;
+
+        coins = 0;
+
+        armor = maxArmor = 3;
 
         shooting = false;
         dead = false;
@@ -328,6 +337,15 @@ public class Player extends MapObject {
     }
     public void hit(int damage){
         if (flinching) return;
+
+        int newDamage = damage-armor;
+        armor-=damage;
+        if(armor < 0){
+            armor = 0;
+        }
+        damage = newDamage;
+        if (damage < 0) damage = 0;
+
         health -= damage;
         if (health < 0) health = 0;
         if (health == 0) dead = true;
@@ -349,5 +367,22 @@ public class Player extends MapObject {
     public void cleanUp(){
         sourcehealth.delete();
         source.delete();
+    }
+
+    public int getArmor() {
+        return armor;
+    }
+
+    public int getMaxArmor() {
+        return maxArmor;
+    }
+    public void addHealth(int amount){
+        health+=amount;
+        if(health > maxHealth) health = maxHealth;
+    }
+    public void addCoins(int amount){ coins+=amount;}
+
+    public int getCoins() {
+        return coins;
     }
 }

@@ -4,6 +4,8 @@ import cz.Empatix.Entity.Enemies.Bat;
 import cz.Empatix.Entity.Enemies.Rat;
 import cz.Empatix.Entity.Enemies.Skeleton;
 import cz.Empatix.Entity.Enemies.Slime;
+import cz.Empatix.Entity.ItemDrops.ItemManager;
+import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
@@ -30,9 +32,15 @@ public class EnemyManager {
     public void update(){
         // updating enemies
         for(int i = 0;i < enemies.size();i++){
-            enemies.get(i).update();
+            Enemy enemy = enemies.get(i);
+            enemy.update();
             // checking if enemy is dead
-            if (enemies.get(i).shouldRemove()){
+            if (enemy.shouldRemove()){
+                int chance = Random.nextInt(6);
+                if(chance == 1) ItemManager.createAmmoDrop(enemy.getx(),enemy.gety());
+                if(chance == 2) ItemManager.createHPDrop(enemy.getx(),enemy.gety());
+                if(chance == 3) ItemManager.createCoins(enemy.getx(),enemy.gety());
+
                 enemies.remove(i);
                 i--;
             }

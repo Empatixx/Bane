@@ -281,6 +281,7 @@ public abstract class MapObject {
 		glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
 		glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
+
 		glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
 		glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
 

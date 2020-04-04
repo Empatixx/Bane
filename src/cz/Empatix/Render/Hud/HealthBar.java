@@ -27,7 +27,7 @@ public class HealthBar extends HUD{
     private final Matrix4f matrixPos;
 
     public HealthBar(String file, Vector3f pos, int scale, Camera camera){
-        super(file+".tga", pos, scale, camera,HUD.Changing);
+        super(file+".tga", pos, scale, camera,HUD.Static);
         barShader = ShaderManager.getShader("shaders\\shader");
         if (barShader == null){
             barShader = ShaderManager.createShader("shaders\\shader");
@@ -51,13 +51,10 @@ public class HealthBar extends HUD{
         STBImage.stbi_image_free(spritesheetImage);
 
         int vbo;
-        vbo = ModelManager.getModel(width,height);
-        if (vbo == -1){
-            vbo = ModelManager.createModel(width,height);
-        }
+        vbo = ModelManager.createChangingModel(width,height);
         vboVerticesBar = vbo;
 
-        pos.x+=44;
+        pos.x+=45;
         pos.y+=4;
         matrixPos = new Matrix4f().translate(pos).scale(scale);
         camera.hardProjection().mul(matrixPos,matrixPos);

@@ -3,11 +3,13 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 
 import java.util.ArrayList;
 
 public abstract class Weapon {
+    private boolean shooting;
     //ammo vars
     protected final TileMap tm;
     // dmg
@@ -28,6 +30,10 @@ public abstract class Weapon {
     protected Source source;
     protected Source reloadsource;
 
+    Image weaponHud;
+    Image weaponAmmo;
+
+
     /*
     0 - MELEE
     1 - PISTOL
@@ -35,7 +41,7 @@ public abstract class Weapon {
     3 - SHOTGUN
     4 - SPECIAL
      */
-    private int type;
+    protected int type;
 
     Weapon(TileMap tm){
         this.tm = tm;
@@ -68,5 +74,21 @@ public abstract class Weapon {
 
     public boolean isReloading() {
         return reloading;
+    }
+
+    public int getType() {
+        return type;
+    }
+    public void addAmmo(int amount){
+        currentAmmo+=amount;
+        if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
+    }
+
+    public boolean isShooting() {
+        return shooting;
+    }
+
+    public void setShooting(boolean shooting) {
+        this.shooting = shooting;
     }
 }

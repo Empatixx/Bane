@@ -5,6 +5,7 @@ import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
@@ -17,18 +18,20 @@ public class Pistol extends Weapon {
     private final int soundEmptyShoot;
     private final int soundReload;
 
+    private int dots;
 
     private ArrayList<Bullet> bullets;
 
-    Pistol(TileMap tm){
+    Pistol(TileMap tm, Camera c){
         super(tm);
         mindamage = 1;
         maxdamage = 1;
-        inaccuracy = 0.4f;
-        maxAmmo = 120;
+        inaccuracy = 0.8f;
+        maxAmmo = 60;
         maxMagazineAmmo = 7;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
+        type = 1;
         bullets = new ArrayList<>();
         // shooting
         soundShoot = new int[2];
@@ -38,6 +41,9 @@ public class Pistol extends Weapon {
         soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
         soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
 
+        weaponHud = new Image("Textures\\pistol.tga",new Vector3f(1600,975,0),2f,c);
+        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f,c);
+
     }
 
     @Override
@@ -46,32 +52,39 @@ public class Pistol extends Weapon {
             reloadDelay = System.currentTimeMillis() - InGame.deltaPauseTime();
             reloadsource.play(soundReload);
             reloading = true;
+
+            dots = 0;
         }
     }
 
     @Override
     public void shot(float x,float y,float px,float py) {
-        if (currentMagazineAmmo != 0) {
-            if (reloading) return;
-            // delta - time between shoots
-            // InGame.deltaPauseTime(); returns delayed time because of pause time
-            long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-            if (delta > 250){
-                double inaccuracy = 0;
-                if (delta < 400){
-                    inaccuracy = 0.055 * 400/delta * (Random.nextInt(2)*2-1);
+        if(isShooting()) {
+            if (currentMagazineAmmo != 0) {
+                if (reloading) return;
+                // delta - time between shoots
+                // InGame.deltaPauseTime(); returns delayed time because of pause time
+                long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
+                if (delta > 250) {
+                    double inaccuracy = 0;
+                    if (delta < 400) {
+                        inaccuracy = 0.055 * 400 / delta * (Random.nextInt(2) * 2 - 1);
+                    }
+                    delay = System.currentTimeMillis() - InGame.deltaPauseTime();
+                    Bullet bullet = new Bullet(tm, x, y, inaccuracy);
+                    bullet.setPosition(px, py);
+                    bullets.add(bullet);
+                    currentMagazineAmmo--;
+                    source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
+
                 }
-                delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                Bullet bullet = new Bullet(tm,x,y,inaccuracy);
-                bullet.setPosition(px,py);
-                bullets.add(bullet);
-                currentMagazineAmmo--;
-                source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
+            } else if (currentAmmo != 0) {
+                reload();
+            } else {
+                source.play(soundEmptyShoot);
             }
-        } else if (currentAmmo != 0){
-            reload();
-        } else {
-            source.play(soundEmptyShoot);
+            setShooting(false);
+
         }
     }
 
@@ -85,17 +98,23 @@ public class Pistol extends Weapon {
     @Override
     public void draw(Camera c) {
         if(reloading){
-            TextRender.renderText(c,"Reloading...",new Vector3f(1740,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
+            StringBuilder builder = new StringBuilder();
+            for(int i = 0;i<=dots;i++) builder.append(".");
+            TextRender.renderText(c,builder.toString(),new Vector3f(1800,985,0),6,new Vector3f(0.886f,0.6f,0.458f));
 
         } else {
             TextRender.renderText(c,currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1740,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
         }
+        weaponHud.draw();
+        weaponAmmo.draw();
+
     }
 
     @Override
     public void update() {
-        if(reloading && (float)(System.currentTimeMillis()-reloadDelay-InGame.deltaPauseTime())/1000 > 0.7f) {
-
+        float time = (float)(System.currentTimeMillis()-reloadDelay-InGame.deltaPauseTime())/1000;
+        dots = (int)((time / 0.7f) / 0.2f);
+        if(reloading && time > 0.7f) {
             if (currentAmmo - maxMagazineAmmo < 0) {
                 currentMagazineAmmo = currentAmmo;
                 currentAmmo = 0;

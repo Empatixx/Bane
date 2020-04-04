@@ -596,8 +596,6 @@ public class TileMap {
 				int nextShiftRows;
 				int shiftRows = 0;
 				int shiftCols;
-				int totalPaths = 0;
-
 
 				for (int y = 0; y < roomY; y++) {
 

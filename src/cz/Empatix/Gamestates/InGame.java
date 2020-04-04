@@ -6,6 +6,7 @@ import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
+import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Graphics.Framebuffer;
 import cz.Empatix.Guns.GunsManager;
@@ -13,8 +14,10 @@ import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Hud.ArmorBar;
 import cz.Empatix.Render.Hud.HealthBar;
 import cz.Empatix.Render.Hud.MenuBar;
+import cz.Empatix.Render.Hud.MiniMap;
 import cz.Empatix.Render.Lightning.LightManager;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
@@ -44,11 +47,16 @@ public class InGame extends GameState {
     private float mouseX;
     private float mouseY;
 
+    // ingame huds
     private HealthBar healthBar;
+    private ArmorBar armorBar;
+    private MiniMap miniMap;
 
     private EnemyManager enemyManager;
 
     private Framebuffer objectsFramebuffer;
+
+    private ItemManager itemManager;
 
     private LightManager lightManager;
     //
@@ -93,20 +101,15 @@ public class InGame extends GameState {
                     }
                 }
             }
-        } else {
-            float px = player.getX();
-            float py = player.getY();
-            float mx = tileMap.getX();
-            float my = tileMap.getY();
-            gunsManager.shot(mouseX-mx-px,
-                    mouseY-my-py,
-                    px,
-                    py);
+        } else{
+            gunsManager.stopShooting();
         }
     }
 
     @Override
     void mousePressed(int button) {
+        System.out.println("test");
+        gunsManager.startShooting();
     }
 
     @Override
@@ -167,10 +170,16 @@ public class InGame extends GameState {
 
         // weapons
         gunsManager = new GunsManager(tileMap,camera);
+        // items drops
+        itemManager = new ItemManager(tileMap,gunsManager,player);
 
 
         //health bar
         healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,camera);
+        //armor bar
+        armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3,camera);
+        //minimap
+        miniMap = new MiniMap(camera);
 
         //audio
         AudioManager.playSoundtrack(Soundtrack.IDLE);
@@ -212,6 +221,7 @@ public class InGame extends GameState {
 
         tileMap.draw();
 
+        itemManager.draw(camera);
 
         player.draw(camera);
 
@@ -234,6 +244,9 @@ public class InGame extends GameState {
         player.drawVignette();
 
         healthBar.draw();
+        armorBar.draw();
+        miniMap.draw();
+        TextRender.renderText(camera,player.getCoins()+" $",new Vector3f(1820,300,0),3,new Vector3f(1.0f,1.0f,1.0f));
 
 
         if(pause){
@@ -293,6 +306,14 @@ public class InGame extends GameState {
             );
 
             // updating bullets(ammo)
+            float px = player.getX();
+            float py = player.getY();
+            float mx = tileMap.getX();
+            float my = tileMap.getY();
+            gunsManager.shot(mouseX-mx-px,
+                    mouseY-my-py,
+                    px,
+                    py);
             gunsManager.update();
             // updating if player shoots any enemies
             enemyManager.update();
@@ -302,6 +323,9 @@ public class InGame extends GameState {
             player.checkCollision(enemies);
 
             healthBar.update(player.getHealth(), player.getMaxHealth());
+            armorBar.update(player.getArmor(),player.getMaxArmor());
+
+            itemManager.update(player.getX(),player.getY());
         }
 
     }

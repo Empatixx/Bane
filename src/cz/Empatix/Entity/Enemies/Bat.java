@@ -179,6 +179,7 @@ public class Bat extends Enemy {
             speed.x = 0;
             speed.y = 0;
             dead = true;
+
         }
     }
 }

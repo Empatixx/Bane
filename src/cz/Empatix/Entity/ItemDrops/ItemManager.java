@@ -27,29 +27,30 @@ public class ItemManager {
         pickupSound =  AudioManager.loadSound("pickup.ogg");
         source = new Source(Source.EFFECTS,0.35f);
     }
-
-    public static void createAmmoDrop(float x, float y){
-        int random = cz.Empatix.Java.Random.nextInt(2);
+    public static void createDrop(float x, float y){
+        int drops = 4;
+        if(player.getHealth() == player.getMaxHealth()){
+            drops--;
+        }
+        int random = cz.Empatix.Java.Random.nextInt(drops);
         if(random == 0){
             ItemDrop drop = new PistolAmmo(tm);
             drop.setPosition(x,y);
             itemDrops.add(drop);
 
-        } else {
+        } else if (random == 1) {
             ItemDrop drop = new ShotgunAmmo(tm);
             drop.setPosition(x,y);
             itemDrops.add(drop);
+        } else if(random == 3){
+            ItemDrop drop = new HealingPot(tm);
+            drop.setPosition(x,y);
+            itemDrops.add(drop);
+        } else {
+            ItemDrop drop = new Coin(tm);
+            drop.setPosition(x,y);
+            itemDrops.add(drop);
         }
-    }
-    public static void createHPDrop(float x, float y){
-        ItemDrop drop = new HealingPot(tm);
-        drop.setPosition(x,y);
-        itemDrops.add(drop);
-    }
-    public static void createCoins(float x, float y){
-        ItemDrop drop = new Coin(tm);
-        drop.setPosition(x,y);
-        itemDrops.add(drop);
     }
     public void update(float x, float y){
         for(int i = 0;i<itemDrops.size();i++){
@@ -72,7 +73,7 @@ public class ItemManager {
                 } else if(type == ItemDrop.HP){
                     player.addHealth(2);
                 } else if(type == ItemDrop.COIN){
-                    player.addCoins(2);
+                    player.addCoins(1);
                 }
 
                 source.play(pickupSound);

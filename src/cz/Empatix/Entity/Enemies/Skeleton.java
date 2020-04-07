@@ -3,11 +3,11 @@ package cz.Empatix.Entity.Enemies;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Graphics.Model.ModelManager;
-import cz.Empatix.Graphics.Shaders.ShaderManager;
-import cz.Empatix.Graphics.Sprites.Sprite;
-import cz.Empatix.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Graphics.Model.ModelManager;
+import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Graphics.Sprites.Sprite;
+import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
 
 public class Skeleton extends Enemy {

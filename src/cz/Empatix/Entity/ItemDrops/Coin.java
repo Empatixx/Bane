@@ -2,12 +2,12 @@ package cz.Empatix.Entity.ItemDrops;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Gamestates.InGame;
-import cz.Empatix.Graphics.Model.ModelManager;
-import cz.Empatix.Graphics.Shaders.ShaderManager;
-import cz.Empatix.Graphics.Sprites.Sprite;
-import cz.Empatix.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Lightning.LightManager;
+import cz.Empatix.Render.Graphics.Model.ModelManager;
+import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Graphics.Sprites.Sprite;
+import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -17,36 +17,42 @@ public class Coin extends ItemDrop{
         super(tm);
         type = COIN;
         canDespawn = true;
+        facingRight = true;
         liveTime = System.currentTimeMillis();
         pickedUp = false;
 
-        width = 30;
-        height = 30;
-        cwidth = 15;
-        cheight = 15;
-        scale = 2;
+        width = 33;
+        height = 33;
+        cwidth = 30;
+        cheight = 30;
+        scale = 1.5f;
+
+        spriteSheetCols = 10;
 
         //amount = Random.nextInt(3) + 1;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\coin.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\bane_coin.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\coin.tga");
-            Sprite[] sprites = new Sprite[1];
-            double[] texCoords =
-                    {
-                            0.,0.,
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\bane_coin.tga");
+            Sprite[] sprites = new Sprite[10];
+            for(int i = 0; i < sprites.length; i++) {
+                double[] texCoords =
+                        {
+                                (double) i/spriteSheetCols,0,
 
-                            0.,1.,
+                                (double)i/spriteSheetCols,1,
 
-                            1.,1.,
+                                (1.0+i)/spriteSheetCols,1,
 
-                            1.,0.
-                    };
-            Sprite sprite = new Sprite(texCoords);
-            sprites[0] = sprite;
+                                (1.0+i)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
             spritesheet.addSprites(sprites);
         }
         vboVerticles = ModelManager.getModel(width,height);
@@ -56,7 +62,7 @@ public class Coin extends ItemDrop{
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(0));
-        animation.setDelay(-1);
+        animation.setDelay(100);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){

@@ -43,7 +43,7 @@ public class Shotgun extends Weapon {
         soundReload = AudioManager.loadSound("guns\\reloadshotgun.ogg");
 
         weaponHud = new Image("Textures\\shotgun.tga",new Vector3f(1600,975,0),2f,c);
-        weaponAmmo = new Image("Textures\\shotgun_bullet.tga",new Vector3f(1800,975,0),1f,c);
+        weaponAmmo = new Image("Textures\\shotgun_bullet.tga",new Vector3f(1810,975,0),1f,c);
 
     }
 
@@ -101,10 +101,10 @@ public class Shotgun extends Weapon {
         if(reloading){
             StringBuilder builder = new StringBuilder();
             for(int i = 0;i<=dots;i++) builder.append(".");
-            TextRender.renderText(c,builder.toString(),new Vector3f(1800,985,0),6,new Vector3f(0.886f,0.6f,0.458f));;
+            TextRender.renderText(c,builder.toString(),new Vector3f(1825,985,0),6,new Vector3f(0.886f,0.6f,0.458f));;
 
         } else {
-            TextRender.renderText(c,currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1740,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
+            TextRender.renderText(c,currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1760,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
         }
         weaponHud.draw();
         weaponAmmo.draw();
@@ -123,7 +123,7 @@ public class Shotgun extends Weapon {
         dots = (int)((time / 0.7f) / 0.2f);
         if(reloading && time > 0.7f) {
 
-            if (currentAmmo - maxMagazineAmmo < 0) {
+            if (currentAmmo - maxMagazineAmmo+currentMagazineAmmo < 0) {
                 currentMagazineAmmo = currentAmmo;
                 currentAmmo = 0;
             } else {

@@ -1,6 +1,6 @@
 package cz.Empatix.Entity;
 
-import cz.Empatix.Graphics.Sprites.Sprite;
+import cz.Empatix.Render.Graphics.Sprites.Sprite;
 
 public class Animation {
 

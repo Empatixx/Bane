@@ -2,10 +2,10 @@ package cz.Empatix.Render;
 
 
 import cz.Empatix.Gamestates.InGame;
-import cz.Empatix.Graphics.ByteBufferImage;
-import cz.Empatix.Graphics.Model.ModelManager;
-import cz.Empatix.Graphics.Shaders.Shader;
-import cz.Empatix.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Graphics.ByteBufferImage;
+import cz.Empatix.Render.Graphics.Model.ModelManager;
+import cz.Empatix.Render.Graphics.Shaders.Shader;
+import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;

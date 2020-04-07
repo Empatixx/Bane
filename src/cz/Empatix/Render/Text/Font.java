@@ -1,6 +1,6 @@
 package cz.Empatix.Render.Text;
 
-import cz.Empatix.Graphics.ByteBufferImage;
+import cz.Empatix.Render.Graphics.ByteBufferImage;
 import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;

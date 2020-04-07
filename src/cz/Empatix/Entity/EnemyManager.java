@@ -13,6 +13,8 @@ import cz.Empatix.Render.TileMap;
 import java.util.ArrayList;
 
 public class EnemyManager {
+    private int chanceDrop;
+
     private static ArrayList<Enemy> enemies;
 
     private static Player player;
@@ -36,11 +38,12 @@ public class EnemyManager {
             enemy.update();
             // checking if enemy is dead
             if (enemy.shouldRemove()){
-                int chance = Random.nextInt(6);
-                if(chance == 1) ItemManager.createAmmoDrop(enemy.getx(),enemy.gety());
-                if(chance == 2) ItemManager.createHPDrop(enemy.getx(),enemy.gety());
-                if(chance == 3) ItemManager.createCoins(enemy.getx(),enemy.gety());
-
+                chanceDrop++;
+                int chance = Random.nextInt(5);
+                if(chanceDrop+chance > 3){
+                    ItemManager.createDrop(enemy.getx(),enemy.gety());
+                    chanceDrop=0;
+                }
                 enemies.remove(i);
                 i--;
             }

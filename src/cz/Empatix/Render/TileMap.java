@@ -1,11 +1,10 @@
 package cz.Empatix.Render;
 
 
-
-import cz.Empatix.Graphics.ByteBufferImage;
-import cz.Empatix.Graphics.Shaders.Shader;
-import cz.Empatix.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Render.Graphics.ByteBufferImage;
+import cz.Empatix.Render.Graphics.Shaders.Shader;
+import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -33,7 +32,7 @@ public class TileMap {
 	private double tween;
 	
 	// map
-	private int[][] map;
+	private byte[][] map;
 	private int tileSize;
 	private int numRows;
 	private int numCols;
@@ -506,7 +505,7 @@ public class TileMap {
 				boolean right;
 
 				// final tilemap
-				map = new int[numRows][numCols];
+				map = new byte[numRows][numCols];
 
 				//fill array all indexes with 1
 				for (int x2 = 0; x2 < numRows; x2++) {
@@ -549,7 +548,7 @@ public class TileMap {
 							}
 
 
-							int[][] roomMap = mistnost.getRoomMap();
+							byte[][] roomMap = mistnost.getRoomMap();
 
 							shiftsCols[y*roomX+x] = shiftCols;
 
@@ -897,7 +896,7 @@ public class TileMap {
 	public float getPlayerStartY(){ return playerStartY; }
 
 	public void autoTile(){
-		int[][] newMap = new int[numRows][numCols];
+		byte[][] newMap = new byte[numRows][numCols];
 
 		for(int i = 0;i < numRows;i++){
 			for(int j = 0;j<numCols;j++){

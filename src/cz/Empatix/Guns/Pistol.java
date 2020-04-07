@@ -100,10 +100,10 @@ public class Pistol extends Weapon {
         if(reloading){
             StringBuilder builder = new StringBuilder();
             for(int i = 0;i<=dots;i++) builder.append(".");
-            TextRender.renderText(c,builder.toString(),new Vector3f(1800,985,0),6,new Vector3f(0.886f,0.6f,0.458f));
+            TextRender.renderText(c,builder.toString(),new Vector3f(1820,985,0),6,new Vector3f(0.886f,0.6f,0.458f));
 
         } else {
-            TextRender.renderText(c,currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1740,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
+            TextRender.renderText(c,currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1750,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
         }
         weaponHud.draw();
         weaponAmmo.draw();
@@ -115,7 +115,7 @@ public class Pistol extends Weapon {
         float time = (float)(System.currentTimeMillis()-reloadDelay-InGame.deltaPauseTime())/1000;
         dots = (int)((time / 0.7f) / 0.2f);
         if(reloading && time > 0.7f) {
-            if (currentAmmo - maxMagazineAmmo < 0) {
+            if (currentAmmo - maxMagazineAmmo+currentMagazineAmmo < 0) {
                 currentMagazineAmmo = currentAmmo;
                 currentAmmo = 0;
             } else {

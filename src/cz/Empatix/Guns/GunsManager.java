@@ -71,7 +71,7 @@ public class GunsManager {
     }
 
     private void setCurrentWeapon(Weapon current) {
-        if(System.currentTimeMillis()-switchDelay < 300 || this.current == current || current.isReloading()) return;
+        if(System.currentTimeMillis()-switchDelay < 300 || this.current == current || this.current.isReloading()) return;
         switchDelay = System.currentTimeMillis();
         this.current = current;
         source.play(soundSwitchingGun);

@@ -96,6 +96,7 @@ public class Settings {
                 {
                         1600, 900,
                         1440, 900,
+                        800, 600,
 
                 };
         fixedCameraSize = false;
@@ -142,6 +143,7 @@ public class Settings {
                 {
                         1600, 900,
                         1440, 900,
+                        800, 600,
 
                 };
         fixedCameraSize = false;
@@ -181,6 +183,7 @@ public class Settings {
                 {
                         1600, 900,
                         1440, 900,
+                        800, 600,
                 };
         fixedCameraSize = false;
         for (int j = 0; j < fixedSize.length; j += 2) {

@@ -2,12 +2,12 @@ package cz.Empatix.Entity.ItemDrops;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Gamestates.InGame;
-import cz.Empatix.Graphics.Model.ModelManager;
-import cz.Empatix.Graphics.Shaders.ShaderManager;
-import cz.Empatix.Graphics.Sprites.Sprite;
-import cz.Empatix.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Lightning.LightManager;
+import cz.Empatix.Render.Graphics.Model.ModelManager;
+import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Graphics.Sprites.Sprite;
+import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -21,10 +21,11 @@ public class HealingPot extends ItemDrop{
         pickedUp = false;
 
         width = 30;
-        height = 30;
-        cwidth = 15;
-        cheight = 15;
-        scale = 2;
+        height = 37;
+        cwidth = 30;
+        cheight = 46;
+        scale = 1;
+        facingRight = true;
 
         //amount = Random.nextInt(3) + 1;
 

@@ -36,7 +36,7 @@ public class Room {
     private boolean right;
 
     // tiles of room
-    private int[][] roomMap;
+    private byte[][] roomMap;
 
     // corners of room
     private int yMin;
@@ -74,30 +74,14 @@ public class Room {
             numCols = Integer.parseInt(br.readLine());
             numRows = Integer.parseInt(br.readLine());
 
-            roomMap = new int[numRows][numCols];
+            roomMap = new byte[numRows][numCols];
 
             String delims = "\\s+";
             for(int row = 0; row < numRows; row++) {
                 String line = br.readLine();
                 String[] tokens = line.split(delims);
                 for(int col = 0; col < numCols; col++) {
-                    char letter = tokens[col].charAt(0);
-                    if (Character.isLetter(letter)){
-                        if (letter == 'R' && (right)) {
-                            roomMap[row][col] = 0;
-                        } else if (letter == 'L' && (left)) {
-                            roomMap[row][col] = 0;
-                        } else if (letter == 'T' && (top)) {
-                            roomMap[row][col] = 0;
-                        } else if (letter == 'B' && (bottom)) {
-                            roomMap[row][col] = 0;
-                        } else {
-                            roomMap[row][col] = 1;
-                        }
-
-                    }  else {
-                        roomMap[row][col] = Integer.parseInt(tokens[col]);
-                    }
+                    roomMap[row][col] = Byte.parseByte(tokens[col]);
                 }
             }
             // converting
@@ -162,7 +146,7 @@ public class Room {
         return type;
     }
 
-    int[][] getRoomMap() {
+    byte[][] getRoomMap() {
         return roomMap;
     }
     int getNumCols() {

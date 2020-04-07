@@ -1,8 +1,8 @@
 package cz.Empatix.Render;
 
-import cz.Empatix.Graphics.ByteBufferImage;
-import cz.Empatix.Graphics.Shaders.Shader;
-import cz.Empatix.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Graphics.ByteBufferImage;
+import cz.Empatix.Render.Graphics.Shaders.Shader;
+import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 
@@ -16,7 +16,7 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 
-public class LoadingScreen {
+public class    LoadingScreen {
     private Shader shader;
     private final int idTexture;
     private int vboVertices;

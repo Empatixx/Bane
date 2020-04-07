@@ -2,13 +2,13 @@ package cz.Empatix.Entity.ItemDrops;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Gamestates.InGame;
-import cz.Empatix.Graphics.Model.ModelManager;
-import cz.Empatix.Graphics.Shaders.ShaderManager;
-import cz.Empatix.Graphics.Sprites.Sprite;
-import cz.Empatix.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Lightning.LightManager;
+import cz.Empatix.Render.Graphics.Model.ModelManager;
+import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Graphics.Sprites.Sprite;
+import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -26,8 +26,9 @@ public class ShotgunAmmo extends ItemDrop{
         cwidth = 16;
         cheight = 45;
         scale = 1;
+        facingRight = true;
 
-        amount = Random.nextInt(2) + 1;
+        amount = Random.nextInt(4) + 1;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\shotgun_bullet.tga");

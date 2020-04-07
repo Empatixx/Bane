@@ -41,7 +41,7 @@ public class Submachine extends Weapon{
         soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
         soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
 
-        weaponHud = new Image("Textures\\pistol.tga",new Vector3f(1600,975,0),2f,c);
+        weaponHud = new Image("Textures\\submachine.tga",new Vector3f(1600,975,0),1f,c);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f,c);
 
     }
@@ -68,7 +68,7 @@ public class Submachine extends Weapon{
                 if (delta > 250) {
                     double inaccuracy = 0;
                     if (delta < 400) {
-                        inaccuracy = (0.055+Random.nextInt(2)/750f) * 400 / delta * (Random.nextInt(2) * 2 - 1);
+                        inaccuracy = (Math.random() * 0.155) * (Random.nextInt(2) * 2 - 1);
                     }
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                     Bullet bullet = new Bullet(tm, x, y, inaccuracy);
@@ -114,7 +114,7 @@ public class Submachine extends Weapon{
         float time = (float)(System.currentTimeMillis()-reloadDelay-InGame.deltaPauseTime())/1000;
         dots = (int)((time / 0.7f) / 0.2f);
         if(reloading && time > 0.7f) {
-            if (currentAmmo - maxMagazineAmmo < 0) {
+            if (currentAmmo - maxMagazineAmmo+currentMagazineAmmo < 0) {
                 currentMagazineAmmo = currentAmmo;
                 currentAmmo = 0;
             } else {

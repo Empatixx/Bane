@@ -2,10 +2,10 @@ package cz.Empatix.Render.Text;
 
 
 import com.sun.istack.internal.NotNull;
-import cz.Empatix.Graphics.Model.ModelManager;
-import cz.Empatix.Graphics.Shaders.Shader;
-import cz.Empatix.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Graphics.Model.ModelManager;
+import cz.Empatix.Render.Graphics.Shaders.Shader;
+import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
 
 
 public class TextRender {

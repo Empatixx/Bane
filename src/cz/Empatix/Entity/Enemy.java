@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class  Enemy extends MapObject {
-
     protected int health;
     protected int maxHealth;
     protected boolean dead;
@@ -44,7 +43,9 @@ public abstract class  Enemy extends MapObject {
         if(dead) return;
         health -= damage;
         if(health < 0) health = 0;
-        if(health == 0) dead = true;
+        if(health == 0){
+            dead = true;
+        }
 
         //flinching = true;
         //flinchTimer = System.nanoTime();

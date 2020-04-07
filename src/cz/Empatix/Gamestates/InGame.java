@@ -8,17 +8,17 @@ import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Graphics.Framebuffer;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Hud.ArmorBar;
-import cz.Empatix.Render.Hud.HealthBar;
+import cz.Empatix.Render.Graphics.Framebuffer;
+import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Hud.MenuBar;
-import cz.Empatix.Render.Hud.MiniMap;
-import cz.Empatix.Render.Lightning.LightManager;
+import cz.Empatix.Render.Hud.*;
+import cz.Empatix.Render.Postprocessing.GaussianBlur;
+import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
@@ -28,6 +28,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.opengl.GL11.*;
 
 
@@ -51,14 +52,19 @@ public class InGame extends GameState {
     private HealthBar healthBar;
     private ArmorBar armorBar;
     private MiniMap miniMap;
+    private cz.Empatix.Render.Hud.Image coin;
 
     private EnemyManager enemyManager;
 
+    // post processing
     private Framebuffer objectsFramebuffer;
+    private Framebuffer pauseBlurFramebuffer;
+    private GaussianBlur gaussianBlur;
+    private LightManager lightManager;
+
+
 
     private ItemManager itemManager;
-
-    private LightManager lightManager;
     //
     // Paused game
     //
@@ -108,7 +114,6 @@ public class InGame extends GameState {
 
     @Override
     void mousePressed(int button) {
-        System.out.println("test");
         gunsManager.startShooting();
     }
 
@@ -116,6 +121,7 @@ public class InGame extends GameState {
     void keyReleased(int k) {
 
         if (k == GLFW_KEY_ESCAPE){
+            gunsManager.stopShooting();
             pause = !pause;
             if(pause){
                 Game.setCursor(Game.ARROW);
@@ -152,7 +158,9 @@ public class InGame extends GameState {
         pause = false;
 
         objectsFramebuffer = new Framebuffer();
+        pauseBlurFramebuffer = new Framebuffer();
         lightManager = new LightManager();
+        gaussianBlur = new GaussianBlur("shaders\\blur");
 
         Game.setCursor(Game.CROSSHAIR);
 
@@ -180,6 +188,8 @@ public class InGame extends GameState {
         armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3,camera);
         //minimap
         miniMap = new MiniMap(camera);
+        // coin
+        coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f,camera);
 
         //audio
         AudioManager.playSoundtrack(Soundtrack.IDLE);
@@ -213,7 +223,7 @@ public class InGame extends GameState {
 
     @Override
     void draw() {
-        //bg.draw(g);
+
         objectsFramebuffer.bindFBO();
         // clear framebuffer
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -231,6 +241,12 @@ public class InGame extends GameState {
         gunsManager.draw(camera);
 
         objectsFramebuffer.unbindFBO();
+        if(pause){
+            pauseBlurFramebuffer.bindFBO();
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+
 
         lightManager.draw(objectsFramebuffer);
 
@@ -245,11 +261,13 @@ public class InGame extends GameState {
 
         healthBar.draw();
         armorBar.draw();
-        miniMap.draw();
-        TextRender.renderText(camera,player.getCoins()+" $",new Vector3f(1820,300,0),3,new Vector3f(1.0f,1.0f,1.0f));
-
+        //miniMap.draw(); //TODO: dodelat mapu
+        coin.draw();
+        TextRender.renderText(camera,""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
 
         if(pause){
+            pauseBlurFramebuffer.unbindFBO();
+            gaussianBlur.draw(pauseBlurFramebuffer);
             pauseBackground.draw();
             for(MenuBar bar: pauseBars){
                 bar.draw();
@@ -267,6 +285,7 @@ public class InGame extends GameState {
 
     @Override
     void update() {
+        System.out.println("Time: "+glfwGetTime());
         // loc of mouse
         final Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
         mouseX = mouseLoc.x* Settings.scaleMouseX();
@@ -283,8 +302,6 @@ public class InGame extends GameState {
                 Camera.getWIDTH() / 2f - player.getX(),
                 Camera.getHEIGHT() / 2f - player.getY()
         );
-
-        lightManager.update();
 
         if(pause){
             for(MenuBar hud:pauseBars){
@@ -327,6 +344,9 @@ public class InGame extends GameState {
 
             itemManager.update(player.getX(),player.getY());
         }
+
+        gaussianBlur.update(pause);
+        lightManager.update();
 
     }
 

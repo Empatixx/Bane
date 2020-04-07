@@ -2,11 +2,11 @@ package cz.Empatix.Entity;
 
 
 import cz.Empatix.AudioManager.Source;
-import cz.Empatix.Graphics.Shaders.Shader;
-import cz.Empatix.Graphics.Sprites.Spritesheet;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Lightning.LightPoint;
+import cz.Empatix.Render.Graphics.Shaders.Shader;
+import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
+import cz.Empatix.Render.Postprocessing.Lightning.LightPoint;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;

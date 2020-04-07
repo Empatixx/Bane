@@ -2,8 +2,8 @@ package cz.Empatix.Main;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Gamestates.GameStateManager;
-import cz.Empatix.Graphics.ByteBufferImage;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.LoadingScreen;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.*;

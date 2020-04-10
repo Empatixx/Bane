@@ -9,40 +9,41 @@ import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
 
-public class Bat extends Enemy {
+public class KingSlime extends Enemy {
+
     private static final int IDLE = 0;
     private static final int DEAD = 1;
 
-    public Bat(TileMap tm, Player player) {
+
+    public KingSlime(TileMap tm, Player player) {
 
         super(tm,player);
 
-        moveSpeed = 1.4f;
-        maxSpeed = 5.2f;
-        stopSpeed = 0.8f;
+        moveSpeed = 0.6f;
+        maxSpeed = 1.6f;
+        stopSpeed = 0.5f;
 
-        width = 64;
-        height = 64;
-        cwidth = 64;
-        cheight = 64;
-        scale = 2;
+        width = 128;
+        height = 96;
+        cwidth = 128;
+        cheight = 96;
+        scale = 4;
 
-
-        health = maxHealth = 5;
-        damage = 2;
+        health = maxHealth = 30;
+        damage = 1;
 
         type = melee;
         facingRight = true;
 
-        spriteSheetCols = 4;
+        spriteSheetCols = 6;
         spriteSheetRows = 1;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\bat.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\bat.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
                 double[] texCoords =
@@ -61,7 +62,7 @@ public class Bat extends Enemy {
             }
             spritesheet.addSprites(sprites);
 
-            sprites = new Sprite[4];
+            sprites = new Sprite[6];
             for(int i = 0; i < sprites.length; i++) {
                 double[] texCoords =
                         {
@@ -78,6 +79,7 @@ public class Bat extends Enemy {
 
             }
             spritesheet.addSprites(sprites);
+
         }
         vboVerticles = ModelManager.getModel(width,height);
         if (vboVerticles == -1){
@@ -86,17 +88,17 @@ public class Bat extends Enemy {
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(125);
+        animation.setDelay(175);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\shader");
         }
         // because of scaling image by 2x
-        width *= 2;
-        height *= 2;
-        cwidth *= 2;
-        cheight *= 2;
+        width *= scale;
+        height *= scale;
+        cwidth *= scale;
+        cheight *= scale;
     }
 
     private void getNextPosition() {
@@ -161,7 +163,6 @@ public class Bat extends Enemy {
 
     public void draw() {
 
-
         setMapPosition();
 
         super.draw();
@@ -173,12 +174,11 @@ public class Bat extends Enemy {
         health -= damage;
         if(health < 0) health = 0;
         if(health == 0){
-            animation.setDelay(100);
+            animation.setDelay(65);
             animation.setFrames(spritesheet.getSprites(DEAD));
             speed.x = 0;
             speed.y = 0;
             dead = true;
-
         }
     }
 }

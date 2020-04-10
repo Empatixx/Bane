@@ -42,12 +42,11 @@ public class MenuBar {
      * @param file - path of texture
      * @param pos - position of menu bar
      * @param scale - scaling of texture(width*scale,height*scale)
-     * @param camera - camera
      * @param width - width on screen
      * @param height- height on screen
      * @param animated - if image has image of click also
      */
-    public MenuBar(String file, Vector3f pos, float scale, Camera camera, int width, int height, boolean animated){
+    public MenuBar(String file, Vector3f pos, float scale, int width, int height, boolean animated){
         this.animated = animated;
         ByteBufferImage decoder = new ByteBufferImage();
         ByteBuffer spritesheetImage = decoder.decodeImage(file);
@@ -125,7 +124,7 @@ public class MenuBar {
         matrixPos = new Matrix4f()
                 .translate(pos)
                 .scale(scale);
-        camera.hardProjection().mul(matrixPos,matrixPos);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
 
     }
 

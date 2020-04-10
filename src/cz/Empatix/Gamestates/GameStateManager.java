@@ -1,7 +1,6 @@
 package cz.Empatix.Gamestates;
 
 import cz.Empatix.AudioManager.AudioManager;
-import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Text.TextRender;
 
 import java.util.ArrayList;
@@ -16,8 +15,6 @@ public class GameStateManager {
 
     public GameStateManager() {
         // openGL matrix4f
-        Camera camera = new Camera(1920,1080);
-
         // audio
         AudioManager.init();
         AudioManager.setListenerData(0,0);
@@ -28,8 +25,8 @@ public class GameStateManager {
         gameStates = new ArrayList<>();
 
         currentState = MENU;
-        gameStates.add(new MenuState(this, camera));
-        gameStates.add(new InGame(this, camera));
+        gameStates.add(new MenuState(this));
+        gameStates.add(new InGame(this));
 
     }
 

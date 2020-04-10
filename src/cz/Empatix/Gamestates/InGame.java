@@ -28,7 +28,6 @@ import java.awt.*;
 import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.opengl.GL11.*;
 
 
@@ -84,8 +83,7 @@ public class InGame extends GameState {
 
 
 
-    InGame(GameStateManager gsm,Camera c){
-        super(c);
+    InGame(GameStateManager gsm){
         this.gsm = gsm;
     }
 
@@ -165,31 +163,31 @@ public class InGame extends GameState {
         Game.setCursor(Game.CROSSHAIR);
 
         // Tile map
-        tileMap = new TileMap(64, camera);
+        tileMap = new TileMap(64);
         tileMap.loadTiles("Textures\\tileset64.tga");
         tileMap.loadMap();
         tileMap.setTween(0.10);
 
         // player
-        player = new Player(tileMap, camera);
+        player = new Player(tileMap);
         player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
 
         //bg = new Background("/testing.jpg/");
 
         // weapons
-        gunsManager = new GunsManager(tileMap,camera);
+        gunsManager = new GunsManager(tileMap);
         // items drops
         itemManager = new ItemManager(tileMap,gunsManager,player);
 
 
         //health bar
-        healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,camera);
+        healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5);
         //armor bar
-        armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3,camera);
+        armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3);
         //minimap
-        miniMap = new MiniMap(camera);
+        miniMap = new MiniMap();
         // coin
-        coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f,camera);
+        coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
 
         //audio
         AudioManager.playSoundtrack(Soundtrack.IDLE);
@@ -199,21 +197,21 @@ public class InGame extends GameState {
 
 
         // pause menu
-        pauseBackground = new Background("Textures\\Menu\\pausemenu.tga",camera);
+        pauseBackground = new Background("Textures\\Menu\\pausemenu.tga");
         pauseBackground.setDimensions(500,800);
         pauseBars = new MenuBar[3];
 
         String defaultBar = "Textures\\Menu\\menu_bar.tga";
         MenuBar bar;
-        bar = new MenuBar(defaultBar,new Vector3f(960,455,0),1.70f,camera,200,100,true);
+        bar = new MenuBar(defaultBar,new Vector3f(960,455,0),1.70f,200,100,true);
         bar.setType(PAUSERESUME);
         pauseBars[0] = bar;
 
-        bar = new MenuBar(defaultBar,new Vector3f(960,645,0),1.70f,camera,200,100,true);
+        bar = new MenuBar(defaultBar,new Vector3f(960,645,0),1.70f,200,100,true);
         bar.setType(PAUSESETTINGS);
         pauseBars[1] = bar;
 
-        bar = new MenuBar(defaultBar,new Vector3f(960,835,0),1.70f,camera,200,100,true);
+        bar = new MenuBar(defaultBar,new Vector3f(960,835,0),1.70f,200,100,true);
         bar.setType(PAUSEEXIT);
         pauseBars[2] = bar;
 
@@ -231,14 +229,14 @@ public class InGame extends GameState {
 
         tileMap.draw();
 
-        itemManager.draw(camera);
+        itemManager.draw();
 
-        player.draw(camera);
+        player.draw();
 
         // draw enemies
-        enemyManager.draw(camera);
+        enemyManager.draw();
 
-        gunsManager.draw(camera);
+        gunsManager.draw();
 
         objectsFramebuffer.unbindFBO();
         if(pause){
@@ -251,11 +249,11 @@ public class InGame extends GameState {
         lightManager.draw(objectsFramebuffer);
 
         if (Game.displayCollisions){
-            TextRender.renderText(camera,"X: "+(int)player.getX(),new Vector3f(1650,200,0),3,new Vector3f(1.0f,1.0f,1.0f));
-            TextRender.renderText(camera,"Y: "+(int)player.getY(),new Vector3f(1650,300,0),3,new Vector3f(1.0f,1.0f,1.0f));
+            TextRender.renderText("X: "+(int)player.getX(),new Vector3f(1650,200,0),3,new Vector3f(1.0f,1.0f,1.0f));
+            TextRender.renderText("Y: "+(int)player.getY(),new Vector3f(1650,300,0),3,new Vector3f(1.0f,1.0f,1.0f));
         }
 
-        gunsManager.drawHud(camera);
+        gunsManager.drawHud();
 
         player.drawVignette();
 
@@ -263,7 +261,7 @@ public class InGame extends GameState {
         armorBar.draw();
         //miniMap.draw(); //TODO: dodelat mapu
         coin.draw();
-        TextRender.renderText(camera,""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
+        TextRender.renderText(""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
 
         if(pause){
             pauseBlurFramebuffer.unbindFBO();
@@ -272,10 +270,10 @@ public class InGame extends GameState {
             for(MenuBar bar: pauseBars){
                 bar.draw();
             }
-            TextRender.renderText(camera,"Pause",new Vector3f(925,300,0),7,new Vector3f(0.874f,0.443f,0.149f));
-            TextRender.renderText(camera,"Resume",new Vector3f(905,465,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            TextRender.renderText(camera,"Save",new Vector3f(955,655,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            TextRender.renderText(camera,"Exit",new Vector3f(975,845,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            TextRender.renderText("Pause",new Vector3f(925,300,0),7,new Vector3f(0.874f,0.443f,0.149f));
+            TextRender.renderText("Resume",new Vector3f(905,465,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            TextRender.renderText("Save",new Vector3f(955,655,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            TextRender.renderText("Exit",new Vector3f(975,845,0),4,new Vector3f(0.874f,0.443f,0.149f));
 
         }
 
@@ -285,7 +283,6 @@ public class InGame extends GameState {
 
     @Override
     void update() {
-        System.out.println("Time: "+glfwGetTime());
         // loc of mouse
         final Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
         mouseX = mouseLoc.x* Settings.scaleMouseX();

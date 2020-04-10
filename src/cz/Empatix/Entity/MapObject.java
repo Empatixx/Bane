@@ -244,7 +244,7 @@ public abstract class MapObject {
 	void setUp(boolean b) { up = b; }
 	void setDown(boolean b) { down = b; }
 
-	public void draw(Camera camera) {
+	public void draw() {
 		// pokud neni object na obrazovce - zrusit
 		if (isNotOnScrean()){
 			return;
@@ -266,7 +266,7 @@ public abstract class MapObject {
 					.rotateY(3.14f);
 
 		}
-		camera.projection().mul(target,target);
+		Camera.getInstance().projection().mul(target,target);
 
 		shader.bind();
 		shader.setUniformi("sampler",0);

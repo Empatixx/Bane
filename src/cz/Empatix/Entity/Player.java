@@ -5,7 +5,6 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Background;
-import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -55,7 +54,7 @@ public class Player extends MapObject {
     private final int soundLowHealth;
 
 
-    public Player(TileMap tm, Camera camera) {
+    public Player(TileMap tm) {
         super(tm);
         width = 32;
         height = 76;
@@ -149,7 +148,7 @@ public class Player extends MapObject {
 
 
         //hit vignette
-        hitVignette = new Background("Textures\\vignette.tga", camera);
+        hitVignette = new Background("Textures\\vignette.tga");
         hitVignette.setFadeEffect(true);
 
         // audio
@@ -288,9 +287,9 @@ public class Player extends MapObject {
 
     }
 
-    public void draw(Camera camera) {
+    public void draw() {
         setMapPosition();
-        super.draw(camera);
+        super.draw();
     }
 
     public void drawVignette(){

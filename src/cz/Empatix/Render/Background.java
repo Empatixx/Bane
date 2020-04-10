@@ -28,7 +28,7 @@ public class Background {
     private long time;
     private float alpha;
 
-    public Background(String filepath, Camera camera) {
+    public Background(String filepath) {
         shader = ShaderManager.getShader("shaders\\background");
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\background");
@@ -73,7 +73,7 @@ public class Background {
         glBindBuffer(GL_ARRAY_BUFFER,0);
 
         matrixPos = new Matrix4f().translate(new Vector3f((float)Camera.getWIDTH()/2,(float)Camera.getHEIGHT()/2,0));
-        camera.hardProjection().mul(matrixPos,matrixPos);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
     }
 
     /**

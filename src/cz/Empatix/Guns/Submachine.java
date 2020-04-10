@@ -4,7 +4,6 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
-import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
@@ -22,7 +21,7 @@ public class Submachine extends Weapon{
 
     private ArrayList<Bullet> bullets;
 
-    Submachine(TileMap tm, Camera c){
+    Submachine(TileMap tm){
         super(tm);
         mindamage = 1;
         maxdamage = 1;
@@ -41,8 +40,8 @@ public class Submachine extends Weapon{
         soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
         soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
 
-        weaponHud = new Image("Textures\\submachine.tga",new Vector3f(1600,975,0),1f,c);
-        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f,c);
+        weaponHud = new Image("Textures\\submachine.tga",new Vector3f(1600,975,0),1f);
+        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
 
     }
 
@@ -88,21 +87,21 @@ public class Submachine extends Weapon{
     }
 
     @Override
-    public void drawAmmo(Camera c) {
+    public void drawAmmo() {
         for (Bullet bullet : bullets) {
-            bullet.draw(c);
+            bullet.draw();
         }
     }
 
     @Override
-    public void draw(Camera c) {
+    public void draw() {
         if(reloading){
             StringBuilder builder = new StringBuilder();
             for(int i = 0;i<=dots;i++) builder.append(".");
-            TextRender.renderText(c,builder.toString(),new Vector3f(1800,985,0),6,new Vector3f(0.886f,0.6f,0.458f));
+            TextRender.renderText(builder.toString(),new Vector3f(1800,985,0),6,new Vector3f(0.886f,0.6f,0.458f));
 
         } else {
-            TextRender.renderText(c,currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1740,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
+            TextRender.renderText(currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1740,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
         }
         weaponHud.draw();
         weaponAmmo.draw();

@@ -9,62 +9,32 @@
     <bookmark url="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Coin.java" line="64" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Textures/bane_coin.tga" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Textures/submachine.tga" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/shaders/blur-fs.glsl" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/shaders/blur-vs.glsl" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/shaders/chystane/blur-fs.glsl" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/shaders/chystane/blur-vs.glsl" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/GaussianBlur.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Postprocess.java" afterDir="false" />
+    <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="rng changes of item drops,antinonluck system">
+      <change afterPath="$PROJECT_DIR$/Textures/Sprites/Enemies/slime.tga" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Textures/Sprites/Enemies/slimebullet.tga" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shaders/chystane/test-fs.glsl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shaders/fade-fs.glsl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shaders/fade-vs.glsl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shaders/test-fs.glsl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shaders/test-vs.glsl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/KingSlime.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/WeaponDrop.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Fade.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Textures/coin.tga" beforeDir="false" afterPath="$PROJECT_DIR$/Textures/coin.tga" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Textures/healingpot.tga" beforeDir="false" afterPath="$PROJECT_DIR$/Textures/healingpot.tga" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Textures/pistol_bullet.tga" beforeDir="false" afterPath="$PROJECT_DIR$/Textures/pistol_bullet.tga" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Textures/shotgun_bullet.tga" beforeDir="false" afterPath="$PROJECT_DIR$/Textures/shotgun_bullet.tga" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Textures/Sprites/Enemies/slime64.tga" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/crashlog.log" beforeDir="false" afterPath="$PROJECT_DIR$/crashlog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/Game_jar/Game.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/Game_jar/Game.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Animation.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Animation.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemies/Slime.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemies/Slime.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/EnemyManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/EnemyManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/MapObject.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/MapObject.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Player.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/InGame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/InGame.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Graphics/ByteBufferImage.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Graphics/Framebuffer.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Graphics/Model/ModelManager.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Graphics/Shaders/Shader.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Graphics/Shaders/ShaderManager.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Graphics/Sprites/Sprite.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Graphics/Sprites/Spritesheet.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Graphics/Sprites/SpritesheetManager.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Bullet.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Bullet.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/GunsManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/GunsManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Settings.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Settings.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Background.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Background.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HUD.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HUD.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HealthBar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HealthBar.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/MenuBar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/MenuBar.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/SliderBar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/SliderBar.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Lightning/LightManager.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Lightning/LightPoint.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/Font.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/Font.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/TextRender.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/TextRender.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/TileMap.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/TileMap.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/background-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/background-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/light-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/light-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/light-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/light-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Animation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Animation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shaders/chystane/blur-fs.glsl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/shaders/chystane/blur-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/chystane/test-vs.glsl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Skeleton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Skeleton.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Coin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Coin.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/HealingPot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/HealingPot.java" afterDir="false" />
@@ -73,34 +43,25 @@
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ShotgunAmmo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ShotgunAmmo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameState.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameStateManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameStateManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Graphics/ByteBufferImage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/ByteBufferImage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Graphics/Framebuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Framebuffer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Graphics/Model/ModelManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Model/ModelManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Graphics/Shaders/Shader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Shaders/Shader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Graphics/Shaders/ShaderManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Shaders/ShaderManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Graphics/Sprites/Sprite.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Sprites/Sprite.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Graphics/Sprites/Spritesheet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Sprites/Spritesheet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Graphics/Sprites/SpritesheetManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Sprites/SpritesheetManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Main/Settings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Main/Settings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Background.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Background.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Camera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Camera.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ArmorBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ArmorBar.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HUD.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HUD.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Image.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Image.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MenuBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MenuBar.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MiniMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MiniMap.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/SliderBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/SliderBar.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Lightning/LightManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Lightning/LightPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightPoint.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/LoadingScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/LoadingScreen.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Text/Font.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Text/Font.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Text/TextRender.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Text/TextRender.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" afterDir="false" />
     </list>
@@ -125,11 +86,29 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="353">
+              <caret line="162" column="21" selection-start-line="162" selection-start-column="21" selection-end-line="162" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="371">
+              <caret line="165" column="21" selection-start-line="165" selection-start-column="21" selection-end-line="165" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/KingSlime.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="125">
-              <caret line="326" column="26" selection-start-line="326" selection-start-column="26" selection-end-line="326" selection-end-column="26" />
+            <state relative-caret-position="389">
+              <caret line="164" column="21" selection-start-line="164" selection-start-column="21" selection-end-line="164" selection-end-column="21" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -138,80 +117,73 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/GaussianBlur.java">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Coin.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="8" column="5" lean-forward="true" selection-start-line="8" selection-start-column="5" selection-end-line="8" selection-end-column="5" />
-              <folding>
-                <element signature="e#205#206#0" expanded="true" />
-                <element signature="e#234#235#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="551">
+              <caret line="89" column="21" selection-start-line="89" selection-start-column="21" selection-end-line="89" selection-end-column="21" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/shaders/chystane/light-fs.glsl">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Postprocess.java">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="8" column="29" lean-forward="true" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
-              <folding>
-                <element signature="e#1250#1251#0" expanded="true" />
-                <element signature="e#1279#1280#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="587">
+              <caret line="140" column="21" selection-start-line="140" selection-start-column="21" selection-end-line="140" selection-end-column="21" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/shaders/blur-fs.glsl">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ShotgunAmmo.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="25" column="1" lean-forward="true" selection-start-line="25" selection-start-column="1" selection-end-line="25" selection-end-column="1" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightPoint.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="72">
-              <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/shaders/light-fs.glsl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="7" selection-start-line="7" selection-end-line="7" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/shaders/blur-vs.glsl">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="54">
-              <caret line="3" selection-start-line="3" selection-end-line="3" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="920">
-              <caret line="59" column="79" selection-start-line="59" selection-start-column="79" selection-end-line="59" selection-end-column="79" />
+            <state relative-caret-position="569">
+              <caret line="84" column="21" selection-start-line="84" selection-start-column="21" selection-end-line="84" selection-end-column="21" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/PistolAmmo.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="569">
+              <caret line="85" column="21" selection-start-line="85" selection-start-column="21" selection-end-line="85" selection-end-column="21" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Skeleton.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="677">
+              <caret line="148" column="19" selection-start-line="148" selection-start-column="19" selection-end-line="148" selection-end-column="19" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/HealingPot.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="569">
+              <caret line="84" column="21" selection-start-line="84" selection-start-column="21" selection-end-line="84" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="533">
+              <caret line="159" column="21" selection-start-line="159" selection-start-column="21" selection-end-line="159" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -223,18 +195,13 @@
       <list>
         <option value="GLSL Shader" />
         <option value="Enum" />
-        <option value="Singleton" />
         <option value="Class" />
+        <option value="Singleton" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>do</find>
-      <find>glvVer</find>
-      <find>getTileSi</find>
-      <find>playerStartX</find>
-      <find>Classic</find>
       <find>Collision</find>
       <find>updateCurr</find>
       <find>Animation</find>
@@ -244,7 +211,6 @@
       <find>sca</find>
       <find>Light</find>
       <find>dr</find>
-      <find>draw</find>
       <find>pickup</find>
       <find>- InGame.deltaPauseTime())/1000</find>
       <find>light</find>
@@ -260,65 +226,94 @@
       <find>tex_coords</find>
       <find>coin</find>
       <find>update</find>
+      <find>System.c</find>
+      <find>System.currentTimeMillis()</find>
+      <find>ca</find>
+      <find>draw</find>
+      <find>camera</find>
+      <find>cam</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Jiří Krokviakbufix" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="0.24" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Resources/Map/currentmap1.map" />
-        <option value="$PROJECT_DIR$/Resources/Map/currentmap2.map" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/SliderBar.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Graphics/Framebuffer.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Lightning/LightPoint.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" />
-        <option value="$PROJECT_DIR$/shaders/background-vs.glsl" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java" />
-        <option value="$PROJECT_DIR$/Zalohy/0111/TileMap.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/RoomPath.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrop.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Skeleton.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/HealthPot.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HUD.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Graphics/Model/ModelManager.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ArmorBar.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MiniMap.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemDrop.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" />
-        <option value="$PROJECT_DIR$/shaders/background-fs.glsl" />
-        <option value="$PROJECT_DIR$/shaders/chystane/blur-fs.glsl" />
-        <option value="$PROJECT_DIR$/shaders/blur-vs.glsl" />
-        <option value="$PROJECT_DIR$/shaders/light-vs.glsl" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Lightning/LightManager.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/HealingPot.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Coin.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Main/Settings.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/PistolAmmo.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ShotgunAmmo.java" />
         <option value="$PROJECT_DIR$/shaders/light-fs.glsl" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocess.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/LoadingScreen.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightManager.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/GaussianBlur.java" />
         <option value="$PROJECT_DIR$/shaders/blur-fs.glsl" />
         <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Postprocess.java" />
+        <option value="$PROJECT_DIR$/shaders/chystane/fade-fs.glsl" />
+        <option value="$PROJECT_DIR$/shaders/fade-fs.glsl" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Fade.java" />
+        <option value="$PROJECT_DIR$/shaders/test-vs.glsl" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Camera.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameStateManager.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameState.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Background.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Image.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HUD.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ArmorBar.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MenuBar.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MiniMap.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Text/TextRender.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/SliderBar.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/WeaponDrop.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Skeleton.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/HealingPot.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ShotgunAmmo.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/PistolAmmo.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Coin.java" />
+        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/KingSlime.java" />
       </list>
     </option>
   </component>
@@ -343,8 +338,7 @@
     </treeState>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-12" />
-    <option name="y" value="1" />
+    <option name="x" value="-8" />
     <option name="width" value="1040" />
     <option name="height" value="744" />
   </component>
@@ -356,7 +350,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -521,43 +515,41 @@
             <path>
               <item name="Game" type="b2602c69:ProjectViewProjectNode" />
               <item name="Game" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
+              <item name="Render" type="462c0819:PsiDirectoryNode" />
+              <item name="Text" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Game" type="462c0819:PsiDirectoryNode" />
               <item name="Textures" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="Game" type="462c0819:PsiDirectoryNode" />
+              <item name="Textures" type="462c0819:PsiDirectoryNode" />
+              <item name="Sprites" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8 (2) &gt;" type="70bed36:NamedLibraryElementNode" />
+              <item name="Game" type="462c0819:PsiDirectoryNode" />
+              <item name="Textures" type="462c0819:PsiDirectoryNode" />
+              <item name="Sprites" type="462c0819:PsiDirectoryNode" />
+              <item name="Enemies" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8 (2) &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="rt.jar" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8 (2) &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="rt.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; 1.8 (2) &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="rt.jar" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="awt" type="462c0819:PsiDirectoryNode" />
+              <item name="Game" type="462c0819:PsiDirectoryNode" />
+              <item name="Textures" type="462c0819:PsiDirectoryNode" />
+              <item name="Sprites" type="462c0819:PsiDirectoryNode" />
+              <item name="Player" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -565,7 +557,7 @@
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="GenerateAntBuildDialog.outputFileNameProperty" value="game" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1586257384962" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1586498984223" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/nativelib/joml-1.9.20.jar!/" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.16894531" />
@@ -576,11 +568,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="E:\source\Game\Textures" />
+      <recent name="E:\source\Game\Textures\Sprites\Enemies" />
       <recent name="E:\source\Game\shaders" />
       <recent name="E:\source\Game\shaders\chystane" />
+      <recent name="E:\source\Game\Textures" />
       <recent name="E:\source\Game\shaders\td" />
-      <recent name="E:\source\Game\Sounds" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="cz.Empatix.Guns" />
@@ -717,7 +709,14 @@
       <option name="project" value="LOCAL" />
       <updated>1585987724878</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="rng changes of item drops,antinonluck system">
+      <created>1586257428642</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1586257428642</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TodoView">
@@ -731,7 +730,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Structure" order="0" sideWeight="0.3808948" side_tool="true" weight="0.112" />
       <window_info id="Designer" order="1" />
@@ -739,16 +737,16 @@
       <window_info id="Capture Tool" order="3" />
       <window_info id="UI Designer" order="4" />
       <window_info id="Favorites" order="5" sideWeight="0.4980695" side_tool="true" weight="0.2260128" />
-      <window_info content_ui="combo" id="Project" order="6" sideWeight="0.5019305" visible="true" weight="0.16151386" />
+      <window_info active="true" content_ui="combo" id="Project" order="6" sideWeight="0.5019305" visible="true" weight="0.28411514" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.804811" visible="true" weight="0.032502707" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.804811" visible="true" weight="0.11484291" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.7905117" weight="0.15709643" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.8054371" weight="0.032502707" />
       <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49946696" weight="0.21235102" />
-      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32936078" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.082340196" />
       <window_info anchor="bottom" id="Messages" order="9" weight="0.10400867" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.195189" side_tool="true" weight="0.11618257" />
       <window_info anchor="bottom" id="Inspection Results" order="11" weight="0.42361864" />
@@ -797,6 +795,9 @@
       <window_info anchor="right" id="Ant Build" order="9" side_tool="true" weight="0.046375267" />
     </layout-to-restore>
   </component>
+  <component name="UpdateCopyrightCheckinHandler">
+    <option name="UPDATE_COPYRIGHT" value="true" />
+  </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
@@ -839,6 +840,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="Adding bat" />
     <MESSAGE value="fixing size of slimes" />
     <MESSAGE value="adding txt of bats" />
@@ -850,7 +852,8 @@
     <MESSAGE value="lights bugfix,shotgun rework,color banding fix,new prototype of generation map" />
     <MESSAGE value="new generation of map- paths,enemy spawning collision fix,optimalizations" />
     <MESSAGE value="armors,armorbar,submachine gun,item drops,coins,minmap" />
-    <option name="LAST_COMMIT_MESSAGE" value="armors,armorbar,submachine gun,item drops,coins,minmap" />
+    <MESSAGE value="rng changes of item drops,antinonluck system" />
+    <option name="LAST_COMMIT_MESSAGE" value="rng changes of item drops,antinonluck system" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="antWorkspaceConfiguration">
@@ -874,64 +877,276 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Sprites/SpritesheetManager.java">
+    <entry file="file://$PROJECT_DIR$/shaders/chystane/fade-fs.glsl" />
+    <entry file="file://$PROJECT_DIR$/shaders/chystane/fade-vs.glsl" />
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Fade.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="19" selection-start-line="19" selection-end-line="19" />
-          <folding>
-            <element signature="e#390#391#0" expanded="true" />
-            <element signature="e#439#440#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="180">
+          <caret line="10" column="17" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ArmorBar.java">
+    <entry file="file://$PROJECT_DIR$/shaders/fade-fs.glsl">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="146">
-          <caret line="46" column="41" lean-forward="true" selection-start-line="46" selection-start-column="41" selection-end-line="46" selection-end-column="41" />
+        <state relative-caret-position="288">
+          <caret line="16" column="1" lean-forward="true" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shaders/background-fs.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="11" selection-start-line="11" selection-end-line="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shaders/chystane/test-fs.glsl">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shaders/chystane/test-vs.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="23" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shaders/test-fs.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="17" selection-start-line="2" selection-start-column="8" selection-end-line="2" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Textures/Sprites/Enemies/slime64.tga" />
+    <entry file="file://$PROJECT_DIR$/shaders/test-vs.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="3" column="29" selection-start-line="3" selection-start-column="29" selection-end-line="3" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game.properties">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/game.xml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shaders/blur-fs.glsl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="25" column="1" selection-start-line="25" selection-start-column="1" selection-end-line="25" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/shaders/chystane/light-fs.glsl">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemDrop.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="34" column="16" selection-start-line="34" selection-start-column="16" selection-end-line="34" selection-end-column="16" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java">
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/dd.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1584">
-          <caret line="101" column="44" selection-start-line="101" selection-start-column="44" selection-end-line="101" selection-end-column="44" />
+        <state relative-caret-position="36">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java">
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameStateManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1278">
-          <caret line="87" column="24" lean-forward="true" selection-start-line="87" selection-start-column="24" selection-end-line="87" selection-end-column="24" />
-          <folding>
-            <element signature="e#1940#1941#0" expanded="true" />
-            <element signature="e#1971#1972#0" expanded="true" />
-            <element signature="e#2020#2021#0" expanded="true" />
-            <element signature="e#2060#2061#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="432">
+          <caret line="28" column="32" selection-start-line="28" selection-start-column="32" selection-end-line="28" selection-end-column="32" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Textures/armorbar.tga">
-      <provider selected="true" editor-type-id="images" />
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="12" column="29" selection-start-line="12" selection-start-column="29" selection-end-line="12" selection-end-column="29" />
+        </state>
+      </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Textures/coin.tga">
-      <provider selected="true" editor-type-id="images" />
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="382">
+          <caret line="75" lean-forward="true" selection-start-line="75" selection-end-line="75" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Camera.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Background.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="341">
+          <caret line="73" lean-forward="true" selection-start-line="73" selection-end-line="73" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Image.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="215">
+          <caret line="38" column="27" selection-start-line="38" selection-start-column="27" selection-end-line="38" selection-end-column="27" />
+        </state>
+      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HUD.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="972">
-          <caret line="67" selection-start-line="67" selection-end-line="67" />
+        <state relative-caret-position="492">
+          <caret line="81" column="48" lean-forward="true" selection-start-line="81" selection-start-column="48" selection-end-line="81" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="741">
+          <caret line="55" lean-forward="true" selection-start-line="55" selection-end-line="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ArmorBar.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="544">
+          <caret line="55" lean-forward="true" selection-start-line="55" selection-end-line="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MenuBar.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="126" column="28" selection-start-line="126" selection-start-column="28" selection-end-line="126" selection-end-column="28" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MiniMap.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="34" selection-start-line="8" selection-start-column="34" selection-end-line="8" selection-end-column="34" />
+        <state relative-caret-position="126">
+          <caret line="7" column="21" lean-forward="true" selection-start-line="7" selection-start-column="21" selection-end-line="7" selection-end-column="21" />
+          <folding>
+            <element signature="e#271#272#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="317">
+          <caret line="62" column="25" selection-start-line="62" selection-start-column="25" selection-end-line="62" selection-end-column="25" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="291">
+          <caret line="246" column="16" selection-start-line="246" selection-start-column="16" selection-end-line="246" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="327">
+          <caret line="69" lean-forward="true" selection-start-line="69" selection-end-line="69" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="98" column="17" lean-forward="true" selection-start-line="98" selection-start-column="17" selection-end-line="98" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="147">
+          <caret line="104" lean-forward="true" selection-start-line="104" selection-end-line="104" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="475">
+          <caret line="100" column="39" selection-start-line="100" selection-start-column="38" selection-end-line="100" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="376">
+          <caret line="65" column="11" selection-start-line="65" selection-start-column="11" selection-end-line="65" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2893">
+          <caret line="273" column="37" selection-start-line="273" selection-start-column="37" selection-end-line="273" selection-end-column="37" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2191#2192#0" expanded="true" />
+            <element signature="e#2221#2222#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Text/TextRender.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="263">
+          <caret line="108" column="7" lean-forward="true" selection-start-line="108" selection-start-column="7" selection-end-line="108" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="196">
+          <caret line="58" column="35" selection-start-line="58" selection-start-column="35" selection-end-line="58" selection-end-column="35" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/SliderBar.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="795">
+          <caret line="178" column="30" lean-forward="true" selection-start-line="178" selection-start-column="30" selection-end-line="178" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1667">
+          <caret line="167" column="35" lean-forward="true" selection-start-line="167" selection-start-column="35" selection-end-line="167" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="213">
+          <caret line="289" lean-forward="true" selection-start-line="289" selection-end-line="289" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/WeaponDrop.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="682">
+          <caret line="50" column="22" selection-start-line="50" selection-start-column="22" selection-end-line="50" selection-end-column="29" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -940,89 +1155,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="159" column="8" selection-start-line="159" selection-start-column="8" selection-end-line="159" selection-end-column="8" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Framebuffer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="515">
-          <caret line="33" column="47" lean-forward="true" selection-start-line="33" selection-start-column="47" selection-end-line="33" selection-end-column="47" />
-          <folding>
-            <element signature="e#1164#1165#0" expanded="true" />
-            <element signature="e#1218#1219#0" expanded="true" />
-            <element signature="e#1251#1252#0" expanded="true" />
-            <element signature="e#1305#1306#0" expanded="true" />
-            <element signature="e#1415#1416#0" expanded="true" />
-            <element signature="e#1467#1468#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/shaders/background-fs.glsl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="21" column="4" selection-start-line="21" selection-start-column="2" selection-end-line="21" selection-end-column="4" />
-          <folding>
-            <element signature="e#10196#10197#0" expanded="true" />
-            <element signature="e#10224#10225#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Shaders/Shader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="29" column="62" selection-start-line="29" selection-start-column="62" selection-end-line="29" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="30" column="19" selection-start-line="30" selection-start-column="19" selection-end-line="30" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="757">
-          <caret line="182" selection-start-line="182" selection-end-line="182" />
+        <state relative-caret-position="533">
+          <caret line="159" column="21" selection-start-line="159" selection-start-column="21" selection-end-line="159" selection-end-column="21" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Skeleton.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="50" column="36" selection-start-line="50" selection-start-column="36" selection-end-line="50" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="327">
-          <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="331">
-          <caret line="65" column="79" selection-start-line="65" selection-start-column="79" selection-end-line="65" selection-end-column="79" />
+        <state relative-caret-position="677">
+          <caret line="148" column="19" selection-start-line="148" selection-start-column="19" selection-end-line="148" selection-end-column="19" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1031,103 +1172,29 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/HealingPot.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="28" selection-start-line="28" selection-end-line="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="569">
+          <caret line="84" column="21" selection-start-line="84" selection-start-column="21" selection-end-line="84" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemDrop.java">
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="217">
-          <caret line="15" column="25" selection-start-line="15" selection-start-column="25" selection-end-line="15" selection-end-column="25" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="353">
+          <caret line="162" column="21" selection-start-line="162" selection-start-column="21" selection-end-line="162" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Textures/bane_coin.tga">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Image.java">
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Coin.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="179">
-          <caret line="21" column="25" lean-forward="true" selection-start-line="21" selection-start-column="25" selection-end-line="21" selection-end-column="25" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="296">
-          <caret line="45" column="79" selection-start-line="45" selection-start-column="79" selection-end-line="45" selection-end-column="79" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1656">
-          <caret line="102" column="73" selection-start-line="102" selection-start-column="73" selection-end-line="102" selection-end-column="73" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Main/Game.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2736">
-          <caret line="171" column="7" selection-start-line="171" selection-start-column="7" selection-end-line="171" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/shaders/background-vs.glsl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="1" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/shaders/light-vs.glsl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Main/Settings.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1278">
-          <caret line="78" column="27" selection-start-line="78" selection-start-column="27" selection-end-line="78" selection-end-column="27" />
+        <state relative-caret-position="587">
+          <caret line="140" column="21" selection-start-line="140" selection-start-column="21" selection-end-line="140" selection-end-column="21" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ShotgunAmmo.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="20" column="46" selection-start-line="20" selection-start-column="46" selection-end-line="20" selection-end-column="46" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="846">
-          <caret line="54" column="41" selection-start-line="54" selection-start-column="41" selection-end-line="54" selection-end-column="41" />
+        <state relative-caret-position="569">
+          <caret line="84" column="21" selection-start-line="84" selection-start-column="21" selection-end-line="84" selection-end-column="21" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1136,152 +1203,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/PistolAmmo.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="3" selection-start-line="11" selection-start-column="3" selection-end-line="11" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="738">
-          <caret line="47" column="9" selection-start-line="47" selection-start-column="9" selection-end-line="47" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="684">
-          <caret line="48" column="13" selection-start-line="48" selection-start-column="13" selection-end-line="48" selection-end-column="13" />
-          <folding>
-            <element signature="e#1329#1330#0" expanded="true" />
-            <element signature="e#1359#1360#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/LoadingScreen.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="19" column="26" selection-start-line="19" selection-start-column="26" selection-end-line="19" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17244">
-          <caret line="974" column="52" selection-start-line="974" selection-start-column="52" selection-end-line="974" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/shaders/chystane/blur-vs.glsl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="1" lean-forward="true" selection-start-line="11" selection-start-column="1" selection-end-line="11" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/shaders/chystane/blur-fs.glsl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="3" column="25" lean-forward="true" selection-start-line="3" selection-start-column="25" selection-end-line="3" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Room.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="809">
-          <caret line="143" selection-start-line="143" selection-end-line="143" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="2" column="27" selection-start-line="2" selection-start-column="27" selection-end-line="2" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-347">
-          <caret line="20" column="22" selection-start-line="20" selection-start-column="22" selection-end-line="20" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightPoint.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="920">
-          <caret line="59" column="79" selection-start-line="59" selection-start-column="79" selection-end-line="59" selection-end-column="79" />
+        <state relative-caret-position="569">
+          <caret line="85" column="21" selection-start-line="85" selection-start-column="21" selection-end-line="85" selection-end-column="21" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-opengl/lwjgl-opengl-sources.jar!/org/lwjgl/opengl/GL15.java">
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="595">
-          <caret line="69" column="33" lean-forward="true" selection-start-line="69" selection-start-column="33" selection-end-line="69" selection-end-column="33" />
+        <state relative-caret-position="371">
+          <caret line="165" column="21" selection-start-line="165" selection-start-column="21" selection-end-line="165" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/shaders/light-fs.glsl">
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Coin.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        <state relative-caret-position="551">
+          <caret line="89" column="21" selection-start-line="89" selection-start-column="21" selection-end-line="89" selection-end-column="21" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/shaders/blur-vs.glsl">
+    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/KingSlime.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="3" selection-start-line="3" selection-end-line="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/shaders/chystane/light-fs.glsl">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/shaders/blur-fs.glsl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="25" column="1" lean-forward="true" selection-start-line="25" selection-start-column="1" selection-end-line="25" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Postprocess.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="29" lean-forward="true" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
-          <folding>
-            <element signature="e#1250#1251#0" expanded="true" />
-            <element signature="e#1279#1280#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/GaussianBlur.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="8" column="5" lean-forward="true" selection-start-line="8" selection-start-column="5" selection-end-line="8" selection-end-column="5" />
-          <folding>
-            <element signature="e#205#206#0" expanded="true" />
-            <element signature="e#234#235#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="326" column="26" selection-start-line="326" selection-start-column="26" selection-end-line="326" selection-end-column="26" />
+        <state relative-caret-position="389">
+          <caret line="164" column="21" selection-start-line="164" selection-start-column="21" selection-end-line="164" selection-end-column="21" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

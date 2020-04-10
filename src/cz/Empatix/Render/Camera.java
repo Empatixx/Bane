@@ -5,12 +5,16 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Camera {
+    private final static Camera thisInstance = new Camera(1920,1080);
+
     private final Vector3f position;
     private final Matrix4f projection;
 
     private static int WIDTH;
     private static int HEIGHT;
 
+
+    public static Camera getInstance(){ return thisInstance;}
 
     public Camera(int x, int y){
         position = new Vector3f(0,0,0);

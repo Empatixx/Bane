@@ -49,7 +49,7 @@ public class SliderBar {
 
 
     private boolean locked;
-    public SliderBar(String file, Vector3f pos, float scale, Camera camera){
+    public SliderBar(String file, Vector3f pos, float scale){
         this.pos = pos;
         this.scale = scale;
         ByteBufferImage decoder = new ByteBufferImage();
@@ -106,7 +106,7 @@ public class SliderBar {
         matrixPos = new Matrix4f()
                 .translate(pos)
                 .scale(scale);
-        camera.hardProjection().mul(matrixPos,matrixPos);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
 
         ///
         ///
@@ -148,7 +148,7 @@ public class SliderBar {
         if(pos.x<sliderMinX) pos.x = sliderMinX;
         value = (pos.x-sliderMinX)/(sliderMaxX-sliderMinX);
     }
-    public void draw(Camera c){
+    public void draw(){
 
         shader.bind();
         shader.setUniformi("sampler",0);
@@ -178,7 +178,7 @@ public class SliderBar {
                 .translate(pos)
                 .scale(scale);
 
-        c.hardProjection().mul(target,target);
+        Camera.getInstance().hardProjection().mul(target,target);
         shader.bind();
         shader.setUniformi("sampler",0);
         shader.setUniformm4f("projection",target);

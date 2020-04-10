@@ -34,9 +34,8 @@ public class Image {
      * @param file - path of texture
      * @param pos - position of menu bar
      * @param scale - scaling of texture(width*scale,height*scale)
-     * @param camera - camera
      */
-    public Image(String file, Vector3f pos, float scale, Camera camera){
+    public Image(String file, Vector3f pos, float scale){
         ByteBufferImage decoder = new ByteBufferImage();
         ByteBuffer spritesheetImage = decoder.decodeImage(file);
 
@@ -85,7 +84,7 @@ public class Image {
         matrixPos = new Matrix4f()
                 .translate(pos)
                 .scale(scale);
-        camera.hardProjection().mul(matrixPos,matrixPos);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
 
     }
 

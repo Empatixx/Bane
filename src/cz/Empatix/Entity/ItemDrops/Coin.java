@@ -2,7 +2,6 @@ package cz.Empatix.Entity.ItemDrops;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Gamestates.InGame;
-import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -87,7 +86,7 @@ public class Coin extends ItemDrop{
             remove();
         }
     }
-    public void draw(Camera c){
+    public void draw(){
 
         setMapPosition();
 
@@ -95,7 +94,7 @@ public class Coin extends ItemDrop{
         if((float)(timeNow - liveTime - InGame.deltaPauseTime())/1000 > 25  && canDespawn){
             if((timeNow - liveTime-InGame.deltaPauseTime()) / 10 % 2 == 0) return;
         }
-        super.draw(c);
+        super.draw();
     }
 }
 

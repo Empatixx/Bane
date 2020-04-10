@@ -1,12 +1,10 @@
 package cz.Empatix.Gamestates;
 
 
-import cz.Empatix.Render.Camera;
 
 abstract class GameState {
 
 	GameStateManager gsm;
-	Camera camera;
 
 	abstract void init();
 	abstract void update();
@@ -15,9 +13,5 @@ abstract class GameState {
 	abstract void keyReleased(int k);
 	abstract void mousePressed(int button);
 	abstract void mouseReleased(int button);
-
-	GameState(Camera c){
-	    this.camera = c;
-    }
 
 }

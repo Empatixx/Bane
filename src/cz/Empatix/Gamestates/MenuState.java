@@ -7,7 +7,6 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Background;
-import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Hud.MenuBar;
 import cz.Empatix.Render.Hud.SliderBar;
@@ -60,8 +59,7 @@ public class MenuState extends GameState{
     private Source source;
     private int soundMenuClick;
 
-    MenuState(GameStateManager gsm, Camera c){
-        super(c);
+    MenuState(GameStateManager gsm){
         this.gsm = gsm;
         this.
         init();
@@ -77,25 +75,25 @@ public class MenuState extends GameState{
             for (int i = 0; i < settingsHuds.length;i++){
                 settingsHuds[i].draw();
             }
-            TextRender.renderText(camera,"Graphics",new Vector3f(550,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            TextRender.renderText(camera,"Audio",new Vector3f(940,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            TextRender.renderText(camera,"Controls",new Vector3f(1260,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            TextRender.renderText("Graphics",new Vector3f(550,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            TextRender.renderText("Audio",new Vector3f(940,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            TextRender.renderText("Controls",new Vector3f(1260,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
 
             if(selectedSettings == GRAPHICS){
-                TextRender.renderText(camera,"Resolution:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText(camera,Settings.WIDTH+"x"+Settings.HEIGHT,new Vector3f(1160,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Resolution:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText(Settings.WIDTH+"x"+Settings.HEIGHT,new Vector3f(1160,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 for(int j = 0;j < graphicsHuds.length;j++){
                     graphicsHuds[j].draw();
                 }
             } else if (selectedSettings == AUDIO){
-                TextRender.renderText(camera,"Overall:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText(camera,"Sounds:",new Vector3f(460,550,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText(camera,"Music:",new Vector3f(460,650,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Overall:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Sounds:",new Vector3f(460,550,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Music:",new Vector3f(460,650,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 for(SliderBar hud:audioSliders){
-                    hud.draw(camera);
+                    hud.draw();
                 }
             } else if (selectedSettings == CONTROLS){
-                TextRender.renderText(camera,"Coming soon...",new Vector3f(760,450,0),5,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Coming soon...",new Vector3f(760,450,0),5,new Vector3f(0.874f,0.443f,0.149f));
 
             }
 
@@ -110,22 +108,22 @@ public class MenuState extends GameState{
 
     @Override
     public void init() {
-        bg = new Background("Textures\\Menu\\bg.png",camera);
+        bg = new Background("Textures\\Menu\\bg.png");
         settingsHuds = new MenuBar[4];
         huds = new MenuBar[3];
         graphicsHuds = new MenuBar[2];
         audioSliders = new SliderBar[3];
-        title = new Image("Textures\\Menu\\logo.tga",new Vector3f(960,150,0),7,camera);
+        title = new Image("Textures\\Menu\\logo.tga",new Vector3f(960,150,0),7);
         // the main menu
-        MenuBar bar = new MenuBar("Textures\\Menu\\menu_bar_start.tga",new Vector3f(960,400,0),1.8f,camera,200,100,true);
+        MenuBar bar = new MenuBar("Textures\\Menu\\menu_bar_start.tga",new Vector3f(960,400,0),1.8f,200,100,true);
         bar.setType(BEGIN);
         huds[0] = bar;
 
-        bar = new MenuBar("Textures\\Menu\\menu_bar_settings.tga",new Vector3f(960,625,0),1.8f,camera,200,100,true);
+        bar = new MenuBar("Textures\\Menu\\menu_bar_settings.tga",new Vector3f(960,625,0),1.8f,200,100,true);
         bar.setType(SETTINGS);
         huds[1] = bar;
 
-        bar = new MenuBar("Textures\\Menu\\menu_bar_exit.tga",new Vector3f(960,850,0),1.8f,camera,200,100,true);
+        bar = new MenuBar("Textures\\Menu\\menu_bar_exit.tga",new Vector3f(960,850,0),1.8f,200,100,true);
         bar.setType(EXIT);
         huds[2] = bar;
 
@@ -133,48 +131,48 @@ public class MenuState extends GameState{
 
 
         // settings main menu
-        settingsBg = new Background("Textures\\Menu\\settings.tga",camera);
+        settingsBg = new Background("Textures\\Menu\\settings.tga");
 
         String defaultBar = "Textures\\Menu\\menu_bar.tga";
-        bar = new MenuBar(defaultBar,new Vector3f(610,275,0),1.5f,camera,200,100,true);
+        bar = new MenuBar(defaultBar,new Vector3f(610,275,0),1.5f,200,100,true);
         bar.setType(GRAPHICS);
         bar.setClick(true);
         settingsHuds[0] = bar;
 
-        bar = new MenuBar(defaultBar,new Vector3f(960,275,0),1.5f,camera,200,100,true);
+        bar = new MenuBar(defaultBar,new Vector3f(960,275,0),1.5f,200,100,true);
         bar.setType(AUDIO);
         settingsHuds[1] = bar;
 
-        bar = new MenuBar(defaultBar,new Vector3f(1310,275,0),1.5f,camera,200,100,true);
+        bar = new MenuBar(defaultBar,new Vector3f(1310,275,0),1.5f,200,100,true);
         bar.setType(CONTROLS);
         settingsHuds[2] = bar;
 
 
         // graphics menu
-        bar = new MenuBar("Textures\\Menu\\settings_exit.tga",new Vector3f(1558,220,0),2,camera,25,25,true);
+        bar = new MenuBar("Textures\\Menu\\settings_exit.tga",new Vector3f(1558,220,0),2,25,25,true);
         bar.setType(SETTINGSEXIT);
         settingsHuds[3] = bar;
 
-        bar = new MenuBar("Textures\\Menu\\arrow_left.tga",new Vector3f(1020,430,0),4,camera,15,15,true);
+        bar = new MenuBar("Textures\\Menu\\arrow_left.tga",new Vector3f(1020,430,0),4,15,15,true);
         bar.setType(LOWERRESOLUTION);
         graphicsHuds[0] = bar;
 
-        bar = new MenuBar("Textures\\Menu\\arrow_right.tga",new Vector3f(1420,430,0),4,camera,15,15,true);
+        bar = new MenuBar("Textures\\Menu\\arrow_right.tga",new Vector3f(1420,430,0),4,15,15,true);
         bar.setType(HIGHERRESOLUTION);
         graphicsHuds[1] = bar;
 
 
-        SliderBar sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1100,430,0),4,camera);
+        SliderBar sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1100,430,0),4);
         sliderBar.setValue(Settings.OVERALL);
         sliderBar.setType(OVERALL);
         audioSliders[0] = sliderBar;
 
-        sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1100,530,0),4,camera);
+        sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1100,530,0),4);
         sliderBar.setValue(Settings.EFFECTS);
         sliderBar.setType(EFFECTS);
         audioSliders[1] = sliderBar;
 
-        sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1100,630,0),4,camera);
+        sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1100,630,0),4);
         sliderBar.setValue(Settings.MUSIC);
         sliderBar.setType(MUSIC);
         audioSliders[2] = sliderBar;

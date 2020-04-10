@@ -4,7 +4,6 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.GunsManager;
-import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.TileMap;
 
 import java.util.ArrayList;
@@ -80,9 +79,9 @@ public class ItemManager {
             }
         }
     }
-    public void draw(Camera c){
+    public void draw(){
         for(ItemDrop drop : itemDrops){
-            drop.draw(c);
+            drop.draw();
         }
     }
 }

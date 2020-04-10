@@ -3,7 +3,6 @@ package cz.Empatix.Entity.Enemies;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -15,12 +14,11 @@ import cz.Empatix.Render.TileMap;
 public class Slime extends Enemy {
 
     private static final int IDLE = 0;
+    private static final int DEAD = 1;
 
     public Slime(TileMap tm, Player player) {
 
         super(tm,player);
-
-
 
         moveSpeed = 0.6f;
         maxSpeed = 1.6f;
@@ -38,24 +36,24 @@ public class Slime extends Enemy {
         type = melee;
         facingRight = true;
 
-        spriteSheetCols = 4;
+        spriteSheetCols = 6;
         spriteSheetRows = 1;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slime64.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slime64.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
                 double[] texCoords =
                         {
                                 (double) i/spriteSheetCols,0,
 
-                                (double)i/spriteSheetCols,1,
+                                (double)i/spriteSheetCols,0.5,
 
-                                (1.0+i)/spriteSheetCols,1,
+                                (1.0+i)/spriteSheetCols,0.5,
 
                                 (1.0+i)/spriteSheetCols,0
                         };
@@ -64,6 +62,25 @@ public class Slime extends Enemy {
 
             }
             spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[6];
+            for(int i = 0; i < sprites.length; i++) {
+                double[] texCoords =
+                        {
+                                (double) i/spriteSheetCols,0.5,
+
+                                (double)i/spriteSheetCols,1,
+
+                                (1.0+i)/spriteSheetCols,1,
+
+                                (1.0+i)/spriteSheetCols,0.5
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
         }
         vboVerticles = ModelManager.getModel(width,height);
         if (vboVerticles == -1){
@@ -131,6 +148,11 @@ public class Slime extends Enemy {
     }
 
     public void update() {
+        // update animation
+        animation.update();
+
+        if(dead) return;
+
         // ENEMY AI
         EnemyAI();
 
@@ -138,18 +160,27 @@ public class Slime extends Enemy {
         getNextPosition();
         checkTileMapCollision();
         setPosition(temp.x, temp.y);
-
-        // update animation
-        animation.update();
     }
 
-    public void draw(Camera camera) {
+    public void draw() {
 
         setMapPosition();
 
-        super.draw(camera);
+        super.draw();
 
     }
-
+    @Override
+    public void hit(int damage) {
+        if(dead) return;
+        health -= damage;
+        if(health < 0) health = 0;
+        if(health == 0){
+            animation.setDelay(65);
+            animation.setFrames(spritesheet.getSprites(DEAD));
+            speed.x = 0;
+            speed.y = 0;
+            dead = true;
+        }
+    }
 }
 

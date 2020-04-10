@@ -3,7 +3,6 @@ package cz.Empatix.Entity.Enemies;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -142,11 +141,11 @@ public class Skeleton extends Enemy {
         animation.update();
     }
 
-    public void draw(Camera camera) {
+    public void draw() {
 
         setMapPosition();
 
-        super.draw(camera);
+        super.draw();
 
     }
 

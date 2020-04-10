@@ -2,7 +2,6 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
-import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 
@@ -65,9 +64,9 @@ public abstract class Weapon {
     public void setType(int type) {
         this.type = type;
     }
-    public abstract void draw(Camera c);
+    public abstract void draw();
     public abstract void update();
-    public abstract void drawAmmo(Camera c);
+    public abstract void drawAmmo();
     public abstract void updateAmmo();
 
     public abstract void checkCollisions(ArrayList<Enemy> enemies);

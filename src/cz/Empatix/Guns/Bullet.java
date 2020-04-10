@@ -3,7 +3,6 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -157,10 +156,10 @@ public class Bullet extends MapObject {
 
     }
 
-    public void draw(Camera camera) {
+    public void draw() {
         setMapPosition();
 
-        super.draw(camera);
+        super.draw();
 
     }
     public boolean isHit() {return hit;}

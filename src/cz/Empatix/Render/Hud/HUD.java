@@ -28,7 +28,7 @@ public abstract class HUD {
 
     private Matrix4f matrixPos;
 
-    public HUD(String file, Vector3f pos, int scale, Camera camera, int state){
+    public HUD(String file, Vector3f pos, int scale, int state){
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\shader");
@@ -83,7 +83,7 @@ public abstract class HUD {
         glBindBuffer(GL_ARRAY_BUFFER,0);
 
         matrixPos = new Matrix4f().translate(pos).scale(scale);
-        camera.hardProjection().mul(matrixPos,matrixPos);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
 
     }
     public void draw(){

@@ -68,7 +68,7 @@ public class TileMap {
 	private float playerStartY;
 
 
-	public TileMap(int tileSize, Camera camera) {
+	public TileMap(int tileSize) {
 		this.tileSize = tileSize;
 		// 2x scale
 		numRowsToDraw = Camera.getHEIGHT() / (tileSize*2) + 2;
@@ -76,7 +76,7 @@ public class TileMap {
 
 		position = new Vector3f(0,0,0);
 
-		this.camera = camera;
+		this.camera = Camera.getInstance();
 		tween = 1;
 
 		target = new Matrix4f();

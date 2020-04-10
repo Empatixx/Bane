@@ -26,8 +26,8 @@ public class HealthBar extends HUD{
     private Shader barShader;
     private final Matrix4f matrixPos;
 
-    public HealthBar(String file, Vector3f pos, int scale, Camera camera){
-        super(file+".tga", pos, scale, camera,HUD.Static);
+    public HealthBar(String file, Vector3f pos, int scale){
+        super(file+".tga", pos, scale,HUD.Static);
         barShader = ShaderManager.getShader("shaders\\shader");
         if (barShader == null){
             barShader = ShaderManager.createShader("shaders\\shader");
@@ -57,7 +57,7 @@ public class HealthBar extends HUD{
         pos.x+=45;
         pos.y+=4;
         matrixPos = new Matrix4f().translate(pos).scale(scale);
-        camera.hardProjection().mul(matrixPos,matrixPos);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
 
         this.width = width;
         this.height = height;

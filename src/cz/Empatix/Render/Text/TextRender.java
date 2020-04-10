@@ -103,12 +103,11 @@ public class TextRender {
 
     /**
      *
-     * @param camera - camera for which we will display text [Dimensions]
      * @param text - String that we want to render
      * @param pos - Position of text
      * @param scale - Scaling of text
      */
-    public static void renderText(Camera camera, String text,@NotNull Vector3f pos, int scale, @NotNull Vector3f color){
+    public static void renderText(String text,@NotNull Vector3f pos, int scale, @NotNull Vector3f color){
         Font font = fonts.get(0);
         matrixPos = new Matrix4f().translate(pos).scale(scale);
 
@@ -119,7 +118,7 @@ public class TextRender {
 
         shader.setUniformi("sampler",0);
         shader.setUniform3f("color",color);
-        camera.hardProjection().mul(matrixPos,matrixPos);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
 
         for(char c : text.toCharArray()){
             shader.setUniformm4f("projection",matrixPos);

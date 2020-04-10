@@ -3,7 +3,7 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
-import cz.Empatix.Render.Camera;
+import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
@@ -27,14 +27,14 @@ public class GunsManager {
     private Image weaponBorder_hud;
 
 
-    public GunsManager(TileMap tileMap, Camera c){
+    public GunsManager(TileMap tileMap){
         weapons = new ArrayList<>();
-        weapons.add(new Pistol(tileMap,c));
-        weapons.add(new Shotgun(tileMap,c));
-        weapons.add(new Submachine(tileMap,c));
+        weapons.add(new Pistol(tileMap));
+        weapons.add(new Shotgun(tileMap));
+        weapons.add(new Submachine(tileMap));
 
 
-        weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f,c);
+        weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);
 
 
         soundSwitchingGun = AudioManager.loadSound("guns\\switchgun.ogg");
@@ -59,19 +59,19 @@ public class GunsManager {
         }
         current.update();
     }
-    public void draw(Camera c){
+    public void draw(){
         for(Weapon weapon : weapons){
-            weapon.drawAmmo(c);
+            weapon.drawAmmo();
         }
     }
-    public void drawHud(Camera c){
-        current.draw(c);
+    public void drawHud(){
+        current.draw();
 
         weaponBorder_hud.draw();
     }
 
     private void setCurrentWeapon(Weapon current) {
-        if(System.currentTimeMillis()-switchDelay < 300 || this.current == current || this.current.isReloading()) return;
+        if(System.currentTimeMillis()- InGame.deltaPauseTime()-switchDelay < 500 || this.current == current || this.current.isReloading()) return;
         switchDelay = System.currentTimeMillis();
         this.current = current;
         source.play(soundSwitchingGun);

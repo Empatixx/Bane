@@ -105,7 +105,7 @@ public abstract class MapObject {
 	}
 
 	
-	private Rectangle getRectangle() {
+	public Rectangle getRectangle() {
 		return new Rectangle(
 				(int)position.x-cwidth/2,
 				(int)position.y-cheight/2,
@@ -141,13 +141,11 @@ public abstract class MapObject {
 		bottomRight = br == Tile.BLOCKED;
 
 	}
-	// popis fce v Render.TileMap row: 195
-
 	/**
 	 *
 	 * @return if MapObject can be shown on screan of monitor
 	 */
-	private boolean isNotOnScrean(){
+	public boolean isNotOnScrean(){
 		return (
 				position.x - width/2 > Camera.getWIDTH()-xmap || position.x+width/2 < -xmap
 				||
@@ -210,8 +208,8 @@ public abstract class MapObject {
 		}
 	}
 	
-	int getx() { return (int)position.x; }
-	int gety() { return (int)position.y; }
+	public int getx() { return (int)position.x; }
+	public int gety() { return (int)position.y; }
 
 	/**
 	 * @param x X location of MapObject

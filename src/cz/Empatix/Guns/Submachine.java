@@ -40,7 +40,7 @@ public class Submachine extends Weapon{
         soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
         soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
 
-        weaponHud = new Image("Textures\\submachine.tga",new Vector3f(1600,975,0),1f);
+        weaponHud = new Image("Textures\\submachine.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
 
     }
@@ -64,7 +64,7 @@ public class Submachine extends Weapon{
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
                 long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-                if (delta > 250) {
+                if (delta > 150) {
                     double inaccuracy = 0;
                     if (delta < 400) {
                         inaccuracy = (Math.random() * 0.155) * (Random.nextInt(2) * 2 - 1);

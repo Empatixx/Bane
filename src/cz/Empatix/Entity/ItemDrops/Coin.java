@@ -71,8 +71,8 @@ public class Coin extends ItemDrop{
         // because of scaling image by 3x
         width *= scale;
         height *= scale;
-        cwidth *= scale*2;
-        cheight *= scale*2;
+        cwidth *= scale;
+        cheight *= scale;
 
         light = LightManager.createLight(new Vector3f(1.0f,0.8274f,.0f),new Vector2f(0,0),1.25f,this);
 
@@ -81,18 +81,21 @@ public class Coin extends ItemDrop{
     public void update(){
         animation.update();
         long timeNow = System.currentTimeMillis();
-        if((float)(timeNow - liveTime - InGame.deltaPauseTime())/1000 > 30  && canDespawn){
+        float time = (float)(timeNow - liveTime - InGame.deltaPauseTime())/1000;
+        if(time >= 30 && canDespawn){
             pickedUp = true;
             remove();
+        } else if(time >= 25 && canDespawn){
+            flinching = true;
         }
     }
     public void draw(){
 
         setMapPosition();
 
-        long timeNow = System.currentTimeMillis();
-        if((float)(timeNow - liveTime - InGame.deltaPauseTime())/1000 > 25  && canDespawn){
-            if((timeNow - liveTime-InGame.deltaPauseTime()) / 10 % 2 == 0) return;
+        long timeNow = System.currentTimeMillis()- InGame.deltaPauseTime();
+        if(flinching){
+            if((timeNow - liveTime) / 10 % 2 == 0) return;
         }
         super.draw();
     }

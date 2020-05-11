@@ -28,6 +28,9 @@ public class Image {
 
     private Matrix4f matrixPos;
 
+    private int width;
+    private int height;
+
 
     /**
      *
@@ -52,10 +55,11 @@ public class Image {
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-        int width = decoder.getWidth();
-        int height = decoder.getHeight();
+        width = decoder.getWidth();
+        height = decoder.getHeight();
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
+
 
         STBImage.stbi_image_free(spritesheetImage);
 
@@ -115,5 +119,17 @@ public class Image {
         shader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
         glActiveTexture(0);
+    }
+
+    public int getIdTexture() {
+        return idTexture;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
     }
 }

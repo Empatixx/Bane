@@ -12,7 +12,7 @@ public abstract class ItemDrop extends MapObject {
 
     static final int HP = 0;
     static final int ARMOR = 4;
-    static final int GUN = 5;
+    static final int GUN = 6;
     static final int COIN = 5;
 
     int type;
@@ -33,10 +33,6 @@ public abstract class ItemDrop extends MapObject {
         return pickedUp;
     }
     public void update() { }
-    public boolean intersectsPlayer(float x, float y){
-        return x>position.x-cwidth/2 && x<position.x+cwidth/2 &&
-                y>position.y-cheight/2 && y<position.y+cheight/2;
-    }
 
     public void remove(){
         pickedUp = true;

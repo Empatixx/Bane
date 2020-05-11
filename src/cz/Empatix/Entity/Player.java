@@ -56,15 +56,15 @@ public class Player extends MapObject {
 
     public Player(TileMap tm) {
         super(tm);
-        width = 32;
-        height = 76;
+        //width = cwidth= 17;
+        //height = cheight = 24;
+        width = cwidth= 32;
+        height = cheight = 72;
         // spritesheet
         spriteSheetCols = 6;
         spriteSheetRows = 4;
 
         // COLLISION WIDTH/HEIGHT
-        cwidth = 32;
-        cheight = 76;
         scale = 2;
 
         moveSpeed = 0.68f;
@@ -140,11 +140,11 @@ public class Player extends MapObject {
             shader = ShaderManager.createShader("shaders\\shader");
         }
 
-        // because of scaling image by 2x
-        width *= 2;
-        height *= 2;
-        cwidth *= 2;
-        cheight *= 2;
+        // because of scaling image by 5x
+        width *= scale;
+        height *= scale;
+        cwidth *= scale;
+        cheight *= scale;
 
 
         //hit vignette

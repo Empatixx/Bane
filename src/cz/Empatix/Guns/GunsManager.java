@@ -3,6 +3,7 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
@@ -16,6 +17,7 @@ public class GunsManager {
 
     private final static int FIRSTSLOT = 0;
     private final static int SECONDARYSLOT = 1;
+    private int currentslot;
 
     private Weapon[] equipedweapons;
     private final int soundSwitchingGun;
@@ -46,17 +48,21 @@ public class GunsManager {
         equipedweapons[1] = weapons.get(1);
 
         current = equipedweapons[FIRSTSLOT];
+        currentslot = FIRSTSLOT;
     }
     public void shot(float x,float y,float px,float py){
+        if(current == null) return;
         current.shot(x,y,px,py);
     }
     public void reload(){
+        if(current == null)return;
         current.reload();
     }
     public void update(){
         for(Weapon weapon : weapons){
             weapon.updateAmmo();
         }
+        if(current == null) return;
         current.update();
     }
     public void draw(){
@@ -65,13 +71,19 @@ public class GunsManager {
         }
     }
     public void drawHud(){
-        current.draw();
+        if(current != null) {
+            current.draw();
+        }
 
         weaponBorder_hud.draw();
     }
 
-    private void setCurrentWeapon(Weapon current) {
-        if(System.currentTimeMillis()- InGame.deltaPauseTime()-switchDelay < 500 || this.current == current || this.current.isReloading()) return;
+    private void setCurrentWeapon(Weapon current, int slot) {
+        if(System.currentTimeMillis()- InGame.deltaPauseTime()-switchDelay < 500) return;
+        if(this.current != null){
+            if(this.current == current || this.current.isReloading()) return;
+        }
+        currentslot = slot;
         switchDelay = System.currentTimeMillis();
         this.current = current;
         source.play(soundSwitchingGun);
@@ -82,29 +94,71 @@ public class GunsManager {
         }
     }
 
-    public void keyPressed(int k) {
+    public void keyPressed(int k, int x,int y) {
         switch (k) {
+            case GLFW.GLFW_KEY_Q: {
+                if(current != null){
+                    stopShooting();
+                    ItemManager.dropWeapon(current, x,y);
+                }
+                current = null;
+                equipedweapons[currentslot] = null;
+                break;
+            }
             case GLFW.GLFW_KEY_1: {
-                setCurrentWeapon(equipedweapons[FIRSTSLOT]);
+                setCurrentWeapon(equipedweapons[FIRSTSLOT],FIRSTSLOT);
                 break;
             }
             case GLFW.GLFW_KEY_2: {
-                setCurrentWeapon(equipedweapons[SECONDARYSLOT]);
+                setCurrentWeapon(equipedweapons[SECONDARYSLOT],SECONDARYSLOT);
                 break;
             }
         }
     }
     public void stopShooting(){
+        if(current == null) return;
         current.setShooting(false);
     }
     public void startShooting(){
+        if(current == null) return;
         current.setShooting(true);
     }
-    public void addAmmo(int amount, int type){
-        if(equipedweapons[0].getType() == type){
-            equipedweapons[0].addAmmo(amount);
-        } else if (equipedweapons[1].getType() == type) {
-            equipedweapons[1].addAmmo(amount);
+    public boolean addAmmo(int amount, int type) {
+        // first check main gun in hand
+        if(current != null){
+            if(current.getType() == type){
+                if(current.isFullAmmo()) return false;
+                current.addAmmo(amount);
+                return true;
+            }
         }
+        // check all guns in inventory
+        for (int i = 0; i < 2; i++) {
+            Weapon weapon = equipedweapons[i];
+            if (weapon == null) continue;
+            if (weapon.getType() == type) {
+                if(weapon.isFullAmmo()) return false;
+                weapon.addAmmo(amount);
+                return true;
+            }
+        }
+        return false;
+    }
+    public void changeGun(int x, int y, Weapon weapon){
+        source.play(soundSwitchingGun);
+        stopShooting();
+        for(int i = 0;i<2;i++){
+            if(equipedweapons[i] == null){
+                if(i==currentslot) current = weapon;
+                equipedweapons[i] = weapon;
+                return;
+            }
+        }
+        ItemManager.dropWeapon(current,x,y);
+        equipedweapons[currentslot] = weapon;
+        current=weapon;
+    }
+    public void dropGun(int px,int py){
+        ItemManager.dropWeapon(weapons.get(2),px,py);
     }
 }

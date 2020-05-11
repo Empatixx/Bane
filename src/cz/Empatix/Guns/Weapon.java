@@ -90,4 +90,9 @@ public abstract class Weapon {
     public void setShooting(boolean shooting) {
         this.shooting = shooting;
     }
+
+    public Image getWeaponHud() {
+        return weaponHud;
+    }
+    public boolean isFullAmmo(){ return maxAmmo == currentAmmo;}
 }

@@ -99,6 +99,7 @@ public class InGame extends GameState {
                         gsm.setState(GameStateManager.MENU);
                     } else if (type == PAUSERESUME){
                         pause = false;
+                        gunsManager.stopShooting();
                         Game.setCursor(Game.CROSSHAIR);
                     } else{
                         // TODO: save menu
@@ -119,7 +120,6 @@ public class InGame extends GameState {
     void keyReleased(int k) {
 
         if (k == GLFW_KEY_ESCAPE){
-            gunsManager.stopShooting();
             pause = !pause;
             if(pause){
                 Game.setCursor(Game.ARROW);
@@ -128,6 +128,7 @@ public class InGame extends GameState {
                 Game.setCursor(Game.CROSSHAIR);
                 pauseTimeEnded += System.currentTimeMillis() - pauseTimeStarted;
             }
+            gunsManager.stopShooting();
         }
         player.keyReleased(k);
 
@@ -141,10 +142,17 @@ public class InGame extends GameState {
     @Override
     void keyPressed(int k) {
         if(pause) return;
-
-        gunsManager.keyPressed(k);
+        float px = player.getX();
+        float py = player.getY();
+        float mx = tileMap.getX();
+        float my = tileMap.getY();
+        gunsManager.keyPressed(k,(int)(mouseX-mx-px),(int)(mouseY-my-py));
 
         player.keyPressed(k);
+
+        if(k == GLFW.GLFW_KEY_E){
+            itemManager.pickUpGun((int)(mouseX-mx-px),(int)(mouseY-my-py));
+        }
 
         if (k == GLFW.GLFW_KEY_F1){
             Game.displayCollisions = !Game.displayCollisions;
@@ -171,6 +179,7 @@ public class InGame extends GameState {
         // player
         player = new Player(tileMap);
         player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
+
 
         //bg = new Background("/testing.jpg/");
 
@@ -217,6 +226,9 @@ public class InGame extends GameState {
 
         source = new Source(Source.EFFECTS,0.35f);
         soundMenuClick = AudioManager.loadSound("menuclick.ogg");
+
+
+        gunsManager.dropGun((int)player.getX(),(int)player.getY());
     }
 
     @Override
@@ -339,7 +351,7 @@ public class InGame extends GameState {
             healthBar.update(player.getHealth(), player.getMaxHealth());
             armorBar.update(player.getArmor(),player.getMaxArmor());
 
-            itemManager.update(player.getX(),player.getY());
+            itemManager.update();
         }
 
         gaussianBlur.update(pause);

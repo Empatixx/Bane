@@ -4,24 +4,20 @@ import cz.Empatix.Render.Graphics.Framebuffer;
 
 public class Fade extends Postprocess  {
     private float value;
-    private boolean reverse;
+
+    private long timer;
+    private float time;
 
     public Fade(String shader) {
         super(shader);
-        value = 1;
-        reverse = false;
+        value = 1f;
+        time = 75f;
     }
     public void update(){
-        if(reverse){
-            if(value < 1f){
-                value+=0.01f;
-            }
-        } else {
-            if(value > 0){
-                value-=0.01f;
-            } else {
-                reverse=true;
-            }
+        if(System.currentTimeMillis() - timer > time){
+            value-=0.045f;
+            timer=System.currentTimeMillis();
+            time-=0.5f;
         }
 
     }
@@ -29,7 +25,7 @@ public class Fade extends Postprocess  {
     @Override
     public void draw(Framebuffer framebuffer) {
         shader.bind();
-        shader.setUniformf("value",value);
+        shader.setUniformf("darkness",value);
         super.draw(framebuffer);
         shader.unbind();
     }

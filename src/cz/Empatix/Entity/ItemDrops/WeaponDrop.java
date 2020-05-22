@@ -35,7 +35,7 @@ public class WeaponDrop extends ItemDrop {
         this.weapon = weapon;
         type = GUN;
         canDespawn = false;
-        liveTime = System.currentTimeMillis();
+        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
         pickedUp = false;
 
         width=cwidth=weapon.getWeaponHud().getWidth();

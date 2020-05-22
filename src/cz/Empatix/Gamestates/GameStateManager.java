@@ -1,7 +1,9 @@
 package cz.Empatix.Gamestates;
 
 import cz.Empatix.AudioManager.AudioManager;
+import cz.Empatix.Render.Screanshot;
 import cz.Empatix.Render.Text.TextRender;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
@@ -12,6 +14,8 @@ public class GameStateManager {
 
     protected static final int MENU = 0;
     protected static final int INGAME = 1;
+
+    private Screanshot screanshot;
 
     public GameStateManager() {
         // openGL matrix4f
@@ -28,6 +32,7 @@ public class GameStateManager {
         gameStates.add(new MenuState(this));
         gameStates.add(new InGame(this));
 
+        screanshot = new Screanshot();
     }
 
     public void setState(int state) {
@@ -45,6 +50,9 @@ public class GameStateManager {
 
     public void keyPressed(int k) {
         gameStates.get(currentState).keyPressed(k);
+        if(k == GLFW.GLFW_KEY_F2){
+            screanshot.keyPressed();
+        }
     }
 
     public void keyReleased(int k) {

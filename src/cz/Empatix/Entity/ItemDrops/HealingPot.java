@@ -16,7 +16,7 @@ public class HealingPot extends ItemDrop{
         super(tm);
         type = HP;
         canDespawn = true;
-        liveTime = System.currentTimeMillis();
+        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
         pickedUp = false;
 
         width = 30;

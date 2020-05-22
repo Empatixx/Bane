@@ -17,7 +17,7 @@ public class ShotgunAmmo extends ItemDrop{
         super(tm);
         type = SHOTGUNAMMO;
         canDespawn = true;
-        liveTime = System.currentTimeMillis();
+        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
         pickedUp = false;
 
         width = 16;

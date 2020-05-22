@@ -17,11 +17,13 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 
+import static cz.Empatix.Main.Game.window;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Player extends MapObject {
 
-    private boolean shooting;
     private boolean dead;
+    private long deathTime;
 
     // vignette ( player hurt - effect )
     private Background hitVignette;
@@ -49,6 +51,7 @@ public class Player extends MapObject {
 
     // audio
     private final int[] soundPlayerhurt;
+    private final int soundPlayerdeath;
 
     private final Source sourcehealth;
     private final int soundLowHealth;
@@ -78,7 +81,6 @@ public class Player extends MapObject {
 
         armor = maxArmor = 3;
 
-        shooting = false;
         dead = false;
         flinching = false;
         facingRight = true;
@@ -155,6 +157,7 @@ public class Player extends MapObject {
         soundPlayerhurt = new int[2];
         soundPlayerhurt[0] = AudioManager.loadSound("playerhurt_1.ogg");
         soundPlayerhurt[1] = AudioManager.loadSound("playerhurt_2.ogg");
+        soundPlayerdeath = AudioManager.loadSound("playerdeath.ogg");
 
 
         sourcehealth = new Source(Source.EFFECTS,1f);
@@ -168,8 +171,14 @@ public class Player extends MapObject {
     public void update() {
         // check if player is not dead
         // TODO: gamestate for dying
-        if (health < 0) {
-            dead = true;
+        if (health <= 0) {
+            speed.x = 0;
+            speed.y = 0;
+            right=false;
+            up=false;
+            down=false;
+            left=false;
+            flinching = false;
         } else if (health < 3 && !lowHealth){
             lowHealth = true;
             sourcehealth.play(soundLowHealth);
@@ -335,7 +344,7 @@ public class Player extends MapObject {
         return position.y;
     }
     public void hit(int damage){
-        if (flinching) return;
+        if (flinching ||dead) return;
 
         int newDamage = damage-armor;
         armor-=damage;
@@ -352,6 +361,8 @@ public class Player extends MapObject {
         flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
         hitVignette.updateFadeTime();
         source.play(soundPlayerhurt[Random.nextInt(2)]);
+
+        if(health <=0 )setDead();
 
     }
 
@@ -383,5 +394,28 @@ public class Player extends MapObject {
 
     public int getCoins() {
         return coins;
+    }
+
+    public boolean isDead() {
+        return dead;
+    }
+
+    public long getDeathTime() {
+        return deathTime;
+    }
+
+    public void setDead(){
+        deathTime = System.currentTimeMillis();
+        dead = true;
+        speed.x = 0;
+        speed.y = 0;
+        right=false;
+        up=false;
+        down=false;
+        left=false;
+        flinching = false;
+        if(sourcehealth.isPlaying()) sourcehealth.stop();
+        lowHealth = false;
+        glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
     }
 }

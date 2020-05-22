@@ -18,7 +18,7 @@ public class PistolAmmo extends ItemDrop {
         super(tm);
         type = PISTOLAMMO;
         canDespawn = true;
-        liveTime = System.currentTimeMillis();
+        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
         pickedUp = false;
 
         width = 16;

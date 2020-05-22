@@ -17,7 +17,7 @@ public class Coin extends ItemDrop{
         type = COIN;
         canDespawn = true;
         facingRight = true;
-        liveTime = System.currentTimeMillis();
+        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
         pickedUp = false;
 
         width = 33;

@@ -28,7 +28,7 @@ public class MenuBar {
     private Shader shader;
     private int idTexture;
 
-    int vboTextures[];
+    int[] vboTextures;
     int vboVertices;
 
     private Matrix4f matrixPos;

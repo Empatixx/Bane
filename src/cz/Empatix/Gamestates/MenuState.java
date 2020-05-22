@@ -15,6 +15,9 @@ import org.joml.Vector3f;
 
 import java.awt.*;
 
+import static cz.Empatix.Main.Game.ARROW;
+import static cz.Empatix.Main.Game.setCursor;
+
 public class MenuState extends GameState{
     // main menu
     private final static int BEGIN = 0;
@@ -185,7 +188,7 @@ public class MenuState extends GameState{
         source = new Source(Source.EFFECTS,1f);
         soundMenuClick = AudioManager.loadSound("menuclick.ogg");
 
-
+        setCursor(ARROW);
     }
 
     @Override

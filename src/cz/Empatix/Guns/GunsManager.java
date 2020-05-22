@@ -79,12 +79,12 @@ public class GunsManager {
     }
 
     private void setCurrentWeapon(Weapon current, int slot) {
-        if(System.currentTimeMillis()- InGame.deltaPauseTime()-switchDelay < 500) return;
+        if(System.currentTimeMillis()-InGame.deltaPauseTime()-switchDelay < 500) return;
         if(this.current != null){
             if(this.current == current || this.current.isReloading()) return;
         }
         currentslot = slot;
-        switchDelay = System.currentTimeMillis();
+        switchDelay = System.currentTimeMillis()-InGame.deltaPauseTime();
         this.current = current;
         source.play(soundSwitchingGun);
     }

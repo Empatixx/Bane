@@ -26,10 +26,12 @@ public class Image {
     private int vboTextures;
     private int vboVertices;
 
-    private Matrix4f matrixPos;
-
     private int width;
     private int height;
+
+    private float alpha;
+    private float scale;
+    private Vector3f pos;
 
 
     /**
@@ -43,9 +45,9 @@ public class Image {
         ByteBuffer spritesheetImage = decoder.decodeImage(file);
 
 
-        shader = ShaderManager.getShader("shaders\\shader");
+        shader = ShaderManager.getShader("shaders\\image");
         if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
+            shader = ShaderManager.createShader("shaders\\image");
         }
 
         idTexture = glGenTextures();
@@ -85,17 +87,22 @@ public class Image {
         glBufferData(GL_ARRAY_BUFFER,buffer,GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER,0);
 
-        matrixPos = new Matrix4f()
-                .translate(pos)
-                .scale(scale);
-        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
-
+        alpha = 1f;
+        this.scale = scale;
+        this.pos = pos;
     }
 
     public void draw(){
         shader.bind();
         shader.setUniformi("sampler",0);
+        Matrix4f matrixPos = new Matrix4f()
+                .translate(pos)
+                .scale(scale);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
+
         shader.setUniformm4f("projection",matrixPos);
+        shader.setUniformf("alpha",alpha);
+
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,idTexture);
 
@@ -131,5 +138,17 @@ public class Image {
 
     public int getWidth() {
         return width;
+    }
+
+    public void setAlpha(float alpha) {
+        this.alpha = alpha;
+    }
+
+    public void setPosition(Vector3f position){
+        this.pos = position;
+    }
+
+    public Vector3f getPos() {
+        return pos;
     }
 }

@@ -17,6 +17,7 @@ import cz.Empatix.Render.Graphics.Framebuffer;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Hud.MenuBar;
 import cz.Empatix.Render.Hud.*;
+import cz.Empatix.Render.Postprocessing.Fade;
 import cz.Empatix.Render.Postprocessing.GaussianBlur;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.Text.TextRender;
@@ -27,7 +28,9 @@ import org.lwjgl.glfw.GLFW;
 import java.awt.*;
 import java.util.ArrayList;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static cz.Empatix.Main.Game.ARROW;
+import static cz.Empatix.Main.Game.setCursor;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 
@@ -39,6 +42,7 @@ public class InGame extends GameState {
     //
     // game state manager
     private Player player;
+    private Image skullPlayerdead;
 
     private TileMap tileMap;
 
@@ -58,6 +62,8 @@ public class InGame extends GameState {
     // post processing
     private Framebuffer objectsFramebuffer;
     private Framebuffer pauseBlurFramebuffer;
+    private Framebuffer fadeFramebuffer;
+    private Fade fade;
     private GaussianBlur gaussianBlur;
     private LightManager lightManager;
 
@@ -100,7 +106,7 @@ public class InGame extends GameState {
                     } else if (type == PAUSERESUME){
                         pause = false;
                         gunsManager.stopShooting();
-                        Game.setCursor(Game.CROSSHAIR);
+                        setCursor(Game.CROSSHAIR);
                     } else{
                         // TODO: save menu
                     }
@@ -118,14 +124,23 @@ public class InGame extends GameState {
 
     @Override
     void keyReleased(int k) {
-
+        if(player.isDead()){
+            if(k == GLFW_KEY_SPACE){
+                float time = (System.currentTimeMillis()-player.getDeathTime());
+                if(time > 5500){
+                    gsm.setState(GameStateManager.MENU);
+                    glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
+                }
+            }
+            return;
+        }
         if (k == GLFW_KEY_ESCAPE){
             pause = !pause;
             if(pause){
-                Game.setCursor(Game.ARROW);
+                setCursor(ARROW);
                 pauseTimeStarted = System.currentTimeMillis();
             } else {
-                Game.setCursor(Game.CROSSHAIR);
+                setCursor(Game.CROSSHAIR);
                 pauseTimeEnded += System.currentTimeMillis() - pauseTimeStarted;
             }
             gunsManager.stopShooting();
@@ -141,6 +156,7 @@ public class InGame extends GameState {
 
     @Override
     void keyPressed(int k) {
+        if(player.isDead()) return;
         if(pause) return;
         float px = player.getX();
         float py = player.getY();
@@ -165,10 +181,13 @@ public class InGame extends GameState {
 
         objectsFramebuffer = new Framebuffer();
         pauseBlurFramebuffer = new Framebuffer();
+        fadeFramebuffer = new Framebuffer();
         lightManager = new LightManager();
+        fade = new Fade("shaders\\fade");
         gaussianBlur = new GaussianBlur("shaders\\blur");
 
-        Game.setCursor(Game.CROSSHAIR);
+
+        setCursor(Game.CROSSHAIR);
 
         // Tile map
         tileMap = new TileMap(64);
@@ -229,6 +248,10 @@ public class InGame extends GameState {
 
 
         gunsManager.dropGun((int)player.getX(),(int)player.getY());
+
+        skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),3f);
+        skullPlayerdead.setAlpha(0f);
+
     }
 
     @Override
@@ -251,7 +274,12 @@ public class InGame extends GameState {
         gunsManager.draw();
 
         objectsFramebuffer.unbindFBO();
-        if(pause){
+        if(player.isDead()){
+            fadeFramebuffer.bindFBO();
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+        else if(pause){
             pauseBlurFramebuffer.bindFBO();
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
@@ -274,8 +302,33 @@ public class InGame extends GameState {
         //miniMap.draw(); //TODO: dodelat mapu
         coin.draw();
         TextRender.renderText(""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
+        if(player.isDead()){
+            fadeFramebuffer.unbindFBO();
+            fade.draw(fadeFramebuffer);
+            if(player.isDead()){
+                skullPlayerdead.draw();
+            }
+            float time = (System.currentTimeMillis()-player.getDeathTime());
+            if(time > 3800){
+                glLineWidth(3f);
+                glBegin(GL_LINES);
+                float first = 960-(time-3800)/2.5f;
+                float secondary = 960+(time-3800)/2.5f;
+                if(first<480) first=480;
+                if(secondary>1440) secondary=1440;
+                glVertex2f(secondary, 360);
+                glVertex2f(first, 360);
+                glEnd();
+            }
+            if(time > 5500){
+                if(System.currentTimeMillis() / 500 % 2 == 0) {
+                    TextRender.renderText("Press space to continue...",new Vector3f(1500,1000,0),2,new Vector3f(1f,1f,1f));
 
-        if(pause){
+                }
+            }
+
+        }
+        else if(pause){
             pauseBlurFramebuffer.unbindFBO();
             gaussianBlur.draw(pauseBlurFramebuffer);
             pauseBackground.draw();
@@ -295,6 +348,20 @@ public class InGame extends GameState {
 
     @Override
     void update() {
+        if(player.isDead()){
+            enemyManager.update();
+            fade.update();
+            player.update();
+            float time = (System.currentTimeMillis()-player.getDeathTime());
+            if(time > 2000){
+                Vector3f pos = skullPlayerdead.getPos();
+                float y = pos.y() + (240-pos.y()) * time/40000;
+                Vector3f newpos = new Vector3f(pos.x(),y,0);
+                skullPlayerdead.setPosition(newpos);
+            }
+            skullPlayerdead.setAlpha(time/4500f);
+            return;
+        }
         // loc of mouse
         final Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
         mouseX = mouseLoc.x* Settings.scaleMouseX();

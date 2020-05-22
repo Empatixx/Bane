@@ -34,7 +34,7 @@ public class Game implements Runnable {
     private GameStateManager gsm;
 
     // The window handle
-    static long window;
+    public static long window;
     private GLFWMouseButtonCallback mouseButtonCallback;
     private GLFWKeyCallback keyCallback;
 
@@ -148,16 +148,12 @@ public class Game implements Runnable {
                 if (cursor == MemoryUtil.NULL)
                     throw new RuntimeException("Error creating cursor");
 
-                //GLFW.glfwSetCursor(window, cursor);
-
                 STBImage.stbi_image_free(buffer);
                 cursorImage.free();
             }
         } catch (Exception e){
             e.printStackTrace();
         }
-        // Set the cursor on a window
-        setCursor(ARROW);
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
         // Enable v-sync
@@ -212,6 +208,7 @@ public class Game implements Runnable {
         glViewport(0,0,Settings.WIDTH,Settings.HEIGHT);
 
         glEnable(GL_TEXTURE_2D);
+        glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glMatrixMode(GL_MODELVIEW);
@@ -219,7 +216,6 @@ public class Game implements Runnable {
 
         // GAMESTATE / RUNNING
         initGame();
-
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -309,5 +305,8 @@ public class Game implements Runnable {
 
         // Make the window visible
         glfwShowWindow(window);
+    }
+    public static void hideCursor(){
+        glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
     }
 }

@@ -327,6 +327,10 @@ public abstract class MapObject {
 	public int getCwidth() {
 		return cwidth;
 	}
+
+	public boolean isFlinching(){
+		return flinching;
+	}
 }
 
 

@@ -17,9 +17,8 @@ import java.nio.DoubleBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Background {
-
     private Shader shader;
-    private final int idTexture;
+    private int idTexture;
     private int vboVertices;
     private int vboTextures;
     private Matrix4f matrixPos;
@@ -33,47 +32,86 @@ public class Background {
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\background");
         }
-
         ByteBufferImage decoder = new ByteBufferImage();
         ByteBuffer spritesheetImage = decoder.decodeImage(filepath);
+        int channels = decoder.getChannels();
+        if(channels == 3) {
+            int width = decoder.getWidth();
+            int height = decoder.getHeight();
 
-        int width = decoder.getWidth();
-        int height = decoder.getHeight();
+            idTexture = glGenTextures();
 
-        idTexture = glGenTextures();
+            glBindTexture(GL_TEXTURE_2D, idTexture);
 
-        glBindTexture(GL_TEXTURE_2D, idTexture);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, spritesheetImage);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
+            STBImage.stbi_image_free(spritesheetImage);
 
-        STBImage.stbi_image_free(spritesheetImage);
+            int vbo;
+            vbo = ModelManager.getModel(Camera.getWIDTH(), Camera.getHEIGHT());
+            if (vbo == -1) {
+                vbo = ModelManager.createModel(Camera.getWIDTH(), Camera.getHEIGHT());
+            }
+            vboVertices = vbo;
 
-        int vbo;
-        vbo = ModelManager.getModel(Camera.getWIDTH(),Camera.getHEIGHT());
-        if (vbo == -1){
-            vbo = ModelManager.createModel(Camera.getWIDTH(),Camera.getHEIGHT());
+            double[] texCoords =
+                    {
+                            0, 0, 0, 1, 1, 1, 1, 0
+                    };
+
+            DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
+            buffer.put(texCoords);
+            buffer.flip();
+            vboTextures = glGenBuffers();
+
+            glBindBuffer(GL_ARRAY_BUFFER, vboTextures);
+            glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+            matrixPos = new Matrix4f().translate(new Vector3f((float) Camera.getWIDTH() / 2, (float) Camera.getHEIGHT() / 2, 0));
+            Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+        } else if(channels == 4){
+            int width = decoder.getWidth();
+            int height = decoder.getHeight();
+
+            idTexture = glGenTextures();
+
+            glBindTexture(GL_TEXTURE_2D, idTexture);
+
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
+
+            STBImage.stbi_image_free(spritesheetImage);
+
+            int vbo;
+            vbo = ModelManager.getModel(Camera.getWIDTH(), Camera.getHEIGHT());
+            if (vbo == -1) {
+                vbo = ModelManager.createModel(Camera.getWIDTH(), Camera.getHEIGHT());
+            }
+            vboVertices = vbo;
+
+            double[] texCoords =
+                    {
+                            0, 0, 0, 1, 1, 1, 1, 0
+                    };
+
+            DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
+            buffer.put(texCoords);
+            buffer.flip();
+            vboTextures = glGenBuffers();
+
+            glBindBuffer(GL_ARRAY_BUFFER, vboTextures);
+            glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+            matrixPos = new Matrix4f().translate(new Vector3f((float) Camera.getWIDTH() / 2, (float) Camera.getHEIGHT() / 2, 0));
+            Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
         }
-        vboVertices = vbo;
-
-        double[] texCoords =
-                {
-                        0,0, 0,1, 1,1, 1,0
-                };
-
-        DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
-        buffer.put(texCoords);
-        buffer.flip();
-        vboTextures = glGenBuffers();
-
-        glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
-        glBufferData(GL_ARRAY_BUFFER,buffer,GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER,0);
-
-        matrixPos = new Matrix4f().translate(new Vector3f((float)Camera.getWIDTH()/2,(float)Camera.getHEIGHT()/2,0));
-        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
     }
 
     /**

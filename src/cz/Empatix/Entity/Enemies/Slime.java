@@ -1,20 +1,31 @@
 package cz.Empatix.Entity.Enemies;
 
 import cz.Empatix.Entity.Animation;
+import cz.Empatix.Entity.Enemies.Projectiles.Slimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
 
+import java.util.ArrayList;
 
 
 public class Slime extends Enemy {
 
     private static final int IDLE = 0;
     private static final int DEAD = 1;
+
+    private boolean shootready;
+    private boolean disableDraw;
+    private long shootCooldown;
+
+
+    private ArrayList<Slimebullet> bullets;
+
 
     public Slime(TileMap tm, Player player) {
 
@@ -100,6 +111,8 @@ public class Slime extends Enemy {
         height *= 2;
         cwidth *= 2;
         cheight *= 2;
+
+        bullets = new ArrayList<>();
     }
 
     private void getNextPosition() {
@@ -148,11 +161,52 @@ public class Slime extends Enemy {
     }
 
     public void update() {
+        setMapPosition();
         // update animation
-        animation.update();
+        if(!isDead()){
+            animation.update();
+        } else if(!animation.hasPlayedOnce()) {
+            animation.update();
+            if(animation.getIndexOfFrame() == 5){
+                disableDraw = true;
+            }
+        }
+        for(int i = 0;i<bullets.size();i++){
+            Slimebullet slimebullet = bullets.get(i);
+            slimebullet.update();
+            if(slimebullet.intersects(player) && !player.isFlinching() && !player.isDead()){
+                slimebullet.setHit();
+                player.hit(1);
+            }
+            if(slimebullet.shouldRemove()) {
+                bullets.remove(i);
+                i--;
+            }
+        }
 
         if(dead) return;
 
+        if(!shootready && animation.getIndexOfFrame() == 0 && System.currentTimeMillis()-shootCooldown- InGame.deltaPauseTime() > 2000){
+            shootready = true;
+            shootCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
+        }
+        else if(shootready && animation.getIndexOfFrame() == 2){
+            shootready=false;
+            final int tileTargetX = px/tileSize;
+            final int tileTargetY = py/tileSize;
+
+            final int tileEnemyX = (int)position.x/tileSize;
+            final int tileEnemyY = (int)position.y/tileSize;
+
+            if (Math.abs(tileEnemyX - tileTargetX) <= 8 && Math.abs(tileEnemyY - tileTargetY) <= 8) {
+
+                for (int i = 0; i < 5; i++) {
+                    Slimebullet slimebullet = new Slimebullet(tileMap, px - position.x, py - position.y, 1.3 * i);
+                    slimebullet.setPosition(position.x, position.y);
+                    bullets.add(slimebullet);
+                }
+            }
+        }
         // ENEMY AI
         EnemyAI();
 
@@ -163,11 +217,10 @@ public class Slime extends Enemy {
     }
 
     public void draw() {
-
-        setMapPosition();
-
-        super.draw();
-
+        for(Slimebullet bullet : bullets){
+            bullet.draw();
+        }
+        if(!disableDraw) super.draw();
     }
     @Override
     public void hit(int damage) {
@@ -181,6 +234,10 @@ public class Slime extends Enemy {
             speed.y = 0;
             dead = true;
         }
+    }
+    @Override
+    public boolean shouldRemove(){
+        return animation.hasPlayedOnce() && isDead() && bullets.size()==0;
     }
 }
 

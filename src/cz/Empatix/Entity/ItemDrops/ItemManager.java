@@ -17,6 +17,7 @@ public class ItemManager {
 
 
     private final int pickupSound;
+    private final int pickupCoinSound;
     private Source source;
 
     public ItemManager(TileMap tm, GunsManager gm, Player player){
@@ -25,6 +26,8 @@ public class ItemManager {
         this.player = player;
         itemDrops = new ArrayList<>();
         pickupSound =  AudioManager.loadSound("pickup.ogg");
+        pickupCoinSound =  AudioManager.loadSound("coin.ogg");
+
         source = new Source(Source.EFFECTS,0.35f);
 
     }
@@ -86,7 +89,7 @@ public class ItemManager {
                 } else if(type == ItemDrop.COIN){
                     player.addCoins(1);
                     drop.pickedUp = true;
-                    source.play(pickupSound);
+                    source.play(pickupCoinSound);
                 } else if(type == ItemDrop.GUN){
                     float newDist = (float)((WeaponDrop)drop).distance(player.getX(),player.getY());
                     if(distance > newDist || distance == -1) {

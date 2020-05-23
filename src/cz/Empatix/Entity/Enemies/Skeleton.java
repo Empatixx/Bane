@@ -129,6 +129,7 @@ public class Skeleton extends Enemy {
     }
 
     public void update() {
+        setMapPosition();
         // ENEMY AI
         EnemyAI();
 
@@ -142,8 +143,6 @@ public class Skeleton extends Enemy {
     }
 
     public void draw() {
-
-        setMapPosition();
 
         super.draw();
 

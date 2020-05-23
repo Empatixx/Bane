@@ -1,6 +1,5 @@
-package cz.Empatix.Guns;
+package cz.Empatix.Entity.Enemies.Projectiles;
 
-import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -12,21 +11,17 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-
-public class Bullet extends MapObject {
+public class Slimebullet extends MapObject {
     // SPRITE VARS
     private final static int sprites = 0;
     private final static int hitSprites = 1;
+
 
     // BASIC VARS
     private boolean hit;
     private boolean remove;
 
-    // audio
-    private final int soundWallhit;
-    private final int soundEnemyhit;
-
-    public Bullet(TileMap tm, double x, double y,double inaccuracy) {
+    public Slimebullet(TileMap tm, double x, double y, double inaccuracy) {
 
         super(tm);
         facingRight = true;
@@ -46,15 +41,15 @@ public class Bullet extends MapObject {
 
         double atan = Math.atan2(y,x) + inaccuracy;
         // 30 - speed of bullet
-        speed.x = (float)(Math.cos(atan) * 30);
-        speed.y = (float)(Math.sin(atan) * 30);
+        speed.x = (float)(Math.cos(atan) * 10);
+        speed.y = (float)(Math.sin(atan) * 10);
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slimebullet.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slimebullet.tga");
 
             Sprite[] images = new Sprite[4];
 
@@ -116,11 +111,7 @@ public class Bullet extends MapObject {
         cwidth *= 2;
         cheight *= 2;
 
-        // audio
-        soundWallhit = AudioManager.loadSound("guns\\wallhit.ogg");
-        soundEnemyhit = AudioManager.loadSound("guns\\enemyhit.ogg");
-
-        light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f((float)x+xmap,(float)y+ymap), 1.75f,this);
+        light = LightManager.createLight(new Vector3f(0.474f,0.8745f,0.0f), new Vector2f((float)x+xmap,(float)y+ymap), 1.25f,this);
     }
 
     public void setHit() {
@@ -140,7 +131,6 @@ public class Bullet extends MapObject {
         setPosition(temp.x, temp.y);
 
         if((speed.x == 0 || speed.y == 0) && !hit) {
-            source.play(soundWallhit);
             setHit();
         }
 
@@ -151,7 +141,7 @@ public class Bullet extends MapObject {
                 light.remove();
             } else {
                 // decrease intensity every time we use next sprite of hitBullet
-                light.setIntensity(1.5f-0.5f*animation.getIndexOfFrame());
+                light.setIntensity(1-0.5f*animation.getIndexOfFrame());
             }
         }
 
@@ -163,7 +153,4 @@ public class Bullet extends MapObject {
     }
     public boolean isHit() {return hit;}
 
-    public void playEnemyHit(){
-        source.play(soundEnemyhit);
-    }
 }

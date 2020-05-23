@@ -11,19 +11,25 @@ import cz.Empatix.Render.TileMap;
 
 public class Rat extends Enemy {
     private static final int IDLE = 0;
+    private static final int DEAD = 1;
 
     public Rat(TileMap tm, Player player) {
 
         super(tm,player);
 
         moveSpeed = 1.2f;
-        maxSpeed = 3.2f;
+        maxSpeed = 4.4f;
         stopSpeed = 1f;
 
-        width = 64;
+        /*width = 64;
         height = 47;
         cwidth = 64;
         cheight = 47;
+        */
+        width=85;
+        height=37;
+        cwidth=64;
+        cheight=37;
         scale = 2;
 
         health = maxHealth = 7;
@@ -33,7 +39,7 @@ public class Rat extends Enemy {
         facingRight = true;
 
         spriteSheetCols = 4;
-        spriteSheetRows = 1;
+        spriteSheetRows = 2;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\rat.tga");
@@ -47,11 +53,29 @@ public class Rat extends Enemy {
                         {
                                 (double) i/spriteSheetCols,0,
 
+                                (double)i/spriteSheetCols,0.5,
+
+                                (1.0+i)/spriteSheetCols,0.5,
+
+                                (1.0+i)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[3];
+            for(int i = 0; i < sprites.length; i++) {
+                double[] texCoords =
+                        {
+                                (double) i/spriteSheetCols,0.5,
+
                                 (double)i/spriteSheetCols,1,
 
                                 (1.0+i)/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,0
+                                (1.0+i)/spriteSheetCols,0.5
                         };
                 Sprite sprite = new Sprite(texCoords);
                 sprites[i] = sprite;
@@ -66,7 +90,7 @@ public class Rat extends Enemy {
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(90);
+        animation.setDelay(120);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
@@ -125,6 +149,11 @@ public class Rat extends Enemy {
     }
 
     public void update() {
+        // update animation
+        animation.update();
+
+        if(dead) return;
+        setMapPosition();
         // ENEMY AI
         EnemyAI();
 
@@ -132,18 +161,24 @@ public class Rat extends Enemy {
         getNextPosition();
         checkTileMapCollision();
         setPosition(temp.x, temp.y);
-
-        // update animation
-        animation.update();
     }
 
     public void draw() {
-
-
-        setMapPosition();
-
         super.draw();
 
     }
+    @Override
+    public void hit(int damage) {
+        if(dead) return;
+        health -= damage;
+        if(health < 0) health = 0;
+        if(health == 0){
+            animation.setDelay(150);
+            animation.setFrames(spritesheet.getSprites(DEAD));
+            speed.x = 0;
+            speed.y = 0;
+            dead = true;
 
+        }
+    }
 }

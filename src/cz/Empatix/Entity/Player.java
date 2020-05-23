@@ -169,8 +169,8 @@ public class Player extends MapObject {
     }
 
     public void update() {
+        setMapPosition();
         // check if player is not dead
-        // TODO: gamestate for dying
         if (health <= 0) {
             speed.x = 0;
             speed.y = 0;
@@ -297,7 +297,6 @@ public class Player extends MapObject {
     }
 
     public void draw() {
-        setMapPosition();
         super.draw();
     }
 
@@ -417,5 +416,6 @@ public class Player extends MapObject {
         if(sourcehealth.isPlaying()) sourcehealth.stop();
         lowHealth = false;
         glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
+        source.play(soundPlayerdeath);
     }
 }

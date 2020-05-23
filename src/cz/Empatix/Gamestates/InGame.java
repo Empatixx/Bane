@@ -249,7 +249,7 @@ public class InGame extends GameState {
 
         gunsManager.dropGun((int)player.getX(),(int)player.getY());
 
-        skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),3f);
+        skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),1f);
         skullPlayerdead.setAlpha(0f);
 
     }
@@ -310,14 +310,15 @@ public class InGame extends GameState {
             }
             float time = (System.currentTimeMillis()-player.getDeathTime());
             if(time > 3800){
+                TextRender.renderText("GAME OVER",new Vector3f( 800,340,0),5,new Vector3f((time-3800)/2000,(time-3800)/2000,(time-3800)/2000));
                 glLineWidth(3f);
                 glBegin(GL_LINES);
                 float first = 960-(time-3800)/2.5f;
                 float secondary = 960+(time-3800)/2.5f;
                 if(first<480) first=480;
                 if(secondary>1440) secondary=1440;
-                glVertex2f(secondary, 360);
-                glVertex2f(first, 360);
+                glVertex2f(secondary, 380);
+                glVertex2f(first, 380);
                 glEnd();
             }
             if(time > 5500){
@@ -355,7 +356,7 @@ public class InGame extends GameState {
             float time = (System.currentTimeMillis()-player.getDeathTime());
             if(time > 2000){
                 Vector3f pos = skullPlayerdead.getPos();
-                float y = pos.y() + (240-pos.y()) * time/40000;
+                float y = pos.y() + (140-pos.y()) * time/40000;
                 Vector3f newpos = new Vector3f(pos.x(),y,0);
                 skullPlayerdead.setPosition(newpos);
             }

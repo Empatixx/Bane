@@ -145,6 +145,7 @@ public class Bat extends Enemy {
     }
 
     public void update() {
+        setMapPosition();
         // update animation
         animation.update();
 
@@ -160,9 +161,6 @@ public class Bat extends Enemy {
     }
 
     public void draw() {
-
-
-        setMapPosition();
 
         super.draw();
 

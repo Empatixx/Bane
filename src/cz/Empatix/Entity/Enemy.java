@@ -22,9 +22,9 @@ public abstract class  Enemy extends MapObject {
 
     private Path path;
 
-    private final Player player;
-    private int px;
-    private int py;
+    protected final Player player;
+    public int px;
+    public int py;
 
     //protected boolean flinching;
     //protected long flinchTimer;

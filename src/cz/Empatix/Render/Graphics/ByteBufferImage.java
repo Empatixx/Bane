@@ -11,6 +11,7 @@ import static org.lwjgl.stb.STBImage.stbi_load;
 public class ByteBufferImage {
     private int width;
     private int height;
+    private int channels;
 
     public ByteBuffer decodeImage(String filepath){
         ByteBuffer buffer;
@@ -30,6 +31,7 @@ public class ByteBufferImage {
             }
             this.width = w.get(0);
             this.height = h.get(0);
+            this.channels = channels.get(0);
 
             buffer.flip();
 
@@ -46,5 +48,9 @@ public class ByteBufferImage {
 
     public int getWidth() {
         return width;
+    }
+
+    public int getChannels() {
+        return channels;
     }
 }

@@ -135,6 +135,8 @@ public class MenuState extends GameState{
 
         // settings main menu
         settingsBg = new Background("Textures\\Menu\\settings.tga");
+        settingsBg.setDimensions(1280,720);
+
 
         String defaultBar = "Textures\\Menu\\menu_bar.tga";
         bar = new MenuBar(defaultBar,new Vector3f(610,275,0),1.5f,200,100,true);
@@ -180,7 +182,6 @@ public class MenuState extends GameState{
         sliderBar.setType(MUSIC);
         audioSliders[2] = sliderBar;
 
-        settingsBg.setDimensions(1280,720);
         selectedSettings = GRAPHICS;
 
 

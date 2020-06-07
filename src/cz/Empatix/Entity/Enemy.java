@@ -2,13 +2,29 @@ package cz.Empatix.Entity;
 
 import cz.Empatix.Entity.AI.Path;
 import cz.Empatix.Entity.AI.PathNode;
+import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Graphics.Shaders.Shader;
+import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL20.*;
+
 public abstract class  Enemy extends MapObject {
+    private static final int IDLE = 0;
+    private static final int DEAD = 1;
+
     protected int health;
     protected int maxHealth;
     protected boolean dead;
@@ -26,13 +42,77 @@ public abstract class  Enemy extends MapObject {
     public int px;
     public int py;
 
+    protected boolean itemDropped;
+
     //protected boolean flinching;
     //protected long flinchTimer;
+
+    private Shader outlineShader;
+    protected long lastTimeDamaged;
 
     public Enemy(TileMap tm, Player player) {
         super(tm);
         this.player = player;
+        itemDropped=false;
 
+        outlineShader = ShaderManager.getShader("shaders\\outline");
+        if (outlineShader == null){
+            outlineShader = ShaderManager.createShader("shaders\\outline");
+        }
+    }
+
+    @Override
+    public void draw() {
+        super.draw();
+        long time = System.currentTimeMillis() - lastTimeDamaged - InGame.deltaPauseTime();
+        if (time < 500) {
+
+            Matrix4f target;
+            if (facingRight) {
+                target = new Matrix4f().translate(position)
+                        .scale(scale);
+            } else {
+                target = new Matrix4f().translate(position)
+                        .scale(scale)
+                        .rotateY(3.14f);
+
+            }
+            Camera.getInstance().projection().mul(target, target);
+
+            outlineShader.bind();
+            outlineShader.setUniformi("sampler", 0);
+            outlineShader.setUniformm4f("projection", target);
+            int maxWidth = (spriteSheetCols + 1) * 5 + spriteSheetCols * width;
+            int maxHeight = (spriteSheetRows + 1) * 5 + spriteSheetRows * height;
+            outlineShader.setUniform2f("stepSize", new Vector2f(2f / maxWidth, 2f / maxHeight));
+            float alpha = 1 - (float) (System.currentTimeMillis() - lastTimeDamaged - InGame.deltaPauseTime()) / 500;
+            outlineShader.setUniformf("outlineAlpha", alpha);
+
+            glActiveTexture(GL_TEXTURE0);
+            spritesheet.bindTexture();
+
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
+            glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER, animation.getFrame().getVbo());
+            glVertexAttribPointer(1, 2, GL_DOUBLE, false, 0, 0);
+
+            glDrawArrays(GL_QUADS, 0, 4);
+
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+            glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(1);
+
+            outlineShader.unbind();
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glActiveTexture(0);
+        }
     }
 
     public boolean isDead() { return dead; }
@@ -282,5 +362,13 @@ public abstract class  Enemy extends MapObject {
     }
     public boolean shouldRemove(){
         return animation.hasPlayedOnce() && isDead();
+    }
+
+    public boolean canDropItem() {
+        return animation.hasPlayedOnce() && isDead() && !itemDropped;
+    }
+
+    public void setItemDropped() {
+        this.itemDropped = true;
     }
 }

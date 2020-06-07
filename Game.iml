@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/Resources" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/Zalohy" />
       <excludeFolder url="file://$MODULE_DIR$/src/cz/Empatix/Main/Multithreading" />
+      <excludeFolder url="file://$MODULE_DIR$/src/cz/Empatix/Temp" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

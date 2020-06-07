@@ -75,6 +75,7 @@ public class Submachine extends Weapon{
                     bullets.add(bullet);
                     currentMagazineAmmo--;
                     source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
+                    GunsManager.bulletShooted++;
 
                 }
             } else if (currentAmmo != 0) {
@@ -143,6 +144,8 @@ public class Submachine extends Weapon{
                     enemy.hit(1);
                     bullet.playEnemyHit();
                     bullet.setHit();
+                    GunsManager.hitBullets++;
+
                 }
             }
         }

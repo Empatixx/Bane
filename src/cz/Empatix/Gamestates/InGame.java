@@ -36,7 +36,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class InGame extends GameState {
     private boolean pause;
-
+    private long gameStart;
     //
     // Main game
     //
@@ -86,7 +86,6 @@ public class InGame extends GameState {
     // pause time deltas
     private static long pauseTimeStarted;
     private static long pauseTimeEnded;
-
 
 
     InGame(GameStateManager gsm){
@@ -177,6 +176,9 @@ public class InGame extends GameState {
 
     @Override
     void init() {
+        gameStart = System.currentTimeMillis();
+        pauseTimeEnded=0;
+        pauseTimeStarted=0;
         pause = false;
 
         objectsFramebuffer = new Framebuffer();
@@ -246,9 +248,6 @@ public class InGame extends GameState {
         source = new Source(Source.EFFECTS,0.35f);
         soundMenuClick = AudioManager.loadSound("menuclick.ogg");
 
-
-        gunsManager.dropGun((int)player.getX(),(int)player.getY());
-
         skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),1f);
         skullPlayerdead.setAlpha(0f);
 
@@ -256,7 +255,6 @@ public class InGame extends GameState {
 
     @Override
     void draw() {
-
         objectsFramebuffer.bindFBO();
         // clear framebuffer
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -265,6 +263,8 @@ public class InGame extends GameState {
         tileMap.draw();
 
         itemManager.draw();
+
+        tileMap.drawObjects();
 
         player.draw();
 
@@ -308,7 +308,7 @@ public class InGame extends GameState {
             if(player.isDead()){
                 skullPlayerdead.draw();
             }
-            float time = (System.currentTimeMillis()-player.getDeathTime());
+            float time = (System.currentTimeMillis()-player.getDeathTime()- InGame.deltaPauseTime());
             if(time > 3800){
                 TextRender.renderText("GAME OVER",new Vector3f( 800,340,0),5,new Vector3f((time-3800)/2000,(time-3800)/2000,(time-3800)/2000));
                 glLineWidth(3f);
@@ -320,6 +320,29 @@ public class InGame extends GameState {
                 glVertex2f(secondary, 380);
                 glVertex2f(first, 380);
                 glEnd();
+            }
+            if(time > 5000){
+                TextRender.renderText("Enemies killed: "+EnemyManager.enemiesKilled,new Vector3f(600,500,0),3,new Vector3f(1f,1f,1f));
+                TextRender.renderText("Total coins: "+player.getCoins(),new Vector3f(600,600,0),3,new Vector3f(1f,1f,1f));
+                if(GunsManager.bulletShooted == 0){
+                    TextRender.renderText("Accuracy: 0%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
+
+                } else {
+                    TextRender.renderText("Accuracy: "+(int)((float)GunsManager.hitBullets/GunsManager.bulletShooted*100)+"%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
+                }
+                long sec = (player.getDeathTime()-gameStart)/1000%60;
+                long min = ((player.getDeathTime()-gameStart)/1000/60)%60;
+                long hours = (player.getDeathTime()-gameStart)/1000/3600;
+
+                String livetime = "Live time: ";
+                if(hours>=1){
+                    livetime=livetime+hours+"h ";
+                }
+                if(min>=1){
+                    livetime=livetime+min+"min ";
+                }
+                livetime=livetime+sec+"sec";
+                TextRender.renderText(livetime,new Vector3f(600,800,0),3,new Vector3f(1f,1f,1f));
             }
             if(time > 5500){
                 if(System.currentTimeMillis() / 500 % 2 == 0) {
@@ -349,6 +372,7 @@ public class InGame extends GameState {
 
     @Override
     void update() {
+        AudioManager.update();
         if(player.isDead()){
             enemyManager.update();
             fade.update();
@@ -388,10 +412,11 @@ public class InGame extends GameState {
                 }
             }
         } else {
-
             ArrayList<Enemy> enemies = enemyManager.getEnemies();
 
             player.update();
+
+            tileMap.updateObjects(player);
 
             // updating if player entered some another room
             tileMap.updateCurrentRoom(

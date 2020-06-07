@@ -3,6 +3,7 @@ package cz.Empatix.Entity.Enemies;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -35,7 +36,7 @@ public class Bat extends Enemy {
         facingRight = true;
 
         spriteSheetCols = 4;
-        spriteSheetRows = 1;
+        spriteSheetRows = 2;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\bat.tga");
@@ -55,7 +56,8 @@ public class Bat extends Enemy {
 
                                 (1.0+i)/spriteSheetCols,0
                         };
-                Sprite sprite = new Sprite(texCoords);
+                //Sprite sprite = new Sprite(texCoords);
+                Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
                 sprites[i] = sprite;
 
             }
@@ -63,17 +65,7 @@ public class Bat extends Enemy {
 
             sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
-                        {
-                                (double) i/spriteSheetCols,0.5,
-
-                                (double)i/spriteSheetCols,1,
-
-                                (1.0+i)/spriteSheetCols,1,
-
-                                (1.0+i)/spriteSheetCols,0.5
-                        };
-                Sprite sprite = new Sprite(texCoords);
+                Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
                 sprites[i] = sprite;
 
             }
@@ -160,14 +152,10 @@ public class Bat extends Enemy {
         setPosition(temp.x, temp.y);
     }
 
-    public void draw() {
-
-        super.draw();
-
-    }
     @Override
     public void hit(int damage) {
         if(dead) return;
+        lastTimeDamaged=System.currentTimeMillis()-InGame.deltaPauseTime();
         health -= damage;
         if(health < 0) health = 0;
         if(health == 0){

@@ -111,7 +111,12 @@ public class ItemManager {
     }
     public static void dropWeapon(Weapon weapon, int x,int y){
         WeaponDrop drop = new WeaponDrop(tm,weapon,x, y);
-        drop.setPosition(player.getX(),player.getY());
+        drop.setPosition(x,y);
+        itemDrops.add(drop);
+    }
+    public static void dropPlayerWeapon(Weapon weapon, int x,int y){
+        WeaponDrop drop = new WeaponDrop(tm,weapon,x, y);
+        drop.setPosition((int)player.getX(),(int)player.getY());
         itemDrops.add(drop);
     }
     public void pickUpGun(int x, int y){

@@ -48,7 +48,7 @@ public class Slime extends Enemy {
         facingRight = true;
 
         spriteSheetCols = 6;
-        spriteSheetRows = 1;
+        spriteSheetRows = 2;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
@@ -58,17 +58,7 @@ public class Slime extends Enemy {
             spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
-                        {
-                                (double) i/spriteSheetCols,0,
-
-                                (double)i/spriteSheetCols,0.5,
-
-                                (1.0+i)/spriteSheetCols,0.5,
-
-                                (1.0+i)/spriteSheetCols,0
-                        };
-                Sprite sprite = new Sprite(texCoords);
+                Sprite sprite = new Sprite(5,i,0,32,24,spriteSheetRows,spriteSheetCols);
                 sprites[i] = sprite;
 
             }
@@ -76,17 +66,7 @@ public class Slime extends Enemy {
 
             sprites = new Sprite[6];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
-                        {
-                                (double) i/spriteSheetCols,0.5,
-
-                                (double)i/spriteSheetCols,1,
-
-                                (1.0+i)/spriteSheetCols,1,
-
-                                (1.0+i)/spriteSheetCols,0.5
-                        };
-                Sprite sprite = new Sprite(texCoords);
+                Sprite sprite = new Sprite(5,i,1,32,24,spriteSheetRows,spriteSheetCols);
                 sprites[i] = sprite;
 
             }
@@ -225,6 +205,7 @@ public class Slime extends Enemy {
     @Override
     public void hit(int damage) {
         if(dead) return;
+        lastTimeDamaged=System.currentTimeMillis()-InGame.deltaPauseTime();
         health -= damage;
         if(health < 0) health = 0;
         if(health == 0){

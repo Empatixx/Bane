@@ -5,45 +5,100 @@
       <artifact name="Game:jar" />
     </artifacts-to-build>
   </component>
-  <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Coin.java" line="63" />
-    <bookmark url="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" line="362" />
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Projectiles/Slimebullet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Textures/Sprites/chest.tga" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/shaders/outline-fs.glsl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Chest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/lib.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/lib.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Textures/Menu/bg.png" beforeDir="false" afterPath="$PROJECT_DIR$/Textures/Menu/bg.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Game.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Game.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Textures/Sprites/Enemies/bat.tga" beforeDir="false" afterPath="$PROJECT_DIR$/Textures/Sprites/Enemies/bat.tga" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Textures/Sprites/Enemies/rat.tga" beforeDir="false" afterPath="$PROJECT_DIR$/Textures/Sprites/Enemies/rat.tga" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Textures/Sprites/Enemies/skeleton/bat.tga" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Textures/skull.tga" beforeDir="false" afterPath="$PROJECT_DIR$/Textures/skull.tga" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Textures/Sprites/Enemies/slime.tga" beforeDir="false" afterPath="$PROJECT_DIR$/Textures/Sprites/Enemies/slime.tga" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crashlog.log" beforeDir="false" afterPath="$PROJECT_DIR$/crashlog.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/artifacts/Game_jar/Game.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/Game_jar/Game.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/META-INF/Game.kotlin_module" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/META-INF/Game.kotlin_module" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/AudioManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/AudioManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/Soundtrack.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/Soundtrack.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/Source.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/Source.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/AI/Path.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/AI/Path.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/AI/PathNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/AI/PathNode.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Animation.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Animation.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemies/Slime.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemies/Slime.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/EnemyManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/EnemyManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/MapObject.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/MapObject.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Player.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/GameState.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/GameState.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/GameStateManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/GameStateManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/InGame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/InGame.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/MenuState.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/MenuState.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Bullet.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Bullet.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/GunsManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/GunsManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Weapon.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Weapon.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Java/Random.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Java/Random.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/KeyboardInput.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/KeyboardInput.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/MouseInput.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/MouseInput.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Settings.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Settings.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Background.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Background.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Camera.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Camera.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HUD.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HUD.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HealthBar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HealthBar.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/MenuBar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/MenuBar.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/SliderBar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/SliderBar.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/Font.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/Font.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/FontChar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/FontChar.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/TextRender.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/TextRender.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Tile.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Tile.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/TileMap.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/TileMap.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/shaders/chystane/test-fs.glsl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/shaders/chystane/test-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/outline-vs.glsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/AudioManager/AudioManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/AudioManager/AudioManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/AudioManager/Soundtrack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/AudioManager/Soundtrack.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/KingSlime.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Temp/KingSlime.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Skeleton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Skeleton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Skeleton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Temp/Skeleton.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Background.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Background.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/ByteBufferImage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/ByteBufferImage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Sprites/Sprite.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Sprites/Sprite.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Sprites/SpritesheetManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Sprites/SpritesheetManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Text/TextRender.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Text/TextRender.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" afterDir="false" />
     </list>
-    <ignored path="$PROJECT_DIR$/out/" />
-    <ignored path="$PROJECT_DIR$/target/" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -57,88 +112,6 @@
     <option name="myAutoScrollFromSource" value="true" />
     <option name="myElementSize" value="269" />
   </component>
-  <component name="FavoritesManager">
-    <favorites_list name="Game" />
-  </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-700">
-              <caret line="60" column="18" selection-start-line="60" selection-start-column="18" selection-end-line="60" selection-end-column="18" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="439">
-              <caret line="54" column="5" selection-start-line="54" selection-start-column="5" selection-end-line="54" selection-end-column="5" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
-              <caret line="33" column="36" lean-forward="true" selection-start-line="33" selection-start-column="36" selection-end-line="33" selection-end-column="36" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-6.png">
-          <provider selected="true" editor-type-id="images" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-7.png">
-          <provider selected="true" editor-type-id="images" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-5.png">
-          <provider selected="true" editor-type-id="images" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-4.png">
-          <provider selected="true" editor-type-id="images" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-3.png">
-          <provider selected="true" editor-type-id="images" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="424">
-              <caret line="206" column="17" lean-forward="true" selection-start-line="206" selection-start-column="17" selection-end-line="206" selection-end-column="17" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#7066#7067#0" expanded="true" />
-                <element signature="e#7147#7148#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Skeleton.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="648">
-              <caret line="136" column="22" selection-start-line="136" selection-start-column="22" selection-end-line="136" selection-end-column="22" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -148,40 +121,6 @@
         <option value="Class" />
       </list>
     </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>animat</find>
-      <find>shooting</find>
-      <find>released</find>
-      <find>frag</find>
-      <find>blur</find>
-      <find>tex_coords</find>
-      <find>coin</find>
-      <find>System.c</find>
-      <find>System.currentTimeMillis()</find>
-      <find>ca</find>
-      <find>camera</find>
-      <find>cam</find>
-      <find>setPositi</find>
-      <find>movement</find>
-      <find>Frag</find>
-      <find>r</find>
-      <find>target</find>
-      <find>scale</find>
-      <find>delta</find>
-      <find>hit</find>
-      <find>setRight</find>
-      <find>image</find>
-      <find>setPosition</find>
-      <find>ena</find>
-      <find>setCurs</find>
-      <find>setCursor(ARROW);</find>
-      <find>updateLight</find>
-      <find>draw</find>
-      <find>update</find>
-      <find>isFlinching</find>
-    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="PREVIOUS_COMMIT_AUTHORS">
@@ -209,63 +148,6 @@
       </branch-storage>
     </favorite-branches>
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Text/TextRender.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/SliderBar.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/KingSlime.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Sprites/SpritesheetManager.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Sprites/Spritesheet.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemDrop.java" />
-        <option value="$PROJECT_DIR$/shaders/test-vs.glsl" />
-        <option value="$PROJECT_DIR$/shaders/test-fs.glsl" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Shaders/Shader.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" />
-        <option value="$PROJECT_DIR$/shaders/gun-vs.glsl" />
-        <option value="$PROJECT_DIR$/shaders/gun-fs.glsl" />
-        <option value="$PROJECT_DIR$/shaders/blur-fs.glsl" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/test.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameStateManager.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Screanshot.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/GaussianBlur.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Postprocess.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Coin.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/HealingPot.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/PistolAmmo.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ShotgunAmmo.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/WeaponDrop.java" />
-        <option value="$PROJECT_DIR$/shaders/fade-fs.glsl" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Fade.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/MenuBar.java" />
-        <option value="$PROJECT_DIR$/shaders/chystane/image-vs.glsl" />
-        <option value="$PROJECT_DIR$/shaders/chystane/image-fs.glsl" />
-        <option value="$PROJECT_DIR$/shaders/image-fs.glsl" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Image.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Skeleton.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/ByteBufferImage.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Render/Background.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Projectiles/Slimebullet.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" />
-        <option value="$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java" />
-      </list>
-    </option>
-  </component>
   <component name="LogFilters">
     <option name="FILTER_ERRORS" value="false" />
     <option name="FILTER_WARNINGS" value="false" />
@@ -273,257 +155,22 @@
     <option name="FILTER_DEBUG" value="true" />
     <option name="CUSTOM_FILTER" />
   </component>
-  <component name="MavenImportPreferences">
-    <option name="importingSettings">
-      <MavenImportingSettings>
-        <option name="importAutomatically" value="true" />
-      </MavenImportingSettings>
-    </option>
-  </component>
-  <component name="MavenProjectNavigator">
-    <treeState>
-      <expand />
-      <select />
-    </treeState>
-  </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="371" />
-    <option name="y" value="79" />
-    <option name="width" value="1274" />
-    <option name="height" value="893" />
-  </component>
+  <component name="ProjectId" id="1cu3LhfOSBLwsXdIiFpcxYpLqit" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="out" type="462c0819:PsiDirectoryNode" />
-              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="Resources" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="Resources" type="462c0819:PsiDirectoryNode" />
-              <item name="Map" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="screanshots" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="Sounds" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="Sounds" type="462c0819:PsiDirectoryNode" />
-              <item name="guns" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="AudioManager" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Entity" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Entity" type="462c0819:PsiDirectoryNode" />
-              <item name="AI" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Entity" type="462c0819:PsiDirectoryNode" />
-              <item name="Enemies" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Entity" type="462c0819:PsiDirectoryNode" />
-              <item name="Enemies" type="462c0819:PsiDirectoryNode" />
-              <item name="Projectiles" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Entity" type="462c0819:PsiDirectoryNode" />
-              <item name="ItemDrops" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Gamestates" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Guns" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Java" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Main" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Render" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Render" type="462c0819:PsiDirectoryNode" />
-              <item name="Graphics" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Render" type="462c0819:PsiDirectoryNode" />
-              <item name="Graphics" type="462c0819:PsiDirectoryNode" />
-              <item name="Model" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Render" type="462c0819:PsiDirectoryNode" />
-              <item name="Graphics" type="462c0819:PsiDirectoryNode" />
-              <item name="Shaders" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Render" type="462c0819:PsiDirectoryNode" />
-              <item name="Hud" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Render" type="462c0819:PsiDirectoryNode" />
-              <item name="Postprocessing" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Render" type="462c0819:PsiDirectoryNode" />
-              <item name="Postprocessing" type="462c0819:PsiDirectoryNode" />
-              <item name="Lightning" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Empatix" type="462c0819:PsiDirectoryNode" />
-              <item name="Render" type="462c0819:PsiDirectoryNode" />
-              <item name="Text" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="Textures" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Game" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Game" type="462c0819:PsiDirectoryNode" />
-              <item name="Textures" type="462c0819:PsiDirectoryNode" />
-              <item name="Menu" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
     <property name="GenerateAntBuildDialog.backupFiles" value="true" />
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="GenerateAntBuildDialog.outputFileNameProperty" value="game" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1590250478709" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/nativelib/joml-1.9.20.jar!/" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1590745721401" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Textures/Sprites/Enemies" />
+    <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.16894531" />
     <property name="project.structure.side.proportion" value="0.43713278" />
     <property name="restartRequiresConfirmation" value="false" />
@@ -532,36 +179,24 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\jirka\Game\Textures\Sprites\Enemies" />
+      <recent name="D:\jirka\Game\shaders" />
+      <recent name="D:\jirka\Game\src\cz\Empatix\Temp" />
+      <recent name="E:\source\Game\Textures\Sprites" />
       <recent name="E:\source\Game\Sounds\guns" />
-      <recent name="E:\source\Game\Textures\Menu" />
-      <recent name="E:\source\Game\Textures\Sprites\Enemies" />
-      <recent name="E:\source\Game\Sounds" />
-      <recent name="E:\source\Game\shaders\chystane" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="cz.Empatix.Guns" />
       <recent name="cz.Empatix.Entity" />
+      <recent name="cz.Empatix.Guns" />
       <recent name="cz.Empatix.Enemies" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\jirka\Game\src\cz\Empatix\Temp" />
+      <recent name="D:\jirka\Game\shaders" />
       <recent name="E:\source\Game\Textures\Sprites\Enemies" />
       <recent name="E:\source\Game\Textures" />
       <recent name="E:\source\Game\Sounds" />
-      <recent name="E:\source\Game\shaders" />
-      <recent name="E:\source\Game\Textures\Sprites\Player" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" show_console_on_std_err="true" show_console_on_std_out="true">
@@ -701,85 +336,15 @@
       <option name="project" value="LOCAL" />
       <updated>1590159270596</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="slime rework,rat rework">
+      <created>1590250496377</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1590250496377</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
-  </component>
-  <component name="TodoView">
-    <todo-panel id="selected-file">
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
-    <todo-panel id="all">
-      <are-packages-shown value="true" />
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
-  </component>
-  <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
-    <layout>
-      <window_info id="Structure" order="0" sideWeight="0.3808948" side_tool="true" weight="0.112" />
-      <window_info id="Designer" order="1" />
-      <window_info id="Image Layers" order="2" />
-      <window_info id="Capture Tool" order="3" />
-      <window_info id="UI Designer" order="4" />
-      <window_info id="Favorites" order="5" sideWeight="0.4980695" side_tool="true" weight="0.2260128" />
-      <window_info active="true" content_ui="combo" id="Project" order="6" sideWeight="0.5019305" visible="true" weight="0.19349681" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.804811" visible="true" weight="0.23185265" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.7905117" weight="0.15709643" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.8054371" weight="0.39219934" />
-      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49946696" weight="0.21235102" />
-      <window_info anchor="bottom" id="Version Control" order="8" weight="0.082340196" />
-      <window_info anchor="bottom" id="Messages" order="9" weight="0.10400867" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.195189" side_tool="true" weight="0.11618257" />
-      <window_info anchor="bottom" id="Inspection Results" order="11" weight="0.42361864" />
-      <window_info anchor="bottom" id="IntelliGuard" order="12" weight="0.5222102" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="1" weight="0.24946696" />
-      <window_info anchor="right" id="Palette" order="2" />
-      <window_info anchor="right" id="Theme Preview" order="3" />
-      <window_info anchor="right" id="Palette&#9;" order="4" />
-      <window_info anchor="right" id="Capture Analysis" order="5" />
-      <window_info anchor="right" id="Maven" order="6" weight="0.32889125" />
-      <window_info anchor="right" id="Coverage" order="7" side_tool="true" weight="0.32995737" />
-      <window_info anchor="right" id="Maven-2 Build" order="8" side_tool="true" weight="0.3264" />
-      <window_info anchor="right" id="Ant Build" order="9" side_tool="true" weight="0.041577823" />
-    </layout>
-    <layout-to-restore>
-      <window_info id="Structure" order="0" sideWeight="0.3808948" side_tool="true" weight="0.112" />
-      <window_info id="Designer" order="1" />
-      <window_info id="Image Layers" order="2" />
-      <window_info id="Capture Tool" order="3" />
-      <window_info id="UI Designer" order="4" />
-      <window_info id="Favorites" order="5" sideWeight="0.4980695" side_tool="true" weight="0.2260128" />
-      <window_info active="true" content_ui="combo" id="Project" order="6" sideWeight="0.5019305" visible="true" weight="0.13965885" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.804811" visible="true" weight="0.10617551" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.7905117" weight="0.15709643" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.8054371" weight="0.39219934" />
-      <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49946696" weight="0.21235102" />
-      <window_info anchor="bottom" id="Version Control" order="8" weight="0.082340196" />
-      <window_info anchor="bottom" id="Messages" order="9" weight="0.10400867" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.195189" side_tool="true" weight="0.11618257" />
-      <window_info anchor="bottom" id="Inspection Results" order="11" weight="0.42361864" />
-      <window_info anchor="bottom" id="IntelliGuard" order="12" weight="0.5222102" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="1" weight="0.24946696" />
-      <window_info anchor="right" id="Palette" order="2" />
-      <window_info anchor="right" id="Theme Preview" order="3" />
-      <window_info anchor="right" id="Palette&#9;" order="4" />
-      <window_info anchor="right" id="Capture Analysis" order="5" />
-      <window_info anchor="right" id="Maven" order="6" weight="0.32889125" />
-      <window_info anchor="right" id="Coverage" order="7" side_tool="true" weight="0.32995737" />
-      <window_info anchor="right" id="Maven-2 Build" order="8" side_tool="true" weight="0.3264" />
-      <window_info anchor="right" id="Ant Build" order="9" side_tool="true" weight="0.041577823" />
-    </layout-to-restore>
   </component>
   <component name="UpdateCopyrightCheckinHandler">
     <option name="UPDATE_COPYRIGHT" value="true" />
@@ -789,22 +354,7 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="RECENTLY_FILTERED_USER_GROUPS">
-                <collection />
-              </option>
-              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
-              </option>
-              <option name="COLUMN_ORDER">
-                <list>
-                  <option value="0" />
-                  <option value="1" />
-                  <option value="2" />
-                  <option value="3" />
-                </list>
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>
@@ -823,6 +373,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
@@ -842,8 +393,62 @@
     <MESSAGE value="camera singleton" />
     <MESSAGE value="item drop bugfixes" />
     <MESSAGE value="death,time bugfixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="death,time bugfixes" />
+    <MESSAGE value="slime rework,rat rework" />
+    <option name="LAST_COMMIT_MESSAGE" value="slime rework,rat rework" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="713" y="325" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1591543643605">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="713" y="325" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1591543643605" />
+    <state x="666" y="261" key="FileChooserDialogImpl" timestamp="1591456550428">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="666" y="261" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1591456550428" />
+    <state width="1859" height="62" key="GridCell.Tab.0.bottom" timestamp="1591553774058">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1860" height="144" key="GridCell.Tab.0.bottom/0.0.1280.984@0.0.1280.984" timestamp="1591541304629" />
+    <state width="1859" height="62" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1591553774058" />
+    <state width="1859" height="62" key="GridCell.Tab.0.center" timestamp="1591553774058">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1860" height="144" key="GridCell.Tab.0.center/0.0.1280.984@0.0.1280.984" timestamp="1591541304629" />
+    <state width="1859" height="62" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1591553774058" />
+    <state width="1859" height="62" key="GridCell.Tab.0.left" timestamp="1591553774058">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1860" height="144" key="GridCell.Tab.0.left/0.0.1280.984@0.0.1280.984" timestamp="1591541304629" />
+    <state width="1859" height="62" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1591553774058" />
+    <state width="1859" height="62" key="GridCell.Tab.0.right" timestamp="1591553774058">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1860" height="144" key="GridCell.Tab.0.right/0.0.1280.984@0.0.1280.984" timestamp="1591541304629" />
+    <state width="1859" height="62" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1591553774058" />
+    <state x="811" y="226" key="RollbackChangesDialog" timestamp="1591549158143">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="811" y="226" key="RollbackChangesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1591549158143" />
+    <state x="440" y="94" key="SettingsEditor" timestamp="1591456559912">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="440" y="94" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1591456559912" />
+    <state x="769" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1591533375456">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="769" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040@0.0.1920.1040" timestamp="1591533375456" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/WeaponDrop.java</url>
+          <line>70</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
@@ -864,399 +469,5 @@
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Main/Game.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="158" column="23" lean-forward="true" selection-start-line="158" selection-start-column="23" selection-end-line="158" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Animation.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameStateManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightPoint.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="244">
-          <caret line="25" column="19" selection-start-line="25" selection-start-column="19" selection-end-line="25" selection-end-column="19" />
-          <folding>
-            <element signature="e#622#623#0" expanded="true" />
-            <element signature="e#658#659#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1818">
-          <caret line="116" column="18" selection-start-line="116" selection-start-column="18" selection-end-line="116" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/shaders/chystane/test-fs.glsl">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/shaders/chystane/test-vs.glsl">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/screanshots/2020-05-22.png" />
-    <entry file="file://$PROJECT_DIR$/shaders/background-fs.glsl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="12" column="1" selection-start-line="12" selection-start-column="1" selection-end-line="12" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/java/lang/Object.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="601">
-          <caret line="554" column="19" selection-start-line="554" selection-start-column="19" selection-end-line="554" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_201/src.zip!/java/util/ArrayList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="494" column="13" selection-start-line="494" selection-start-column="13" selection-end-line="494" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="226">
-          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2160">
-          <caret line="129" column="34" selection-start-line="129" selection-start-column="34" selection-end-line="129" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="13824">
-          <caret line="784" column="17" selection-start-line="784" selection-start-column="17" selection-end-line="784" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Textures/Sprites/Enemies/bat.tga">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Textures/Sprites/Enemies/skeleton/bat.tga">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Textures/Sprites/Enemies/ratnew.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Textures/Sprites/Enemies/slime.tga">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Textures/Sprites/Enemies/rat.tga">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="254">
-          <caret line="52" column="16" selection-start-line="52" selection-start-column="16" selection-end-line="52" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/PistolAmmo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="20" column="69" selection-start-line="20" selection-start-column="69" selection-end-line="20" selection-end-column="69" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="48">
-          <caret line="68" column="28" selection-start-line="68" selection-start-column="28" selection-end-line="68" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-2.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-1.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-0.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Textures/Menu/loading.tga">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Textures/Menu/bg.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Textures/Menu/bg.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Shaders/Shader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="114" selection-start-line="114" selection-end-line="114" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/ByteBufferImage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="671">
-          <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
-          <folding>
-            <element signature="e#1338#1339#0" expanded="true" />
-            <element signature="e#1369#1370#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="709">
-          <caret line="138" lean-forward="true" selection-start-line="138" selection-end-line="138" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Render/Background.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="18" column="25" selection-start-line="18" selection-start-column="25" selection-end-line="18" selection-end-column="25" />
-          <folding>
-            <element signature="e#5532#5533#0" expanded="true" />
-            <element signature="e#9233#9234#0" expanded="true" />
-            <element signature="e#9307#9308#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Projectiles/Slimebullet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="271">
-          <caret line="115" lean-forward="true" selection-start-line="115" selection-end-line="115" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="298">
-          <caret line="210" column="20" lean-forward="true" selection-start-line="210" selection-start-column="20" selection-end-line="210" selection-end-column="20" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2970">
-          <caret line="172" column="24" selection-start-line="172" selection-start-column="24" selection-end-line="172" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="427">
-          <caret line="331" column="25" selection-start-line="331" selection-start-column="25" selection-end-line="331" selection-end-column="25" />
-          <folding>
-            <element signature="e#7138#7139#0" expanded="true" />
-            <element signature="e#7190#7191#0" expanded="true" />
-            <element signature="e#7319#7320#0" expanded="true" />
-            <element signature="e#7341#7342#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6102">
-          <caret line="345" column="15" lean-forward="true" selection-start-line="345" selection-start-column="15" selection-end-line="345" selection-end-column="15" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="20" column="22" selection-start-line="20" selection-start-column="22" selection-end-line="20" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="148">
-          <caret line="62" column="23" selection-start-line="62" selection-start-column="23" selection-end-line="62" selection-end-column="23" />
-          <folding>
-            <element signature="e#11468#11469#0" expanded="true" />
-            <element signature="e#11528#11529#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="9" column="22" selection-start-line="9" selection-start-column="22" selection-end-line="9" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-5.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-4.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-3.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-6.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/screanshots/2020-05-23-7.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Skeleton.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="648">
-          <caret line="136" column="22" selection-start-line="136" selection-start-column="22" selection-end-line="136" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="424">
-          <caret line="206" column="17" lean-forward="true" selection-start-line="206" selection-start-column="17" selection-end-line="206" selection-end-column="17" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#7066#7067#0" expanded="true" />
-            <element signature="e#7147#7148#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="33" column="36" lean-forward="true" selection-start-line="33" selection-start-column="36" selection-end-line="33" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-700">
-          <caret line="60" column="18" selection-start-line="60" selection-start-column="18" selection-end-line="60" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="439">
-          <caret line="54" column="5" selection-start-line="54" selection-start-column="5" selection-end-line="54" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-  </component>
-  <component name="masterDetails">
-    <states>
-      <state key="ArtifactsStructureConfigurable.UI">
-        <settings>
-          <artifact-editor />
-          <last-edited>Game:jar</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.43713278" />
-                <option value="0.5" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="FacetStructureConfigurable.UI">
-        <settings>
-          <last-edited>No facets are configured</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.43713278" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="GlobalLibrariesConfigurable.UI">
-        <settings>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.43713278" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="JdkListConfigurable.UI">
-        <settings>
-          <last-edited>1.8 (2)</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.43713278" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ModuleStructureConfigurable.UI">
-        <settings>
-          <last-edited>Game</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.43713278" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ProjectLibrariesConfigurable.UI">
-        <settings>
-          <last-edited>lib</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.43713278" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-    </states>
   </component>
 </project>

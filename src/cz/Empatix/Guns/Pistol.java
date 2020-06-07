@@ -74,6 +74,7 @@ public class Pistol extends Weapon {
                     bullet.setPosition(px, py);
                     bullets.add(bullet);
                     currentMagazineAmmo--;
+                    GunsManager.bulletShooted++;
                     source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
 
                 }
@@ -144,6 +145,7 @@ public class Pistol extends Weapon {
                     enemy.hit(1);
                     bullet.playEnemyHit();
                     bullet.setHit();
+                    GunsManager.hitBullets++;
                 }
             }
         }

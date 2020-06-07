@@ -211,6 +211,7 @@ public class Game implements Runnable {
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 

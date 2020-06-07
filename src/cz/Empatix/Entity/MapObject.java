@@ -240,13 +240,14 @@ public abstract class MapObject {
 	void setLeft(boolean b) { left = b; }
 	void setRight(boolean b) { right = b; }
 	void setUp(boolean b) { up = b; }
-	void setDown(boolean b) { down = b; }
+	void setDown(boolean b) { down 	= b; }
 
 	public void draw() {
 		// pokud neni object na obrazovce - zrusit
 		if (isNotOnScrean()){
 			return;
 		}
+
 		// blikání - po hitu - hráč
 		if (flinching){
 			long elapsed = (System.nanoTime() - flinchingTimer) / 1000000;

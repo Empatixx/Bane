@@ -26,16 +26,20 @@ public class AudioManager {
 
     private static double lastVolume;
 
+    private static long timeSoundtrackChange;
 
     // soundtrack
-    private static int currentSoundtrack;
+    private static int currentSoundtrack = -1;
+    private static int previousSoundtrack;
 
     private static boolean hasAudio;
 
 
     public static void playSoundtrack(int soundtrack){
         if (hasAudio){
-            soundtracks.get(currentSoundtrack).pause();
+            timeSoundtrackChange = System.currentTimeMillis();
+
+            previousSoundtrack = currentSoundtrack;
 
             currentSoundtrack = soundtrack;
 
@@ -142,5 +146,19 @@ public class AudioManager {
                 track.setVolume(0.2f);
             }
         }
+        float time = (float)(System.currentTimeMillis() - timeSoundtrackChange);
+        if(time < 750) {
+            soundtracks.get(currentSoundtrack).setVolume(0.2f * time / 750);
+
+            if(previousSoundtrack != -1){
+                soundtracks.get(previousSoundtrack).setVolume(0.2f * (1-time/750));
+            }
+        } else {
+            if(previousSoundtrack != -1){
+                Soundtrack soundtrack = soundtracks.get(previousSoundtrack);
+                if(soundtrack.isPlaying()) soundtrack.pause();
+            }
+        }
+
     }
 }

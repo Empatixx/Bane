@@ -2,31 +2,31 @@
   <library name="lib">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/lib" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl/lwjgl-natives-windows-x86.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl/lwjgl-natives-windows.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-glfw/lwjgl-glfw-natives-windows.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-glfw/lwjgl-glfw-natives-windows-x86.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-opengl/lwjgl-opengl-natives-windows.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-opengl/lwjgl-opengl-natives-windows-x86.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-openal/lwjgl-openal-natives-windows-x86.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-openal/lwjgl-openal-natives-windows.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-stb/lwjgl-stb-natives-windows-x86.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-stb/lwjgl-stb-natives-windows.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-stb/lwjgl-stb.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-stb/lwjgl-stb-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-stb/lwjgl-stb-natives-windows-x86.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-opengl/lwjgl-opengl-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-opengl/lwjgl-opengl-natives-windows-x86.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-openal/lwjgl-openal-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-openal/lwjgl-openal-natives-windows-x86.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-glfw/lwjgl-glfw-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-glfw/lwjgl-glfw-natives-windows-x86.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl/lwjgl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl/lwjgl-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl/lwjgl-natives-windows-x86.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-glfw/lwjgl-glfw-javadoc.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-opengl/lwjgl-opengl-javadoc.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl/lwjgl-javadoc.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-openal/lwjgl-openal-javadoc.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-stb/lwjgl-stb-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl/lwjgl-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-glfw/lwjgl-glfw-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-openal/lwjgl-openal-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-opengl/lwjgl-opengl-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-stb/lwjgl-stb-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-glfw/lwjgl-glfw-sources.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl/lwjgl-sources.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-opengl/lwjgl-opengl-sources.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-openal/lwjgl-openal-sources.jar!/" />
-      <root url="jar://$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-stb/lwjgl-stb-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-openal/lwjgl-openal-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-stb/lwjgl-stb-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-glfw/lwjgl-glfw-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl/lwjgl-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-opengl/lwjgl-opengl-sources.jar!/" />
     </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
   </library>

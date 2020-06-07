@@ -1,7 +1,6 @@
 package cz.Empatix.Render.Text;
 
 
-import com.sun.istack.internal.NotNull;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -107,7 +106,7 @@ public class TextRender {
      * @param pos - Position of text
      * @param scale - Scaling of text
      */
-    public static void renderText(String text,@NotNull Vector3f pos, int scale, @NotNull Vector3f color){
+    public static void renderText(String text,Vector3f pos, int scale, Vector3f color){
         Font font = fonts.get(0);
         matrixPos = new Matrix4f().translate(pos).scale(scale);
 

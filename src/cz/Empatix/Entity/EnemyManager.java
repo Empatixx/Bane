@@ -9,6 +9,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 public class EnemyManager {
+    public static int enemiesKilled;
     private int chanceDrop;
 
     private static ArrayList<Enemy> enemies;
@@ -19,8 +20,6 @@ public class EnemyManager {
     private static TileMap tileMap;
 
     public EnemyManager(Player p, TileMap tm){
-
-
         player = p;
         tileMap = tm;
 
@@ -31,6 +30,7 @@ public class EnemyManager {
         enemiesList.add("Rat");
         enemiesList.add("Bat");
 
+        enemiesKilled = 0;
     }
 
 
@@ -40,16 +40,21 @@ public class EnemyManager {
         for(int i = 0;i < enemies.size();i++){
             Enemy enemy = enemies.get(i);
             enemy.update();
-            // checking if enemy is dead
-            if (enemy.shouldRemove()){
+            // checking if enemy is dead && should drop item
+            if(enemy.canDropItem()){
                 chanceDrop++;
+                enemy.setItemDropped();
                 int chance = Random.nextInt(5);
                 if(chanceDrop+chance > 3){
                     ItemManager.createDrop(enemy.getx(),enemy.gety());
                     chanceDrop=0;
                 }
+            }
+            // checking if enemy is dead && should be removed from memory
+            if (enemy.shouldRemove()){
                 enemies.remove(i);
                 i--;
+                enemiesKilled++;
             }
         }
     }

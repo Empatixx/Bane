@@ -13,7 +13,10 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 
 public class GunsManager {
-    private final ArrayList<Weapon> weapons;
+    public static int bulletShooted;
+    public static int hitBullets;
+
+    private static ArrayList<Weapon> weapons;
 
     private final static int FIRSTSLOT = 0;
     private final static int SECONDARYSLOT = 1;
@@ -49,6 +52,9 @@ public class GunsManager {
 
         current = equipedweapons[FIRSTSLOT];
         currentslot = FIRSTSLOT;
+
+        bulletShooted = 0;
+        hitBullets = 0;
     }
     public void shot(float x,float y,float px,float py){
         if(current == null) return;
@@ -86,6 +92,7 @@ public class GunsManager {
         currentslot = slot;
         switchDelay = System.currentTimeMillis()-InGame.deltaPauseTime();
         this.current = current;
+        stopShooting();
         source.play(soundSwitchingGun);
     }
     public void checkCollisions(ArrayList<Enemy> enemies){
@@ -99,7 +106,7 @@ public class GunsManager {
             case GLFW.GLFW_KEY_Q: {
                 if(current != null){
                     stopShooting();
-                    ItemManager.dropWeapon(current, x,y);
+                    ItemManager.dropPlayerWeapon(current, x,y);
                 }
                 current = null;
                 equipedweapons[currentslot] = null;
@@ -154,11 +161,11 @@ public class GunsManager {
                 return;
             }
         }
-        ItemManager.dropWeapon(current,x,y);
+        ItemManager.dropPlayerWeapon(current,x,y);
         equipedweapons[currentslot] = weapon;
         current=weapon;
     }
-    public void dropGun(int px,int py){
-        ItemManager.dropWeapon(weapons.get(2),px,py);
+    public static void dropGun(int x,int y){
+        ItemManager.dropWeapon(weapons.get(2),x,y);
     }
 }

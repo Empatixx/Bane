@@ -1,10 +1,13 @@
 package cz.Empatix.Render;
 
+import cz.Empatix.Entity.Chest;
 import cz.Empatix.Entity.EnemyManager;
+import cz.Empatix.Entity.MapObject;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Room {
@@ -26,8 +29,6 @@ public class Room {
     public final static int Loot = 1;
     public final static int Shop = 2;
     public final static int Boss = 3;
-    public final static int Path = 4;
-
 
     // orientation about paths
     private boolean bottom;
@@ -44,11 +45,11 @@ public class Room {
     private int xMin;
     private int xMax;
 
-    private int tileSize;
-
     private RoomPath[] roomPaths;
 
-    Room(int type, int id, int x, int y, int tileSize){
+    private ArrayList<MapObject> mapObjects;
+
+    Room(int type, int id, int x, int y){
         entered = false;
 
         this.id = id;
@@ -58,9 +59,9 @@ public class Room {
 
         this.type = type;
 
-        this.tileSize = tileSize;
-
         roomPaths = new RoomPath[4];
+
+        mapObjects = new ArrayList<>();
 
     }
 
@@ -84,58 +85,6 @@ public class Room {
                     roomMap[row][col] = Byte.parseByte(tokens[col]);
                 }
             }
-            // converting
-/*
-            for (int col = 0;col < numCols;col++){
-                for (int row = 0; row < numRows;row++){
-
-                    int currentTile = collisionMap[row][col];
-                    int bottomTile;
-                    int topTile;
-                    int rightTile;
-                    int leftTile;
-
-                    int x;
-
-                    // TOP
-                    x = row-1;
-                    if (x >= 0){ topTile = collisionMap[x][col]; }
-                    else { topTile = 0; }
-
-                    // BOTTOM
-                    x = row+1;
-                    if (x <numRows){ bottomTile = collisionMap[x][col]; }
-                    else { bottomTile = 0; }
-
-                    // RIGHT
-                    x = col+1;
-                    if (x < numCols){ rightTile = collisionMap[row][x]; }
-                    else { rightTile = 0; }
-
-                    // LEFT
-                    x = col-1;
-                    if (x >= 0){ leftTile = collisionMap[row][x]; }
-                    else { leftTile = 0; }
-                    if (currentTile == 1){
-                        if (topTile == 1 && bottomTile == 1){
-                            roomMap[row][col] = 22;
-                        } else if (topTile == 1){
-                            if (leftTile == 1){
-                                roomMap[row][col] = 33;
-                            } else if (rightTile == 1){
-                                roomMap[row][col] = 28;
-                            }
-                        } else if (bottomTile == 1){
-                            if (leftTile == 1){
-                                roomMap[row][col] = 25;
-                            } else if (rightTile == 1){
-                                roomMap[row][col] = 20;
-                            }
-                        }
-                    }
-                }
-            }
-*/
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -158,15 +107,6 @@ public class Room {
     }
 
     int getId(){ return id;}
-
-    int countPaths(){
-        int i = 0;
-        if (bottom) i++;
-        if (top) i++;
-        if (left) i++;
-        if (right) i++;
-        return i;
-    }
 
     public int getY() {
         return y;
@@ -270,5 +210,40 @@ public class Room {
     }
     void setRightRoomPath(RoomPath roomPath){
         roomPaths[3] = roomPath;
+    }
+
+    public void drawObjects(){
+        for(MapObject object : mapObjects){
+            object.draw();
+        }
+    }
+    public void updateObjects(){
+        for(int i = 0;i<mapObjects.size();i++){
+            MapObject object = mapObjects.get(i);
+            if(object instanceof Chest) {
+                if(((Chest)object).shouldRemove()){
+                    mapObjects.remove(i);
+                    i--;
+                    continue;
+                }
+                ((Chest)object).update();
+            }
+        }
+    }
+    public void createObjects(TileMap tm){
+        if(type == Room.Loot || true){
+            Chest chest = new Chest(tm);
+            chest.setPosition(xMin + (float) (xMax - xMin) / 2,yMin + (float) (yMax - yMin) / 2);
+            System.out.println(xMin + (float) (xMax - xMin) / 2+"  "+yMin + (float) (yMax - yMin) / 2);
+            mapObjects.add(chest);
+        }
+    }
+    public void checkCollision(MapObject player){
+        for(MapObject object : mapObjects){
+            if(object instanceof Chest) {
+                ((Chest)object).checkCollisions(player);
+            }
+
+        }
     }
 }

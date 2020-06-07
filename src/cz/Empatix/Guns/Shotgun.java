@@ -75,6 +75,7 @@ public class Shotgun extends Weapon {
                         if (i >= 0) i++;
                         else i--;
                         i = -i;
+                        GunsManager.bulletShooted++;
 
                     }
                     currentMagazineAmmo--;
@@ -156,6 +157,8 @@ public class Shotgun extends Weapon {
                     enemy.hit(1);
                     bullet.playEnemyHit();
                     bullet.setHit();
+                    GunsManager.hitBullets++;
+
                 }
             }
         }

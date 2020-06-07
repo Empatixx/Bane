@@ -1,6 +1,7 @@
 package cz.Empatix.Render;
 
 
+import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -219,7 +220,6 @@ public class TileMap {
 	}
 
 	public void updateCurrentRoom(int x, int y){
-		boolean foundRoom = false;
 		for (RoomPath room : currentRoom.getRoomPaths()){
 			if(room == null) continue;
 			// getting X max/min of room
@@ -245,44 +245,47 @@ public class TileMap {
 
 					ymin += (Camera.getHEIGHT() - yMax - ymin) * tween;
 					ymax += (-yMin - ymax) * tween;
-					//foundRoom = true;
 					break;
 				}
 			}
 		}
+		for (Room room : roomArrayList) {
+			// getting X max/min of room
+			int xMax = room.getxMax();
+			int xMin = room.getxMin();
 
-		if(!foundRoom) {
-			for (Room room : roomArrayList) {
-				// getting X max/min of room
-				int xMax = room.getxMax();
-				int xMin = room.getxMin();
+			// getting Y max/min of room
+			int yMax = room.getyMax();
+			int yMin = room.getyMin();
 
-				// getting Y max/min of room
-				int yMax = room.getyMax();
-				int yMin = room.getyMin();
+			if (x > xMin && x < xMax) {
+				if (y > yMin && y < yMax) {
 
-				if (x > xMin && x < xMax) {
-					if (y > yMin && y < yMax) {
+					// CORNERS OF MAP ( ROOM ) + tween to make it more sync (plus max = min; min = max) bcs of x / y of tilemap is negative
 
-						// CORNERS OF MAP ( ROOM ) + tween to make it more sync (plus max = min; min = max) bcs of x / y of tilemap is negative
+					xmin += (Camera.getWIDTH() - xMax - xmin) * tween;
+					xmax += (-xMin - xmax) * tween;
 
-						xmin += (Camera.getWIDTH() - xMax - xmin) * tween;
-						xmax += (-xMin - xmax) * tween;
+					ymin += (Camera.getHEIGHT() - yMax - ymin) * tween;
+					ymax += (-yMin - ymax) * tween;
 
-						ymin += (Camera.getHEIGHT() - yMax - ymin) * tween;
-						ymax += (-yMin - ymax) * tween;
-
-						if (!room.hasEntered()) {
-							// event trigger on entering a new room
-							room.entered();
-						}
-						currentRoom = room;
-						break;
+					if (!room.hasEntered()) {
+						// event trigger on entering a new room
+						room.entered();
 					}
+					currentRoom = room;
+					break;
+
 				}
 			}
 		}
+		// update map objects
 	}
+	public void updateObjects(MapObject player){
+		currentRoom.checkCollision(player);
+		currentRoom.updateObjects();
+	}
+
 
 	private void generateRooms(){
 		// id generator
@@ -310,7 +313,7 @@ public class TileMap {
 				int x = roomX/2;
 				int y = roomY/2;
 
-				Room mistnost = new Room(Room.Classic,id,x,y,tileSize);
+				Room mistnost = new Room(Room.Classic,id,x,y);
 
 				roomArrayList[currentRooms] = mistnost;
 				roomMap[y][x] = id;
@@ -323,8 +326,13 @@ public class TileMap {
 				// looping each rooms
 				for(int i = 0;i < currentRooms;i++){
 
-					// get number of paths currently coming from that room
-					//int paths = roomArrayList[i].countPaths();
+					// type of room
+					int type;
+					if(currentRooms == 1){
+						type = Room.Loot;
+					} else{
+						type = Room.Classic;
+					}
 
 					int roomX = roomArrayList[i].getX();
 					int roomY = roomArrayList[i].getY();
@@ -357,7 +365,7 @@ public class TileMap {
 						if (rndDirection == 0){
 							int id = getIdGen();
 
-							Room mistnost = new Room(Room.Classic,id,roomX,roomY-1,tileSize);
+							Room mistnost = new Room(type,id,roomX,roomY-1);
 
 							roomArrayList[i].setTop(true);
 							mistnost.setBottom(true);
@@ -369,7 +377,7 @@ public class TileMap {
 						else if (rndDirection == 1){
 							int id = getIdGen();
 
-							Room mistnost = new Room(Room.Classic,id,roomX,roomY+1,tileSize);
+							Room mistnost = new Room(type,id,roomX,roomY+1);
 
 							roomArrayList[i].setBottom(true);
 							mistnost.setTop(true);
@@ -381,7 +389,7 @@ public class TileMap {
 						else if (rndDirection == 2){
 							int id = getIdGen();
 
-							Room mistnost = new Room(Room.Classic,id,roomX-1,roomY,tileSize);
+							Room mistnost = new Room(type,id,roomX-1,roomY);
 
 							mistnost.setRight(true);
 							roomArrayList[i].setLeft(true);
@@ -393,7 +401,7 @@ public class TileMap {
 						else {
 							int id = getIdGen();
 
-							Room mistnost = new Room(Room.Classic,id,roomX+1,roomY,tileSize);
+							Room mistnost = new Room(type,id,roomX+1,roomY);
 
 							mistnost.setLeft(true);
 							roomArrayList[i].setRight(true);
@@ -424,7 +432,7 @@ public class TileMap {
 		// paths informations
 		int[] shiftsCols = new int[roomX*roomY];
 
-		for(int loop = 0;loop < 6;loop++) {
+		for(int loop = 0;loop < 7;loop++) {
 			// load every room maps
 			if (loop == 0){
 				for(Room room : roomArrayList){
@@ -707,11 +715,16 @@ public class TileMap {
 					shiftRows += nextShiftRows;
 					shiftRows += 2;
 				}
-			} else{
+			} else if (loop == 5){
 				for(Room room : roomArrayList){
 					room.unload();
 				}
+			} else{
+				for(Room room : roomArrayList){
+					room.createObjects(this);
+				}
 			}
+
 		}
 
 	}
@@ -888,7 +901,10 @@ public class TileMap {
 		shader.unbind();
 		glBindTexture(GL_TEXTURE_2D,0);
 		glActiveTexture(0);
+	}
 
+	public void drawObjects(){
+        currentRoom.drawObjects();
 	}
 
 	public float getPlayerStartX() { return playerStartX; }

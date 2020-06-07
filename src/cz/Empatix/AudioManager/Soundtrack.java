@@ -93,4 +93,6 @@ public class Soundtrack {
     void setVolume(float vol){
         source.setVolume(vol);
     }
+
+    boolean isPlaying(){return source.isPlaying();}
 }

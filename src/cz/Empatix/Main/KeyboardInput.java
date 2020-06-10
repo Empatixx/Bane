@@ -6,7 +6,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 public class KeyboardInput extends GLFWKeyCallback {
-    private Game game;
+    private final Game game;
     KeyboardInput(Game game){
         this.game = game;
     }

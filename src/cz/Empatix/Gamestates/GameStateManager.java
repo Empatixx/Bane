@@ -17,6 +17,12 @@ public class GameStateManager {
 
     private Screanshot screanshot;
 
+    public void pause(){
+        if(currentState == INGAME){
+            ((InGame)gameStates.get(currentState)).pause();
+        }
+    }
+
     public GameStateManager() {
         // openGL matrix4f
         // audio

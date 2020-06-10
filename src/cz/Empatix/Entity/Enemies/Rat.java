@@ -130,11 +130,12 @@ public class Rat extends Enemy {
     }
 
     public void update() {
+        setMapPosition();
+
         // update animation
         animation.update();
 
         if(dead) return;
-        setMapPosition();
         // ENEMY AI
         EnemyAI();
 

@@ -45,9 +45,9 @@ public class Room {
     private int xMin;
     private int xMax;
 
-    private RoomPath[] roomPaths;
+    private final RoomPath[] roomPaths;
 
-    private ArrayList<MapObject> mapObjects;
+    private final ArrayList<MapObject> mapObjects;
 
     Room(int type, int id, int x, int y){
         entered = false;
@@ -246,4 +246,6 @@ public class Room {
 
         }
     }
+
+    public ArrayList<MapObject> getMapObjects(){return mapObjects;}
 }

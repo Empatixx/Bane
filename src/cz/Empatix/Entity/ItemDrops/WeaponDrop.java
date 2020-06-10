@@ -6,8 +6,8 @@ import cz.Empatix.Guns.Weapon;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
+import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
-import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
@@ -29,6 +29,12 @@ public class WeaponDrop extends ItemDrop {
     private boolean canPick;
 
     private Weapon weapon;
+
+    private Shader outlineShader;
+
+    private int textureWidth;
+    private int textureHeight;
+
 
     public WeaponDrop(TileMap tm,Weapon weapon, int x,int y){
         super(tm);
@@ -76,6 +82,8 @@ public class WeaponDrop extends ItemDrop {
         glBindBuffer(GL_ARRAY_BUFFER,0);
 
         textureId = weapon.getWeaponHud().getIdTexture();
+        textureWidth = weapon.getWeaponHud().getWidth();
+        textureHeight = weapon.getWeaponHud().getHeight();
 
         light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
 
@@ -89,6 +97,11 @@ public class WeaponDrop extends ItemDrop {
         cwidth*=scale;
         cheight*=scale;
 
+        outlineShader = ShaderManager.getShader("shaders\\outline");
+        if (outlineShader == null){
+            outlineShader = ShaderManager.createShader("shaders\\outline");
+        }
+/*
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\weapon_drop.tga");
 
@@ -96,7 +109,7 @@ public class WeaponDrop extends ItemDrop {
         if (spritesheet == null){
             spritesheet = SpritesheetManager.createSpritesheet("Textures\\weapon_drop.tga");
         }
-
+*/
     }
     public void draw(){
 
@@ -151,14 +164,21 @@ public class WeaponDrop extends ItemDrop {
 
 
         if(canPick){
+            outlineShader.bind();
+            outlineShader.setUniformi("sampler",0);
+            outlineShader.setUniformm4f("projection",target);
+            outlineShader.setUniformf("outlineAlpha",1f);
+            outlineShader.setUniform2f("stepSize",new Vector2f(1f/textureWidth,1f/textureHeight));
+            outlineShader.setUniform3f("color",new Vector3f(0.949f, 0.933f, 0.027f));
+
             glActiveTexture(GL_TEXTURE0);
-            spritesheet.bindTexture();
+            glBindTexture(GL_TEXTURE_2D,textureId);
 
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
 
 
-            glBindBuffer(GL_ARRAY_BUFFER, vboVerticesHud);
+            glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
             glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
 

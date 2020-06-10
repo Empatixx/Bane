@@ -195,6 +195,7 @@ public class Player extends MapObject {
 
         getMovementSpeed();
         checkTileMapCollision();
+        checkRoomObjectsCollision();
         setPosition(temp.x, temp.y);
 
         if (right || left) {

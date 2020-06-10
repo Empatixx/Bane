@@ -14,6 +14,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -178,8 +179,8 @@ public abstract class MapObject {
 			}
 		}
 		if(speed.y > 0) {
-			if(bottomLeft || bottomRight) { speed.y
-						= 0;
+			if(bottomLeft || bottomRight) {
+				speed.y = 0;
 				temp.y = (currRow + 1) * tileSize - cheight / 2;
 			}
 			else {
@@ -207,9 +208,61 @@ public abstract class MapObject {
 			}
 		}
 	}
+	public void checkRoomObjectsCollision(){
+		ArrayList<MapObject> mapObjects = tileMap.getRoomMapObjects();
+		for(MapObject obj:mapObjects){
+			boolean y = dest.y()+cheight/2 > obj.gety()-obj.cheight/2 && dest.y()-cheight/2 < obj.gety()+obj.cheight/2;
+			boolean x = position.x()-cwidth/2 < obj.getx()+obj.cwidth/2 && position.x()+cwidth/2 > obj.getx()-obj.cwidth/2;
+
+			if(x && y){
+				if (speed.y > 0) {
+					speed.y = 0;
+					temp.y = obj.gety() - obj.cheight / 2 - cheight / 2;
+
+				} else if (speed.y < 0) {
+					speed.y = 0;
+					temp.y = obj.gety() + obj.cheight / 2 + cheight / 2;
+				}
+			}
+
+			y = position.y()+cheight/2 > obj.gety()-obj.cheight/2 && position.y()-cheight/2 < obj.gety()+obj.cheight/2;
+			x = dest.x()-cwidth/2 < obj.getx()+obj.cwidth/2 && dest.x()+cwidth/2 > obj.getx()-obj.cwidth/2;
+
+			if (y && x) {
+				if (speed.x > 0) {
+					speed.x = 0;
+					temp.x=obj.getx()-obj.cwidth/2-cwidth/2;
+
+				} else if (speed.x < 0) {
+					speed.x = 0;
+					temp.x=obj.getx()+obj.cwidth/2+cwidth/2;
+				}
+			}
+
+
+
+/*
+			if(speed.x > 0) {
+				if(right  && (down && up)) {
+					speed.x = 0;
+					temp.x=obj.getx()-obj.cwidth/2-cwidth/2;
+				}
+			} else if(speed.x < 0) {
+				if(left  && (down && up)) {
+					speed.x = 0;
+					temp.x=obj.getx()+obj.cwidth/2+cwidth/2;
+				}
+			}
+
+*/
+			if(obj instanceof Chest) {
+				//((Chest)obj).checkCollisions(this);
+			}
+		}
+	}
 	
-	public int getx() { return (int)position.x; }
-	public int gety() { return (int)position.y; }
+	public float getx() { return position.x; }
+	public float gety() { return position.y; }
 
 	/**
 	 * @param x X location of MapObject
@@ -331,6 +384,10 @@ public abstract class MapObject {
 
 	public boolean isFlinching(){
 		return flinching;
+	}
+
+	public Vector3f getSpeed() {
+		return speed;
 	}
 }
 

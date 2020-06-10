@@ -79,6 +79,12 @@ public class Game implements Runnable {
         mouseButtonCallback = new MouseInput(this);
         glfwSetKeyCallback(window, keyCallback); // keyboard input check
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
+        glfwSetWindowIconifyCallback(window, new GLFWWindowIconifyCallback() {
+            @Override
+            public void invoke(long window, boolean iconified) {
+                gsm.pause();
+            }
+        });
         // Get the thread stack and push a new frame
         try ( MemoryStack stack = stackPush() ) {
             IntBuffer pWidth = stack.mallocInt(1); // int*

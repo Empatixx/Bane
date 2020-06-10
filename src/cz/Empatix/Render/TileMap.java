@@ -13,6 +13,7 @@ import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL43.*;
 
@@ -177,14 +178,6 @@ public class TileMap {
 		// converting rooms into 1 big tile map
 		formatMap();
 
-		for(int i = 0;i<numRows;i++){
-			for(int j = 0;j<numCols;j++){
-				System.out.print(map[i][j]+" ");
-			}
-			System.out.print("\n");
-		}
-		System.out.println("\n");
-
 		// converting 1 and 0 into tiles id textures
 		autoTile();
 
@@ -281,10 +274,12 @@ public class TileMap {
 		}
 		// update map objects
 	}
-	public void updateObjects(MapObject player){
-		currentRoom.checkCollision(player);
+	public void updateObjects(){
 		currentRoom.updateObjects();
 	}
+
+	public ArrayList<MapObject> getRoomMapObjects(){return currentRoom.getMapObjects();}
+
 
 
 	private void generateRooms(){

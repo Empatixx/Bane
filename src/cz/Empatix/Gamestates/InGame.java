@@ -264,12 +264,13 @@ public class InGame extends GameState {
 
         itemManager.draw();
 
-        tileMap.drawObjects();
-
         player.draw();
 
         // draw enemies
+        tileMap.drawObjects();
+
         enemyManager.draw();
+
 
         gunsManager.draw();
 
@@ -336,12 +337,12 @@ public class InGame extends GameState {
 
                 String livetime = "Live time: ";
                 if(hours>=1){
-                    livetime=livetime+hours+"h ";
+                    livetime=livetime+hours+" h  ";
                 }
                 if(min>=1){
-                    livetime=livetime+min+"min ";
+                    livetime=livetime+min+" min  ";
                 }
-                livetime=livetime+sec+"sec";
+                livetime=livetime+sec+" sec";
                 TextRender.renderText(livetime,new Vector3f(600,800,0),3,new Vector3f(1f,1f,1f));
             }
             if(time > 5500){
@@ -414,9 +415,9 @@ public class InGame extends GameState {
         } else {
             ArrayList<Enemy> enemies = enemyManager.getEnemies();
 
-            player.update();
+            tileMap.updateObjects();
 
-            tileMap.updateObjects(player);
+            player.update();
 
             // updating if player entered some another room
             tileMap.updateCurrentRoom(
@@ -460,4 +461,9 @@ public class InGame extends GameState {
         return pauseTimeEnded ;
     }
 
+    public void pause(){
+        setCursor(ARROW);
+        pauseTimeStarted = System.currentTimeMillis();
+        pause=true;
+    }
 }

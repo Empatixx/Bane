@@ -10,6 +10,7 @@ import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +88,7 @@ public abstract class  Enemy extends MapObject {
             outlineShader.setUniform2f("stepSize", new Vector2f(2f / maxWidth, 2f / maxHeight));
             float alpha = 1 - (float) (System.currentTimeMillis() - lastTimeDamaged - InGame.deltaPauseTime()) / 500;
             outlineShader.setUniformf("outlineAlpha", alpha);
+            outlineShader.setUniform3f("color", new Vector3f(1.0f,0f,0f));
 
             glActiveTexture(GL_TEXTURE0);
             spritesheet.bindTexture();
@@ -357,8 +359,8 @@ public abstract class  Enemy extends MapObject {
     }
 
     private void updatePlayerCords(){
-        px = player.getx();
-        py = player.gety();
+        px = (int)player.getx();
+        py = (int)player.gety();
     }
     public boolean shouldRemove(){
         return animation.hasPlayedOnce() && isDead();

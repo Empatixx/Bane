@@ -9,6 +9,7 @@ import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -101,9 +102,13 @@ public class Chest extends MapObject {
         height *= scale;
         cwidth *= scale;
         cheight *= scale;
+
+        stopSpeed = 0.75f;
     }
     public void update(){
         setMapPosition();
+        checkTileMapCollision();
+        setPosition(temp.x, temp.y);
         if(opened && animation.hasPlayedOnce()){
             remove=true;
 
@@ -114,11 +119,47 @@ public class Chest extends MapObject {
         }
 
         animation.update();
+
+        if (speed.x < 0){
+            speed.x += stopSpeed;
+            if (speed.x > 0) speed.x = 0;
+        } else if (speed.x > 0){
+            speed.x -= stopSpeed;
+            if (speed.x < 0) speed.x = 0;
+        }
+
+        if (speed.y < 0){
+            speed.y += stopSpeed;
+            if (speed.y > 0) speed.y = 0;
+        } else if (speed.y > 0){
+            speed.y -= stopSpeed;
+            if (speed.y < 0) speed.y = 0;
+        }
     }
 
     public void checkCollisions(MapObject obj){
         if(this.intersects(obj)){
             open();
+            Vector3f speed = obj.getSpeed();
+            this.speed.x=speed.x();
+            this.speed.y=speed.y();
+
+            if (speed.x < 0){
+                speed.x += obj.stopSpeed;
+                if (speed.x > 0) speed.x = 0;
+            } else if (speed.x > 0){
+                speed.x -= obj.stopSpeed;
+                if (speed.x < 0) speed.x = 0;
+            }
+
+            if (speed.y < 0){
+                speed.y += obj.stopSpeed;
+                if (speed.y > 0) speed.y = 0;
+            } else if (speed.y > 0){
+                speed.y -= obj.stopSpeed;
+                if (speed.y < 0) speed.y = 0;
+            }
+            obj.setSpeed(speed.x(),speed.y());
         }
     }
     public void open(){
@@ -197,4 +238,10 @@ public class Chest extends MapObject {
         }
     }
     public boolean shouldRemove(){return remove;}
+
+    public void Collision(MapObject obj){
+        if(obj.intersects(this)){
+            obj.setSpeed(0,0);
+        }
+    }
 }

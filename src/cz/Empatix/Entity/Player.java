@@ -72,9 +72,9 @@ public class Player extends MapObject {
 
         moveSpeed = 0.68f;
         maxSpeed = 11.84f;
-        stopSpeed = 1.6f;
+        stopSpeed = 2.2f;
 
-        health = maxHealth = 6;
+        health = maxHealth = 100;
         energy = maxEnergy = 100;
 
         coins = 0;

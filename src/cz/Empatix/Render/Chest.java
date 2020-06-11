@@ -1,15 +1,16 @@
-package cz.Empatix.Entity;
+package cz.Empatix.Render;
 
+import cz.Empatix.Entity.Animation;
+import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Guns.GunsManager;
+import cz.Empatix.Java.Random;
 import cz.Empatix.Main.Game;
-import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
-import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
+import org.joml.Vector2f;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -18,7 +19,7 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
-public class Chest extends MapObject {
+public class Chest extends RoomObject {
     private static final int IDLE = 0;
     private static final int OPEN = 1;
 
@@ -41,6 +42,8 @@ public class Chest extends MapObject {
         spriteSheetRows = 1;
 
         opened = false;
+        collision = true;
+        moveable=true;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\chest.tga");
@@ -97,13 +100,13 @@ public class Chest extends MapObject {
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\shader");
         }
-        // because of scaling image by 2x
+        // because of scaling image by 8x
         width *= scale;
         height *= scale;
         cwidth *= scale;
         cheight *= scale;
 
-        stopSpeed = 0.75f;
+        stopSpeed = 0.65f;
     }
     public void update(){
         setMapPosition();
@@ -112,10 +115,20 @@ public class Chest extends MapObject {
         if(opened && animation.hasPlayedOnce()){
             remove=true;
 
+            Vector2f speed = new Vector2f();
 
-            GunsManager.dropGun((int)position.x,(int)position.y);
+            float x = (float) Random.nextDouble()*(-1+Random.nextInt(2)*2);
+            float y = (float)Random.nextDouble()*(-1+Random.nextInt(2)*2);
 
-            return;
+            GunsManager.dropGun((int)position.x,(int)position.y,speed);
+
+            for(int i = 0;i<5;i++){
+                double atan = Math.atan2(x,
+                        y) + 1.3 * i;
+                speed.x = (float)(Math.cos(atan) * 10);
+                speed.y = (float)(Math.sin(atan) * 10);
+                ItemManager.createDrop(position.x,position.y,speed);
+            }
         }
 
         animation.update();
@@ -137,34 +150,15 @@ public class Chest extends MapObject {
         }
     }
 
-    public void checkCollisions(MapObject obj){
-        if(this.intersects(obj)){
-            open();
-            Vector3f speed = obj.getSpeed();
-            this.speed.x=speed.x();
-            this.speed.y=speed.y();
-
-            if (speed.x < 0){
-                speed.x += obj.stopSpeed;
-                if (speed.x > 0) speed.x = 0;
-            } else if (speed.x > 0){
-                speed.x -= obj.stopSpeed;
-                if (speed.x < 0) speed.x = 0;
-            }
-
-            if (speed.y < 0){
-                speed.y += obj.stopSpeed;
-                if (speed.y > 0) speed.y = 0;
-            } else if (speed.y > 0){
-                speed.y -= obj.stopSpeed;
-                if (speed.y < 0) speed.y = 0;
-            }
-            obj.setSpeed(speed.x(),speed.y());
-        }
+    @Override
+    public void touchEvent() {
+        open();
     }
+
     public void open(){
         if(opened) return;
         opened = true;
+        collision = false;
         animation.setFrames(spritesheet.getSprites(OPEN));
 
     }
@@ -239,9 +233,4 @@ public class Chest extends MapObject {
     }
     public boolean shouldRemove(){return remove;}
 
-    public void Collision(MapObject obj){
-        if(obj.intersects(this)){
-            obj.setSpeed(0,0);
-        }
-    }
 }

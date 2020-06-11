@@ -56,7 +56,7 @@ public class GameStateManager {
 
     public void keyPressed(int k) {
         gameStates.get(currentState).keyPressed(k);
-        if(k == GLFW.GLFW_KEY_F2){
+        if(k == GLFW.GLFW_KEY_F2 || k == GLFW.GLFW_KEY_PRINT_SCREEN){
             screanshot.keyPressed();
         }
     }

@@ -36,7 +36,7 @@ public class WeaponDrop extends ItemDrop {
     private int textureHeight;
 
 
-    public WeaponDrop(TileMap tm,Weapon weapon, int x,int y){
+    public WeaponDrop(TileMap tm,Weapon weapon, float x,float y){
         super(tm);
         this.weapon = weapon;
         type = GUN;
@@ -90,6 +90,76 @@ public class WeaponDrop extends ItemDrop {
         double atan = Math.atan2(y,x);
         speed.x = (float)(Math.cos(atan) * 10);
         speed.y = (float)(Math.sin(atan) * 10);
+        stopSpeed = 0.35f;
+
+        cwidth*=scale;
+        cheight*=scale;
+
+        outlineShader = ShaderManager.getShader("shaders\\outline");
+        if (outlineShader == null){
+            outlineShader = ShaderManager.createShader("shaders\\outline");
+        }
+/*
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\weapon_drop.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\weapon_drop.tga");
+        }
+*/
+    }
+    public WeaponDrop(TileMap tm,Weapon weapon){
+        super(tm);
+        this.weapon = weapon;
+        type = GUN;
+        canDespawn = false;
+        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+        pickedUp = false;
+
+        width=cwidth=weapon.getWeaponHud().getWidth();
+        height=cheight=weapon.getWeaponHud().getHeight();
+        scale = 1.5f;
+        facingRight = true;
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1) {
+            vboVertices = ModelManager.createModel(width, height);
+        }
+
+        vboVerticesHud = ModelManager.getModel(width+10,height+10);
+        if (vboVerticesHud == -1) {
+            vboVerticesHud = ModelManager.createModel(width+10, height+10);
+        }
+
+        // clicking icon
+        double[] texCoords =
+                {
+                        0,0,
+                        0,1,
+                        1,1,
+                        1,0
+                };
+
+        DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
+        buffer.put(texCoords);
+        buffer.flip();
+        vboTextures = glGenBuffers();
+
+        glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
+        glBufferData(GL_ARRAY_BUFFER,buffer,GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER,0);
+
+        textureId = weapon.getWeaponHud().getIdTexture();
+        textureWidth = weapon.getWeaponHud().getWidth();
+        textureHeight = weapon.getWeaponHud().getHeight();
+
+        light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
+
         maxSpeed = 10;
         moveSpeed = 1;
         stopSpeed = 0.35f;
@@ -235,55 +305,9 @@ public class WeaponDrop extends ItemDrop {
 
     @Override
     public void update() {
-        getMovementSpeed();
+        super.update();
         checkTileMapCollision();
         setPosition(temp.x, temp.y);
-    }
-    private void getMovementSpeed() {
-        if (right){
-            speed.x += moveSpeed;
-            if (speed.x > maxSpeed){
-                speed.x = maxSpeed;
-            }
-        }
-        else if (left){
-            speed.x -= moveSpeed;
-            if (speed.x < -maxSpeed){
-                speed.x = -maxSpeed;
-            }
-        }
-        else {
-            if (speed.x < 0){
-                speed.x += stopSpeed;
-                if (speed.x > 0) speed.x = 0;
-            } else if (speed.x > 0){
-                speed.x -= stopSpeed;
-                if (speed.x < 0) speed.x = 0;
-            }
-        }
-
-        if (up){
-            speed.y -= moveSpeed;
-            if (speed.y < -maxSpeed){
-                speed.y = -maxSpeed;
-            }
-        }
-        else if (down){
-            speed.y += moveSpeed;
-            if (speed.y > maxSpeed){
-                speed.y = maxSpeed;
-            }
-        }
-        else {
-            if (speed.y < 0){
-                speed.y += stopSpeed;
-                if (speed.y > 0) speed.y = 0;
-            } else if (speed.y > 0){
-                speed.y -= stopSpeed;
-                if (speed.y < 0) speed.y = 0;
-            }
-        }
-
     }
 
     public void setCanPick(boolean canPick) {

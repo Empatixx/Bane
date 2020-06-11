@@ -71,9 +71,15 @@ public class HealingPot extends ItemDrop{
 
         light = LightManager.createLight(new Vector3f(.0f,1.0f,.0f),new Vector2f(0,0),1.25f,this);
 
+        stopSpeed = 0.35f;
+
     }
 
     public void update(){
+        super.update();
+        checkTileMapCollision();
+        setPosition(temp.x, temp.y);
+
         animation.update();
         long timeNow = System.currentTimeMillis();
         float time = (float)(timeNow - liveTime - InGame.deltaPauseTime())/1000;

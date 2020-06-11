@@ -7,6 +7,7 @@ import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
@@ -165,7 +166,7 @@ public class GunsManager {
         equipedweapons[currentslot] = weapon;
         current=weapon;
     }
-    public static void dropGun(int x,int y){
-        ItemManager.dropWeapon(weapons.get(2),x,y);
+    public static void dropGun(int x, int y, Vector2f speed){
+        ItemManager.dropWeapon(weapons.get(2),x,y,speed);
     }
 }

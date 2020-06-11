@@ -2,6 +2,7 @@ package cz.Empatix.Render;
 
 
 import cz.Empatix.Main.Settings;
+import cz.Empatix.Utility.CopyImagetoClipBoard;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -16,6 +17,11 @@ import static org.lwjgl.opengl.GL11.glReadBuffer;
 
 public class Screanshot extends Thread{
     private boolean screaning;
+    private CopyImagetoClipBoard copyImagetoClipBoard;
+
+    public Screanshot(){
+        copyImagetoClipBoard = new CopyImagetoClipBoard();
+    }
 
     public void keyPressed() {
         if(screaning) return;
@@ -24,6 +30,8 @@ public class Screanshot extends Thread{
         int width = Settings.WIDTH;
         int height = Settings.HEIGHT;
         int bpp = 4;
+
+
         ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * bpp);
         GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer );
         Thread t = new Thread(() -> {
@@ -50,6 +58,10 @@ public class Screanshot extends Thread{
             try {
                 ImageIO.write(image, format, file);
             } catch (IOException e) { e.printStackTrace(); }
+
+            copyImagetoClipBoard.copyImage(image);
+
+
             screaning=false;
         });
         t.start();

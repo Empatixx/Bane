@@ -7,6 +7,7 @@ import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
 import cz.Empatix.Render.Postprocessing.Lightning.LightPoint;
+import cz.Empatix.Render.RoomObject;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
@@ -208,55 +209,91 @@ public abstract class MapObject {
 			}
 		}
 	}
+
 	public void checkRoomObjectsCollision(){
-		ArrayList<MapObject> mapObjects = tileMap.getRoomMapObjects();
-		for(MapObject obj:mapObjects){
-			boolean y = dest.y()+cheight/2 > obj.gety()-obj.cheight/2 && dest.y()-cheight/2 < obj.gety()+obj.cheight/2;
-			boolean x = position.x()-cwidth/2 < obj.getx()+obj.cwidth/2 && position.x()+cwidth/2 > obj.getx()-obj.cwidth/2;
+		ArrayList<RoomObject> mapObjects = tileMap.getRoomMapObjects();
+		for(RoomObject obj:mapObjects){
+			boolean y = (int)dest.y()+cheight/2 > (int)obj.gety()-obj.cheight/2 && (int)dest.y()-cheight/2 < (int)obj.gety()+obj.cheight/2;
+			boolean x = (int)position.x()-cwidth/2 < (int)obj.getx()+obj.cwidth/2 && (int)position.x()+cwidth/2 > (int)obj.getx()-obj.cwidth/2;
 
 			if(x && y){
-				if (speed.y > 0) {
-					speed.y = 0;
-					temp.y = obj.gety() - obj.cheight / 2 - cheight / 2;
-
-				} else if (speed.y < 0) {
-					speed.y = 0;
-					temp.y = obj.gety() + obj.cheight / 2 + cheight / 2;
+				if (speed.y > 0 && obj.collision) {
+					if(obj.moveable){
+						obj.setSpeedY(speed.y*1.75f);
+						speed.y -= stopSpeed*7;
+						if(speed.y < 0) speed.y = 0;
+						temp.y = position.y+speed.y;
+						obj.checkTileMapCollision();
+						// if map object is blocked by tile collision - block player by map object collision
+						if(obj.speed.y == 0){
+							temp.y = obj.gety() - obj.cheight / 2 - cheight / 2;
+						}
+					} else {
+						speed.y=0;
+						temp.y = obj.gety() - obj.cheight / 2 - cheight / 2;
+					}
+				} else if (speed.y < 0 && obj.collision) {
+					if(obj.moveable){
+						obj.setSpeedY(speed.y*1.75f);
+						speed.y += stopSpeed*7;
+						if(speed.y > 0) speed.y = 0;
+						temp.y = position.y+speed.y;
+						obj.checkTileMapCollision();
+						// if map object is blocked by tile collision - block player by map object collision
+						if(obj.speed.y == 0){
+							temp.y = obj.gety() + obj.cheight / 2 + cheight / 2;
+						}
+					} else {
+						speed.y=0;
+						temp.y = obj.gety() + obj.cheight / 2 + cheight / 2;
+					}
 				}
 			}
 
-			y = position.y()+cheight/2 > obj.gety()-obj.cheight/2 && position.y()-cheight/2 < obj.gety()+obj.cheight/2;
-			x = dest.x()-cwidth/2 < obj.getx()+obj.cwidth/2 && dest.x()+cwidth/2 > obj.getx()-obj.cwidth/2;
+			y = (int)position.y()+cheight/2 > (int)obj.gety()-obj.cheight/2 && (int)position.y()-cheight/2 < (int)obj.gety()+obj.cheight/2;
+			x = (int)dest.x()-cwidth/2 < (int)obj.getx()+obj.cwidth/2 && (int)dest.x()+cwidth/2 > (int)obj.getx()-obj.cwidth/2;
 
 			if (y && x) {
-				if (speed.x > 0) {
-					speed.x = 0;
-					temp.x=obj.getx()-obj.cwidth/2-cwidth/2;
+				if (speed.x > 0 && obj.collision) {
+					if(obj.moveable){
+						obj.setSpeedX(speed.x*1.75f);
+						speed.x -= stopSpeed*7;
+						if(speed.x < 0) speed.x = 0;
+						temp.x = position.x+speed.x;
+						obj.checkTileMapCollision();
+						// if map object is blocked by tile collision - block player by map object collision
 
-				} else if (speed.x < 0) {
-					speed.x = 0;
-					temp.x=obj.getx()+obj.cwidth/2+cwidth/2;
+						if(obj.speed.x == 0){
+							temp.x=obj.getx()-obj.cwidth/2-cwidth/2;
+						}
+					} else {
+						speed.x=0;
+						temp.x=obj.getx()-obj.cwidth/2-cwidth/2;
+					}
+				} else if (speed.x < 0 && obj.collision) {
+					if(obj.moveable){
+						obj.setSpeedX(speed.x*1.75f);
+						speed.x += stopSpeed*7;
+						if(speed.x > 0) speed.x = 0;
+						temp.x = position.x+speed.x;
+						obj.checkTileMapCollision();
+						// if map object is blocked by tile collision - block player by map object collision
+						if(obj.speed.x == 0){
+							temp.x=obj.getx()+obj.cwidth/2+cwidth/2;
+						}
+					} else {
+						speed.x=0;
+						temp.x=obj.getx()+obj.cwidth/2+cwidth/2;
+					}
 				}
 			}
 
+			y = dest.y()+cheight/2 > obj.gety()-obj.cheight/2 && dest.y()-cheight/2 < obj.gety()+obj.cheight/2;
+			x = dest.x()-cwidth/2 < obj.getx()+obj.cwidth/2 && dest.x()+cwidth/2 > obj.getx()-obj.cwidth/2;
 
+			if(x && y ){
 
-/*
-			if(speed.x > 0) {
-				if(right  && (down && up)) {
-					speed.x = 0;
-					temp.x=obj.getx()-obj.cwidth/2-cwidth/2;
-				}
-			} else if(speed.x < 0) {
-				if(left  && (down && up)) {
-					speed.x = 0;
-					temp.x=obj.getx()+obj.cwidth/2+cwidth/2;
-				}
-			}
-
-*/
-			if(obj instanceof Chest) {
-				//((Chest)obj).checkCollisions(this);
+				obj.touchEvent();
 			}
 		}
 	}
@@ -281,7 +318,12 @@ public abstract class MapObject {
 		this.speed.x = x;
 		this.speed.y = y;
 	}
-
+	public void setSpeedX(float x) {
+		this.speed.x = x;
+	}
+	public void setSpeedY(float y) {
+		this.speed.y = y;
+	}
 	/**
 	 * Getting shifts of tilemap
 	 */

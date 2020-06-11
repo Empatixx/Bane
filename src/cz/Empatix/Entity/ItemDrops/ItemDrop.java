@@ -32,13 +32,32 @@ public abstract class ItemDrop extends MapObject {
     public boolean isPickedUp() {
         return pickedUp;
     }
-    public void update() { }
+    public void update() {
+        getMovementSpeed();
+    }
 
     public void remove(){
         pickedUp = true;
         light.remove();
     }
+    private void getMovementSpeed() {
+        if (speed.x < 0){
+            speed.x += stopSpeed;
+            if (speed.x > 0) speed.x = 0;
+        } else if (speed.x > 0){
+            speed.x -= stopSpeed;
+            if (speed.x < 0) speed.x = 0;
+        }
+        if (speed.y < 0){
+            speed.y += stopSpeed;
+            if (speed.y > 0) speed.y = 0;
+        } else if (speed.y > 0){
+            speed.y -= stopSpeed;
+            if (speed.y < 0) speed.y = 0;
 
+        }
+
+    }
     public int getAmount() {
         return amount;
     }

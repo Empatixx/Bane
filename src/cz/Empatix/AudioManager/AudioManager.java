@@ -159,6 +159,5 @@ public class AudioManager {
                 if(soundtrack.isPlaying()) soundtrack.pause();
             }
         }
-
     }
 }

@@ -1,8 +1,6 @@
 package cz.Empatix.Render;
 
-import cz.Empatix.Entity.Chest;
 import cz.Empatix.Entity.EnemyManager;
-import cz.Empatix.Entity.MapObject;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -25,10 +23,11 @@ public class Room {
     private final int type;
 
     // types of rooms
-    public final static int Classic = 0;
-    public final static int Loot = 1;
-    public final static int Shop = 2;
-    public final static int Boss = 3;
+    public final static int Starter = 0;
+    public final static int Classic = 1;
+    public final static int Loot = 2;
+    public final static int Shop = 3;
+    public final static int Boss = 43;
 
     // orientation about paths
     private boolean bottom;
@@ -47,7 +46,7 @@ public class Room {
 
     private final RoomPath[] roomPaths;
 
-    private final ArrayList<MapObject> mapObjects;
+    private final ArrayList<RoomObject> mapObjects;
 
     Room(int type, int id, int x, int y){
         entered = false;
@@ -66,28 +65,75 @@ public class Room {
     }
 
     void loadMap(){
-        try {
-            InputStream in = getClass().getResourceAsStream("/Map/currentmap"+(new Random().nextInt(2)+1)+".map");
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(in)
-            );
+        if(type == Classic) {
+            try {
+                InputStream in = getClass().getResourceAsStream("/Map/currentmap" + (new Random().nextInt(2) + 1) + ".map");
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader(in)
+                );
 
-            numCols = Integer.parseInt(br.readLine());
-            numRows = Integer.parseInt(br.readLine());
+                numCols = Integer.parseInt(br.readLine());
+                numRows = Integer.parseInt(br.readLine());
 
-            roomMap = new byte[numRows][numCols];
+                roomMap = new byte[numRows][numCols];
 
-            String delims = "\\s+";
-            for(int row = 0; row < numRows; row++) {
-                String line = br.readLine();
-                String[] tokens = line.split(delims);
-                for(int col = 0; col < numCols; col++) {
-                    roomMap[row][col] = Byte.parseByte(tokens[col]);
+                String delims = "\\s+";
+                for (int row = 0; row < numRows; row++) {
+                    String line = br.readLine();
+                    String[] tokens = line.split(delims);
+                    for (int col = 0; col < numCols; col++) {
+                        roomMap[row][col] = Byte.parseByte(tokens[col]);
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }
-        catch(Exception e) {
-            e.printStackTrace();
+        } else if (type == Loot){
+            try {
+                InputStream in = getClass().getResourceAsStream("/Map/lootroom.map");
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader(in)
+                );
+
+                numCols = Integer.parseInt(br.readLine());
+                numRows = Integer.parseInt(br.readLine());
+
+                roomMap = new byte[numRows][numCols];
+
+                String delims = "\\s+";
+                for (int row = 0; row < numRows; row++) {
+                    String line = br.readLine();
+                    String[] tokens = line.split(delims);
+                    for (int col = 0; col < numCols; col++) {
+                        roomMap[row][col] = Byte.parseByte(tokens[col]);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else if(type == Starter) {
+            try {
+                InputStream in = getClass().getResourceAsStream("/Map/currentmap2.map");
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader(in)
+                );
+
+                numCols = Integer.parseInt(br.readLine());
+                numRows = Integer.parseInt(br.readLine());
+
+                roomMap = new byte[numRows][numCols];
+
+                String delims = "\\s+";
+                for (int row = 0; row < numRows; row++) {
+                    String line = br.readLine();
+                    String[] tokens = line.split(delims);
+                    for (int col = 0; col < numCols; col++) {
+                        roomMap[row][col] = Byte.parseByte(tokens[col]);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -173,8 +219,16 @@ public class Room {
 
                 EnemyManager.addEnemy(xMin,xMax,yMin,yMax);
             }
+
+            lockRoom(true);
         }
     }
+    private void lockRoom(boolean b){
+        for(RoomObject obj:mapObjects){
+            if(obj instanceof PathWall) obj.collision=b;
+        }
+    }
+
 
     boolean isRight() {
         return right;
@@ -213,39 +267,43 @@ public class Room {
     }
 
     public void drawObjects(){
-        for(MapObject object : mapObjects){
+        for(RoomObject object : mapObjects){
             object.draw();
         }
     }
     public void updateObjects(){
         for(int i = 0;i<mapObjects.size();i++){
-            MapObject object = mapObjects.get(i);
+            RoomObject object = mapObjects.get(i);
             if(object instanceof Chest) {
                 if(((Chest)object).shouldRemove()){
                     mapObjects.remove(i);
                     i--;
                     continue;
                 }
-                ((Chest)object).update();
             }
+            object.update();
+        }
+        if(EnemyManager.areEnemiesDead()){
+            lockRoom(false);
         }
     }
     public void createObjects(TileMap tm){
-        if(type == Room.Loot || true){
+        if(type == Room.Loot){
             Chest chest = new Chest(tm);
             chest.setPosition(xMin + (float) (xMax - xMin) / 2,yMin + (float) (yMax - yMin) / 2);
-            System.out.println(xMin + (float) (xMax - xMin) / 2+"  "+yMin + (float) (yMax - yMin) / 2);
             mapObjects.add(chest);
         }
     }
-    public void checkCollision(MapObject player){
-        for(MapObject object : mapObjects){
-            if(object instanceof Chest) {
-                ((Chest)object).checkCollisions(player);
-            }
 
-        }
+
+    public ArrayList<RoomObject> getMapObjects(){return mapObjects;}
+
+    public void addWall(TileMap tm, float x, float y){
+        System.out.println("X "+x);
+        System.out.println("Y "+y);
+
+        PathWall roomPath = new PathWall(tm);
+        roomPath.setPosition(x,y);
+        mapObjects.add(roomPath);
     }
-
-    public ArrayList<MapObject> getMapObjects(){return mapObjects;}
 }

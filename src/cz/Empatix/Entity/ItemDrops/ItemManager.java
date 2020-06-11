@@ -6,6 +6,7 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Guns.Weapon;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector2f;
 
 import java.util.ArrayList;
 
@@ -109,10 +110,35 @@ public class ItemManager {
             drop.draw();
         }
     }
-    public static void dropWeapon(Weapon weapon, int x,int y){
-        WeaponDrop drop = new WeaponDrop(tm,weapon,x, y);
+    public static void dropWeapon(Weapon weapon, int x,int y, Vector2f speed){
+        WeaponDrop drop = new WeaponDrop(tm,weapon);
+        drop.setSpeed(speed.x,speed.y);
         drop.setPosition(x,y);
         itemDrops.add(drop);
+    }
+    public static void createDrop(float x, float y, Vector2f speed){
+        int random = cz.Empatix.Java.Random.nextInt(4);
+        if(random == 0){
+            ItemDrop drop = new PistolAmmo(tm);
+            drop.setPosition(x,y);
+            drop.setSpeed(speed.x,speed.y);
+            itemDrops.add(drop);
+        } else if (random == 1) {
+            ItemDrop drop = new ShotgunAmmo(tm);
+            drop.setPosition(x,y);
+            drop.setSpeed(speed.x,speed.y);
+            itemDrops.add(drop);
+        } else if(random == 3){
+            ItemDrop drop = new HealingPot(tm);
+            drop.setPosition(x,y);
+            drop.setSpeed(speed.x,speed.y);
+            itemDrops.add(drop);
+        } else {
+            ItemDrop drop = new Coin(tm);
+            drop.setPosition(x,y);
+            drop.setSpeed(speed.x,speed.y);
+            itemDrops.add(drop);
+        }
     }
     public static void dropPlayerWeapon(Weapon weapon, int x,int y){
         WeaponDrop drop = new WeaponDrop(tm,weapon,x, y);

@@ -1,7 +1,6 @@
 package cz.Empatix.Render;
 
 
-import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -262,7 +261,14 @@ public class TileMap {
 					ymin += (Camera.getHEIGHT() - yMax - ymin) * tween;
 					ymax += (-yMin - ymax) * tween;
 
-					if (!room.hasEntered()) {
+
+					xMax -= tileSize*2;
+					xMin += tileSize*2;
+
+					// getting Y max/min of room
+					yMax -= tileSize*2;
+					yMin += tileSize*2;
+					if (!room.hasEntered() && y > yMin && y < yMax && x > xMin && x < xMax) {
 						// event trigger on entering a new room
 						room.entered();
 					}
@@ -278,7 +284,7 @@ public class TileMap {
 		currentRoom.updateObjects();
 	}
 
-	public ArrayList<MapObject> getRoomMapObjects(){return currentRoom.getMapObjects();}
+	public ArrayList<RoomObject> getRoomMapObjects(){return currentRoom.getMapObjects();}
 
 
 
@@ -308,7 +314,7 @@ public class TileMap {
 				int x = roomX/2;
 				int y = roomY/2;
 
-				Room mistnost = new Room(Room.Classic,id,x,y);
+				Room mistnost = new Room(Room.Starter,id,x,y);
 
 				roomArrayList[currentRooms] = mistnost;
 				roomMap[y][x] = id;
@@ -318,15 +324,23 @@ public class TileMap {
 				currentRooms++;
 			} else {
 				int newRooms = 0;
+				boolean lootRoomCreated = false;
 				// looping each rooms
 				for(int i = 0;i < currentRooms;i++){
 
 					// type of room
 					int type;
-					if(currentRooms == 1){
+					if(currentRooms >= 4 && !lootRoomCreated){
 						type = Room.Loot;
 					} else{
 						type = Room.Classic;
+					}
+
+					int currentRoomType = roomArrayList[i].getType();
+
+					// cancel if we would connect new room to loot room
+					if(currentRoomType == Room.Loot){
+						continue;
 					}
 
 					int roomX = roomArrayList[i].getX();
@@ -347,6 +361,9 @@ public class TileMap {
 
 					// Creates a new path from old to new room, less chance for rooms with more paths
 					if (chance > 0.2+0.2*paths){
+						if(type == Room.Loot){
+							lootRoomCreated = true;
+						}
 						// random between <0,4)
 						int rndDirection = Random.nextInt(4);
 
@@ -626,15 +643,19 @@ public class TileMap {
 							if(bottomRoom != null && mistnost.isBottom()){
 								int paths = 0;
 								// if bottom room cols starts on another cols
-								int fixX = shiftsCols[(y+1)*roomX+x]-shiftCols > 0 ? shiftsCols[(y+1)*roomX+x]-shiftCols : 0;
-								int fixXMax = cols-bottomRoom.getNumCols()-(shiftsCols[(y+1)*roomX+x]-shiftCols)> 0 ? cols-bottomRoom.getNumCols()-(shiftsCols[(y+1)*roomX+x]-shiftCols) : 0;
+								int fixX = Math.max(shiftsCols[(y + 1) * roomX + x] - shiftCols, 0);
+								int fixXMax = Math.max(cols - bottomRoom.getNumCols() - (shiftsCols[(y + 1) * roomX + x] - shiftCols), 0);
 								B:for(int j = 1+shiftCols+fixX+(cols-fixXMax-2-fixX)/2;j<cols+shiftCols-1-fixXMax;j++){
 									for(int i = rows-1+shiftRows;i<numRows;i++){
 								 		if(paths >= 2) break B;
-										if(map[i][j] == Tile.NORMAL) break;
+										if(map[i][j] == Tile.NORMAL){
+											mistnost.addWall(this,j*tileSize+tileSize/2,(rows-1+shiftRows)*tileSize+tileSize/2);
+											bottomRoom.addWall(this,j*tileSize+tileSize/2,(i-1)*tileSize+tileSize/2);
+											break;
+										}
 										map[i][j] = Tile.NORMAL;
 									}
-									 paths++;
+									paths++;
 								}
 								RoomPath bottomPath = new RoomPath();
 
@@ -667,6 +688,8 @@ public class TileMap {
 									for (int i = cols - 1 + shiftCols; i < numCols; i++) {
 										if (paths >= 2) break B;
 										if (map[j][i] == Tile.NORMAL) {
+											mistnost.addWall(this,(cols - 1 + shiftCols)*tileSize+tileSize/2,j*tileSize+tileSize/2);
+											sideRoom.addWall(this,(i-1)*tileSize+tileSize/2,j*tileSize+tileSize/2);
 											break;
 										}
 										map[j][i] = Tile.NORMAL;

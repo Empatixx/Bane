@@ -33,6 +33,8 @@ public class EnemyManager {
         enemiesKilled = 0;
     }
 
+    public static boolean areEnemiesDead(){return enemies.isEmpty();}
+
 
 
     public void update(){

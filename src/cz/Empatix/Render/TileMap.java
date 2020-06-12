@@ -306,6 +306,7 @@ public class TileMap {
 		//arraylist filled with rooms
 		roomArrayList = new Room[maxRooms];
 
+		boolean lootRoomCreated = false;
 		while(!mapCompleted){
 			if (currentRooms == 0){
 				// starting room
@@ -324,14 +325,16 @@ public class TileMap {
 				currentRooms++;
 			} else {
 				int newRooms = 0;
-				boolean lootRoomCreated = false;
+
 				// looping each rooms
 				for(int i = 0;i < currentRooms;i++){
 
 					// type of room
 					int type;
-					if(currentRooms >= 4 && !lootRoomCreated){
+					if(currentRooms+newRooms >= 4 && !lootRoomCreated) {
 						type = Room.Loot;
+					} else if (maxRooms-1==currentRooms+newRooms) {
+						type = Room.Boss;
 					} else{
 						type = Room.Classic;
 					}
@@ -341,6 +344,10 @@ public class TileMap {
 					// cancel if we would connect new room to loot room
 					if(currentRoomType == Room.Loot){
 						continue;
+					} else if(currentRoomType == Room.Starter){
+						if(type == Room.Loot){
+							continue;
+						}
 					}
 
 					int roomX = roomArrayList[i].getX();
@@ -649,8 +656,9 @@ public class TileMap {
 									for(int i = rows-1+shiftRows;i<numRows;i++){
 								 		if(paths >= 2) break B;
 										if(map[i][j] == Tile.NORMAL){
-											mistnost.addWall(this,j*tileSize+tileSize/2,(rows-1+shiftRows)*tileSize+tileSize/2);
-											bottomRoom.addWall(this,j*tileSize+tileSize/2,(i-1)*tileSize+tileSize/2);
+											mistnost.addWall(this,j*tileSize+tileSize/2,(rows-1+shiftRows)*tileSize+tileSize/2,PathWall.BOTTOM);
+											bottomRoom.addWall(this,j*tileSize+tileSize/2,(i-1)*tileSize+tileSize/2,PathWall.TOP);
+
 											break;
 										}
 										map[i][j] = Tile.NORMAL;
@@ -688,8 +696,8 @@ public class TileMap {
 									for (int i = cols - 1 + shiftCols; i < numCols; i++) {
 										if (paths >= 2) break B;
 										if (map[j][i] == Tile.NORMAL) {
-											mistnost.addWall(this,(cols - 1 + shiftCols)*tileSize+tileSize/2,j*tileSize+tileSize/2);
-											sideRoom.addWall(this,(i-1)*tileSize+tileSize/2,j*tileSize+tileSize/2);
+											mistnost.addWall(this,(cols - 1 + shiftCols)*tileSize+tileSize/2,j*tileSize+tileSize/2,PathWall.RIGHT);
+											sideRoom.addWall(this,(i-1)*tileSize+tileSize/2,j*tileSize+tileSize/2,PathWall.LEFT);
 											break;
 										}
 										map[j][i] = Tile.NORMAL;
@@ -1037,5 +1045,9 @@ public class TileMap {
 			}
 		}
 		this.map = newMap;
+	}
+
+	public void addObject(RoomObject obj){
+		currentRoom.addObject(obj);
 	}
 }

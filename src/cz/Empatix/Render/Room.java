@@ -1,5 +1,7 @@
 package cz.Empatix.Render;
 
+import cz.Empatix.AudioManager.AudioManager;
+import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.EnemyManager;
 
 import java.io.BufferedReader;
@@ -27,7 +29,7 @@ public class Room {
     public final static int Classic = 1;
     public final static int Loot = 2;
     public final static int Shop = 3;
-    public final static int Boss = 43;
+    public final static int Boss = 4;
 
     // orientation about paths
     private boolean bottom;
@@ -111,7 +113,7 @@ public class Room {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else if(type == Starter) {
+        }else if(type == Starter || type == Boss) {
             try {
                 InputStream in = getClass().getResourceAsStream("/Map/currentmap2.map");
                 BufferedReader br = new BufferedReader(
@@ -221,6 +223,15 @@ public class Room {
             }
 
             lockRoom(true);
+        } else if (type == Room.Boss){
+
+            int y=yMin + (yMax - yMin) / 2;
+            int x=xMin + (xMax - xMin) / 2;
+            EnemyManager.spawnBoss(x,y);
+
+            AudioManager.playSoundtrack(Soundtrack.BOSS);
+
+            lockRoom(true);
         }
     }
     private void lockRoom(boolean b){
@@ -298,12 +309,16 @@ public class Room {
 
     public ArrayList<RoomObject> getMapObjects(){return mapObjects;}
 
-    public void addWall(TileMap tm, float x, float y){
+    public void addWall(TileMap tm, float x, float y,int dir){
         System.out.println("X "+x);
         System.out.println("Y "+y);
 
         PathWall roomPath = new PathWall(tm);
+        roomPath.setDirection(dir);
         roomPath.setPosition(x,y);
         mapObjects.add(roomPath);
+    }
+    public void addObject(RoomObject obj){
+        mapObjects.add(obj);
     }
 }

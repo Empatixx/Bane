@@ -1,5 +1,6 @@
 package cz.Empatix.Entity;
 
+import cz.Empatix.Entity.Enemies.KingSlime;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Tile;
@@ -29,11 +30,19 @@ public class EnemyManager {
         enemiesList.add("Slime");
         enemiesList.add("Rat");
         enemiesList.add("Bat");
+        //enemiesList.add("KingSlime");
 
         enemiesKilled = 0;
     }
 
-    public static boolean areEnemiesDead(){return enemies.isEmpty();}
+    public static boolean areEnemiesDead(){
+        for(Enemy e:enemies){
+            if(!e.isDead()){
+                return false;
+            }
+        }
+        return true;
+    }
 
 
 
@@ -72,6 +81,11 @@ public class EnemyManager {
     }
     private static int getRandom(int lower, int upper) {
         return cz.Empatix.Java.Random.nextInt((upper - lower) + 1) + lower;
+    }
+    public static void spawnBoss(int x,int y){
+        KingSlime slime = new KingSlime(tileMap,player);
+        slime.setPosition(x,y);
+        enemies.add(slime);
     }
     public static void addEnemy(int xMin,int xMax, int yMin,int yMax){
         int enemyType = cz.Empatix.Java.Random.nextInt(enemiesList.size());

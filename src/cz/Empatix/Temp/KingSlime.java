@@ -23,10 +23,10 @@ public class KingSlime extends Enemy {
         maxSpeed = 1.6f;
         stopSpeed = 0.5f;
 
-        width = 128;
-        height = 96;
-        cwidth = 128;
-        cheight = 96;
+        width = 64;
+        height = 48;
+        cwidth = 64;
+        cheight = 48;
         scale = 4;
 
         health = maxHealth = 30;

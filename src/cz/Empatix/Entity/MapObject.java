@@ -160,8 +160,8 @@ public abstract class MapObject {
 	 */
 	protected void checkTileMapCollision() {
 
-		currCol = (int)position.x / tileSize;
-		currRow = (int)position.y / tileSize;
+		//currCol = (int)position.x / tileSize;
+		//currRow = (int)position.y / tileSize;
 		
 		dest.x = position.x + speed.x;
 		dest.y = position.y + speed.y;
@@ -173,6 +173,7 @@ public abstract class MapObject {
 		if(speed.y < 0) {
 			if(topLeft || topRight) {
 				speed.y = 0;
+				currRow = ((int)position.y - cheight / 2) / tileSize;
 				temp.y = currRow * tileSize + cheight / 2;
 			}
 			else {
@@ -182,6 +183,7 @@ public abstract class MapObject {
 		if(speed.y > 0) {
 			if(bottomLeft || bottomRight) {
 				speed.y = 0;
+				currRow = ((int)position.y + cheight / 2 - 1) / tileSize;
 				temp.y = (currRow + 1) * tileSize - cheight / 2;
 			}
 			else {
@@ -193,6 +195,7 @@ public abstract class MapObject {
 		if(speed.x < 0) {
 			if(topLeft || bottomLeft) {
 				speed.x = 0;
+				currCol = ((int)position.x - cwidth / 2) / tileSize;
 				temp.x = currCol * tileSize + cwidth / 2;
 			}
 			else {
@@ -202,6 +205,7 @@ public abstract class MapObject {
 		if(speed.x > 0) {
 			if(topRight || bottomRight) {
 				speed.x = 0;
+				currCol = ((int)position.x + cwidth / 2 - 1) / tileSize;
 				temp.x = (currCol + 1) * tileSize - cwidth / 2;
 			}
 			else {
@@ -288,8 +292,8 @@ public abstract class MapObject {
 				}
 			}
 
-			y = dest.y()+cheight/2 > obj.gety()-obj.cheight/2 && dest.y()-cheight/2 < obj.gety()+obj.cheight/2;
-			x = dest.x()-cwidth/2 < obj.getx()+obj.cwidth/2 && dest.x()+cwidth/2 > obj.getx()-obj.cwidth/2;
+			y = (int)dest.y()+cheight/2 > (int)obj.gety()-obj.cheight/2 && (int)dest.y()-cheight/2 < (int)obj.gety()+obj.cheight/2;
+			x = (int)dest.x()-cwidth/2 < (int)obj.getx()+obj.cwidth/2 && (int)dest.x()+cwidth/2 > (int)obj.getx()-obj.cwidth/2;
 
 			if(x && y ){
 

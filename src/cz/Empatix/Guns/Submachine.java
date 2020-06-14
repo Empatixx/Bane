@@ -26,7 +26,7 @@ public class Submachine extends Weapon{
         mindamage = 1;
         maxdamage = 1;
         inaccuracy = 0.5f;
-        maxAmmo = 100;
+        maxAmmo = 400;
         maxMagazineAmmo = 20;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
@@ -41,7 +41,7 @@ public class Submachine extends Weapon{
         soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
 
         weaponHud = new Image("Textures\\submachine.tga",new Vector3f(1600,975,0),2f);
-        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
+        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1830,975,0),1f);
 
     }
 
@@ -70,8 +70,9 @@ public class Submachine extends Weapon{
                         inaccuracy = (Math.random() * 0.155) * (Random.nextInt(2) * 2 - 1);
                     }
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                    Bullet bullet = new Bullet(tm, x, y, inaccuracy);
+                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                     bullet.setPosition(px, py);
+                    bullet.setDamage(1);
                     bullets.add(bullet);
                     currentMagazineAmmo--;
                     source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
@@ -140,8 +141,8 @@ public class Submachine extends Weapon{
     public void checkCollisions(ArrayList<Enemy> enemies) {
         for(Bullet bullet:bullets){
             for(Enemy enemy:enemies){
-                if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead()) {
-                    enemy.hit(1);
+                if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
+                    enemy.hit(bullet.getDamage());
                     bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;

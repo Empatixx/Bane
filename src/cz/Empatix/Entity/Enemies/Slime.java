@@ -93,6 +93,7 @@ public class Slime extends Enemy {
         cheight *= 2;
 
         bullets = new ArrayList<>();
+
     }
 
     private void getNextPosition() {
@@ -142,6 +143,7 @@ public class Slime extends Enemy {
 
     public void update() {
         setMapPosition();
+        if(isSpawning()) return;
         // update animation
         if(!isDead()){
             animation.update();
@@ -204,7 +206,7 @@ public class Slime extends Enemy {
     }
     @Override
     public void hit(int damage) {
-        if(dead) return;
+        if(dead || isSpawning()) return;
         lastTimeDamaged=System.currentTimeMillis()-InGame.deltaPauseTime();
         health -= damage;
         if(health < 0) health = 0;

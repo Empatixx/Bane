@@ -118,9 +118,14 @@ public class InGame extends GameState {
 
     @Override
     void mousePressed(int button) {
-        gunsManager.startShooting();
+        if(button == GLFW_MOUSE_BUTTON_LEFT){
+            gunsManager.startShooting();
+        }
     }
-
+    @Override
+    public void mouseScroll(double x, double y){
+        gunsManager.changeGunScroll();
+    }
     @Override
     void keyReleased(int k) {
         if(player.isDead()){
@@ -137,7 +142,7 @@ public class InGame extends GameState {
             pause = !pause;
             if(pause){
                 setCursor(ARROW);
-                pauseTimeStarted = System.currentTimeMillis();
+                pauseTimeStarted = System.currentTimeMillis() - InGame.deltaPauseTime();
             } else {
                 setCursor(Game.CROSSHAIR);
                 pauseTimeEnded += System.currentTimeMillis() - pauseTimeStarted;
@@ -251,6 +256,8 @@ public class InGame extends GameState {
         skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),1f);
         skullPlayerdead.setAlpha(0f);
 
+
+
     }
 
     @Override
@@ -309,13 +316,13 @@ public class InGame extends GameState {
             if(player.isDead()){
                 skullPlayerdead.draw();
             }
-            float time = (System.currentTimeMillis()-player.getDeathTime()- InGame.deltaPauseTime());
-            if(time > 3800){
+            float time = (System.currentTimeMillis()-player.getDeathTime());
+            if(time > 3500){
                 TextRender.renderText("GAME OVER",new Vector3f( 800,340,0),5,new Vector3f((time-3800)/2000,(time-3800)/2000,(time-3800)/2000));
                 glLineWidth(3f);
                 glBegin(GL_LINES);
-                float first = 960-(time-3800)/2.5f;
-                float secondary = 960+(time-3800)/2.5f;
+                float first = 960-(time-3500)/2.5f;
+                float secondary = 960+(time-3500)/2.5f;
                 if(first<480) first=480;
                 if(secondary>1440) secondary=1440;
                 glVertex2f(secondary, 380);
@@ -463,7 +470,7 @@ public class InGame extends GameState {
 
     public void pause(){
         setCursor(ARROW);
-        pauseTimeStarted = System.currentTimeMillis();
+        pauseTimeStarted = System.currentTimeMillis() - InGame.deltaPauseTime();
         pause=true;
     }
 }

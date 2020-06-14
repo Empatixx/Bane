@@ -26,7 +26,9 @@ public class Bullet extends MapObject {
     private final int soundWallhit;
     private final int soundEnemyhit;
 
-    public Bullet(TileMap tm, double x, double y,double inaccuracy) {
+    private int damage;
+
+    public Bullet(TileMap tm, double x, double y,double inaccuracy, int speed) {
 
         super(tm);
         facingRight = true;
@@ -46,8 +48,8 @@ public class Bullet extends MapObject {
 
         double atan = Math.atan2(y,x) + inaccuracy;
         // 30 - speed of bullet
-        speed.x = (float)(Math.cos(atan) * 30);
-        speed.y = (float)(Math.sin(atan) * 30);
+        this.speed.x = (float)(Math.cos(atan) * speed);
+        this.speed.y = (float)(Math.sin(atan) * speed);
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
@@ -123,6 +125,10 @@ public class Bullet extends MapObject {
         light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f((float)x+xmap,(float)y+ymap), 1.75f,this);
     }
 
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
+
     public void setHit() {
         if(hit) return;
         hit = true;
@@ -130,6 +136,10 @@ public class Bullet extends MapObject {
         animation.setDelay(70);
         speed.x = 0;
         speed.y = 0;
+    }
+
+    public int getDamage() {
+        return damage;
     }
 
     public boolean shouldRemove() { return remove; }

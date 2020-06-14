@@ -3,6 +3,7 @@ package cz.Empatix.Entity;
 import cz.Empatix.Entity.AI.Path;
 import cz.Empatix.Entity.AI.PathNode;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -49,7 +50,12 @@ public abstract class  Enemy extends MapObject {
     //protected long flinchTimer;
 
     private Shader outlineShader;
+    private Shader spawnShader;
+
     protected long lastTimeDamaged;
+
+    protected long spawnTime;
+
 
     public Enemy(TileMap tm, Player player) {
         super(tm);
@@ -60,26 +66,130 @@ public abstract class  Enemy extends MapObject {
         if (outlineShader == null){
             outlineShader = ShaderManager.createShader("shaders\\outline");
         }
+
+        spawnShader = ShaderManager.getShader("shaders\\spawn");
+        if (spawnShader == null){
+            spawnShader = ShaderManager.createShader("shaders\\spawn");
+        }
+
+        spawnTime=System.currentTimeMillis()-InGame.deltaPauseTime();
+
     }
 
+    public boolean isSpawning(){
+        return System.currentTimeMillis()-InGame.deltaPauseTime()-spawnTime < 1000;
+    }
     @Override
     public void draw() {
-        super.draw();
+        // pokud neni object na obrazovce - zrusit
+        if (isNotOnScrean()){
+            return;
+        }
+
+        // blikání - po hitu - hráč
+        if (flinching){
+            long elapsed = (System.nanoTime() - flinchingTimer) / 1000000;
+            if (elapsed / 100 % 2 == 0){
+                return;
+            }
+        }
+        Matrix4f target;
+        if (facingRight) {
+            target = new Matrix4f().translate(position)
+                    .scale(scale);
+        } else {
+            target = new Matrix4f().translate(position)
+                    .scale(scale)
+                    .rotateY(3.14f);
+
+        }
+        Camera.getInstance().projection().mul(target,target);
+
+        if(isSpawning()){
+            spawnShader.bind();
+            spawnShader.setUniformi("sampler",0);
+            spawnShader.setUniformm4f("projection",target);
+            float spawnTime = (float)(System.currentTimeMillis()-InGame.deltaPauseTime()-this.spawnTime)/1000;
+            spawnShader.setUniformf("spawn",spawnTime);
+
+            glActiveTexture(GL_TEXTURE0);
+            spritesheet.bindTexture();
+
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
+            glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
+            glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+
+            glDrawArrays(GL_QUADS, 0, 4);
+
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+            glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(1);
+
+            spawnShader.unbind();
+            glBindTexture(GL_TEXTURE_2D,0);
+            glActiveTexture(0);
+
+        } else {
+            shader.bind();
+            shader.setUniformi("sampler",0);
+            shader.setUniformm4f("projection",target);
+            glActiveTexture(GL_TEXTURE0);
+            spritesheet.bindTexture();
+
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
+            glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
+            glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+
+            glDrawArrays(GL_QUADS, 0, 4);
+
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+            glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(1);
+
+            shader.unbind();
+            glBindTexture(GL_TEXTURE_2D,0);
+            glActiveTexture(0);
+        }
+
+        if (Game.displayCollisions){
+            glColor3i(255,255,255);
+            glBegin(GL_LINE_LOOP);
+            // BOTTOM LEFT
+            glVertex2f(position.x+xmap-cwidth/2,position.y+ymap-cheight/2);
+            // TOP LEFT
+            glVertex2f(position.x+xmap-cwidth/2, position.y+ymap+cheight/2);
+            // TOP RIGHT
+            glVertex2f(position.x+xmap+cwidth/2, position.y+ymap+cheight/2);
+            // BOTTOM RIGHT
+            glVertex2f(position.x+xmap+cwidth/2, position.y+ymap-cheight/2);
+            glEnd();
+
+            glPointSize(10);
+            glColor3i(255,0,0);
+            glBegin(GL_POINTS);
+            glVertex2f(position.x+xmap,position.y+ymap);
+            glEnd();
+
+
+        }
         long time = System.currentTimeMillis() - lastTimeDamaged - InGame.deltaPauseTime();
         if (time < 500) {
-
-            Matrix4f target;
-            if (facingRight) {
-                target = new Matrix4f().translate(position)
-                        .scale(scale);
-            } else {
-                target = new Matrix4f().translate(position)
-                        .scale(scale)
-                        .rotateY(3.14f);
-
-            }
-            Camera.getInstance().projection().mul(target, target);
-
             outlineShader.bind();
             outlineShader.setUniformi("sampler", 0);
             outlineShader.setUniformm4f("projection", target);

@@ -153,7 +153,53 @@ public class TextRender {
         glActiveTexture(0);
 
     }
+    public static void renderMapText(String text,Vector3f pos, int scale, Vector3f color){
+        Font font = fonts.get(0);
+        matrixPos = new Matrix4f().translate(pos).scale(scale);
 
+        shader.bind();
+
+        glActiveTexture(GL_TEXTURE0);
+        font.bindTexture();
+
+        shader.setUniformi("sampler",0);
+        shader.setUniform3f("color",color);
+        Camera.getInstance().projection().mul(matrixPos,matrixPos);
+
+        for(char c : text.toCharArray()){
+            shader.setUniformm4f("projection",matrixPos);
+            for (FontChar fontc : font.getChars()){
+                if (fontc.getChar() == c){
+
+                    glEnableVertexAttribArray(0);
+                    glEnableVertexAttribArray(1);
+
+
+                    glBindBuffer(GL_ARRAY_BUFFER,fontc.getVerticlesVBO());
+                    glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+                    glBindBuffer(GL_ARRAY_BUFFER,fontc.getTexcoordsVBO());
+                    glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+
+                    glDrawArrays(GL_QUADS, 0, 4);
+
+                    glBindBuffer(GL_ARRAY_BUFFER,0);
+
+                    glDisableVertexAttribArray(0);
+                    glDisableVertexAttribArray(1);
+
+                    // shifting width of char
+                    matrixPos.translate(fontc.getWidth(),0,0);
+                    break;
+                }
+            }
+
+        }
+        shader.unbind();
+        glBindTexture(GL_TEXTURE_2D,0);
+        glActiveTexture(0);
+
+    }
     private static int flipEndian(int val) {
         return (val >>> 24) | (val << 24) | ((val << 8) & 0x00FF0000)
                 | ((val >> 8) & 0x0000FF00);

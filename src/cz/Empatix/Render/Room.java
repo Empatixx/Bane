@@ -3,6 +3,8 @@ package cz.Empatix.Render;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.EnemyManager;
+import cz.Empatix.Render.Text.TextRender;
+import org.joml.Vector3f;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -281,6 +283,19 @@ public class Room {
         for(RoomObject object : mapObjects){
             object.draw();
         }
+        if(type == Starter){
+            int y=yMin + (yMax - yMin) / 2;
+            int x=xMin + (xMax - xMin) / 2;
+            float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
+            TextRender.renderMapText("WASD - Movement",new Vector3f(x,y,0),2,
+                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+            TextRender.renderMapText("Mouse click - shoot",new Vector3f(x,y+50,0),2,
+                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+            TextRender.renderMapText("1 and 2 - weapon slots",new Vector3f(x,y+100,0),2,
+                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+            TextRender.renderMapText("E/Q - pickup/drop gun",new Vector3f(x,y+150,0),2,
+                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+        }
     }
     public void updateObjects(){
         for(int i = 0;i<mapObjects.size();i++){
@@ -310,8 +325,6 @@ public class Room {
     public ArrayList<RoomObject> getMapObjects(){return mapObjects;}
 
     public void addWall(TileMap tm, float x, float y,int dir){
-        System.out.println("X "+x);
-        System.out.println("Y "+y);
 
         PathWall roomPath = new PathWall(tm);
         roomPath.setDirection(dir);

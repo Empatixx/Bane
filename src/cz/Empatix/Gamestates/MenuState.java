@@ -191,7 +191,9 @@ public class MenuState extends GameState{
 
         setCursor(ARROW);
     }
-
+    @Override
+    public void mouseScroll(double x, double y){
+    }
     @Override
     public void keyPressed(int k) {
     }

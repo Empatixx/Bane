@@ -13,5 +13,5 @@ abstract class GameState {
 	abstract void keyReleased(int k);
 	abstract void mousePressed(int button);
 	abstract void mouseReleased(int button);
-
+	abstract void mouseScroll(double x, double y);
 }

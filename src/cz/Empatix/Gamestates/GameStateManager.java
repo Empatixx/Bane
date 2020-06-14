@@ -73,4 +73,8 @@ public class GameStateManager {
         gameStates.get(currentState).mouseReleased(button);
     }
 
+    public void mouseScroll(double x, double y) {
+        gameStates.get(currentState).mouseScroll(x,y);
+    }
+
 }

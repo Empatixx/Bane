@@ -29,7 +29,7 @@ public class Shotgun extends Weapon {
         mindamage = 1;
         maxdamage = 1;
         inaccuracy = 0.7f;
-        maxAmmo = 18;
+        maxAmmo = 36;
         maxMagazineAmmo = 2;
         type = 3;
         currentAmmo = maxAmmo;
@@ -69,9 +69,16 @@ public class Shotgun extends Weapon {
                     for (int i = 0; i < 4; ) {
                         double inaccuracy = 0.055 * i;
 
-                        Bullet bullet = new Bullet(tm, x, y, inaccuracy);
+                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                         bullet.setPosition(px, py);
                         bullets.add(bullet);
+                        if(i <= 1){
+                            bullet.setDamage(2);
+
+                        } else {
+                            bullet.setDamage(1);
+
+                        }
                         if (i >= 0) i++;
                         else i--;
                         i = -i;
@@ -153,8 +160,8 @@ public class Shotgun extends Weapon {
     public void checkCollisions(ArrayList<Enemy> enemies) {
         for(Bullet bullet:bullets){
             for(Enemy enemy:enemies){
-                if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead()) {
-                    enemy.hit(1);
+                if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
+                    enemy.hit(bullet.getDamage());
                     bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;

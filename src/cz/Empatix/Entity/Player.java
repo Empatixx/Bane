@@ -243,7 +243,7 @@ public class Player extends MapObject {
     public void checkCollision(ArrayList<Enemy> enemies){
         for (Enemy currentEnemy:enemies){
             // check player X enemy collision
-            if (intersects(currentEnemy) && !currentEnemy.isDead()){
+            if (intersects(currentEnemy) && !currentEnemy.isDead() && !currentEnemy.isSpawning()){
                 hit(currentEnemy.getDamage());
             }
         }

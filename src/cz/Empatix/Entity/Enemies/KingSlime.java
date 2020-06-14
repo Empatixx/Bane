@@ -13,7 +13,6 @@ import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
-import cz.Empatix.Render.RoomObject;
 import cz.Empatix.Render.TileMap;
 
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class KingSlime extends Enemy {
     private int angle;
     private boolean chestCreated;
 
-    private ArrayList<KingSlimebullet> bullets;
+    private final ArrayList<KingSlimebullet> bullets;
 
 
     public KingSlime(TileMap tm, Player player) {
@@ -49,7 +48,7 @@ public class KingSlime extends Enemy {
         cheight = 48;
         scale = 5;
 
-        health = maxHealth = 30;
+        health = maxHealth = 110;
         damage = 1;
 
         type = melee;
@@ -153,6 +152,7 @@ public class KingSlime extends Enemy {
 
     public void update() {
         setMapPosition();
+        if(isSpawning()) return;
         // update animation
         if(!isDead()){
             animation.update();
@@ -163,8 +163,9 @@ public class KingSlime extends Enemy {
                 if(!chestCreated){
                     chestCreated=true;
 
-                    RoomObject chest = new Chest(tileMap);
+                    Chest chest = new Chest(tileMap);
                     chest.setPosition(position.x,position.y);
+                    chest.disableDropWeapon();
                     tileMap.addObject(chest);
                 }
             }
@@ -260,7 +261,7 @@ public class KingSlime extends Enemy {
     }
     @Override
     public void hit(int damage) {
-        if(dead) return;
+        if(dead || isSpawning()) return;
         lastTimeDamaged=System.currentTimeMillis()- InGame.deltaPauseTime();
         health -= damage;
         if(health < 0) health = 0;

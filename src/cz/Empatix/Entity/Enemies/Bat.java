@@ -29,7 +29,7 @@ public class Bat extends Enemy {
         scale = 2;
 
 
-        health = maxHealth = 5;
+        health = maxHealth = 10;
         damage = 2;
 
         type = melee;
@@ -89,6 +89,7 @@ public class Bat extends Enemy {
         height *= 2;
         cwidth *= 2;
         cheight *= 2;
+
     }
 
     private void getNextPosition() {
@@ -138,6 +139,7 @@ public class Bat extends Enemy {
 
     public void update() {
         setMapPosition();
+        if(isSpawning()) return;
         // update animation
         animation.update();
 
@@ -154,7 +156,7 @@ public class Bat extends Enemy {
 
     @Override
     public void hit(int damage) {
-        if(dead) return;
+        if(dead || isSpawning()) return;
         lastTimeDamaged=System.currentTimeMillis()-InGame.deltaPauseTime();
         health -= damage;
         if(health < 0) health = 0;

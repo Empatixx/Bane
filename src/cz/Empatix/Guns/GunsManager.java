@@ -5,6 +5,7 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
@@ -38,6 +39,7 @@ public class GunsManager {
         weapons.add(new Pistol(tileMap));
         weapons.add(new Shotgun(tileMap));
         weapons.add(new Submachine(tileMap));
+        weapons.add(new Revolver(tileMap));
 
 
         weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);
@@ -49,7 +51,7 @@ public class GunsManager {
         equipedweapons = new Weapon[2];
 
         equipedweapons[0] = weapons.get(0);
-        equipedweapons[1] = weapons.get(1);
+        //equipedweapons[1] = weapons.get(1);
 
         current = equipedweapons[FIRSTSLOT];
         currentslot = FIRSTSLOT;
@@ -87,6 +89,7 @@ public class GunsManager {
 
     private void setCurrentWeapon(Weapon current, int slot) {
         if(System.currentTimeMillis()-InGame.deltaPauseTime()-switchDelay < 500) return;
+        if(this.current == null && current == null && slot == currentslot) return;
         if(this.current != null){
             if(this.current == current || this.current.isReloading()) return;
         }
@@ -155,6 +158,13 @@ public class GunsManager {
     public void changeGun(int x, int y, Weapon weapon){
         source.play(soundSwitchingGun);
         stopShooting();
+        // check player's currentslot
+        if(equipedweapons[currentslot] == null){
+            if(currentslot==currentslot) current = weapon;
+            equipedweapons[currentslot] = weapon;
+            return;
+        }
+        // check player's all slots
         for(int i = 0;i<2;i++){
             if(equipedweapons[i] == null){
                 if(i==currentslot) current = weapon;
@@ -162,11 +172,15 @@ public class GunsManager {
                 return;
             }
         }
+        // if player's slots are already filled
         ItemManager.dropPlayerWeapon(current,x,y);
         equipedweapons[currentslot] = weapon;
         current=weapon;
     }
     public static void dropGun(int x, int y, Vector2f speed){
-        ItemManager.dropWeapon(weapons.get(2),x,y,speed);
+        ItemManager.dropWeapon(weapons.get(1+Random.nextInt(3)),x,y,speed);
+    }
+    public void changeGunScroll(){
+        setCurrentWeapon(weapons.get(currentslot == FIRSTSLOT ? SECONDARYSLOT : FIRSTSLOT),currentslot == FIRSTSLOT ? SECONDARYSLOT : FIRSTSLOT);
     }
 }

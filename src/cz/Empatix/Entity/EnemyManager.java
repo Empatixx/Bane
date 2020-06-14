@@ -140,6 +140,7 @@ public class EnemyManager {
         }
 
         instance.setPosition(x,y);
+        instance.checkTileMapCollision();
         enemies.add(instance);
     }
 }

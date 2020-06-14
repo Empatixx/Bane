@@ -28,358 +28,38 @@
 [LWJGL] 	Module: org.lwjgl.openal
 [LWJGL] 	Loaded from org.lwjgl.librarypath: C:\Users\JKrok\AppData\Local\Temp\lwjglJKrok\3.2.3-build-13\OpenAL.dll
 [LWJGL] Java 9 text decoding enabled
-UPS: 186   FPS: 1
-UPS: 15   FPS: 1
-UPS: 5   FPS: 1
-X 2496.0
-Y 960.0
-X 2880.0
-Y 960.0
-X 2496.0
-Y 1088.0
-X 2880.0
-Y 1088.0
-X 5312.0
-Y 1984.0
-X 5312.0
-Y 2368.0
-X 5440.0
-Y 1984.0
-X 5440.0
-Y 2368.0
-X 5824.0
-Y 4288.0
-X 5824.0
-Y 4672.0
-X 5952.0
-Y 4288.0
-X 5952.0
-Y 4672.0
-X 9792.0
-Y 4288.0
-X 9792.0
-Y 4672.0
-X 9920.0
-Y 4288.0
-X 9920.0
-Y 4672.0
-X 3648.0
-Y 5568.0
-X 4032.0
-Y 5568.0
-X 3648.0
-Y 5696.0
-X 4032.0
-Y 5696.0
-X 7616.0
-Y 5568.0
-X 8000.0
-Y 5568.0
-X 7616.0
-Y 5696.0
-X 8000.0
-Y 5696.0
-UPS: 26   FPS: 24
-UPS: 67   FPS: 61
+UPS: 239   FPS: 1
+UPS: 17   FPS: 1
+UPS: 1   FPS: 1
+UPS: 4   FPS: 1
+UPS: 38   FPS: 39
 UPS: 60   FPS: 60
-UPS: 60   FPS: 51
-UPS: 60   FPS: 59
 UPS: 60   FPS: 60
 UPS: 60   FPS: 60
 UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 58
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 55
-UPS: 60   FPS: 42
-UPS: 60   FPS: 57
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 59
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 57
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 58
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 59
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-[LWJGL] 16 bytes leaked, thread 14 (Game), address: 0x13510150000
+[LWJGL] 16 bytes leaked, thread 14 (Game), address: 0x2B826BB0000
 	at org.lwjgl.system.Callback.create(Callback.java:136)
 	at org.lwjgl.system.Callback.<init>(Callback.java:86)
 	at org.lwjgl.glfw.GLFWWindowIconifyCallback.<init>(GLFWWindowIconifyCallback.java:57)
-	at cz.Empatix.Main.Game$1.<init>(Game.java:82)
-	at cz.Empatix.Main.Game.initWindow(Game.java:82)
-	at cz.Empatix.Main.Game.run(Game.java:204)
+	at cz.Empatix.Main.Game$1.<init>(Game.java:89)
+	at cz.Empatix.Main.Game.initWindow(Game.java:89)
+	at cz.Empatix.Main.Game.run(Game.java:220)
 	at java.base/java.lang.Thread.run(Thread.java:832)
-[LWJGL] 16 bytes leaked, thread 14 (Game), address: 0x1357FFF0000
+[LWJGL] 16 bytes leaked, thread 14 (Game), address: 0x2B826BC0000
+	at org.lwjgl.system.Callback.create(Callback.java:136)
+	at org.lwjgl.system.Callback.<init>(Callback.java:86)
+	at org.lwjgl.glfw.GLFWScrollCallback.<init>(GLFWScrollCallback.java:58)
+	at cz.Empatix.Main.Game$2.<init>(Game.java:96)
+	at cz.Empatix.Main.Game.initWindow(Game.java:96)
+	at cz.Empatix.Main.Game.run(Game.java:220)
+	at java.base/java.lang.Thread.run(Thread.java:832)
+[LWJGL] 16 bytes leaked, thread 14 (Game), address: 0x2B81E320000
 	at org.lwjgl.system.Callback.create(Callback.java:136)
 	at org.lwjgl.system.Callback.<init>(Callback.java:86)
 	at org.lwjgl.glfw.GLFWErrorCallback.<init>(GLFWErrorCallback.java:60)
 	at org.lwjgl.glfw.GLFWErrorCallback$1.<init>(GLFWErrorCallback.java:97)
 	at org.lwjgl.glfw.GLFWErrorCallback.createPrint(GLFWErrorCallback.java:97)
-	at cz.Empatix.Main.Game.initWindow(Game.java:55)
-	at cz.Empatix.Main.Game.run(Game.java:204)
+	at cz.Empatix.Main.Game.initWindow(Game.java:62)
+	at cz.Empatix.Main.Game.run(Game.java:220)
 	at java.base/java.lang.Thread.run(Thread.java:832)
 AL lib: (EE) alc_cleanup: 1 device not closed

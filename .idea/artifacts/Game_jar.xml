@@ -2,7 +2,6 @@
   <artifact type="jar" name="Game:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/Game_jar</output-path>
     <root id="archive" name="Game.jar">
-      <element id="module-output" name="Game" />
       <element id="extracted-dir" path="$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl/lwjgl-natives-windows-x86.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl/lwjgl-natives-windows.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/Desktop/lwjgl-3.2.3/lwjgl-glfw/lwjgl-glfw-natives-windows.jar" path-in-jar="/" />
@@ -19,6 +18,7 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/nativelib/lwjgl-stb-natives-windows-x86.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/nativelib/lwjgl-stb-natives-windows.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/nativelib/joml-1.9.20.jar" path-in-jar="/" />
+      <element id="module-output" name="Game" />
     </root>
   </artifact>
 </component>

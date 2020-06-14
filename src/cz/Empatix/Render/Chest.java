@@ -25,6 +25,7 @@ public class Chest extends RoomObject {
 
     private boolean opened;
     private boolean remove;
+    private boolean dropGun;
 
 
     public Chest(TileMap tm){
@@ -106,8 +107,13 @@ public class Chest extends RoomObject {
         cwidth *= scale;
         cheight *= scale;
 
-        stopSpeed = 0.65f;
+        stopSpeed = 0.55f;
+        dropGun= true;
     }
+    public void disableDropWeapon(){
+        dropGun = false;
+    }
+
     public void update(){
         setMapPosition();
         checkTileMapCollision();
@@ -120,7 +126,7 @@ public class Chest extends RoomObject {
             float x = (float) Random.nextDouble()*(-1+Random.nextInt(2)*2);
             float y = (float)Random.nextDouble()*(-1+Random.nextInt(2)*2);
 
-            GunsManager.dropGun((int)position.x,(int)position.y,speed);
+            if(dropGun) GunsManager.dropGun((int)position.x,(int)position.y,speed);
 
             for(int i = 0;i<5;i++){
                 double atan = Math.atan2(x,

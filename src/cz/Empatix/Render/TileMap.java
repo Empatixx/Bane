@@ -345,7 +345,7 @@ public class TileMap {
 					if(currentRoomType == Room.Loot){
 						continue;
 					} else if(currentRoomType == Room.Starter){
-						if(type == Room.Loot){
+						if(type == Room.Loot || type == Room.Boss){
 							continue;
 						}
 					}

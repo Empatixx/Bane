@@ -33,7 +33,7 @@ public class Rat extends Enemy {
         cheight=37;
         scale = 2;
 
-        health = maxHealth = 7;
+        health = maxHealth = 14;
         damage = 1;
 
         type = melee;
@@ -82,6 +82,7 @@ public class Rat extends Enemy {
         height *= 2;
         cwidth *= 2;
         cheight *= 2;
+
     }
 
     private void getNextPosition() {
@@ -131,7 +132,7 @@ public class Rat extends Enemy {
 
     public void update() {
         setMapPosition();
-
+        if(isSpawning()) return;
         // update animation
         animation.update();
 
@@ -146,7 +147,7 @@ public class Rat extends Enemy {
     }
     @Override
     public void hit(int damage) {
-        if(dead) return;
+        if(dead || isSpawning()) return;
         lastTimeDamaged=System.currentTimeMillis()-InGame.deltaPauseTime();
         health -= damage;
         if(health < 0) health = 0;

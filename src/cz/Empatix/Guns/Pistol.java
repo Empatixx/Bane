@@ -26,7 +26,7 @@ public class Pistol extends Weapon {
         mindamage = 1;
         maxdamage = 1;
         inaccuracy = 0.8f;
-        maxAmmo = 60;
+        maxAmmo = 120;
         maxMagazineAmmo = 7;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
@@ -70,8 +70,9 @@ public class Pistol extends Weapon {
                         inaccuracy = 0.055 * 400 / delta * (Random.nextInt(2) * 2 - 1);
                     }
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                    Bullet bullet = new Bullet(tm, x, y, inaccuracy);
+                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                     bullet.setPosition(px, py);
+                    bullet.setDamage(2);
                     bullets.add(bullet);
                     currentMagazineAmmo--;
                     GunsManager.bulletShooted++;
@@ -141,8 +142,8 @@ public class Pistol extends Weapon {
     public void checkCollisions(ArrayList<Enemy> enemies) {
         for(Bullet bullet:bullets){
             for(Enemy enemy:enemies){
-                if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead()) {
-                    enemy.hit(1);
+                if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
+                    enemy.hit(bullet.getDamage());
                     bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;

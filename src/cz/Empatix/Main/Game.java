@@ -5,6 +5,8 @@ import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.LoadingScreen;
+import cz.Empatix.Render.Text.TextRender;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
@@ -31,9 +33,14 @@ public class Game implements Runnable {
     private static boolean running;
     private Thread thread;
 
+    private long updateDelay;
+    private long drawDelay;
+    private long lastDeltas;
+    private long lastDeltas2;
+
     private GameStateManager gsm;
 
-    // The window handle
+    // The window hoandle
     public static long window;
     private GLFWMouseButtonCallback mouseButtonCallback;
     private GLFWKeyCallback keyCallback;
@@ -65,12 +72,12 @@ public class Game implements Runnable {
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will be resizable
+        glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE); // the window will be focused by windows
 
 
 
         // Create the window
-        window = glfwCreateWindow(Settings.WIDTH, Settings.HEIGHT, "2D Game", glfwGetPrimaryMonitor(), NULL);
+        window = glfwCreateWindow(Settings.WIDTH, Settings.HEIGHT, "Bane", glfwGetPrimaryMonitor(), NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -83,6 +90,13 @@ public class Game implements Runnable {
             @Override
             public void invoke(long window, boolean iconified) {
                 gsm.pause();
+            }
+        });
+
+        glfwSetScrollCallback(window, new GLFWScrollCallback() {
+            @Override
+            public void invoke(long window, double xoffset, double yoffset) {
+                gsm.mouseScroll(xoffset,yoffset);
             }
         });
         // Get the thread stack and push a new frame
@@ -165,6 +179,8 @@ public class Game implements Runnable {
         // Enable v-sync
         glfwSwapInterval(1);
 
+        glfwFocusWindow(window);
+
 
 
     }
@@ -227,7 +243,13 @@ public class Game implements Runnable {
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+        lastDeltas = System.nanoTime();
+        lastDeltas2 = System.nanoTime();
+
         while ( running ) {
+            if(glfwWindowShouldClose(window)){
+                running=false;
+            }
             long now = System.nanoTime();
             delta += (now-lastTime) / ns;
             lastTime = now;
@@ -260,19 +282,36 @@ public class Game implements Runnable {
 
     }
     private void update() {
+        long updateStart = System.nanoTime();
         // Poll for window events. The key callback above will only be
         // invoked during this call.
         glfwPollEvents();
 
         // gamestate update
         gsm.update();
+
+        if(System.nanoTime() - lastDeltas > 100000000){
+            updateDelay = System.nanoTime()-updateStart;
+            lastDeltas=System.nanoTime();
+        }
     }
 
     private void draw() {
+        long drawStart = System.nanoTime();
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
         // gamestate draw
         gsm.draw();
 
+        if(System.nanoTime() - lastDeltas2 > 100000000){
+            drawDelay = System.nanoTime()-drawStart;
+            lastDeltas2=System.nanoTime();
+
+        }
+        if(displayCollisions){
+            TextRender.renderText("draw: "+(float)drawDelay/1000000+" ms",new Vector3f(200,300,0),2,new Vector3f(1.0f,1.0f,1.0f));
+            TextRender.renderText("update: "+(float)updateDelay/1000000+" ms",new Vector3f(200, 350,0),2,new Vector3f(1.0f,1.0f,1.0f));
+        }
 
         glfwSwapBuffers(window); // swap the color buffers
 

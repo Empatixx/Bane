@@ -29,25 +29,39 @@ public class ItemManager {
         pickupSound =  AudioManager.loadSound("pickup.ogg");
         pickupCoinSound =  AudioManager.loadSound("coin.ogg");
 
-        source = new Source(Source.EFFECTS,0.35f);
+        source = AudioManager.createSource(Source.EFFECTS,0.35f);
 
     }
     public static void createDrop(float x, float y){
-        int drops = 4;
+        int drops = 3;
         if(player.getHealth() == player.getMaxHealth()){
             drops--;
         }
         int random = cz.Empatix.Java.Random.nextInt(drops);
-        if(random == 0){
-            ItemDrop drop = new PistolAmmo(tm);
-            drop.setPosition(x,y);
-            itemDrops.add(drop);
 
-        } else if (random == 1) {
-            ItemDrop drop = new ShotgunAmmo(tm);
-            drop.setPosition(x,y);
-            itemDrops.add(drop);
-        } else if(random == 3){
+        int[] weaponTypes = gm.getWeaponTypes();
+        if(random == 0){
+            boolean loop = false;
+            for(int slot = cz.Empatix.Java.Random.nextInt(2);;){
+                if(weaponTypes[0] == ItemDrop.PISTOLAMMO){
+                    ItemDrop drop = new PistolAmmo(tm);
+                    drop.setPosition(x,y);
+                    itemDrops.add(drop);
+                } else if(weaponTypes[0] != -1) {
+                    ItemDrop drop = new ShotgunAmmo(tm);
+                    drop.setPosition(x,y);
+                    itemDrops.add(drop);
+                }
+                if(slot == 1) {
+                    slot--;
+                } else {
+                    slot++;
+                }
+                if(loop) break;
+                loop = true;
+            }
+
+        } else if(random == 2){
             ItemDrop drop = new HealingPot(tm);
             drop.setPosition(x,y);
             itemDrops.add(drop);

@@ -98,14 +98,14 @@ public class EnemyManager {
         } catch (Exception e){
             e.printStackTrace();
         }
+        int tileSize = tileMap.getTileSize();
 
-        int x = getRandom(xMin,xMax);
-        int y = getRandom(yMin,yMax);
+        int x = getRandom(xMin+tileSize,xMax-tileSize);
+        int y = getRandom(yMin+tileSize,yMax-tileSize);
 
         int cwidth = instance.getCwidth()/2;
         int cheight = instance.getCheight()/2;
 
-        int tileSize = tileMap.getTileSize();
 
 
         int leftTile = (x - cwidth / 2) / tileSize;
@@ -141,6 +141,7 @@ public class EnemyManager {
 
         instance.setPosition(x,y);
         instance.checkTileMapCollision();
+        instance.setPosition(instance.temp.x,instance.temp.y);
         enemies.add(instance);
     }
 }

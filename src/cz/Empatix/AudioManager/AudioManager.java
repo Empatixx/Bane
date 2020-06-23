@@ -24,6 +24,9 @@ public class AudioManager {
     private static HashMap<String,Integer> buffers;
     private static ArrayList<Soundtrack> soundtracks;
 
+    private static ArrayList<Source> sources;
+
+
     private static double lastVolume;
 
     private static long timeSoundtrackChange;
@@ -52,6 +55,7 @@ public class AudioManager {
         lastVolume = Settings.MUSIC * Settings.OVERALL;
 
         soundtracks = new ArrayList<>();
+        sources = new ArrayList<>();
         buffers = new HashMap<>();
         String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
 
@@ -158,6 +162,24 @@ public class AudioManager {
                 Soundtrack soundtrack = soundtracks.get(previousSoundtrack);
                 if(soundtrack.isPlaying()) soundtrack.pause();
             }
+        }
+        for(int i = 0;i<sources.size();i++){
+            if(sources.get(i).isDeleted()){
+                sources.remove(i);
+                i--;
+            }
+        }
+    }
+
+    public static Source createSource(int type,float volume){
+        Source source = new Source(type,volume);
+        sources.add(source);
+        return source;
+    }
+
+    public static void cleanUpAllSources(){
+        for(Source s : sources){
+            s.delete();
         }
     }
 }

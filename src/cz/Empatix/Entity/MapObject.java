@@ -96,8 +96,6 @@ public abstract class MapObject {
 		dest = new Vector2f(0,0);
 		speed = new Vector3f(0,0,0);
 		position = new Vector3f(0,0,0);
-
-		source = new Source(Source.EFFECTS,0.35f);
 	}
 	
 	public boolean intersects(MapObject o) {

@@ -258,7 +258,7 @@ public abstract class  Enemy extends MapObject {
             final int tileEnemyY = (int)position.y/tileSize;
 
             if ((tileEnemyX != tileTargetX || tileEnemyY != tileTargetY)) {
-                if (Math.abs(tileEnemyX - tileTargetX) <= 8 && Math.abs(tileEnemyY - tileTargetY) <= 8) {
+                if (Math.abs(tileEnemyX - tileTargetX) <= 12 && Math.abs(tileEnemyY - tileTargetY) <= 12 ) {
                     boolean endFound = false;
 
                     final List<PathNode> opened = new ArrayList<>();

@@ -31,12 +31,6 @@ public class Source {
         AL10.alSourcei(sourceId,AL10.AL_BUFFER,buffer);
         resume();
     }
-
-    public void delete(){
-        stop();
-        AL10.alDeleteSources(sourceId);
-        deleted = true;
-    }
     public void setLooping(boolean b){
         AL10.alSourcei(sourceId,AL10.AL_LOOPING, b ? AL10.AL_TRUE : AL10.AL_FALSE);
     }
@@ -61,10 +55,14 @@ public class Source {
         AL10.alSource3f(sourceId,AL10.AL_POSITION,x,y,0);
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        if(deleted) return;
-        delete();
+
+    public void delete() {
+        stop();
+        AL10.alDeleteSources(sourceId);
+        deleted = true;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
     }
 }

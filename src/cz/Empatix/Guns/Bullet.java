@@ -1,6 +1,7 @@
 package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
+import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -121,6 +122,7 @@ public class Bullet extends MapObject {
         // audio
         soundWallhit = AudioManager.loadSound("guns\\wallhit.ogg");
         soundEnemyhit = AudioManager.loadSound("guns\\enemyhit.ogg");
+        source = AudioManager.createSource(Source.EFFECTS,0.35f);
 
         light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f((float)x+xmap,(float)y+ymap), 1.75f,this);
     }
@@ -158,6 +160,7 @@ public class Bullet extends MapObject {
         if(hit) {
             if (animation.hasPlayedOnce()){
                 remove = true;
+                source.delete();
                 light.remove();
             } else {
                 // decrease intensity every time we use next sprite of hitBullet

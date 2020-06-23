@@ -46,7 +46,7 @@ public class GunsManager {
 
 
         soundSwitchingGun = AudioManager.loadSound("guns\\switchgun.ogg");
-        source = new Source(Source.EFFECTS,0.35f);
+        source = AudioManager.createSource(Source.EFFECTS,0.35f);
 
         equipedweapons = new Weapon[2];
 
@@ -160,8 +160,8 @@ public class GunsManager {
         stopShooting();
         // check player's currentslot
         if(equipedweapons[currentslot] == null){
-            if(currentslot==currentslot) current = weapon;
             equipedweapons[currentslot] = weapon;
+            current = weapon;
             return;
         }
         // check player's all slots
@@ -181,6 +181,18 @@ public class GunsManager {
         ItemManager.dropWeapon(weapons.get(1+Random.nextInt(3)),x,y,speed);
     }
     public void changeGunScroll(){
-        setCurrentWeapon(weapons.get(currentslot == FIRSTSLOT ? SECONDARYSLOT : FIRSTSLOT),currentslot == FIRSTSLOT ? SECONDARYSLOT : FIRSTSLOT);
+        int slot = currentslot;
+        slot++;
+        if(slot > 1) slot = 0;
+        setCurrentWeapon(equipedweapons[slot],slot);
+    }
+
+    public int[] getWeaponTypes(){
+        int[] types = new int[2];
+        if(equipedweapons[0] != null) types[0] = equipedweapons[0].getType();
+        else types[0] = -1;
+        if(equipedweapons[1] != null) types[1] = equipedweapons[1].getType();
+        else types[1] = -1;
+        return types;
     }
 }

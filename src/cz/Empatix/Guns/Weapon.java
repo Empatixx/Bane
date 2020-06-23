@@ -1,5 +1,6 @@
 package cz.Empatix.Guns;
 
+import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Render.Hud.Image;
@@ -44,8 +45,8 @@ public abstract class Weapon {
 
     Weapon(TileMap tm){
         this.tm = tm;
-        source = new Source(Source.EFFECTS,0.35f);
-        reloadsource = new Source(Source.EFFECTS,0.35f);
+        source = AudioManager.createSource(Source.EFFECTS,0.35f);
+        reloadsource = AudioManager.createSource(Source.EFFECTS,0.35f);
     }
 
 

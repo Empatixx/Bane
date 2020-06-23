@@ -181,6 +181,8 @@ public class InGame extends GameState {
 
     @Override
     void init() {
+        AudioManager.cleanUpAllSources();
+
         gameStart = System.currentTimeMillis();
         pauseTimeEnded=0;
         pauseTimeStarted=0;
@@ -255,9 +257,7 @@ public class InGame extends GameState {
 
         skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),1f);
         skullPlayerdead.setAlpha(0f);
-
-
-
+        
     }
 
     @Override

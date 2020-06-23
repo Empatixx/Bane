@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class Submachine extends Weapon{
     // audio
-    private final int[] soundShoot;
+    private final int soundShoot;
     private final int soundEmptyShoot;
     private final int soundReload;
 
@@ -33,9 +33,7 @@ public class Submachine extends Weapon{
         type = 1;
         bullets = new ArrayList<>();
         // shooting
-        soundShoot = new int[2];
-        soundShoot[0] = AudioManager.loadSound("guns\\shootpistol_1.ogg");
-        soundShoot[1] = AudioManager.loadSound("guns\\shootpistol_2.ogg");
+        soundShoot = AudioManager.loadSound("guns\\shootsubmachine.ogg");
         // shooting without ammo
         soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
         soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
@@ -75,7 +73,7 @@ public class Submachine extends Weapon{
                     bullet.setDamage(1);
                     bullets.add(bullet);
                     currentMagazineAmmo--;
-                    source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
+                    source.play(soundShoot);
                     GunsManager.bulletShooted++;
 
                 }

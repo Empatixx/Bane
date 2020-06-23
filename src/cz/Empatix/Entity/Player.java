@@ -160,11 +160,13 @@ public class Player extends MapObject {
         soundPlayerdeath = AudioManager.loadSound("playerdeath.ogg");
 
 
-        sourcehealth = new Source(Source.EFFECTS,1f);
+        sourcehealth = AudioManager.createSource(Source.EFFECTS,1f);
+        source = AudioManager.createSource(Source.EFFECTS,0.35f);
         soundLowHealth = AudioManager.loadSound("lowhealth.ogg");
         sourcehealth.setLooping(true);
 
         light = LightManager.createLight(new Vector3f(1.0f,1.0f,1.0f),new Vector2f(0,0),5f,this);
+
 
     }
 

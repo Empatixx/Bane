@@ -35,7 +35,7 @@ public class Animation {
             currentFrame++;
             startTime = System.nanoTime();
         }
-        if(currentFrame == frames.length) {
+        if(currentFrame == frames.length) { 
             currentFrame = 0;
             playedOnce = true;
         }

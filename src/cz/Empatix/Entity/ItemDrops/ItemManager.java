@@ -19,18 +19,27 @@ public class ItemManager {
 
     private final int pickupSound;
     private final int pickupCoinSound;
-    private Source source;
+    private final Source source;
 
     public ItemManager(TileMap tm, GunsManager gm, Player player){
-        this.tm = tm;
-        this.gm = gm;
-        this.player = player;
+        ItemManager.tm = tm;
+        ItemManager.gm = gm;
+        ItemManager.player = player;
         itemDrops = new ArrayList<>();
         pickupSound =  AudioManager.loadSound("pickup.ogg");
         pickupCoinSound =  AudioManager.loadSound("coin.ogg");
 
         source = AudioManager.createSource(Source.EFFECTS,0.35f);
 
+    }
+    public void clear(){
+        for(ItemDrop i:itemDrops){
+            if(i instanceof WeaponDrop) {
+                ((WeaponDrop)i).despawn();
+            }
+            i.remove();
+        }
+        itemDrops.clear();
     }
     public static void createDrop(float x, float y){
         int drops = 3;

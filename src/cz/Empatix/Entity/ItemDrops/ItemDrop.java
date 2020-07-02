@@ -37,7 +37,6 @@ public abstract class ItemDrop extends MapObject {
     }
 
     public void remove(){
-        pickedUp = true;
         light.remove();
     }
     private void getMovementSpeed() {

@@ -167,6 +167,8 @@ public class KingSlime extends Enemy {
                     chest.setPosition(position.x,position.y);
                     chest.disableDropWeapon();
                     tileMap.addObject(chest);
+
+                    tileMap.addLadder();
                 }
             }
         }
@@ -271,8 +273,6 @@ public class KingSlime extends Enemy {
             speed.x = 0;
             speed.y = 0;
             dead = true;
-
-
 
             AudioManager.playSoundtrack(Soundtrack.IDLE);
         }

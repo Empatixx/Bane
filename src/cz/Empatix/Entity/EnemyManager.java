@@ -30,7 +30,6 @@ public class EnemyManager {
         enemiesList.add("Slime");
         enemiesList.add("Rat");
         enemiesList.add("Bat");
-        //enemiesList.add("KingSlime");
 
         enemiesKilled = 0;
     }

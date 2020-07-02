@@ -44,6 +44,9 @@ public abstract class  Enemy extends MapObject {
     public int px;
     public int py;
 
+    public int pxTile;
+    public int pyTile;
+
     protected boolean itemDropped;
 
     //protected boolean flinching;
@@ -259,6 +262,10 @@ public abstract class  Enemy extends MapObject {
 
             if ((tileEnemyX != tileTargetX || tileEnemyY != tileTargetY)) {
                 if (Math.abs(tileEnemyX - tileTargetX) <= 12 && Math.abs(tileEnemyY - tileTargetY) <= 12 ) {
+
+                    pxTile = tileTargetX;
+                    pyTile = tileTargetY;
+
                     boolean endFound = false;
 
                     final List<PathNode> opened = new ArrayList<>();

@@ -325,4 +325,7 @@ public class WeaponDrop extends ItemDrop {
     public double distance(float px, float py){
         return Math.sqrt(Math.pow(position.x-px,2)+Math.pow(position.y-py,2));
     }
+    public void despawn(){
+        weapon.despawn();
+    }
 }

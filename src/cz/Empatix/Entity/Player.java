@@ -21,6 +21,10 @@ import static cz.Empatix.Main.Game.window;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Player extends MapObject {
+    // roll
+    private long rollCooldown;
+    private boolean rolling;
+
 
     private boolean dead;
     private long deathTime;
@@ -167,11 +171,20 @@ public class Player extends MapObject {
 
         light = LightManager.createLight(new Vector3f(1.0f,1.0f,1.0f),new Vector2f(0,0),5f,this);
 
+        rolling = false;
 
     }
 
     public void update() {
         setMapPosition();
+        // check if player should be still rolling
+        if(System.currentTimeMillis() - rollCooldown - InGame.deltaPauseTime() >= 400 && rolling){
+            rolling = false;
+            right=false;
+            up=false;
+            down=false;
+            left=false;
+        }
         // check if player is not dead
         if (health <= 0) {
             speed.x = 0;
@@ -310,6 +323,14 @@ public class Player extends MapObject {
     }
 
     public void keyPressed(int key) {
+        if(key == GLFW_KEY_SPACE && false){
+            System.out.println("TEST");
+            if(System.currentTimeMillis() - rollCooldown - InGame.deltaPauseTime() >= 1000 && currentAction != IDLE){
+                rollCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+                rolling = true;
+            }
+        }
+        if(rolling) return;
         if (key == GLFW.GLFW_KEY_W){
             setUp(true);
         }
@@ -324,6 +345,7 @@ public class Player extends MapObject {
         }
     }
     public void keyReleased(int key) {
+        if(rolling) return;
         if (key == GLFW.GLFW_KEY_W){
             setUp(false);
         }
@@ -346,7 +368,7 @@ public class Player extends MapObject {
         return position.y;
     }
     public void hit(int damage){
-        if (flinching ||dead) return;
+        if (flinching ||dead || rolling) return;
 
         int newDamage = damage-armor;
         armor-=damage;

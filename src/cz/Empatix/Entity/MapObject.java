@@ -157,9 +157,6 @@ public abstract class MapObject {
 	 * Calculating destinations and checking if there is any collision
 	 */
 	protected void checkTileMapCollision() {
-
-		//currCol = (int)position.x / tileSize;
-		//currRow = (int)position.y / tileSize;
 		
 		dest.x = position.x + speed.x;
 		dest.y = position.y + speed.y;
@@ -310,6 +307,8 @@ public abstract class MapObject {
 	public void setPosition(float  x, float y) {
 		position.x = x;
 		position.y = y;
+		temp.x = x;
+		temp.y = y;
 	}
 	/**
 	 * Setting vector2 speed of MapObject

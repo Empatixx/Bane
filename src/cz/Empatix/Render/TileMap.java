@@ -1,6 +1,7 @@
 package cz.Empatix.Render;
 
 
+import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -17,6 +18,11 @@ import java.util.ArrayList;
 import static org.lwjgl.opengl.GL43.*;
 
 public class TileMap {
+	// gamestate
+	private InGame inGame;
+
+
+
 	// position
 	private final Vector3f position;
 	private final Camera camera;
@@ -69,7 +75,8 @@ public class TileMap {
 	private float playerStartY;
 
 
-	public TileMap(int tileSize) {
+	public TileMap(int tileSize, InGame inGame) {
+		this.inGame = inGame;
 		this.tileSize = tileSize;
 		// 2x scale
 		numRowsToDraw = Camera.getHEIGHT() / (tileSize*2) + 2;
@@ -605,6 +612,10 @@ public class TileMap {
 								playerStartY = yMin + (float) (yMax - yMin) / 2;
 
 								currentRoom = mistnost;
+
+								System.out.println("FOUND LMAO");
+								System.out.println("FOUND LMAO");
+
 							}
 
 							if (nextShiftRows < rows) {
@@ -1049,5 +1060,22 @@ public class TileMap {
 
 	public void addObject(RoomObject obj){
 		currentRoom.addObject(obj);
+	}
+	public void addLadder(){
+		int xMin = currentRoom.getxMin();
+		int xMax = currentRoom.getxMax();
+
+		int yMin = currentRoom.getyMin();
+		int yMax = currentRoom.getyMax();
+
+		Ladder ladder = new Ladder(this);
+		ladder.setPosition(xMin + (float) (xMax - xMin) / 2, yMin + (float) (yMax - yMin) / 2);
+		addObject(ladder);
+	}
+
+	public void newMap(){
+		tween = 1;
+		loadMap();
+		inGame.nextFloor();
 	}
 }

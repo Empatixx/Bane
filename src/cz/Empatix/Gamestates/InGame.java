@@ -40,9 +40,12 @@ public class InGame extends GameState {
     //
     // Main game
     //
-    // game state manager
-    private Player player;
+
+    // death menu
     private Image skullPlayerdead;
+    private Image[] logos;
+
+    private Player player;
 
     private TileMap tileMap;
 
@@ -129,12 +132,11 @@ public class InGame extends GameState {
     @Override
     void keyReleased(int k) {
         if(player.isDead()){
-            if(k == GLFW_KEY_SPACE){
-                float time = (System.currentTimeMillis()-player.getDeathTime());
-                if(time > 5500){
-                    gsm.setState(GameStateManager.MENU);
-                    glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
-                }
+            float time = (System.currentTimeMillis()-player.getDeathTime());
+            if(time > 5500){
+                gsm.setState(GameStateManager.MENU);
+                glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
+
             }
             return;
         }
@@ -199,7 +201,7 @@ public class InGame extends GameState {
         setCursor(Game.CROSSHAIR);
 
         // Tile map
-        tileMap = new TileMap(64);
+        tileMap = new TileMap(64,this);
         tileMap.loadTiles("Textures\\tileset64.tga");
         tileMap.loadMap();
         tileMap.setTween(0.10);
@@ -256,6 +258,12 @@ public class InGame extends GameState {
         soundMenuClick = AudioManager.loadSound("menuclick.ogg");
 
         skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),1f);
+        logos = new Image[4];
+        logos[0] = new Image("Textures\\killslogo.tga", new Vector3f(500,476,0),1.5f);
+        logos[1] = new Image("Textures\\coinlogo.tga", new Vector3f(500,576,0),1.5f);
+        logos[2] = new Image("Textures\\accuracylogo.tga", new Vector3f(500,676,0),1.5f);
+        logos[3] = new Image("Textures\\timelogo.tga", new Vector3f(500,776,0),1.5f);
+
         skullPlayerdead.setAlpha(0f);
         
     }
@@ -330,6 +338,9 @@ public class InGame extends GameState {
                 glEnd();
             }
             if(time > 5000){
+                for(Image img : logos){
+                    img.draw();
+                }
                 TextRender.renderText("Enemies killed: "+EnemyManager.enemiesKilled,new Vector3f(600,500,0),3,new Vector3f(1f,1f,1f));
                 TextRender.renderText("Total coins: "+player.getCoins(),new Vector3f(600,600,0),3,new Vector3f(1f,1f,1f));
                 if(GunsManager.bulletShooted == 0){
@@ -354,7 +365,7 @@ public class InGame extends GameState {
             }
             if(time > 5500){
                 if(System.currentTimeMillis() / 500 % 2 == 0) {
-                    TextRender.renderText("Press space to continue...",new Vector3f(1500,1000,0),2,new Vector3f(1f,1f,1f));
+                    TextRender.renderText("Press aynthing to continue...",new Vector3f(1500,1000,0),2,new Vector3f(1f,1f,1f));
 
                 }
             }
@@ -422,9 +433,9 @@ public class InGame extends GameState {
         } else {
             ArrayList<Enemy> enemies = enemyManager.getEnemies();
 
-            tileMap.updateObjects();
-
             player.update();
+
+            tileMap.updateObjects();
 
             // updating if player entered some another room
             tileMap.updateCurrentRoom(
@@ -457,7 +468,6 @@ public class InGame extends GameState {
 
         gaussianBlur.update(pause);
         lightManager.update();
-
     }
 
     /**
@@ -472,5 +482,11 @@ public class InGame extends GameState {
         setCursor(ARROW);
         pauseTimeStarted = System.currentTimeMillis() - InGame.deltaPauseTime();
         pause=true;
+    }
+
+    public void nextFloor(){
+        player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
+        tileMap.setTween(0.10);
+        itemManager.clear();
     }
 }

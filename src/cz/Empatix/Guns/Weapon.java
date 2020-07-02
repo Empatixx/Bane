@@ -27,6 +27,8 @@ public abstract class Weapon {
     protected int currentMagazineAmmo;
     protected int maxMagazineAmmo;
 
+    boolean alreadyDropped;
+
     protected Source source;
     protected Source reloadsource;
 
@@ -96,4 +98,16 @@ public abstract class Weapon {
         return weaponHud;
     }
     public boolean isFullAmmo(){ return maxAmmo == currentAmmo;}
+
+    public boolean hasAlreadyDropped() {
+        return alreadyDropped;
+    }
+    public void drop(){
+        alreadyDropped = true;
+        currentAmmo = maxAmmo;
+        currentMagazineAmmo = maxMagazineAmmo;
+    }
+    public void despawn(){
+        alreadyDropped = false;
+    }
 }

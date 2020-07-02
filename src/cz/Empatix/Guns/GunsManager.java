@@ -178,7 +178,12 @@ public class GunsManager {
         current=weapon;
     }
     public static void dropGun(int x, int y, Vector2f speed){
-        ItemManager.dropWeapon(weapons.get(1+Random.nextInt(3)),x,y,speed);
+        Weapon weapon = weapons.get(1+Random.nextInt(3));
+        while(weapon.hasAlreadyDropped()){
+            weapon = weapons.get(1+Random.nextInt(3));
+        }
+        weapon.drop();
+        ItemManager.dropWeapon(weapon,x,y,speed);
     }
     public void changeGunScroll(){
         int slot = currentslot;
@@ -186,7 +191,6 @@ public class GunsManager {
         if(slot > 1) slot = 0;
         setCurrentWeapon(equipedweapons[slot],slot);
     }
-
     public int[] getWeaponTypes(){
         int[] types = new int[2];
         if(equipedweapons[0] != null) types[0] = equipedweapons[0].getType();

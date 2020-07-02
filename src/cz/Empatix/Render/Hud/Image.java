@@ -44,7 +44,6 @@ public class Image {
         ByteBufferImage decoder = new ByteBufferImage();
         ByteBuffer spritesheetImage = decoder.decodeImage(file);
 
-
         shader = ShaderManager.getShader("shaders\\image");
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\image");

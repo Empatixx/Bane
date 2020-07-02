@@ -313,10 +313,10 @@ public class Room {
             lockRoom(false);
         }
     }
-    public void createObjects(TileMap tm){
-        if(type == Room.Loot){
+    public void createObjects(TileMap tm) {
+        if (type == Room.Loot) {
             Chest chest = new Chest(tm);
-            chest.setPosition(xMin + (float) (xMax - xMin) / 2,yMin + (float) (yMax - yMin) / 2);
+            chest.setPosition(xMin + (float) (xMax - xMin) / 2, yMin + (float) (yMax - yMin) / 2);
             mapObjects.add(chest);
         }
     }

@@ -23,41 +23,15 @@
 [LWJGL] Loading library: OpenAL
 [LWJGL] 	Module: org.lwjgl.openal
 [LWJGL] 	Loaded from org.lwjgl.librarypath: C:\Users\JKrok\AppData\Local\Temp\lwjglJKrok\3.2.3-build-13\OpenAL.dll
-UPS: 204   FPS: 1
-UPS: 14   FPS: 1
-UPS: 3   FPS: 1
-FOUND LMAO
-FOUND LMAO
-UPS: 18   FPS: 18
-UPS: 60   FPS: 41
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 56
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 51
-UPS: 60   FPS: 57
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
+UPS: 223   FPS: 1
+UPS: 18   FPS: 1
+UPS: 1   FPS: 1
+UPS: 5   FPS: 1
+UPS: 52   FPS: 52
+UPS: 60   FPS: 42
 UPS: 60   FPS: 58
 UPS: 60   FPS: 60
 UPS: 60   FPS: 60
-UPS: 60   FPS: 52
-UPS: 60   FPS: 59
 UPS: 60   FPS: 60
 UPS: 60   FPS: 60
 UPS: 60   FPS: 60
@@ -76,8 +50,9 @@ UPS: 60   FPS: 60
 UPS: 60   FPS: 60
 UPS: 60   FPS: 60
 UPS: 60   FPS: 60
-UPS: 60   FPS: 51
-UPS: 60   FPS: 55
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
 UPS: 60   FPS: 60
 UPS: 60   FPS: 60
 UPS: 60   FPS: 60
@@ -100,3 +75,29 @@ UPS: 60   FPS: 60
 UPS: 60   FPS: 60
 UPS: 60   FPS: 60
 UPS: 59   FPS: 59
+[LWJGL] 8 bytes leaked, thread 9 (Game), address: 0x15B00000
+	at org.lwjgl.system.Callback.create(Callback.java:136)
+	at org.lwjgl.system.Callback.<init>(Callback.java:86)
+	at org.lwjgl.glfw.GLFWErrorCallback.<init>(GLFWErrorCallback.java:60)
+	at org.lwjgl.glfw.GLFWErrorCallback$1.<init>(GLFWErrorCallback.java:97)
+	at org.lwjgl.glfw.GLFWErrorCallback.createPrint(GLFWErrorCallback.java:97)
+	at cz.Empatix.Main.Game.initWindow(Game.java:62)
+	at cz.Empatix.Main.Game.run(Game.java:220)
+	at java.lang.Thread.run(Thread.java:748)
+[LWJGL] 8 bytes leaked, thread 9 (Game), address: 0x1C140000
+	at org.lwjgl.system.Callback.create(Callback.java:136)
+	at org.lwjgl.system.Callback.<init>(Callback.java:86)
+	at org.lwjgl.glfw.GLFWWindowIconifyCallback.<init>(GLFWWindowIconifyCallback.java:57)
+	at cz.Empatix.Main.Game$1.<init>(Game.java:89)
+	at cz.Empatix.Main.Game.initWindow(Game.java:89)
+	at cz.Empatix.Main.Game.run(Game.java:220)
+	at java.lang.Thread.run(Thread.java:748)
+[LWJGL] 8 bytes leaked, thread 9 (Game), address: 0x1C150000
+	at org.lwjgl.system.Callback.create(Callback.java:136)
+	at org.lwjgl.system.Callback.<init>(Callback.java:86)
+	at org.lwjgl.glfw.GLFWScrollCallback.<init>(GLFWScrollCallback.java:58)
+	at cz.Empatix.Main.Game$2.<init>(Game.java:96)
+	at cz.Empatix.Main.Game.initWindow(Game.java:96)
+	at cz.Empatix.Main.Game.run(Game.java:220)
+	at java.lang.Thread.run(Thread.java:748)
+AL lib: (EE) alc_cleanup: 1 device not closed

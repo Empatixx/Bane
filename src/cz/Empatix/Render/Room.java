@@ -2,7 +2,9 @@ package cz.Empatix.Render;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
+import cz.Empatix.Entity.Enemies.Shopkeeper;
 import cz.Empatix.Entity.EnemyManager;
+import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
@@ -52,6 +54,8 @@ public class Room {
 
     private final ArrayList<RoomObject> mapObjects;
 
+    private MapObject shopkeeper;
+
     Room(int type, int id, int x, int y){
         entered = false;
 
@@ -95,6 +99,29 @@ public class Room {
         } else if (type == Loot){
             try {
                 InputStream in = getClass().getResourceAsStream("/Map/lootroom.map");
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader(in)
+                );
+
+                numCols = Integer.parseInt(br.readLine());
+                numRows = Integer.parseInt(br.readLine());
+
+                roomMap = new byte[numRows][numCols];
+
+                String delims = "\\s+";
+                for (int row = 0; row < numRows; row++) {
+                    String line = br.readLine();
+                    String[] tokens = line.split(delims);
+                    for (int col = 0; col < numCols; col++) {
+                        roomMap[row][col] = Byte.parseByte(tokens[col]);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (type == Shop){
+            try {
+                InputStream in = getClass().getResourceAsStream("/Map/shoproom.map");
                 BufferedReader br = new BufferedReader(
                         new InputStreamReader(in)
                 );
@@ -279,9 +306,16 @@ public class Room {
         roomPaths[3] = roomPath;
     }
 
+    public void preDrawObjects(){
+        for(RoomObject object : mapObjects){
+            if(object.isPreDraw()){
+                object.draw();
+            }
+        }
+    }
     public void drawObjects(){
         for(RoomObject object : mapObjects){
-            object.draw();
+            if(!object.isPreDraw())object.draw();
         }
         if(type == Starter){
             int y=yMin + (yMax - yMin) / 2;
@@ -295,6 +329,8 @@ public class Room {
                     new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
             TextRender.renderMapText("E/Q - pickup/drop gun",new Vector3f(x,y+150,0),2,
                     new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+        } else if (type == Shop){
+            shopkeeper.draw();
         }
     }
     public void updateObjects(){
@@ -312,12 +348,28 @@ public class Room {
         if(EnemyManager.areEnemiesDead()){
             lockRoom(false);
         }
+        if(type == Shop) {
+            ((Shopkeeper)shopkeeper).update();
+        }
     }
     public void createObjects(TileMap tm) {
         if (type == Room.Loot) {
             Chest chest = new Chest(tm);
             chest.setPosition(xMin + (float) (xMax - xMin) / 2, yMin + (float) (yMax - yMin) / 2);
             mapObjects.add(chest);
+        }
+        if(type == Room.Shop){
+            for(int i = 1;i<=3;i++){
+                ShopTable table = new ShopTable(tm);
+                table.setPosition(xMin+ (float) (xMax - xMin) / 4 * i,yMin + (float) (yMax - yMin) / 2);
+                table.createItem();
+                mapObjects.add(table);
+
+                if(i == 2){
+                    shopkeeper = new Shopkeeper(tm);
+                    shopkeeper.setPosition(xMin+ (float) (xMax - xMin) / 4 * i,yMin + (float) (yMax - yMin) / 2 - 300);
+                }
+            }
         }
     }
 

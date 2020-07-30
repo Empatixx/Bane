@@ -8,5 +8,5 @@ out vec4 gl_FragColor;
 
 void main(){
     gl_FragColor = texture(sampler, tex_coords);
-    gl_FragColor.rgba *= vec4(spawn);
+    gl_FragColor.rgba *= vec4(vec3(spawn),0.9);
 }

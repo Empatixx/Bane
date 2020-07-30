@@ -13,7 +13,9 @@ import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.Hud.HealthBar;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
@@ -33,6 +35,7 @@ public class KingSlime extends Enemy {
     private boolean chestCreated;
 
     private final ArrayList<KingSlimebullet> bullets;
+    private HealthBar healthBar;
 
 
     public KingSlime(TileMap tm, Player player) {
@@ -103,6 +106,8 @@ public class KingSlime extends Enemy {
 
         angle=0;
         chestCreated=false;
+
+        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(1000,1000,0),7,50,4);
     }
 
     private void getNextPosition() {
@@ -154,6 +159,7 @@ public class KingSlime extends Enemy {
         setMapPosition();
         if(isSpawning()) return;
         // update animation
+        healthBar.update(health,maxHealth);
         if(!isDead()){
             animation.update();
         } else if(!animation.hasPlayedOnce()) {
@@ -258,8 +264,14 @@ public class KingSlime extends Enemy {
         for(KingSlimebullet bullet : bullets){
             bullet.draw();
         }
-        if(!disableDraw) super.draw();
+        if(!disableDraw){
+            super.draw();
+        }
 
+
+    }
+    public void drawHud(){
+        healthBar.draw();
     }
     @Override
     public void hit(int damage) {
@@ -275,6 +287,10 @@ public class KingSlime extends Enemy {
             dead = true;
 
             AudioManager.playSoundtrack(Soundtrack.IDLE);
+
+            for(KingSlimebullet slimebullet : bullets){
+                slimebullet.setHit();
+            }
         }
     }
     @Override

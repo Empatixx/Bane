@@ -18,11 +18,15 @@ public abstract class ItemDrop extends MapObject {
     int type;
     boolean pickedUp;
 
+    boolean shop;
+    int price;
+
     boolean canDespawn;
     long liveTime;
 
     public ItemDrop(TileMap tm){
         super(tm);
+        shop = false;
     }
 
     public void setAmount(int amount) {
@@ -59,5 +63,22 @@ public abstract class ItemDrop extends MapObject {
     }
     public int getAmount() {
         return amount;
+    }
+
+    public void setShop(int price){
+        this.price = price;
+        canDespawn=false;
+        shop = true;
+    }
+    public void shopBuy(){
+        shop = false;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public boolean isShop() {
+        return shop;
     }
 }

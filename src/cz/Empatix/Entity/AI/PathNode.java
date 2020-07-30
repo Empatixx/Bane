@@ -24,12 +24,20 @@ public class PathNode {
         this.h = h;
         this.g = g;
         this.parent = parent;
+        right=false;
+        left=false;
+        up=false;
+        down=false;
     }
     public int getX (){ return x;}
     public int getY() { return y;}
 
     public int getH() {
         return h;
+    }
+
+    public int getG() {
+        return g;
     }
 
     public PathNode getParent() {

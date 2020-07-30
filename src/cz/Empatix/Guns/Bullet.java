@@ -144,7 +144,7 @@ public class Bullet extends MapObject {
         return damage;
     }
 
-    public boolean shouldRemove() { return remove; }
+    public boolean shouldRemove() { return remove && !source.isPlaying(); }
 
     public void update() {
         setMapPosition();
@@ -155,12 +155,14 @@ public class Bullet extends MapObject {
             source.play(soundWallhit);
             setHit();
         }
+        if(remove && !source.isPlaying()){
+            source.delete();
+        }
 
         animation.update();
         if(hit) {
             if (animation.hasPlayedOnce()){
                 remove = true;
-                source.delete();
                 light.remove();
             } else {
                 // decrease intensity every time we use next sprite of hitBullet
@@ -171,6 +173,7 @@ public class Bullet extends MapObject {
     }
 
     public void draw() {
+        if(source.isPlaying() && remove) return;
         super.draw();
 
     }

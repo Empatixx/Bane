@@ -164,9 +164,12 @@ public class AudioManager {
             }
         }
         for(int i = 0;i<sources.size();i++){
-            if(sources.get(i).isDeleted()){
+            Source source = sources.get(i);
+            if(source.isDeleted()){
                 sources.remove(i);
                 i--;
+            } else {
+                source.update();
             }
         }
     }

@@ -1,6 +1,7 @@
 package cz.Empatix.Render;
 
 
+import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
@@ -20,7 +21,7 @@ import static org.lwjgl.opengl.GL43.*;
 public class TileMap {
 	// gamestate
 	private InGame inGame;
-
+	private int floor;
 
 
 	// position
@@ -63,6 +64,8 @@ public class TileMap {
 	// rooms
 	private Room[] roomArrayList;
 	private Room currentRoom;
+	private Room[] sideRooms;
+
 	private int[][] roomMap;
 	private int idGen;
 
@@ -88,7 +91,9 @@ public class TileMap {
 		tween = 1;
 
 		target = new Matrix4f();
+		floor = 0;
 
+		sideRooms = new Room[4];
 	}
 
 	public int getNumRows() {
@@ -279,8 +284,25 @@ public class TileMap {
 						// event trigger on entering a new room
 						room.entered();
 					}
-					currentRoom = room;
-					break;
+					if(currentRoom != room){
+						currentRoom = room;
+						A: for(int i = 0;i < roomY;i++){
+							for(int j = 0;j <roomX;j++){
+								if(roomMap[i][j] == room.getId()){
+									if(roomY > i+1) sideRooms[0] = getRoom(roomMap[i+1][j]);
+									else sideRooms[0] = null;
+									if(0 <= i-1) sideRooms[1] = getRoom(roomMap[i-1][j]);
+									else sideRooms[1] = null;
+									if(roomX > j+1) sideRooms[2] = getRoom(roomMap[i][j+1]);
+									else sideRooms[2] = null;
+									if(0 <= j-1) sideRooms[3] = getRoom(roomMap[i][j-1]);
+									else sideRooms[3] = null;
+									break A;
+								}
+							}
+						}
+					}
+ 					break;
 
 				}
 			}
@@ -289,6 +311,12 @@ public class TileMap {
 	}
 	public void updateObjects(){
 		currentRoom.updateObjects();
+		for(Room r : sideRooms){
+			if(r != null){
+				r.updateObjects();
+			}
+		}
+
 	}
 
 	public ArrayList<RoomObject> getRoomMapObjects(){return currentRoom.getMapObjects();}
@@ -299,7 +327,7 @@ public class TileMap {
 		// id generator
 		idGen = 0;
 
-		int maxRooms = 7;
+		int maxRooms = 9;
 		int currentRooms = 0;
 
 		// boolean loop
@@ -314,6 +342,7 @@ public class TileMap {
 		roomArrayList = new Room[maxRooms];
 
 		boolean lootRoomCreated = false;
+		boolean shopRoomCreated = false;
 		while(!mapCompleted){
 			if (currentRooms == 0){
 				// starting room
@@ -323,6 +352,7 @@ public class TileMap {
 				int y = roomY/2;
 
 				Room mistnost = new Room(Room.Starter,id,x,y);
+				currentRoom = mistnost;
 
 				roomArrayList[currentRooms] = mistnost;
 				roomMap[y][x] = id;
@@ -340,6 +370,8 @@ public class TileMap {
 					int type;
 					if(currentRooms+newRooms >= 4 && !lootRoomCreated) {
 						type = Room.Loot;
+					} else if(currentRooms+newRooms >= 1 && !shopRoomCreated) {
+						type = Room.Shop;
 					} else if (maxRooms-1==currentRooms+newRooms) {
 						type = Room.Boss;
 					} else{
@@ -349,7 +381,7 @@ public class TileMap {
 					int currentRoomType = roomArrayList[i].getType();
 
 					// cancel if we would connect new room to loot room
-					if(currentRoomType == Room.Loot){
+					if(currentRoomType == Room.Loot || currentRoomType == Room.Shop) {
 						continue;
 					} else if(currentRoomType == Room.Starter){
 						if(type == Room.Loot || type == Room.Boss){
@@ -377,6 +409,9 @@ public class TileMap {
 					if (chance > 0.2+0.2*paths){
 						if(type == Room.Loot){
 							lootRoomCreated = true;
+						}
+						else if(type == Room.Shop){
+							shopRoomCreated = true;
 						}
 						// random between <0,4)
 						int rndDirection = Random.nextInt(4);
@@ -446,6 +481,17 @@ public class TileMap {
 					}
 				}
 				currentRooms += newRooms;
+			}
+		}
+		A: for(int i = 0;i < roomY;i++){
+			for(int j = 0;j <roomX;j++){
+				if(roomMap[i][j] == currentRoom.getId()){
+					sideRooms[0] = getRoom(roomMap[i+1][j]);
+					sideRooms[1] = getRoom(roomMap[i-1][j]);
+					sideRooms[2] = getRoom(roomMap[i][j+1]);
+					sideRooms[3] = getRoom(roomMap[i][j-1]);
+					break A;
+				}
 			}
 		}
 	}
@@ -610,11 +656,6 @@ public class TileMap {
 
 								playerStartX = xMin + (float) (xMax - xMin) / 2;
 								playerStartY = yMin + (float) (yMax - yMin) / 2;
-
-								currentRoom = mistnost;
-
-								System.out.println("FOUND LMAO");
-								System.out.println("FOUND LMAO");
 
 							}
 
@@ -942,8 +983,21 @@ public class TileMap {
 
 	public void drawObjects(){
         currentRoom.drawObjects();
-	}
+		for(Room r : sideRooms){
+			if(r != null) {
+				r.drawObjects();
+			}
+		}
 
+	}
+	public void preDrawObjects(){
+		currentRoom.preDrawObjects();
+		for(Room r : sideRooms){
+			if(r != null) {
+				r.preDrawObjects();
+			}
+		}
+	}
 	public float getPlayerStartX() { return playerStartX; }
 
 	public float getPlayerStartY(){ return playerStartY; }
@@ -1075,7 +1129,13 @@ public class TileMap {
 
 	public void newMap(){
 		tween = 1;
+		ItemManager.clear();
 		loadMap();
 		inGame.nextFloor();
+		floor++;
+	}
+
+	public int getFloor() {
+		return floor;
 	}
 }

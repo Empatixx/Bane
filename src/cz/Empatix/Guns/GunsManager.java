@@ -185,6 +185,13 @@ public class GunsManager {
         weapon.drop();
         ItemManager.dropWeapon(weapon,x,y,speed);
     }
+    public static Weapon randomGun(){
+        Weapon weapon = weapons.get(1+Random.nextInt(3));
+        while(weapon.hasAlreadyDropped()){
+            weapon = weapons.get(1+Random.nextInt(3));
+        }
+        return weapon;
+    }
     public void changeGunScroll(){
         int slot = currentslot;
         slot++;

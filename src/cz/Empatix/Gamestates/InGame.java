@@ -106,7 +106,7 @@ public class InGame extends GameState {
                         player.cleanUp();
                         gsm.setState(GameStateManager.MENU);
                     } else if (type == PAUSERESUME){
-                        pause = false;
+                        resume();
                         gunsManager.stopShooting();
                         setCursor(Game.CROSSHAIR);
                     } else{
@@ -144,10 +144,9 @@ public class InGame extends GameState {
             pause = !pause;
             if(pause){
                 setCursor(ARROW);
-                pauseTimeStarted = System.currentTimeMillis() - InGame.deltaPauseTime();
+                pauseTimeStarted = System.currentTimeMillis();
             } else {
-                setCursor(Game.CROSSHAIR);
-                pauseTimeEnded += System.currentTimeMillis() - pauseTimeStarted;
+                resume();
             }
             gunsManager.stopShooting();
         }
@@ -171,10 +170,8 @@ public class InGame extends GameState {
         gunsManager.keyPressed(k,(int)(mouseX-mx-px),(int)(mouseY-my-py));
 
         player.keyPressed(k);
+        itemManager.keyPressed(k,(int)(mouseX-mx-px),(int)(mouseY-my-py));
 
-        if(k == GLFW.GLFW_KEY_E){
-            itemManager.pickUpGun((int)(mouseX-mx-px),(int)(mouseY-my-py));
-        }
 
         if (k == GLFW.GLFW_KEY_F1){
             Game.displayCollisions = !Game.displayCollisions;
@@ -203,24 +200,28 @@ public class InGame extends GameState {
         // Tile map
         tileMap = new TileMap(64,this);
         tileMap.loadTiles("Textures\\tileset64.tga");
-        tileMap.loadMap();
-        tileMap.setTween(0.10);
 
         // player
+        // create player object
         player = new Player(tileMap);
-        player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
-
-
-        //bg = new Background("/testing.jpg/");
 
         // weapons
+        // load gun manager with tilemap object
         gunsManager = new GunsManager(tileMap);
         // items drops
+        // load item manager with instances of objects
         itemManager = new ItemManager(tileMap,gunsManager,player);
 
+        // generate map + create objects which needs item manager & gun manager created
+        tileMap.loadMap();
+        // move player to starter room
+        player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
+
+        // make camera move smoothly
+        tileMap.setTween(0.10);
 
         //health bar
-        healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5);
+        healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,45,4);
         //armor bar
         armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3);
         //minimap
@@ -277,6 +278,8 @@ public class InGame extends GameState {
 
         tileMap.draw();
 
+        tileMap.preDrawObjects();
+
         itemManager.draw();
 
         player.draw();
@@ -286,10 +289,10 @@ public class InGame extends GameState {
 
         enemyManager.draw();
 
-
         gunsManager.draw();
 
         objectsFramebuffer.unbindFBO();
+
         if(player.isDead()){
             fadeFramebuffer.bindFBO();
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -310,6 +313,8 @@ public class InGame extends GameState {
         }
 
         gunsManager.drawHud();
+        enemyManager.drawHud();
+
 
         player.drawVignette();
 
@@ -479,14 +484,22 @@ public class InGame extends GameState {
     }
 
     public void pause(){
-        setCursor(ARROW);
-        pauseTimeStarted = System.currentTimeMillis() - InGame.deltaPauseTime();
-        pause=true;
+        if(!pause) {
+            setCursor(ARROW);
+            pauseTimeStarted = System.currentTimeMillis();
+            pause = true;
+
+        }
+    }
+    public void resume(){
+        setCursor(Game.CROSSHAIR);
+        pauseTimeEnded += System.currentTimeMillis() - pauseTimeStarted;
+        pause=false;
+
     }
 
     public void nextFloor(){
         player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
         tileMap.setTween(0.10);
-        itemManager.clear();
     }
 }

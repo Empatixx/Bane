@@ -45,6 +45,7 @@ public class Chest extends RoomObject {
         opened = false;
         collision = true;
         moveable=true;
+        preDraw = false;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\chest.tga");

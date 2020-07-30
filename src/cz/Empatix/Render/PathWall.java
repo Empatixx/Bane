@@ -21,6 +21,7 @@ public class PathWall extends RoomObject {
     public static final int BOTTOM = 2;
     public static final int RIGHT = 3;
 
+    private boolean reverse;
 
     public void setDirection(int d){
         animation.setFrames(spritesheet.getSprites(d));
@@ -30,6 +31,8 @@ public class PathWall extends RoomObject {
         super(tm);
         collision=false;
         moveable=false;
+        preDraw = false;
+        reverse=false;
         height = 64;
         width = 64;
         cwidth = 64;
@@ -141,11 +144,15 @@ public class PathWall extends RoomObject {
     }
     public void update() {
         setMapPosition();
+        if(collision && !reverse){
+            animation.reverse();
+            reverse=true;
+        }
         if (collision && animation.getIndexOfFrame() != 3) {
             animation.update();
 
         }else if (!collision && animation.getIndexOfFrame() != 0){
-            animation.setFrame(animation.getIndexOfFrame()-1);
+            animation.update();
         }
     }
     @Override
@@ -194,4 +201,5 @@ public class PathWall extends RoomObject {
     public void touchEvent() {
 
     }
+
 }

@@ -12,6 +12,8 @@ public class Source {
     public float volume;
 
     private boolean deleted;
+    private long timeStop;
+    private boolean stopping;
 
     public static final int MUSIC = 0;
     public static final int EFFECTS = 1;
@@ -26,7 +28,8 @@ public class Source {
     }
 
     public void play(int buffer){
-        stop();
+        stopping = false;
+        AL10.alSourceStop(sourceId);
         setVolume(volume);
         AL10.alSourcei(sourceId,AL10.AL_BUFFER,buffer);
         resume();
@@ -49,7 +52,8 @@ public class Source {
         AL10.alSourcePlay(sourceId);
     }
     public void stop(){
-        AL10.alSourceStop(sourceId);
+        timeStop = System.currentTimeMillis();
+        stopping = true;
     }
     public void setPosition(float x, float y){
         AL10.alSource3f(sourceId,AL10.AL_POSITION,x,y,0);
@@ -60,6 +64,18 @@ public class Source {
         stop();
         AL10.alDeleteSources(sourceId);
         deleted = true;
+    }
+    public void update(){
+        float time = (float)(System.currentTimeMillis() - timeStop);
+
+        if(stopping){
+            if(time < 750){
+                setVolume(volume * (1-time/750));
+            }else {
+                stopping=false;
+                AL10.alSourceStop(sourceId);
+            }
+        }
     }
 
     public boolean isDeleted() {

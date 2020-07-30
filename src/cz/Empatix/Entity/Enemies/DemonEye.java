@@ -10,40 +10,40 @@ import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
 
-public class Bat extends Enemy {
+public class DemonEye extends Enemy {
     private static final int IDLE = 0;
     private static final int DEAD = 1;
 
-    public Bat(TileMap tm, Player player) {
+    public DemonEye(TileMap tm, Player player) {
 
         super(tm,player);
 
-        moveSpeed = 1.4f;
-        maxSpeed = 5.2f;
-        stopSpeed = 0.8f;
+        moveSpeed = 2f;
+        maxSpeed = 8.5f;
+        stopSpeed = 1.6f;
 
-        width = 64;
+        width = 76;
         height = 64;
-        cwidth = 64;
+        cwidth = 76;
         cheight = 64;
         scale = 2;
 
 
-        health = maxHealth = 10;
+        health = maxHealth = 12;
         damage = 2;
 
         type = melee;
         facingRight = true;
 
         spriteSheetCols = 4;
-        spriteSheetRows = 2;
+        spriteSheetRows = 1;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\bat.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\demoneye.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\bat.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\demoneye.tga");
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
                 //Sprite sprite = new Sprite(texCoords);
@@ -53,13 +53,15 @@ public class Bat extends Enemy {
             }
             spritesheet.addSprites(sprites);
 
-            sprites = new Sprite[4];
+            /*sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
                 Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
                 sprites[i] = sprite;
 
             }
             spritesheet.addSprites(sprites);
+
+             */
         }
         vboVerticles = ModelManager.getModel(width,height);
         if (vboVerticles == -1){
@@ -151,8 +153,8 @@ public class Bat extends Enemy {
         health -= damage;
         if(health < 0) health = 0;
         if(health == 0){
-            animation.setDelay(100);
-            animation.setFrames(spritesheet.getSprites(DEAD));
+            //animation.setDelay(100);
+            //animation.setFrames(spritesheet.getSprites(DEAD));
             speed.x = 0;
             speed.y = 0;
             dead = true;

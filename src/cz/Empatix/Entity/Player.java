@@ -414,6 +414,10 @@ public class Player extends MapObject {
         health+=amount;
         if(health > maxHealth) health = maxHealth;
     }
+    public void addArmor(int amount){
+        armor+=amount;
+        if(armor > maxArmor) armor = maxArmor;
+    }
     public void addCoins(int amount){ coins+=amount;}
 
     public int getCoins() {
@@ -442,5 +446,8 @@ public class Player extends MapObject {
         lowHealth = false;
         glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
         source.play(soundPlayerdeath);
+    }
+    public void removeCoins(int amount){
+        coins-=amount;
     }
 }

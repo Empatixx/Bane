@@ -25,11 +25,12 @@ public class EnemyManager {
         tileMap = tm;
 
         enemies = new ArrayList<>();
-        enemiesList = new ArrayList<>(3);
+        enemiesList = new ArrayList<>(4);
 
         enemiesList.add("Slime");
         enemiesList.add("Rat");
         enemiesList.add("Bat");
+        enemiesList.add("DemonEye");
 
         enemiesKilled = 0;
     }
@@ -78,6 +79,14 @@ public class EnemyManager {
             e.draw();
         }
     }
+    // not affected by lightning system
+    public void drawHud(){
+        for(Enemy e : enemies){
+            if(e instanceof KingSlime) {
+                ((KingSlime)e).drawHud();
+            }
+        }
+    }
     private static int getRandom(int lower, int upper) {
         return cz.Empatix.Java.Random.nextInt((upper - lower) + 1) + lower;
     }
@@ -87,7 +96,11 @@ public class EnemyManager {
         enemies.add(slime);
     }
     public static void addEnemy(int xMin,int xMax, int yMin,int yMax){
-        int enemyType = cz.Empatix.Java.Random.nextInt(enemiesList.size());
+        int defaultsize = 3;
+        if(tileMap.getFloor() >= 1){
+            defaultsize++;
+        }
+        int enemyType = cz.Empatix.Java.Random.nextInt(defaultsize);
         Enemy instance = null;
         try{
             String enemy = "cz.Empatix.Entity.Enemies."+enemiesList.get(enemyType);

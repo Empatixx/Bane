@@ -3,7 +3,6 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
@@ -11,7 +10,8 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-public class Submachine extends Weapon{
+public class Grenadelauncher extends Weapon {
+    // map push when player shoot
     // audio
     private final int soundShoot;
     private final int soundEmptyShoot;
@@ -19,27 +19,27 @@ public class Submachine extends Weapon{
 
     private int dots;
 
-    private ArrayList<Bullet> bullets;
+    private ArrayList<Grenadebullet> bullets;
 
-    Submachine(TileMap tm){
+    Grenadelauncher(TileMap tm){
         super(tm);
         mindamage = 1;
-        maxdamage = 2;
-        inaccuracy = 0.5f;
-        maxAmmo = 400;
-        maxMagazineAmmo = 20;
+        maxdamage = 1;
+        inaccuracy = 0.7f;
+        maxAmmo = 24;
+        maxMagazineAmmo = 6;
+        type = 3;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
-        type = 1;
         bullets = new ArrayList<>();
         // shooting
-        soundShoot = AudioManager.loadSound("guns\\shootsubmachine.ogg");
+        soundShoot = AudioManager.loadSound("guns\\grenadelaunchershoot.ogg");
         // shooting without ammo
         soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
-        soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
+        soundReload = AudioManager.loadSound("guns\\grenadelauncherreload.ogg");
 
-        weaponHud = new Image("Textures\\submachine.tga",new Vector3f(1600,975,0),2f);
-        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1830,975,0),1f);
+        weaponHud = new Image("Textures\\grenadelauncher.tga",new Vector3f(1600,975,0),2f);
+        weaponAmmo = new Image("Textures\\shotgun_bullet.tga",new Vector3f(1810,975,0),1f);
 
     }
 
@@ -60,21 +60,17 @@ public class Submachine extends Weapon{
             if (currentMagazineAmmo != 0) {
                 if (reloading) return;
                 // delta - time between shoots
-                // InGame.deltaPauseTime(); returns delayed time because of pause time
                 long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-                if (delta > 150) {
+                if (delta > 450) {
+                    source.play(soundShoot);
                     double inaccuracy = 0;
-                    if (delta < 400) {
-                        inaccuracy = (Math.random() * 0.155) * (Random.nextInt(2) * 2 - 1);
-                    }
+
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+                    Grenadebullet bullet = new Grenadebullet(tm, x, y, inaccuracy,30);
+                    bullet.setDamage(4);
                     bullet.setPosition(px, py);
-                    int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
-                    bullet.setDamage(damage);
                     bullets.add(bullet);
                     currentMagazineAmmo--;
-                    source.play(soundShoot);
                     GunsManager.bulletShooted++;
 
                 }
@@ -83,14 +79,7 @@ public class Submachine extends Weapon{
             } else {
                 source.play(soundEmptyShoot);
             }
-
-        }
-    }
-
-    @Override
-    public void drawAmmo() {
-        for (Bullet bullet : bullets) {
-            bullet.draw();
+            setShooting(false);
         }
     }
 
@@ -99,21 +88,28 @@ public class Submachine extends Weapon{
         if(reloading){
             StringBuilder builder = new StringBuilder();
             for(int i = 0;i<=dots;i++) builder.append(".");
-            TextRender.renderText(builder.toString(),new Vector3f(1800,985,0),6,new Vector3f(0.886f,0.6f,0.458f));
+            TextRender.renderText(builder.toString(),new Vector3f(1825,985,0),6,new Vector3f(0.886f,0.6f,0.458f));;
 
         } else {
-            TextRender.renderText(currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1740,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
+            TextRender.renderText(currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1760,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
         }
         weaponHud.draw();
         weaponAmmo.draw();
+    }
 
+    @Override
+    public void drawAmmo() {
+        for(Grenadebullet bullet:bullets){
+            bullet.draw();
+        }
     }
 
     @Override
     public void update() {
-        float time = (float)(System.currentTimeMillis()-reloadDelay-InGame.deltaPauseTime())/1000;
-        dots = (int)((time / 0.7f) / 0.2f);
-        if(reloading && time > 0.7f) {
+        float time = (float)(System.currentTimeMillis()-reloadDelay- InGame.deltaPauseTime())/1000;
+        dots = (int)((time / 2.2f) / 0.2f);
+        if(reloading && time > 2.2f) {
+
             if (currentAmmo - maxMagazineAmmo+currentMagazineAmmo < 0) {
                 currentMagazineAmmo = currentAmmo;
                 currentAmmo = 0;
@@ -138,16 +134,15 @@ public class Submachine extends Weapon{
 
     @Override
     public void checkCollisions(ArrayList<Enemy> enemies) {
-        for(Bullet bullet:bullets){
+        for(Grenadebullet bullet:bullets){
             for(Enemy enemy:enemies){
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
-                    enemy.hit(bullet.getDamage());
                     bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;
-
                 }
             }
         }
     }
+
 }

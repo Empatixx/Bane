@@ -24,7 +24,7 @@ public class Revolver extends Weapon {
     Revolver(TileMap tm){
         super(tm);
         mindamage = 4;
-        maxdamage = 4;
+        maxdamage = 6;
         inaccuracy = 0.8f;
         maxAmmo = 60;
         maxMagazineAmmo = 5;
@@ -70,7 +70,8 @@ public class Revolver extends Weapon {
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                     Bullet bullet = new Bullet(tm, x, y, inaccuracy,40);
                     bullet.setPosition(px, py);
-                    bullet.setDamage(4);
+                    int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                    bullet.setDamage(damage);
                     bullets.add(bullet);
                     currentMagazineAmmo--;
                     GunsManager.bulletShooted++;

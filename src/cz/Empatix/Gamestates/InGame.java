@@ -13,10 +13,13 @@ import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Graphics.Framebuffer;
+import cz.Empatix.Render.Hud.ArmorBar;
+import cz.Empatix.Render.Hud.HealthBar;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Hud.MenuBar;
-import cz.Empatix.Render.Hud.*;
+import cz.Empatix.Render.Hud.Minimap.MiniMap;
 import cz.Empatix.Render.Postprocessing.Fade;
 import cz.Empatix.Render.Postprocessing.GaussianBlur;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
@@ -58,6 +61,7 @@ public class InGame extends GameState {
     private HealthBar healthBar;
     private ArmorBar armorBar;
     private MiniMap miniMap;
+    private DamageIndicator damageIndicator;
     private cz.Empatix.Render.Hud.Image coin;
 
     private EnemyManager enemyManager;
@@ -197,8 +201,10 @@ public class InGame extends GameState {
 
         setCursor(Game.CROSSHAIR);
 
+        miniMap = new MiniMap();
+
         // Tile map
-        tileMap = new TileMap(64,this);
+        tileMap = new TileMap(64,this,miniMap);
         tileMap.loadTiles("Textures\\tileset64.tga");
 
         // player
@@ -225,7 +231,8 @@ public class InGame extends GameState {
         //armor bar
         armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3);
         //minimap
-        miniMap = new MiniMap();
+        tileMap.fillMiniMap();
+        damageIndicator = new DamageIndicator();
         // coin
         coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
 
@@ -266,7 +273,7 @@ public class InGame extends GameState {
         logos[3] = new Image("Textures\\timelogo.tga", new Vector3f(500,776,0),1.5f);
 
         skullPlayerdead.setAlpha(0f);
-        
+
     }
 
     @Override
@@ -320,8 +327,9 @@ public class InGame extends GameState {
 
         healthBar.draw();
         armorBar.draw();
-        //miniMap.draw(); //TODO: dodelat mapu
+        miniMap.draw(); //TODO: dodelat mapu
         coin.draw();
+        damageIndicator.draw();
         TextRender.renderText(""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
         if(player.isDead()){
             fadeFramebuffer.unbindFBO();
@@ -448,6 +456,10 @@ public class InGame extends GameState {
                     (int) player.getY()
             );
 
+            // update player icon location by new room
+            miniMap.update(tileMap);
+
+
             // updating bullets(ammo)
             float px = player.getX();
             float py = player.getY();
@@ -460,6 +472,7 @@ public class InGame extends GameState {
             gunsManager.update();
             // updating if player shoots any enemies
             enemyManager.update();
+            damageIndicator.update();
 
             // check bullet collision with enemies
             gunsManager.checkCollisions(enemies);
@@ -480,7 +493,7 @@ public class InGame extends GameState {
      * @return returns time delta in ms
      */
     public static long deltaPauseTime(){
-        return pauseTimeEnded ;
+        return pauseTimeEnded;
     }
 
     public void pause(){
@@ -499,7 +512,11 @@ public class InGame extends GameState {
     }
 
     public void nextFloor(){
+        tileMap.fillMiniMap();
         player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
         tileMap.setTween(0.10);
     }
+    public Player getPlayer(){return player;}
+
+
 }

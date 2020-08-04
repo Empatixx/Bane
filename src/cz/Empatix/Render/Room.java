@@ -5,6 +5,7 @@ import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.Enemies.Shopkeeper;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.MapObject;
+import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
@@ -17,6 +18,7 @@ import java.util.Random;
 public class Room {
     // if player has entered room yet
     private boolean entered;
+    private MMRoom minimapRoom;
 
     // indicator for setting map
     private final int id;
@@ -353,12 +355,45 @@ public class Room {
         }
     }
     public void createObjects(TileMap tm) {
-        if (type == Room.Loot) {
+        if(type == Classic){
+            int num = cz.Empatix.Java.Random.nextInt(3);
+
+            for(int i = 0;i<num;i++){
+                int tileSize = tm.getTileSize();
+
+                int xMinTile = xMin/tileSize+1;
+                int yMinTile = yMin/tileSize+1;
+
+                int xMaxTile = xMax/tileSize-2;
+                int yMaxTile = yMax/tileSize-2;
+
+                int x = cz.Empatix.Java.Random.nextInt((xMaxTile - xMinTile) + 1) + xMinTile;
+                int y = cz.Empatix.Java.Random.nextInt((yMaxTile - yMinTile) + 1) + yMinTile;
+
+                boolean done = false;
+                while(!done) {
+                    x = cz.Empatix.Java.Random.nextInt((xMaxTile - xMinTile) + 1) + xMinTile;
+                    y = cz.Empatix.Java.Random.nextInt((yMaxTile - yMinTile) + 1) + yMinTile;
+                    boolean collision = false;
+                    A: for (int k = -1; k < 2; k++) {
+                        for (int j = -1; j < 2; j++) {
+                            if(tm.getType(y+k,x+j) == Tile.BLOCKED) {
+                                collision = true;
+                                break A;
+                            }
+                        }
+                    }
+                    if(!collision) done = true;
+                }
+                tm.addSpike(x*tileSize+tileSize/2,y*tileSize+tileSize/2,this);
+            }
+        }
+        if (type == Loot) {
             Chest chest = new Chest(tm);
             chest.setPosition(xMin + (float) (xMax - xMin) / 2, yMin + (float) (yMax - yMin) / 2);
             mapObjects.add(chest);
         }
-        if(type == Room.Shop){
+        if(type == Shop){
             for(int i = 1;i<=3;i++){
                 ShopTable table = new ShopTable(tm);
                 table.setPosition(xMin+ (float) (xMax - xMin) / 4 * i,yMin + (float) (yMax - yMin) / 2);
@@ -385,5 +420,16 @@ public class Room {
     }
     public void addObject(RoomObject obj){
         mapObjects.add(obj);
+    }
+
+    public void setMinimapRoom(MMRoom minimapRoom) {
+        this.minimapRoom = minimapRoom;
+    }
+    public void showRoomOnMinimap() {
+        minimapRoom.setDiscovered(true);
+    }
+
+    public MMRoom getMinimapRoom() {
+        return minimapRoom;
     }
 }

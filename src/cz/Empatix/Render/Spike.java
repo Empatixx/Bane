@@ -1,6 +1,7 @@
 package cz.Empatix.Render;
 
 import cz.Empatix.Entity.Animation;
+import cz.Empatix.Entity.Player;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -15,20 +16,23 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
-public class Ladder extends RoomObject {
+public class Spike extends RoomObject {
     public boolean remove;
-    public Ladder(TileMap tm){
+    private Player player;
+    private boolean damageAnimation;
+    public Spike(TileMap tm, Player player){
         super(tm);
-        width = 32;
-        height = 32;
+        this.player = player;
+        width = 16;
+        height = 16;
         cwidth = 16;
         cheight = 16;
-        scale = 4;
+        scale = 8;
 
         facingRight = true;
         flinching=false;
 
-        spriteSheetCols = 1;
+        spriteSheetCols = 4;
         spriteSheetRows = 1;
 
         collision = false;
@@ -36,12 +40,12 @@ public class Ladder extends RoomObject {
         preDraw = true;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\ladder.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\spike.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\ladder.tga");
-            Sprite[] sprites = new Sprite[1];
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\spike.tga");
+            Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
                 double[] texCoords =
                         {
@@ -67,7 +71,7 @@ public class Ladder extends RoomObject {
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(0));
-        animation.setDelay(-1);
+        animation.setDelay(250);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
@@ -78,6 +82,9 @@ public class Ladder extends RoomObject {
         height *= scale;
         cwidth *= scale;
         cheight *= scale;
+
+        damageAnimation = true;
+        remove = false;
     }
 
     public void update(){
@@ -85,13 +92,17 @@ public class Ladder extends RoomObject {
         checkTileMapCollision();
 
         animation.update();
+
+        if(animation.getIndexOfFrame() == 2){
+            damageAnimation = false;
+        } else {
+            damageAnimation = true;
+        }
     }
 
     @Override
     public void touchEvent() {
-        if(remove) return;
-        tileMap.newMap();
-        remove = true;
+        if(damageAnimation)player.hit(1);
     }
 
     @Override

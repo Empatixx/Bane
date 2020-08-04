@@ -3,46 +3,53 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
+import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-public class Pistol extends Weapon {
+import static org.lwjgl.opengl.GL11.*;
+
+public class Sniperrifle extends Weapon {
     // audio
-    private final int[] soundShoot;
+    private final int soundShoot;
     private final int soundEmptyShoot;
     private final int soundReload;
 
     private int dots;
 
+    private boolean firstTickLaser;
+    private Vector2f startLaser;
+    private Vector2f endLaser;
+
     private ArrayList<Bullet> bullets;
 
-    Pistol(TileMap tm){
+    Sniperrifle(TileMap tm){
         super(tm);
-        mindamage = 1;
-        maxdamage = 3;
-        inaccuracy = 0.8f;
-        maxAmmo = 120;
-        maxMagazineAmmo = 7;
+        mindamage = 4;
+        maxdamage = 4;
+        inaccuracy = 0f;
+        maxAmmo = 30;
+        maxMagazineAmmo = 4;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         type = 1;
         bullets = new ArrayList<>();
         // shooting
-        soundShoot = new int[2];
-        soundShoot[0] = AudioManager.loadSound("guns\\shootpistol_1.ogg");
-        soundShoot[1] = AudioManager.loadSound("guns\\shootpistol_2.ogg");
+        soundShoot = AudioManager.loadSound("guns\\shootrevolver.ogg");
         // shooting without ammo
         soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
         soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
 
-        weaponHud = new Image("Textures\\pistol.tga",new Vector3f(1600,975,0),2f);
+        weaponHud = new Image("Textures\\sniperrifle.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
 
+        startLaser = new Vector2f();
+        endLaser = new Vector2f();
     }
 
     @Override
@@ -64,20 +71,66 @@ public class Pistol extends Weapon {
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
                 long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-                if (delta > 250) {
-                    double inaccuracy = 0;
-                    if (delta < 400) {
-                        inaccuracy = 0.055 * 400 / delta * (Random.nextInt(2) * 2 - 1);
-                    }
+                if (delta > 450) {
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
-                    bullet.setPosition(px, py);
-                    int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
-                    bullet.setDamage(damage);
-                    bullets.add(bullet);
                     currentMagazineAmmo--;
                     GunsManager.bulletShooted++;
-                    source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
+                    source.play(soundShoot);
+
+                    startLaser.x = px;
+                    startLaser.y = py;
+
+                    endLaser.x = x+px;
+                    endLaser.y = y+py;
+                    int tileSize = tm.getTileSize();
+                    Vector2f temp = new Vector2f(endLaser.x,endLaser.y);
+                    while(true){
+                        if(tm.getType((int)endLaser.y/tileSize,(int)endLaser.x/tileSize) == Tile.BLOCKED){
+                            if(px < temp.x) {
+                                endLaser.x = ((int)temp.x/tileSize) * tileSize;
+                            } else {
+                                endLaser.x = ((int)temp.x/tileSize +1) * tileSize;
+                            }
+                            if(py < endLaser.y) {
+                                endLaser.y = ((int)temp.y/tileSize) * tileSize;
+                            } else {
+                                endLaser.y = ((int)temp.y/tileSize + 1) * tileSize;
+                            }
+                            break;
+                        }
+                        double atan = Math.atan2(y,x);
+                        // 30 - speed of bullet
+                        float tileSizeX = (float)(Math.cos(atan) * tileSize);
+                        float tileSizeY = (float)(Math.sin(atan) * tileSize);
+                        if(x-960 < 0){
+                            temp.x+=tileSizeX;
+                        }else {
+                            temp.x-=tileSizeX;
+                        }
+                        if(tm.getType((int)endLaser.y/tileSize,(int)temp.x/tileSize) == Tile.BLOCKED){
+                            if(px < temp.x) {
+                                endLaser.x = ((int)temp.x/tileSize) * tileSize;
+                            } else {
+                                endLaser.x = ((int)temp.x/tileSize +1) * tileSize;
+                            }
+                            break;
+                        }
+                        if(y-540 < 0){
+                            temp.y+=tileSizeY;
+                        }else {
+                            temp.y-=tileSizeY;
+                        }
+                        if(tm.getType((int)temp.y/tileSize,(int)endLaser.x/tileSize) == Tile.BLOCKED){
+                            if(py < temp.y) {
+                                endLaser.y = ((int)temp.y/tileSize) * tileSize;
+                            } else {
+                                endLaser.y = ((int)temp.y/tileSize + 1) * tileSize;
+                            }
+                            break;
+                        }
+                        endLaser.x = temp.x();
+                        endLaser.y = temp.y();
+                    }
 
                 }
             } else if (currentAmmo != 0) {
@@ -92,9 +145,11 @@ public class Pistol extends Weapon {
 
     @Override
     public void drawAmmo() {
-        for (Bullet bullet : bullets) {
-            bullet.draw();
-        }
+        glLineWidth(3f);
+        glBegin(GL_LINES);
+        glVertex2f(startLaser.x+tm.getX(),startLaser.y+tm.getY());
+        glVertex2f(endLaser.x+tm.getX(),endLaser.y+tm.getY());
+        glEnd();
     }
 
     @Override

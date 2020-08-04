@@ -25,6 +25,7 @@ public class ItemManager {
     private final int pickupSound;
     private final int pickupCoinSound;
     private final Source source;
+    private final Source buysource;
 
     private Image shopHud;
     private boolean showShopHud;
@@ -40,6 +41,7 @@ public class ItemManager {
         pickupCoinSound = AudioManager.loadSound("coin.ogg");
 
         source = AudioManager.createSource(Source.EFFECTS, 0.35f);
+        buysource = AudioManager.createSource(Source.EFFECTS, 0.35f);
 
         shopHud = new Image("Textures\\shophud.tga", new Vector3f(0, 0, 0), 3.5f);
         showShopHud = false;
@@ -296,14 +298,14 @@ public class ItemManager {
                 // buying item from shop
                 if(shopItem instanceof WeaponDrop){
                     if(player.getCoins() >= shopItem.getPrice()) {
-                        source.play(soundShopBuy);
+                        buysource.play(soundShopBuy);
                         player.removeCoins(shopItem.getPrice());
                         gm.changeGun(x, y, ((WeaponDrop) shopItem).getWeapon());
                         shopItem.pickedUp = true;
                     }
                 } else {
                     if(player.getCoins() >= shopItem.getPrice()) {
-                        source.play(soundShopBuy);
+                        buysource.play(soundShopBuy);
                         player.removeCoins(shopItem.getPrice());
                         shopItem.shopBuy();
                     }

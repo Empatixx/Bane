@@ -76,7 +76,7 @@ public class Player extends MapObject {
 
         moveSpeed = 0.68f;
         maxSpeed = 11.84f;
-        stopSpeed = 2.2f;
+        stopSpeed = 2.75f;
 
         health = maxHealth = 7;
         energy = maxEnergy = 100;
@@ -317,14 +317,11 @@ public class Player extends MapObject {
     }
 
     public void drawVignette(){
-        if(flinching || lowHealth){
-            hitVignette.draw();
-        }
+        hitVignette.draw();
     }
 
     public void keyPressed(int key) {
         if(key == GLFW_KEY_SPACE && false){
-            System.out.println("TEST");
             if(System.currentTimeMillis() - rollCooldown - InGame.deltaPauseTime() >= 1000 && currentAction != IDLE){
                 rollCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
                 rolling = true;

@@ -5,11 +5,14 @@ import cz.Empatix.Entity.Enemies.Projectiles.Slimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Random;
+import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector2f;
 
 import java.util.ArrayList;
 
@@ -217,6 +220,9 @@ public class Slime extends Enemy {
             speed.y = 0;
             dead = true;
         }
+        int x = -cwidth/4+ Random.nextInt(cwidth/2);
+        DamageIndicator.addDamageShow(damage,(int)position.x-x,(int)position.y-cheight/2
+                ,new Vector2f(-x/25f,-1f));
     }
     @Override
     public boolean shouldRemove(){

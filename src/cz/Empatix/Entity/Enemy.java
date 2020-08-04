@@ -3,8 +3,10 @@ package cz.Empatix.Entity;
 import cz.Empatix.Entity.AI.Path;
 import cz.Empatix.Entity.AI.PathNode;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Random;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Tile;
@@ -248,6 +250,9 @@ public abstract class  Enemy extends MapObject {
 
         //flinching = true;
         //flinchTimer = System.nanoTime();
+        int x = -cwidth/4+ Random.nextInt(cwidth/2);
+        DamageIndicator.addDamageShow(damage,(int)position.x-x,(int)position.y-cheight/2
+                ,new Vector2f(-x/25f,-1.5f));
     }
     protected void EnemyAI() {
 

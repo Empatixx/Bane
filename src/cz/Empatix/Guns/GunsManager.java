@@ -40,6 +40,10 @@ public class GunsManager {
         weapons.add(new Shotgun(tileMap));
         weapons.add(new Submachine(tileMap));
         weapons.add(new Revolver(tileMap));
+        weapons.add(new Grenadelauncher(tileMap));
+        weapons.add(new Lahti(tileMap));
+        weapons.add(new M4(tileMap));
+        //weapons.add(new Sniperrifle(tileMap));
 
 
         weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);
@@ -51,7 +55,7 @@ public class GunsManager {
         equipedweapons = new Weapon[2];
 
         equipedweapons[0] = weapons.get(0);
-        //equipedweapons[1] = weapons.get(1);
+        equipedweapons[1] = weapons.get(4);
 
         current = equipedweapons[FIRSTSLOT];
         currentslot = FIRSTSLOT;
@@ -178,17 +182,17 @@ public class GunsManager {
         current=weapon;
     }
     public static void dropGun(int x, int y, Vector2f speed){
-        Weapon weapon = weapons.get(1+Random.nextInt(3));
+        Weapon weapon = weapons.get(1+Random.nextInt(weapons.size()-1));
         while(weapon.hasAlreadyDropped()){
-            weapon = weapons.get(1+Random.nextInt(3));
+            weapon = weapons.get(1+Random.nextInt(weapons.size()-1));
         }
         weapon.drop();
         ItemManager.dropWeapon(weapon,x,y,speed);
     }
     public static Weapon randomGun(){
-        Weapon weapon = weapons.get(1+Random.nextInt(3));
+        Weapon weapon = weapons.get(1+Random.nextInt(weapons.size()-1));
         while(weapon.hasAlreadyDropped()){
-            weapon = weapons.get(1+Random.nextInt(3));
+            weapon = weapons.get(1+Random.nextInt(weapons.size()-1));
         }
         return weapon;
     }

@@ -9,12 +9,14 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Chest;
+import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Hud.HealthBar;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -288,10 +290,14 @@ public class KingSlime extends Enemy {
 
             AudioManager.playSoundtrack(Soundtrack.IDLE);
 
+            // deleting all projectiles after death
             for(KingSlimebullet slimebullet : bullets){
                 slimebullet.setHit();
             }
         }
+        int x = -cwidth/4+Random.nextInt(cwidth/2);
+        DamageIndicator.addDamageShow(damage,(int)position.x-x,(int)position.y-cheight/3
+                ,new Vector2f(-x/25f,-1f));
     }
     @Override
     public boolean shouldRemove(){

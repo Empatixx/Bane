@@ -7,6 +7,8 @@ import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Hud.Minimap.MMRoom;
+import cz.Empatix.Render.Hud.Minimap.MiniMap;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -22,6 +24,9 @@ public class TileMap {
 	// gamestate
 	private InGame inGame;
 	private int floor;
+
+	// minimap
+	private MiniMap miniMap;
 
 
 	// position
@@ -78,9 +83,10 @@ public class TileMap {
 	private float playerStartY;
 
 
-	public TileMap(int tileSize, InGame inGame) {
+	public TileMap(int tileSize, InGame inGame, MiniMap miniMap) {
 		this.inGame = inGame;
 		this.tileSize = tileSize;
+		this.miniMap = miniMap;
 		// 2x scale
 		numRowsToDraw = Camera.getHEIGHT() / (tileSize*2) + 2;
 		numColsToDraw = Camera.getWIDTH() / (tileSize*2) + 2;
@@ -283,19 +289,28 @@ public class TileMap {
 					if (!room.hasEntered() && y > yMin && y < yMax && x > xMin && x < xMax) {
 						// event trigger on entering a new room
 						room.entered();
+						room.showRoomOnMinimap();
 					}
 					if(currentRoom != room){
 						currentRoom = room;
 						A: for(int i = 0;i < roomY;i++){
 							for(int j = 0;j <roomX;j++){
 								if(roomMap[i][j] == room.getId()){
-									if(roomY > i+1) sideRooms[0] = getRoom(roomMap[i+1][j]);
+									if(roomY > i+1 && room.isBottom()){
+										sideRooms[0] = getRoom(roomMap[i+1][j]);
+									}
 									else sideRooms[0] = null;
-									if(0 <= i-1) sideRooms[1] = getRoom(roomMap[i-1][j]);
+									if(0 <= i-1 && room.isTop()){
+										sideRooms[1] = getRoom(roomMap[i-1][j]);
+									}
 									else sideRooms[1] = null;
-									if(roomX > j+1) sideRooms[2] = getRoom(roomMap[i][j+1]);
+									if(roomX > j+1 && room.isRight()){
+										sideRooms[2] = getRoom(roomMap[i][j+1]);
+									}
 									else sideRooms[2] = null;
-									if(0 <= j-1) sideRooms[3] = getRoom(roomMap[i][j-1]);
+									if(0 <= j-1 && room.isLeft()){
+										sideRooms[3] = getRoom(roomMap[i][j-1]);
+									}
 									else sideRooms[3] = null;
 									break A;
 								}
@@ -353,6 +368,9 @@ public class TileMap {
 
 				Room mistnost = new Room(Room.Starter,id,x,y);
 				currentRoom = mistnost;
+				MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
+				mistnost.setMinimapRoom(mmRoom);
+				miniMap.addRoom(mmRoom,currentRooms);
 
 				roomArrayList[currentRooms] = mistnost;
 				roomMap[y][x] = id;
@@ -370,7 +388,7 @@ public class TileMap {
 					int type;
 					if(currentRooms+newRooms >= 4 && !lootRoomCreated) {
 						type = Room.Loot;
-					} else if(currentRooms+newRooms >= 1 && !shopRoomCreated) {
+					} else if(currentRooms+newRooms >= 6 && !shopRoomCreated) {
 						type = Room.Shop;
 					} else if (maxRooms-1==currentRooms+newRooms) {
 						type = Room.Boss;
@@ -428,8 +446,15 @@ public class TileMap {
 
 							Room mistnost = new Room(type,id,roomX,roomY-1);
 
+
 							roomArrayList[i].setTop(true);
 							mistnost.setBottom(true);
+
+							// adding to minimap
+							MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
+							roomArrayList[i].getMinimapRoom().addSideRoom(mmRoom,0);
+							mistnost.setMinimapRoom(mmRoom);
+							miniMap.addRoom(mmRoom,currentRooms+newRooms);
 
 							roomArrayList[currentRooms+newRooms] = mistnost;
 							roomMap[roomY-1][roomX] = id;
@@ -443,6 +468,13 @@ public class TileMap {
 							roomArrayList[i].setBottom(true);
 							mistnost.setTop(true);
 
+							// adding to minimap
+							MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
+							roomArrayList[i].getMinimapRoom().addSideRoom(mmRoom,1);
+							mistnost.setMinimapRoom(mmRoom);
+							miniMap.addRoom(mmRoom,currentRooms+newRooms);
+
+
 							roomArrayList[currentRooms+newRooms] = mistnost;
 							roomMap[roomY+1][roomX] = id;
 						}
@@ -455,6 +487,12 @@ public class TileMap {
 							mistnost.setRight(true);
 							roomArrayList[i].setLeft(true);
 
+							// adding to minimap
+							MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
+							roomArrayList[i].getMinimapRoom().addSideRoom(mmRoom,2);
+							mistnost.setMinimapRoom(mmRoom);
+							miniMap.addRoom(mmRoom,currentRooms+newRooms);
+
 							roomArrayList[currentRooms+newRooms] = mistnost;
 							roomMap[roomY][roomX-1] = id;
 						}
@@ -466,6 +504,12 @@ public class TileMap {
 
 							mistnost.setLeft(true);
 							roomArrayList[i].setRight(true);
+
+							// adding to minimap
+							MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
+							roomArrayList[i].getMinimapRoom().addSideRoom(mmRoom,3);
+							mistnost.setMinimapRoom(mmRoom);
+							miniMap.addRoom(mmRoom,currentRooms+newRooms);
 
 							roomArrayList[currentRooms+newRooms] = mistnost;
 							roomMap[roomY][roomX+1] = id;
@@ -1126,7 +1170,12 @@ public class TileMap {
 		ladder.setPosition(xMin + (float) (xMax - xMin) / 2, yMin + (float) (yMax - yMin) / 2);
 		addObject(ladder);
 	}
+	public void addSpike(float x, float y, Room room){
 
+		Spike spike = new Spike(this,inGame.getPlayer());
+		spike.setPosition(x,y);
+		room.addObject(spike);
+	}
 	public void newMap(){
 		tween = 1;
 		ItemManager.clear();
@@ -1137,5 +1186,13 @@ public class TileMap {
 
 	public int getFloor() {
 		return floor;
+	}
+
+	public void fillMiniMap(){
+		currentRoom.showRoomOnMinimap();
+	}
+
+	public Room getCurrentRoom() {
+		return currentRoom;
 	}
 }

@@ -70,7 +70,7 @@ public class EnemyManager {
         }
     }
 
-    public ArrayList<Enemy> getEnemies() {
+    public static ArrayList<Enemy> getEnemies() {
         return enemies;
     }
 
@@ -156,4 +156,5 @@ public class EnemyManager {
         instance.setPosition(instance.temp.x,instance.temp.y);
         enemies.add(instance);
     }
+
 }

@@ -3,7 +3,6 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
@@ -11,34 +10,35 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-public class Submachine extends Weapon{
+public class M4 extends Weapon{
     // audio
     private final int soundShoot;
     private final int soundEmptyShoot;
     private final int soundReload;
 
     private int dots;
+    private int bonusShots;
 
     private ArrayList<Bullet> bullets;
 
-    Submachine(TileMap tm){
+    M4(TileMap tm){
         super(tm);
-        mindamage = 1;
+        mindamage = 2;
         maxdamage = 2;
         inaccuracy = 0.5f;
-        maxAmmo = 400;
-        maxMagazineAmmo = 20;
+        maxAmmo = 500;
+        maxMagazineAmmo = 25;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         type = 1;
         bullets = new ArrayList<>();
         // shooting
-        soundShoot = AudioManager.loadSound("guns\\shootsubmachine.ogg");
+        soundShoot = AudioManager.loadSound("guns\\shootM4.ogg");
         // shooting without ammo
         soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
-        soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
+        soundReload = AudioManager.loadSound("guns\\reloadM4.ogg");
 
-        weaponHud = new Image("Textures\\submachine.tga",new Vector3f(1600,975,0),2f);
+        weaponHud = new Image("Textures\\M4.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1830,975,0),1f);
 
     }
@@ -56,27 +56,35 @@ public class Submachine extends Weapon{
 
     @Override
     public void shot(float x,float y,float px,float py) {
+        long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
+        if(bonusShots > 0 && delta > 250-bonusShots*62.5 && delta < 550){
+            double inaccuracy = 0;
+            Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+            bullet.setPosition(px, py);
+            bullet.setDamage(2);
+            bullets.add(bullet);
+            GunsManager.bulletShooted++;
+            bonusShots--;
+            currentMagazineAmmo--;
+        }
         if(isShooting()) {
             if (currentMagazineAmmo != 0) {
                 if (reloading) return;
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
-                long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-                if (delta > 150) {
+                if (delta > 750) {
                     double inaccuracy = 0;
-                    if (delta < 400) {
-                        inaccuracy = (Math.random() * 0.155) * (Random.nextInt(2) * 2 - 1);
-                    }
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                     Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                     bullet.setPosition(px, py);
-                    int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
-                    bullet.setDamage(damage);
+                    bullet.setDamage(2);
                     bullets.add(bullet);
                     currentMagazineAmmo--;
-                    source.play(soundShoot);
                     GunsManager.bulletShooted++;
-
+                    source.play(soundShoot);
+                    for(int i = 0;i<3 && currentMagazineAmmo-i != 0;i++){
+                        bonusShots++;
+                    }
                 }
             } else if (currentAmmo != 0) {
                 reload();
@@ -112,8 +120,8 @@ public class Submachine extends Weapon{
     @Override
     public void update() {
         float time = (float)(System.currentTimeMillis()-reloadDelay-InGame.deltaPauseTime())/1000;
-        dots = (int)((time / 0.7f) / 0.2f);
-        if(reloading && time > 0.7f) {
+        dots = (int)((time / 1.3f) / 0.2f);
+        if(reloading && time > 1.3f) {
             if (currentAmmo - maxMagazineAmmo+currentMagazineAmmo < 0) {
                 currentMagazineAmmo = currentAmmo;
                 currentAmmo = 0;

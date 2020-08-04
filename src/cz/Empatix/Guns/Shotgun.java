@@ -3,6 +3,7 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
@@ -26,8 +27,8 @@ public class Shotgun extends Weapon {
 
     Shotgun(TileMap tm){
         super(tm);
-        mindamage = 1;
-        maxdamage = 1;
+        mindamage = 2;
+        maxdamage = 3;
         inaccuracy = 0.7f;
         maxAmmo = 36;
         maxMagazineAmmo = 2;
@@ -73,11 +74,11 @@ public class Shotgun extends Weapon {
                         bullet.setPosition(px, py);
                         bullets.add(bullet);
                         if(i <= 1){
-                            bullet.setDamage(2);
-
+                            int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                            bullet.setDamage(damage);
                         } else {
-                            bullet.setDamage(1);
-
+                            int damage = Random.nextInt(maxdamage-mindamage) + mindamage-1;
+                            bullet.setDamage(damage);
                         }
                         if (i >= 0) i++;
                         else i--;

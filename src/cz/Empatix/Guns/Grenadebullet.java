@@ -12,6 +12,8 @@ import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
+import cz.Empatix.Render.RoomObjects.DestroyableObject;
+import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -144,8 +146,17 @@ public class Grenadebullet extends MapObject {
         if(hit) return;
         hit = true;
         for(Enemy e : EnemyManager.getEnemies()){
-            if(Math.abs(position.x-e.getx()) < 250 && Math.abs(position.y-e.gety()) < 250){
+            if(Math.abs(position.x-e.getX()) < 250 && Math.abs(position.y-e.getY()) < 250){
                 e.hit(getDamage());
+            }
+        }
+        for(RoomObject roomObject : tileMap.getRoomMapObjects()){
+            if(roomObject instanceof DestroyableObject){
+                if(!((DestroyableObject) roomObject).isDestroyed()){
+                    if(Math.abs(position.x-roomObject.getX()) < 250 && Math.abs(position.y-roomObject.getY()) < 250){
+                        ((DestroyableObject) roomObject).setHit(getDamage());
+                    }
+                }
             }
         }
         animation.setFrames(spritesheet.getSprites(explosion));

@@ -1,16 +1,14 @@
-package cz.Empatix.Render;
+package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
-import cz.Empatix.Entity.ItemDrops.ItemManager;
-import cz.Empatix.Guns.GunsManager;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -19,16 +17,8 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
-public class Chest extends RoomObject {
-    private static final int IDLE = 0;
-    private static final int OPEN = 1;
-
-    private boolean opened;
-    private boolean remove;
-    private boolean dropGun;
-
-
-    public Chest(TileMap tm){
+public class Flag extends RoomObject {
+    public Flag(TileMap tm){
         super(tm);
         width = 16;
         height = 16;
@@ -42,26 +32,25 @@ public class Chest extends RoomObject {
         spriteSheetCols = 4;
         spriteSheetRows = 1;
 
-        opened = false;
-        collision = true;
-        moveable=true;
-        preDraw = false;
+        collision = false;
+        moveable=false;
+        preDraw = true;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\chest.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\flag.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\chest.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\flag.tga");
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
                 double[] texCoords =
                         {
                                 (double) i/spriteSheetCols,0,
 
-                                (double)i/spriteSheetCols,0.5,
+                                (double)i/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,0.5,
+                                (1.0+i)/spriteSheetCols,1,
 
                                 (1.0+i)/spriteSheetCols,0
                         };
@@ -71,23 +60,6 @@ public class Chest extends RoomObject {
             }
             spritesheet.addSprites(sprites);
 
-            sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
-                        {
-                                (double) i/spriteSheetCols,0.5,
-
-                                (double)i/spriteSheetCols,1,
-
-                                (1.0+i)/spriteSheetCols,1,
-
-                                (1.0+i)/spriteSheetCols,0.5
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
         }
         vboVerticles = ModelManager.getModel(width,height);
         if (vboVerticles == -1){
@@ -95,8 +67,8 @@ public class Chest extends RoomObject {
         }
 
         animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(175);
+        animation.setFrames(spritesheet.getSprites(0));
+        animation.setDelay(200);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
@@ -108,66 +80,17 @@ public class Chest extends RoomObject {
         cwidth *= scale;
         cheight *= scale;
 
-        stopSpeed = 0.55f;
-        dropGun= true;
-    }
-    public void disableDropWeapon(){
-        dropGun = false;
+        remove = false;
     }
 
     public void update(){
         setMapPosition();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
-        if(opened && animation.hasPlayedOnce()){
-            remove=true;
-
-            Vector2f speed = new Vector2f();
-
-            float x = (float) Random.nextDouble()*(-1+Random.nextInt(2)*2);
-            float y = (float)Random.nextDouble()*(-1+Random.nextInt(2)*2);
-
-            if(dropGun) GunsManager.dropGun((int)position.x,(int)position.y,speed);
-
-            for(int i = 0;i<5;i++){
-                double atan = Math.atan2(x,
-                        y) + 1.3 * i;
-                speed.x = (float)(Math.cos(atan) * 10);
-                speed.y = (float)(Math.sin(atan) * 10);
-                ItemManager.createDrop(position.x,position.y,speed);
-            }
-        }
 
         animation.update();
-
-        if (speed.x < 0){
-            speed.x += stopSpeed;
-            if (speed.x > 0) speed.x = 0;
-        } else if (speed.x > 0){
-            speed.x -= stopSpeed;
-            if (speed.x < 0) speed.x = 0;
-        }
-
-        if (speed.y < 0){
-            speed.y += stopSpeed;
-            if (speed.y > 0) speed.y = 0;
-        } else if (speed.y > 0){
-            speed.y -= stopSpeed;
-            if (speed.y < 0) speed.y = 0;
-        }
     }
 
     @Override
     public void touchEvent() {
-        open();
-    }
-
-    public void open(){
-        if(opened) return;
-        opened = true;
-        collision = false;
-        animation.setFrames(spritesheet.getSprites(OPEN));
-
     }
 
     @Override
@@ -238,6 +161,11 @@ public class Chest extends RoomObject {
 
         }
     }
-    public boolean shouldRemove(){return remove;}
+    public boolean shouldRemove(){
+        return remove;
+    }
+    @Override
+    public void keyPress() {
 
+    }
 }

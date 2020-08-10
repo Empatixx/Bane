@@ -41,7 +41,7 @@ public class GunsManager {
         weapons.add(new Submachine(tileMap));
         weapons.add(new Revolver(tileMap));
         weapons.add(new Grenadelauncher(tileMap));
-        weapons.add(new Lahti(tileMap));
+        weapons.add(new Luger(tileMap));
         weapons.add(new M4(tileMap));
         //weapons.add(new Sniperrifle(tileMap));
 
@@ -55,7 +55,7 @@ public class GunsManager {
         equipedweapons = new Weapon[2];
 
         equipedweapons[0] = weapons.get(0);
-        equipedweapons[1] = weapons.get(4);
+        equipedweapons[1] = weapons.get(6);
 
         current = equipedweapons[FIRSTSLOT];
         currentslot = FIRSTSLOT;
@@ -138,12 +138,12 @@ public class GunsManager {
         if(current == null) return;
         current.setShooting(true);
     }
-    public boolean addAmmo(int amount, int type) {
+    public boolean addAmmo(int amountprocent, int type) {
         // first check main gun in hand
         if(current != null){
             if(current.getType() == type){
                 if(current.isFullAmmo()) return false;
-                current.addAmmo(amount);
+                current.addAmmo(amountprocent);
                 return true;
             }
         }
@@ -153,7 +153,7 @@ public class GunsManager {
             if (weapon == null) continue;
             if (weapon.getType() == type) {
                 if(weapon.isFullAmmo()) return false;
-                weapon.addAmmo(amount);
+                weapon.addAmmo(amountprocent);
                 return true;
             }
         }
@@ -195,6 +195,9 @@ public class GunsManager {
             weapon = weapons.get(1+Random.nextInt(weapons.size()-1));
         }
         return weapon;
+    }
+    public Weapon getWeapon(int index){
+        return weapons.get(index);
     }
     public void changeGunScroll(){
         int slot = currentslot;

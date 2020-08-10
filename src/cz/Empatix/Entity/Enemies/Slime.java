@@ -11,6 +11,8 @@ import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.RoomObjects.DestroyableObject;
+import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 
@@ -44,7 +46,7 @@ public class Slime extends Enemy {
         cheight = 48;
         scale = 2;
 
-        health = maxHealth = 10;
+        health = maxHealth = 10+(int)Math.pow(tm.getFloor(),2);
         damage = 1;
 
         type = melee;
@@ -163,6 +165,14 @@ public class Slime extends Enemy {
                 slimebullet.setHit();
                 player.hit(1);
             }
+            for(RoomObject object: tileMap.getRoomMapObjects()){
+                if(object instanceof DestroyableObject) {
+                    if (slimebullet.intersects(object) && !slimebullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
+                        slimebullet.setHit();
+                        ((DestroyableObject) object).setHit(1);
+                    }
+                }
+            }
             if(slimebullet.shouldRemove()) {
                 bullets.remove(i);
                 i--;
@@ -198,6 +208,7 @@ public class Slime extends Enemy {
         // update position
         getNextPosition();
         checkTileMapCollision();
+
         setPosition(temp.x, temp.y);
     }
 

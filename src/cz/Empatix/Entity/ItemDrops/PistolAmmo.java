@@ -28,7 +28,7 @@ public class PistolAmmo extends ItemDrop {
         scale = 1;
         facingRight = true;
 
-        amount = Random.nextInt(7) + 5;
+        amount = Random.nextInt(5) + 3;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\pistol_bullet.tga");

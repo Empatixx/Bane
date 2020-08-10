@@ -13,59 +13,58 @@ import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 
-public class Rat extends Enemy {
+public class Demoneye extends Enemy {
     private static final int IDLE = 0;
     private static final int DEAD = 1;
 
-    public Rat(TileMap tm, Player player) {
+    public Demoneye(TileMap tm, Player player) {
 
         super(tm,player);
 
-        moveSpeed = 1.2f;
-        maxSpeed = 4.4f;
-        stopSpeed = 1f;
+        moveSpeed = 2f;
+        maxSpeed = 8.5f;
+        stopSpeed = 1.6f;
 
-        /*width = 64;
-        height = 47;
-        cwidth = 64;
-        cheight = 47;
-        */
-        width=85;
-        height=37;
-        cwidth=64;
-        cheight=37;
+        width = 76;
+        height = 64;
+        cwidth = 76;
+        cheight = 64;
         scale = 2;
 
-        health = maxHealth = 14+(int)Math.pow(tm.getFloor(),2);
-        damage = 1;
+
+        health = maxHealth = 12+(int)Math.ceil((int)Math.pow(tm.getFloor(),2)*0.5);
+        damage = 2;
 
         type = melee;
         facingRight = true;
 
         spriteSheetCols = 4;
-        spriteSheetRows = 2;
+        spriteSheetRows = 1;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\rat.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\demoneye.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\rat.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\demoneye.tga");
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
+                //Sprite sprite = new Sprite(texCoords);
                 Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
                 sprites[i] = sprite;
 
             }
             spritesheet.addSprites(sprites);
 
-            sprites = new Sprite[3];
+            /*sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
                 Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
                 sprites[i] = sprite;
 
             }
             spritesheet.addSprites(sprites);
+
+             */
         }
         vboVerticles = ModelManager.getModel(width,height);
         if (vboVerticles == -1){
@@ -74,7 +73,7 @@ public class Rat extends Enemy {
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(120);
+        animation.setDelay(125);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
@@ -140,6 +139,7 @@ public class Rat extends Enemy {
         animation.update();
 
         if(dead) return;
+
         // ENEMY AI
         EnemyAI();
 
@@ -149,6 +149,7 @@ public class Rat extends Enemy {
 
         setPosition(temp.x, temp.y);
     }
+
     @Override
     public void hit(int damage) {
         if(dead || isSpawning()) return;
@@ -156,15 +157,15 @@ public class Rat extends Enemy {
         health -= damage;
         if(health < 0) health = 0;
         if(health == 0){
-            animation.setDelay(150);
-            animation.setFrames(spritesheet.getSprites(DEAD));
+            //animation.setDelay(100);
+            //animation.setFrames(spritesheet.getSprites(DEAD));
             speed.x = 0;
             speed.y = 0;
             dead = true;
-        }
-        int x = -cwidth/4+Random.nextInt(cwidth/2);
-        DamageIndicator.addDamageShow(damage,(int)position.x-x,(int)position.y-cheight/3
-        ,new Vector2f(-x/25f,-1f));
 
+        }
+        int x = -cwidth/4+ Random.nextInt(cwidth/2);
+        DamageIndicator.addDamageShow(damage,(int)position.x-x,(int)position.y-cheight/2
+                ,new Vector2f(-x/25f,-1f));
     }
 }

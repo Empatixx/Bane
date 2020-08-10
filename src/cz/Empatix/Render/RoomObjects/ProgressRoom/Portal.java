@@ -1,13 +1,18 @@
-package cz.Empatix.Render;
+package cz.Empatix.Render.RoomObjects.ProgressRoom;
 
 import cz.Empatix.Entity.Animation;
-import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.ProgressRoom;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.RoomObjects.RoomObject;
+import cz.Empatix.Render.Text.TextRender;
+import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -16,36 +21,36 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
-public class Spike extends RoomObject {
-    public boolean remove;
-    private Player player;
-    private boolean damageAnimation;
-    public Spike(TileMap tm, Player player){
+public class Portal extends RoomObject {
+    private static final int IDLE = 0;
+    private boolean message;
+
+    public Portal(TileMap tm){
         super(tm);
-        this.player = player;
-        width = 16;
-        height = 16;
-        cwidth = 16;
-        cheight = 16;
-        scale = 8;
+        width = 86;
+        height = 80;
+        cwidth = 43;
+        cheight = 40;
+        scale = 4;
 
         facingRight = true;
         flinching=false;
 
-        spriteSheetCols = 4;
+        spriteSheetCols = 8;
         spriteSheetRows = 1;
 
         collision = false;
         moveable=false;
         preDraw = true;
+        speedMoveBoost = 0f;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\spike.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\portal.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\spike.tga");
-            Sprite[] sprites = new Sprite[4];
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\portal.tga");
+            Sprite[] sprites = new Sprite[8];
             for(int i = 0; i < sprites.length; i++) {
                 double[] texCoords =
                         {
@@ -62,7 +67,6 @@ public class Spike extends RoomObject {
 
             }
             spritesheet.addSprites(sprites);
-
         }
         vboVerticles = ModelManager.getModel(width,height);
         if (vboVerticles == -1){
@@ -70,8 +74,8 @@ public class Spike extends RoomObject {
         }
 
         animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(0));
-        animation.setDelay(250);
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(125);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
@@ -83,33 +87,32 @@ public class Spike extends RoomObject {
         cwidth *= scale;
         cheight *= scale;
 
-        damageAnimation = true;
-        remove = false;
+        stopSpeed = 0.55f;
     }
 
     public void update(){
+        message = false;
         setMapPosition();
-        checkTileMapCollision();
-
         animation.update();
 
-        if(animation.getIndexOfFrame() == 2){
-            damageAnimation = false;
-        } else {
-            damageAnimation = true;
-        }
     }
 
     @Override
     public void touchEvent() {
-        if(damageAnimation)player.hit(1);
+        message = true;
     }
+
 
     @Override
     public void draw() {
         // pokud neni object na obrazovce - zrusit
         if (isNotOnScrean()){
             return;
+        }
+        if(message){
+            float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
+            TextRender.renderMapText("Press E to enter game",new Vector3f(position.x-125,position.y+155,0),2,
+                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
         }
 
         Matrix4f target;
@@ -169,12 +172,11 @@ public class Spike extends RoomObject {
             glBegin(GL_POINTS);
             glVertex2f(position.x+xmap,position.y+ymap);
             glEnd();
-
-
         }
     }
-    public boolean shouldRemove(){
-        return remove;
+    public boolean shouldRemove(){return remove;}
+    @Override
+    public void keyPress() {
+        ProgressRoom.EnterGame();
     }
-
 }

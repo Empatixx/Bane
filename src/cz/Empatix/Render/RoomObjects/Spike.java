@@ -1,42 +1,53 @@
-package cz.Empatix.Render;
+package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
-import cz.Empatix.Entity.ItemDrops.ItemManager;
+import cz.Empatix.Entity.Player;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
 
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
-public class ShopTable extends RoomObject{
-    public ShopTable(TileMap tm){
+public class Spike extends RoomObject {
+    public boolean remove;
+    private Player player;
+    private boolean damageAnimation;
+    public Spike(TileMap tm, Player player){
         super(tm);
-        width = 96;
-        height = 64;
-        cwidth = 96;
-        cheight = 64;
-        scale = 2.5f;
+        this.player = player;
+        width = 16;
+        height = 16;
+        cwidth = 8;
+        cheight = 8;
+        scale = 8;
 
         facingRight = true;
         flinching=false;
 
-        spriteSheetCols = 1;
+        spriteSheetCols = 4;
         spriteSheetRows = 1;
 
         collision = false;
-        moveable = false;
+        moveable=false;
         preDraw = true;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\table.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\spike.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\table.tga");
-            Sprite[] sprites = new Sprite[1];
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\spike.tga");
+            Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
                 double[] texCoords =
                         {
@@ -53,6 +64,7 @@ public class ShopTable extends RoomObject{
 
             }
             spritesheet.addSprites(sprites);
+
         }
         vboVerticles = ModelManager.getModel(width,height);
         if (vboVerticles == -1){
@@ -61,7 +73,7 @@ public class ShopTable extends RoomObject{
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(0));
-        animation.setDelay(-1);
+        animation.setDelay(250);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
@@ -73,36 +85,24 @@ public class ShopTable extends RoomObject{
         cwidth *= scale;
         cheight *= scale;
 
-    }
-    public void createItem(){
-        ItemManager.createShopDrop(position.x,position.y-20);
+        damageAnimation = true;
+        remove = false;
     }
 
     public void update(){
         setMapPosition();
-        checkTileMapCollision();
-
         animation.update();
 
-        if (speed.x < 0){
-            speed.x += stopSpeed;
-            if (speed.x > 0) speed.x = 0;
-        } else if (speed.x > 0){
-            speed.x -= stopSpeed;
-            if (speed.x < 0) speed.x = 0;
-        }
-
-        if (speed.y < 0){
-            speed.y += stopSpeed;
-            if (speed.y > 0) speed.y = 0;
-        } else if (speed.y > 0){
-            speed.y -= stopSpeed;
-            if (speed.y < 0) speed.y = 0;
+        if(animation.getIndexOfFrame() >= 2){
+            damageAnimation = false;
+        } else {
+            damageAnimation = true;
         }
     }
 
     @Override
     public void touchEvent() {
+        if(damageAnimation)player.hit(1);
     }
 
     @Override
@@ -173,5 +173,11 @@ public class ShopTable extends RoomObject{
 
         }
     }
+    public boolean shouldRemove(){
+        return remove;
+    }
+    @Override
+    public void keyPress() {
 
+    }
 }

@@ -32,6 +32,8 @@ public class ItemManager {
     private ItemDrop shopItem;
     private final int soundShopBuy;
 
+    private int totalCoins;
+
     public ItemManager(TileMap tm, GunsManager gm, Player player) {
         ItemManager.tm = tm;
         ItemManager.gm = gm;
@@ -47,6 +49,7 @@ public class ItemManager {
         showShopHud = false;
         soundShopBuy = AudioManager.loadSound("buy.ogg");
 
+        totalCoins = 0;
     }
 
     public static void clear() {
@@ -67,12 +70,12 @@ public class ItemManager {
         if (random == 0) {
             drop = new PistolAmmo(tm);
             drop.setPosition(x, y);
-            drop.setAmount(70);
+            drop.setAmount(60);
             itemDrops.add(drop);
         } else if (random == 3) {
             drop = new ShotgunAmmo(tm);
             drop.setPosition(x, y);
-            drop.setAmount(20);
+            drop.setAmount(60);
             itemDrops.add(drop);
         } else if (random == 4) {
             drop = new ArmorPot(tm);
@@ -119,17 +122,18 @@ public class ItemManager {
                             drop = new PistolAmmo(tm);
                             drop.setPosition(x, y);
                             itemDrops.add(drop);
-                        } else {
+                        } else{
                             drop = new ShotgunAmmo(tm);
                             drop.setPosition(x, y);
+                            System.out.println(type+" test1");
                             itemDrops.add(drop);
                         }
                     }
                 }
             } else {
-                int type = Random.nextInt(numWeapons);
+                int type = weaponTypes[Random.nextInt(numWeapons)];
                 while(type == -1) {
-                    type = Random.nextInt(numWeapons);
+                    type = weaponTypes[Random.nextInt(numWeapons)];
                 }
                 if (type == ItemDrop.PISTOLAMMO) {
                     drop = new PistolAmmo(tm);
@@ -138,6 +142,7 @@ public class ItemManager {
                 } else {
                     drop = new ShotgunAmmo(tm);
                     drop.setPosition(x, y);
+                    System.out.println(type+" test2");
                     itemDrops.add(drop);
                 }
             }
@@ -173,7 +178,7 @@ public class ItemManager {
                 int type = drop.type;
                 if (drop.isShop()) {
                     showShopHud = true;
-                    shopHud.setPosition(new Vector3f(drop.getx() + tm.getX(), drop.gety() + tm.getY() - 125, 0));
+                    shopHud.setPosition(new Vector3f(drop.getX() + tm.getX(), drop.getY() + tm.getY() - 125, 0));
                     shopItem = drop;
                 } else {
                     if (type == ItemDrop.PISTOLAMMO || type == ItemDrop.SHOTGUNAMMO || type == ItemDrop.SUBMACHINE) {
@@ -190,6 +195,7 @@ public class ItemManager {
                         }
                     } else if (type == ItemDrop.COIN) {
                         player.addCoins(drop.getAmount());
+                        totalCoins+=drop.getAmount();
                         drop.pickedUp = true;
                         source.play(pickupCoinSound);
                     } else if (type == ItemDrop.GUN) {
@@ -221,12 +227,20 @@ public class ItemManager {
         if (showShopHud) {
             shopHud.draw();
 
-            TextRender.renderText("" + shopItem.getPrice(), new Vector3f(
-                            shopItem.getx() + tm.getX() + shopHud.getWidth() + 3,
-                            shopItem.gety() + tm.getY() - 110,
+            TextRender.renderMapText("" + shopItem.getPrice(), new Vector3f(
+                            shopItem.getX() + shopHud.getWidth() + 3,
+                            shopItem.getY() - 110,
                             0),
                     3,
                     new Vector3f(0.986f, 0.7f, 0.458f));
+
+            float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
+            TextRender.renderMapText("Press E to buy",new Vector3f(
+                            shopItem.getX() - 65,
+                            shopItem.getY() + 140,
+                            0),
+                    2,
+                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
         }
     }
 
@@ -313,5 +327,8 @@ public class ItemManager {
             }
 
         }
+    }
+    public int getTotalCoins(){
+        return totalCoins;
     }
 }

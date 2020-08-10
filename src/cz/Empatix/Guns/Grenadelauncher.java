@@ -3,7 +3,10 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
+import cz.Empatix.Render.RoomObjects.DestroyableObject;
+import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
@@ -23,8 +26,8 @@ public class Grenadelauncher extends Weapon {
 
     Grenadelauncher(TileMap tm){
         super(tm);
-        mindamage = 1;
-        maxdamage = 1;
+        mindamage = 4;
+        maxdamage = 7;
         inaccuracy = 0.7f;
         maxAmmo = 24;
         maxMagazineAmmo = 6;
@@ -67,7 +70,8 @@ public class Grenadelauncher extends Weapon {
 
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                     Grenadebullet bullet = new Grenadebullet(tm, x, y, inaccuracy,30);
-                    bullet.setDamage(4);
+                    int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                    bullet.setDamage(damage);
                     bullet.setPosition(px, py);
                     bullets.add(bullet);
                     currentMagazineAmmo--;
@@ -134,12 +138,23 @@ public class Grenadelauncher extends Weapon {
 
     @Override
     public void checkCollisions(ArrayList<Enemy> enemies) {
-        for(Grenadebullet bullet:bullets){
+        ArrayList<RoomObject> objects = tm.getRoomMapObjects();
+        A: for(Grenadebullet bullet:bullets){
             for(Enemy enemy:enemies){
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;
+                    continue A;
+                }
+            }
+            for(RoomObject object: objects){
+                if(object instanceof DestroyableObject) {
+                    if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
+                        bullet.playEnemyHit();
+                        bullet.setHit();
+                        continue A;
+                    }
                 }
             }
         }

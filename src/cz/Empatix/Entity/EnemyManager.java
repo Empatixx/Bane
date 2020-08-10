@@ -1,5 +1,6 @@
 package cz.Empatix.Entity;
 
+import cz.Empatix.Entity.Enemies.ArcaneMage;
 import cz.Empatix.Entity.Enemies.KingSlime;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Java.Random;
@@ -25,12 +26,14 @@ public class EnemyManager {
         tileMap = tm;
 
         enemies = new ArrayList<>();
-        enemiesList = new ArrayList<>(4);
+        enemiesList = new ArrayList<>(5);
+
 
         enemiesList.add("Slime");
         enemiesList.add("Rat");
         enemiesList.add("Bat");
-        enemiesList.add("DemonEye");
+        enemiesList.add("Demoneye");
+        enemiesList.add("Ghost");
 
         enemiesKilled = 0;
     }
@@ -57,7 +60,7 @@ public class EnemyManager {
                 enemy.setItemDropped();
                 int chance = Random.nextInt(5);
                 if(chanceDrop+chance > 3){
-                    ItemManager.createDrop(enemy.getx(),enemy.gety());
+                    ItemManager.createDrop(enemy.getX(),enemy.getY());
                     chanceDrop=0;
                 }
             }
@@ -84,6 +87,8 @@ public class EnemyManager {
         for(Enemy e : enemies){
             if(e instanceof KingSlime) {
                 ((KingSlime)e).drawHud();
+            } else if(e instanceof ArcaneMage) {
+                ((ArcaneMage) e).drawHud();
             }
         }
     }
@@ -91,14 +96,25 @@ public class EnemyManager {
         return cz.Empatix.Java.Random.nextInt((upper - lower) + 1) + lower;
     }
     public static void spawnBoss(int x,int y){
-        KingSlime slime = new KingSlime(tileMap,player);
-        slime.setPosition(x,y);
-        enemies.add(slime);
+        int randombosses = 1;
+        if(tileMap.getFloor() >= 1){
+            //randombosses++;
+        }
+        int typeboss = Random.nextInt(randombosses);
+        if(typeboss == 0){
+            KingSlime slime = new KingSlime(tileMap,player);
+            slime.setPosition(x,y);
+            enemies.add(slime);
+        } else {
+            ArcaneMage arcaneMage= new ArcaneMage(tileMap,player);
+            arcaneMage.setPosition(x,y);
+            enemies.add(arcaneMage);
+        }
     }
     public static void addEnemy(int xMin,int xMax, int yMin,int yMax){
         int defaultsize = 3;
         if(tileMap.getFloor() >= 1){
-            defaultsize++;
+            defaultsize+=2;
         }
         int enemyType = cz.Empatix.Java.Random.nextInt(defaultsize);
         Enemy instance = null;
@@ -156,5 +172,31 @@ public class EnemyManager {
         instance.setPosition(instance.temp.x,instance.temp.y);
         enemies.add(instance);
     }
+    public void addEnemy(int x, int y, String type,int count) {
+        boolean canContinue = false;
+        type = type.substring(0,1).toUpperCase() + type.substring(1).toLowerCase();
+        for (String enemy : enemiesList) {
+            if (enemy.equals(type)) {
+                canContinue = true;
+            }
+        }
+        if (!canContinue) return;
+        for (int i = 0; i < count; i++) {
 
+            Enemy instance = null;
+            try {
+                String enemy = "cz.Empatix.Entity.Enemies." + type;
+                Class<?> clazz = Class.forName(enemy);
+                Constructor<?> constructor = clazz.getConstructor(TileMap.class, Player.class);
+                instance = (Enemy) constructor.newInstance(tileMap, player);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            instance.setPosition(x, y);
+            instance.checkTileMapCollision();
+            instance.setPosition(instance.temp.x, instance.temp.y);
+            enemies.add(instance);
+        }
+    }
 }

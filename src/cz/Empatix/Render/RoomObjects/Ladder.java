@@ -1,12 +1,16 @@
-package cz.Empatix.Render;
+package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.Text.TextRender;
+import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -16,7 +20,6 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Ladder extends RoomObject {
-    public boolean remove;
     public Ladder(TileMap tm){
         super(tm);
         width = 32;
@@ -89,9 +92,6 @@ public class Ladder extends RoomObject {
 
     @Override
     public void touchEvent() {
-        if(remove) return;
-        tileMap.newMap();
-        remove = true;
     }
 
     @Override
@@ -161,9 +161,18 @@ public class Ladder extends RoomObject {
 
 
         }
+        float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
+
+        TextRender.renderMapText("Press E to enter next layer",new Vector3f(position.x-145,position.y+100,0),2,
+                new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
     }
     public boolean shouldRemove(){
         return remove;
     }
-
+    @Override
+    public void keyPress() {
+        if(remove) return;
+        tileMap.newMap();
+        remove = true;
+    }
 }

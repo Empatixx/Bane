@@ -23,7 +23,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-public class KingSlime extends Enemy {
+public class ArcaneMage extends Enemy {
 
     private static final int IDLE = 0;
     private static final int DEAD = 1;
@@ -42,20 +42,20 @@ public class KingSlime extends Enemy {
     private HealthBar healthBar;
 
 
-    public KingSlime(TileMap tm, Player player) {
+    public ArcaneMage(TileMap tm, Player player) {
         super(tm,player);
 
-        moveSpeed = 0.6f;
+        moveSpeed = 0.f;
         maxSpeed = 1.6f;
         stopSpeed = 0.5f;
 
-        width = 64;
-        height = 48;
-        cwidth = 64;
-        cheight = 48;
-        scale = 5;
+        width = 72;
+        height = 92;
+        cwidth = 72;
+        cheight = 92;
+        scale = 3;
 
-        health = maxHealth = 110+(int)Math.pow(tm.getFloor(),2)*20;
+        health = maxHealth = 135+(int)Math.pow(tm.getFloor(),2)*20;
         damage = 1;
 
         type = melee;
@@ -63,27 +63,18 @@ public class KingSlime extends Enemy {
         bullets=new ArrayList<>();
 
         spriteSheetCols = 6;
-        spriteSheetRows = 2;
+        spriteSheetRows = 1;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slimeking.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\arcanemage.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slimeking.tga");
-            Sprite[] sprites = new Sprite[4];
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\arcanemage.tga");
+            Sprite[] sprites = new Sprite[6];
             for(int i = 0; i < sprites.length; i++) {
-                Sprite sprite = new Sprite(5,i,0,32,24,spriteSheetRows,spriteSheetCols);
+                Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
                 sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
-
-            sprites = new Sprite[6];
-            for(int i = 0; i < sprites.length; i++) {
-                Sprite sprite = new Sprite(5,i,1,32,24,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
 
             }
             spritesheet.addSprites(sprites);
@@ -112,51 +103,6 @@ public class KingSlime extends Enemy {
         chestCreated=false;
 
         healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(1000,1000,0),7,50,4);
-    }
-
-    private void getNextPosition() {
-
-        // movement
-        if(left) {
-            speed.x -= moveSpeed;
-            if(speed.x < -maxSpeed) {
-                speed.x = -maxSpeed;
-            }
-        }
-        else if(right) {
-            speed.x += moveSpeed;
-            if(speed.x > maxSpeed) {
-                speed.x = maxSpeed;
-            }
-        }
-        else {
-            if (speed.x < 0){
-                speed.x += stopSpeed;
-                if (speed.x > 0) speed.x = 0;
-            } else if (speed.x > 0){
-                speed.x -= stopSpeed;
-                if (speed.x < 0) speed.x = 0;
-            }
-        }
-        if(down) {
-            speed.y += moveSpeed;
-            if (speed.y > maxSpeed){
-                speed.y = maxSpeed;
-            }
-        } else if (up){
-            speed.y -= moveSpeed;
-            if (speed.y < -maxSpeed){
-                speed.y = -maxSpeed;
-            }
-        } else {
-            if (speed.y < 0){
-                speed.y += stopSpeed;
-                if (speed.y > 0) speed.y = 0;
-            } else if (speed.y > 0){
-                speed.y -= stopSpeed;
-                if (speed.y < 0) speed.y = 0;
-            }
-        }
     }
 
     public void update() {
@@ -206,67 +152,15 @@ public class KingSlime extends Enemy {
 
         if(dead) return;
 
-        if((float)health/maxHealth <= 0.5 && System.currentTimeMillis()-shootCooldownCircle- InGame.deltaPauseTime() > 2500){
-            shootCooldownCircle = System.currentTimeMillis()- InGame.deltaPauseTime();
-            for (int i = 0; i < 5; ) {
-                double inaccuracy = 0.055 * i;
-
-                KingSlimebullet slimebullet = new KingSlimebullet(
-                        tileMap,
-                        px-position.x,
-                        py-position.y,
-                        inaccuracy
-                );
-                slimebullet.setPosition(position.x, position.y);
-                bullets.add(slimebullet);
-                if (i >= 0) i++;
-                else i--;
-                i = -i;
-            }
-        }
-
         if(!shootready && System.currentTimeMillis()-shootCooldown- InGame.deltaPauseTime() > 50){
             shootready = true;
             shootCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
         }
         else if(shootready) {
             shootready = false;
-
-
-            for (int i = 0; i < 1; i++) {
-                float offset = Random.nextInt(3) * 0.1f;
-
-                angle+=7;
-                if(angle >= 360){
-                    angle-=360;
-                }
-
-                KingSlimebullet slimebullet = new KingSlimebullet(
-                        tileMap,
-                        Math.sin(Math.toRadians(angle)),
-                        Math.sin(Math.toRadians(angle-90)),
-                        offset+0.05* i *(1-Random.nextInt(2)*2)
-                );
-                slimebullet.setPosition(position.x, position.y);
-                bullets.add(slimebullet);
-
-                slimebullet = new KingSlimebullet(
-                        tileMap,
-                        Math.sin(Math.toRadians(angle-180)),
-                        Math.sin(Math.toRadians(angle-270)),
-                        offset+0.05* i *(1-Random.nextInt(2)*2)
-                );
-                slimebullet.setPosition(position.x, position.y);
-                bullets.add(slimebullet);
-
-            }
-
         }
-        // ENEMY AI
-        EnemyAI();
-
         // update position
-        getNextPosition();
+        EnemyAI();
         checkTileMapCollision();
         setPosition(temp.x, temp.y);
     }
@@ -292,8 +186,8 @@ public class KingSlime extends Enemy {
         health -= damage;
         if(health < 0) health = 0;
         if(health == 0){
-            animation.setDelay(85);
-            animation.setFrames(spritesheet.getSprites(DEAD));
+            //animation.setDelay(85);
+            //animation.setFrames(spritesheet.getSprites(DEAD));
             speed.x = 0;
             speed.y = 0;
             dead = true;

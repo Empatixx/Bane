@@ -146,7 +146,9 @@ public class Image {
     public void setPosition(Vector3f position){
         this.pos = position;
     }
-
+    public void setScale(float scale){
+        this.scale = scale;
+    }
     public Vector3f getPos() {
         return pos;
     }

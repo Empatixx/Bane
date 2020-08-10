@@ -86,6 +86,18 @@ public abstract class  Enemy extends MapObject {
     }
     @Override
     public void draw() {
+        if(Game.displayCollisions) {
+            if (path != null) {
+                glBegin(GL_LINE_STRIP);
+                for (PathNode node : path.getPathNodes()) {
+                    glPointSize(10);
+                    glColor3i(255, 0, 0);
+                    glVertex2f(node.getX() + xmap, node.getY() + ymap);
+                }
+                glEnd();
+
+            }
+        }
         // pokud neni object na obrazovce - zrusit
         if (isNotOnScrean()){
             return;
@@ -222,17 +234,6 @@ public abstract class  Enemy extends MapObject {
             outlineShader.unbind();
             glBindTexture(GL_TEXTURE_2D, 0);
             glActiveTexture(0);
-        }
-        if(Game.displayCollisions) {
-            if (path != null) {
-                for (PathNode node : path.getPathNodes()) {
-                    glPointSize(10);
-                    glColor3i(255, 0, 0);
-                    glBegin(GL_POINTS);
-                    glVertex2f(node.getX() + xmap, node.getY() + ymap);
-                    glEnd();
-                }
-            }
         }
     }
 
@@ -671,8 +672,8 @@ public abstract class  Enemy extends MapObject {
     // ENEMY AI
 
     private void updatePlayerCords(){
-        px = (int)player.getx();
-        py = (int)player.gety();
+        px = (int)player.getX();
+        py = (int)player.getY();
     }
     public boolean shouldRemove(){
         return animation.hasPlayedOnce() && isDead();

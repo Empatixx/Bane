@@ -81,8 +81,8 @@ public abstract class Weapon {
     public int getType() {
         return type;
     }
-    public void addAmmo(int amount){
-        currentAmmo+=amount;
+    public void addAmmo(int amountprocent){
+        currentAmmo+=Math.ceil((float)(amountprocent)/100*maxAmmo);
         if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
     }
 

@@ -4,10 +4,15 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.Enemies.Shopkeeper;
 import cz.Empatix.Entity.EnemyManager;
+import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.MapObject;
+import cz.Empatix.Entity.Player;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
+import cz.Empatix.Render.RoomObjects.*;
+import cz.Empatix.Render.RoomObjects.ProgressRoom.Portal;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -36,6 +41,7 @@ public class Room {
     public final static int Loot = 2;
     public final static int Shop = 3;
     public final static int Boss = 4;
+    public final static int Progress = 5;
 
     // orientation about paths
     private boolean bottom;
@@ -167,6 +173,29 @@ public class Room {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else if(type == Progress){
+            try {
+                InputStream in = getClass().getResourceAsStream("/Map/progressroom.map");
+                BufferedReader br = new BufferedReader(
+                        new InputStreamReader(in)
+                );
+
+                numCols = Integer.parseInt(br.readLine());
+                numRows = Integer.parseInt(br.readLine());
+
+                roomMap = new byte[numRows][numCols];
+
+                String delims = "\\s+";
+                for (int row = 0; row < numRows; row++) {
+                    String line = br.readLine();
+                    String[] tokens = line.split(delims);
+                    for (int col = 0; col < numCols; col++) {
+                        roomMap[row][col] = Byte.parseByte(tokens[col]);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -193,19 +222,6 @@ public class Room {
 
     public int getX() {
         return x;
-    }
-
-    public boolean[] getPaths(){
-        // 0 - TOP
-        // 1 - BOTTOM
-        // 2 - LEFT
-        // 3 - RIGHT
-        boolean[] paths = new boolean[4];
-        paths[0] = top;
-        paths[1] = bottom;
-        paths[2] = left;
-        paths[3] = right;
-        return paths;
     }
 
     void setTop(boolean top) {
@@ -315,11 +331,11 @@ public class Room {
             }
         }
     }
-    public void drawObjects(){
+    public void drawObjects(TileMap tm){
         for(RoomObject object : mapObjects){
             if(!object.isPreDraw())object.draw();
         }
-        if(type == Starter){
+        if(type == Starter && tm.getFloor() == 0){
             int y=yMin + (yMax - yMin) / 2;
             int x=xMin + (xMax - xMin) / 2;
             float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
@@ -338,17 +354,24 @@ public class Room {
     public void updateObjects(){
         for(int i = 0;i<mapObjects.size();i++){
             RoomObject object = mapObjects.get(i);
-            if(object instanceof Chest) {
-                if(((Chest)object).shouldRemove()){
-                    mapObjects.remove(i);
-                    i--;
-                    continue;
+            if(object.shouldRemove()){
+                mapObjects.remove(i);
+                if(object instanceof DestroyableObject){
+                    if(((DestroyableObject) object).isDestroyed()){
+                        if(((DestroyableObject) object).hasDrop() && Math.random() > 0.8){
+                            ItemManager.createDrop(object.getX(),object.getY());
+                        }
+                    }
                 }
+                i--;
+                continue;
             }
             object.update();
         }
-        if(EnemyManager.areEnemiesDead()){
-            lockRoom(false);
+        if(type == Boss || type == Classic) {
+            if (EnemyManager.areEnemiesDead()) {
+                lockRoom(false);
+            }
         }
         if(type == Shop) {
             ((Shopkeeper)shopkeeper).update();
@@ -358,27 +381,29 @@ public class Room {
         if(type == Classic){
             int num = cz.Empatix.Java.Random.nextInt(3);
 
+            // spikes
             for(int i = 0;i<num;i++){
                 int tileSize = tm.getTileSize();
 
-                int xMinTile = xMin/tileSize+1;
-                int yMinTile = yMin/tileSize+1;
+                int xMinTile = xMin/tileSize + 2;
+                int yMinTile = yMin/tileSize + 2;
 
-                int xMaxTile = xMax/tileSize-2;
-                int yMaxTile = yMax/tileSize-2;
+                int xMaxTile = xMax/tileSize - 2;
+                int yMaxTile = yMax/tileSize - 2;
 
-                int x = cz.Empatix.Java.Random.nextInt((xMaxTile - xMinTile) + 1) + xMinTile;
-                int y = cz.Empatix.Java.Random.nextInt((yMaxTile - yMinTile) + 1) + yMinTile;
+                int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
 
                 boolean done = false;
-                while(!done) {
-                    x = cz.Empatix.Java.Random.nextInt((xMaxTile - xMinTile) + 1) + xMinTile;
-                    y = cz.Empatix.Java.Random.nextInt((yMaxTile - yMinTile) + 1) + yMinTile;
+                while(!done){
                     boolean collision = false;
-                    A: for (int k = -1; k < 2; k++) {
-                        for (int j = -1; j < 2; j++) {
-                            if(tm.getType(y+k,x+j) == Tile.BLOCKED) {
-                                collision = true;
+
+                    x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                    y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                    A: for(int j = -1;j<2;j++){
+                        for(int k = -1;k<2;k++){
+                            if(tm.getType(y+j,x+k) == Tile.BLOCKED){
+                                collision=true;
                                 break A;
                             }
                         }
@@ -386,6 +411,46 @@ public class Room {
                     if(!collision) done = true;
                 }
                 tm.addSpike(x*tileSize+tileSize/2,y*tileSize+tileSize/2,this);
+            }
+            // flags
+            num = cz.Empatix.Java.Random.nextInt(3);
+            for(int i = 0;i<num;i++) {
+                int tileSize = tm.getTileSize();
+
+                int xMinTile = xMin/tileSize + 1;
+                int yMinTile = yMin/tileSize + 1;
+
+                int xMaxTile = xMax/tileSize - 1;
+                int yMaxTile = yMax/tileSize - 1;
+
+                int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                while(tm.getType(y-1,x) != Tile.BLOCKED || tm.getType(y,x) == Tile.BLOCKED){
+                    x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                    y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                }
+                Flag flag = new Flag(tm);
+                flag.setPosition(x*tileSize+tileSize/2,y*tileSize-tileSize/2);
+                this.addObject(flag);
+            }
+            if(Math.random() > 0.5){
+                int tileSize = tm.getTileSize();
+
+                int xMinTile = xMin/tileSize + 1;
+                int yMinTile = yMin/tileSize + 1;
+
+                int xMaxTile = xMax/tileSize - 1;
+                int yMaxTile = yMax/tileSize - 1;
+
+                int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                while(tm.getType(y,x) == Tile.BLOCKED){
+                    x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                    y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                }
+                Barrel barrel = new Barrel(tm);
+                barrel.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
+                this.addObject(barrel);
             }
         }
         if (type == Loot) {
@@ -406,6 +471,39 @@ public class Room {
                 }
             }
         }
+        if(type == Boss){
+            int tileSize = tm.getTileSize();
+            for(int i = 4;i<6;i++){
+                for(int j = 4;j<6;j++){
+                    if(i == 4 && j == 4) continue;
+                    Barrel barrel = new Barrel(tm);
+                    barrel.setPosition(xMin + i*tileSize, yMin + j*tileSize);
+                    mapObjects.add(barrel);
+
+                    barrel = new Barrel(tm);
+                    barrel.setPosition(xMax - i*tileSize, yMin + j*tileSize);
+                    mapObjects.add(barrel);
+
+                    barrel = new Barrel(tm);
+                    barrel.setPosition(xMax - i*tileSize, yMax - j*tileSize);
+                    mapObjects.add(barrel);
+
+                    barrel = new Barrel(tm);
+                    barrel.setPosition(xMin + i*tileSize, yMax - j*tileSize);
+                    mapObjects.add(barrel);
+                }
+            }
+        }
+        if(type == Progress){
+            int tileSize = tm.getTileSize();
+            Portal portal = new Portal(tm);
+            portal.setPosition((float) (numCols*tileSize) / 2,  2*tileSize);
+            mapObjects.add(portal);
+            Flag flag = new Flag(tm);
+            flag.setPosition(x*tileSize+tileSize/2,y*tileSize-tileSize/2);
+            this.addObject(flag);
+        }
+
     }
 
 
@@ -431,5 +529,14 @@ public class Room {
 
     public MMRoom getMinimapRoom() {
         return minimapRoom;
+    }
+    public void keyPressed(int k, Player p){
+        if(k == GLFW.GLFW_KEY_E){
+            for(RoomObject object : mapObjects){
+                if(object.intersects(p)){
+                    object.keyPress();
+                }
+            }
+        }
     }
 }

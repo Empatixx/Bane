@@ -25,6 +25,7 @@ import cz.Empatix.Render.Postprocessing.GaussianBlur;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Console;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
@@ -63,6 +64,7 @@ public class InGame extends GameState {
     private MiniMap miniMap;
     private DamageIndicator damageIndicator;
     private cz.Empatix.Render.Hud.Image coin;
+    private Console console;
 
     private EnemyManager enemyManager;
 
@@ -155,6 +157,7 @@ public class InGame extends GameState {
             gunsManager.stopShooting();
         }
         player.keyReleased(k);
+        miniMap.keyReleased(k);
 
         if(pause) return;
 
@@ -167,6 +170,18 @@ public class InGame extends GameState {
     void keyPressed(int k) {
         if(player.isDead()) return;
         if(pause) return;
+
+        if (k == GLFW.GLFW_KEY_F1){
+            Game.displayCollisions = !Game.displayCollisions;
+        }
+        if (k == GLFW.GLFW_KEY_F2){
+            console.setEnabled(!console.isEnabled());
+        }
+
+        if(console.isEnabled()){
+            console.keyPressed(k);
+            return;
+        }
         float px = player.getX();
         float py = player.getY();
         float mx = tileMap.getX();
@@ -175,11 +190,9 @@ public class InGame extends GameState {
 
         player.keyPressed(k);
         itemManager.keyPressed(k,(int)(mouseX-mx-px),(int)(mouseY-my-py));
+        tileMap.keyPressed(k,player);
+        miniMap.keyPressed(k);
 
-
-        if (k == GLFW.GLFW_KEY_F1){
-            Game.displayCollisions = !Game.displayCollisions;
-        }
     }
 
     @Override
@@ -274,13 +287,14 @@ public class InGame extends GameState {
 
         skullPlayerdead.setAlpha(0f);
 
+        console = new Console(gunsManager,player,itemManager,enemyManager);
     }
 
     @Override
     void draw() {
         objectsFramebuffer.bindFBO();
         // clear framebuffer
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         tileMap.draw();
@@ -328,9 +342,14 @@ public class InGame extends GameState {
         healthBar.draw();
         armorBar.draw();
         miniMap.draw(); //TODO: dodelat mapu
-        coin.draw();
         damageIndicator.draw();
+
+        console.draw();
+
+        coin.draw();
         TextRender.renderText(""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
+
+
         if(player.isDead()){
             fadeFramebuffer.unbindFBO();
             fade.draw(fadeFramebuffer);
@@ -355,7 +374,7 @@ public class InGame extends GameState {
                     img.draw();
                 }
                 TextRender.renderText("Enemies killed: "+EnemyManager.enemiesKilled,new Vector3f(600,500,0),3,new Vector3f(1f,1f,1f));
-                TextRender.renderText("Total coins: "+player.getCoins(),new Vector3f(600,600,0),3,new Vector3f(1f,1f,1f));
+                TextRender.renderText("Total coins: "+itemManager.getTotalCoins(),new Vector3f(600,600,0),3,new Vector3f(1f,1f,1f));
                 if(GunsManager.bulletShooted == 0){
                     TextRender.renderText("Accuracy: 0%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
 
@@ -378,7 +397,7 @@ public class InGame extends GameState {
             }
             if(time > 5500){
                 if(System.currentTimeMillis() / 500 % 2 == 0) {
-                    TextRender.renderText("Press aynthing to continue...",new Vector3f(1500,1000,0),2,new Vector3f(1f,1f,1f));
+                    TextRender.renderText("Press anything to continue...",new Vector3f(1500,1000,0),2,new Vector3f(1f,1f,1f));
 
                 }
             }
@@ -473,6 +492,7 @@ public class InGame extends GameState {
             // updating if player shoots any enemies
             enemyManager.update();
             damageIndicator.update();
+            console.update();
 
             // check bullet collision with enemies
             gunsManager.checkCollisions(enemies);

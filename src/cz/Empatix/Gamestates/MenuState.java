@@ -247,7 +247,7 @@ public class MenuState extends GameState{
                     int type = huds[i].getType();
                     source.play(soundMenuClick);
                     if (type == BEGIN) {
-                        gsm.setState(GameStateManager.INGAME);
+                        gsm.setState(GameStateManager.PROGRESSROOM);
                     } else if (type == SETTINGS) {
                         settings = true;
                     } else if (type == EXIT) {

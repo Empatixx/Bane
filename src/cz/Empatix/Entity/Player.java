@@ -356,14 +356,6 @@ public class Player extends MapObject {
             setDown(false);
         }
     }
-
-    public float getX() {
-        return position.x;
-    }
-
-    public float getY() {
-        return position.y;
-    }
     public void hit(int damage){
         if (flinching ||dead || rolling) return;
 
@@ -446,5 +438,14 @@ public class Player extends MapObject {
     }
     public void removeCoins(int amount){
         coins-=amount;
+    }
+
+    public void setCoins(int coins) {
+        this.coins = coins;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+        this.maxHealth = health;
     }
 }

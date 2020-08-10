@@ -4,6 +4,8 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Hud.Image;
+import cz.Empatix.Render.RoomObjects.DestroyableObject;
+import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
@@ -18,6 +20,8 @@ public class M4 extends Weapon{
 
     private int dots;
     private int bonusShots;
+    private float lastX;
+    private float lastY;
 
     private ArrayList<Bullet> bullets;
 
@@ -26,8 +30,8 @@ public class M4 extends Weapon{
         mindamage = 2;
         maxdamage = 2;
         inaccuracy = 0.5f;
-        maxAmmo = 500;
-        maxMagazineAmmo = 25;
+        maxAmmo = 240;
+        maxMagazineAmmo = 20;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         type = 1;
@@ -59,7 +63,7 @@ public class M4 extends Weapon{
         long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
         if(bonusShots > 0 && delta > 250-bonusShots*62.5 && delta < 550){
             double inaccuracy = 0;
-            Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+            Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,30);
             bullet.setPosition(px, py);
             bullet.setDamage(2);
             bullets.add(bullet);
@@ -75,6 +79,8 @@ public class M4 extends Weapon{
                 if (delta > 750) {
                     double inaccuracy = 0;
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
+                    lastX = x;
+                    lastY = y;
                     Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                     bullet.setPosition(px, py);
                     bullet.setDamage(2);
@@ -146,14 +152,25 @@ public class M4 extends Weapon{
 
     @Override
     public void checkCollisions(ArrayList<Enemy> enemies) {
-        for(Bullet bullet:bullets){
+        ArrayList<RoomObject> objects = tm.getRoomMapObjects();
+        A: for(Bullet bullet:bullets){
             for(Enemy enemy:enemies){
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     enemy.hit(bullet.getDamage());
                     bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;
-
+                    continue A;
+                }
+            }
+            for(RoomObject object: objects){
+                if(object instanceof DestroyableObject) {
+                    if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
+                        bullet.playEnemyHit();
+                        bullet.setHit();
+                        ((DestroyableObject) object).setHit(bullet.getDamage());
+                        continue A;
+                    }
                 }
             }
         }

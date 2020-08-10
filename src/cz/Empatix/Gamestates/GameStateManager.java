@@ -14,6 +14,7 @@ public class GameStateManager {
 
     protected static final int MENU = 0;
     protected static final int INGAME = 1;
+    protected static final int PROGRESSROOM = 2;
 
     private Screanshot screanshot;
 
@@ -37,6 +38,7 @@ public class GameStateManager {
         currentState = MENU;
         gameStates.add(new MenuState(this));
         gameStates.add(new InGame(this));
+        gameStates.add(new ProgressRoom(this));
 
         screanshot = new Screanshot();
     }

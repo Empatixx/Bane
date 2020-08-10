@@ -5,13 +5,15 @@ import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
+import cz.Empatix.Render.RoomObjects.DestroyableObject;
+import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-public class Lahti extends Weapon {
+public class Luger extends Weapon {
     // audio
     private final int[] soundShoot;
     private final int soundEmptyShoot;
@@ -23,12 +25,12 @@ public class Lahti extends Weapon {
 
     private int bonusShots;
 
-    Lahti(TileMap tm){
+    Luger(TileMap tm){
         super(tm);
         mindamage = 1;
         maxdamage = 2;
         inaccuracy = 0.8f;
-        maxAmmo = 180;
+        maxAmmo = 120;
         maxMagazineAmmo = 9;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
@@ -68,7 +70,7 @@ public class Lahti extends Weapon {
             inaccuracy = 0.055 * delta / (250-bonusShots*16.6) * (Random.nextInt(2) * 2 - 1);
             Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
             bullet.setPosition(px, py);
-            bullet.setDamage(2);
+            bullet.setDamage(3);
             bullets.add(bullet);
             GunsManager.bulletShooted++;
 
@@ -159,13 +161,25 @@ public class Lahti extends Weapon {
 
     @Override
     public void checkCollisions(ArrayList<Enemy> enemies) {
-        for(Bullet bullet:bullets){
+        ArrayList<RoomObject> objects = tm.getRoomMapObjects();
+        A: for(Bullet bullet:bullets){
             for(Enemy enemy:enemies){
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     enemy.hit(bullet.getDamage());
                     bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;
+                    continue A;
+                }
+            }
+            for(RoomObject object: objects){
+                if(object instanceof DestroyableObject) {
+                    if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
+                        bullet.playEnemyHit();
+                        bullet.setHit();
+                        ((DestroyableObject) object).setHit(bullet.getDamage());
+                        continue A;
+                    }
                 }
             }
         }

@@ -7,7 +7,7 @@ import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
 import cz.Empatix.Render.Postprocessing.Lightning.LightPoint;
-import cz.Empatix.Render.RoomObject;
+import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
@@ -168,7 +168,8 @@ public abstract class MapObject {
 		if(speed.y < 0) {
 			if(topLeft || topRight) {
 				speed.y = 0;
-				currRow = ((int)position.y - cheight / 2) / tileSize;
+				if(tileSize < cheight/2) currRow = ((int)position.y - cheight / 2) / tileSize;
+				else currRow = (int)position.y / tileSize;
 				temp.y = currRow * tileSize + cheight / 2;
 			}
 			else {
@@ -178,7 +179,8 @@ public abstract class MapObject {
 		if(speed.y > 0) {
 			if(bottomLeft || bottomRight) {
 				speed.y = 0;
-				currRow = ((int)position.y + cheight / 2 - 1) / tileSize;
+				if(tileSize < cheight/2) currRow = ((int)position.y + cheight / 2 - 1) / tileSize;
+				else currRow = (int)position.y / tileSize;
 				temp.y = (currRow + 1) * tileSize - cheight / 2;
 			}
 			else {
@@ -190,7 +192,9 @@ public abstract class MapObject {
 		if(speed.x < 0) {
 			if(topLeft || bottomLeft) {
 				speed.x = 0;
-				currCol = ((int)position.x - cwidth / 2) / tileSize;
+				if(tileSize < cwidth/2) currCol = ((int)position.x - cwidth / 2) / tileSize;
+				else currCol = (int)position.x / tileSize;
+
 				temp.x = currCol * tileSize + cwidth / 2;
 			}
 			else {
@@ -200,7 +204,9 @@ public abstract class MapObject {
 		if(speed.x > 0) {
 			if(topRight || bottomRight) {
 				speed.x = 0;
-				currCol = ((int)position.x + cwidth / 2 - 1) / tileSize;
+				if(tileSize < cwidth/2) currCol = ((int)position.x + cwidth / 2 - 1) / tileSize;
+				else currCol = (int)position.x / tileSize;
+
 				temp.x = (currCol + 1) * tileSize - cwidth / 2;
 			}
 			else {
@@ -211,94 +217,195 @@ public abstract class MapObject {
 
 	public void checkRoomObjectsCollision(){
 		ArrayList<RoomObject> mapObjects = tileMap.getRoomMapObjects();
-		for(RoomObject obj:mapObjects){
-			boolean y = (int)dest.y()+cheight/2 > (int)obj.gety()-obj.cheight/2 && (int)dest.y()-cheight/2 < (int)obj.gety()+obj.cheight/2;
-			boolean x = (int)position.x()-cwidth/2 < (int)obj.getx()+obj.cwidth/2 && (int)position.x()+cwidth/2 > (int)obj.getx()-obj.cwidth/2;
+		boolean[] collisionCheck = new boolean[mapObjects.size()];
+		for(int i = 0;i<mapObjects.size();i++){
+			RoomObject obj = mapObjects.get(i);
+			boolean touchEvent = false;
+
+			boolean y = (int)dest.y()+cheight/2- 1 > (int)obj.getY()-obj.cheight/2 && (int)dest.y()-cheight/2 < (int)obj.getY()+obj.cheight/2- 1;
+			boolean x = (int)position.x()-cwidth/2 < (int)obj.getX()+obj.cwidth/2- 1 && (int)position.x()+cwidth/2- 1 > (int)obj.getX()-obj.cwidth/2;
 
 			if(x && y){
+				touchEvent = true;
 				if (speed.y > 0 && obj.collision) {
 					if(obj.moveable){
-						obj.setSpeedY(speed.y*1.75f);
-						speed.y -= stopSpeed*7;
+						obj.setSpeedY(speed.y*obj.getSpeedMoveBoost());
+						speed.y -= stopSpeed*obj.getSpeedMoveBoost();
 						if(speed.y < 0) speed.y = 0;
 						temp.y = position.y+speed.y;
 						obj.checkTileMapCollision();
+						obj.checkRoomObjectsCollision(obj,collisionCheck);
 						// if map object is blocked by tile collision - block player by map object collision
-						if(obj.speed.y == 0){
-							temp.y = obj.gety() - obj.cheight / 2 - cheight / 2;
+						if(obj.speed.y <= speed.y){
+							temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
 						}
 					} else {
 						speed.y=0;
-						temp.y = obj.gety() - obj.cheight / 2 - cheight / 2;
+						temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
 					}
 				} else if (speed.y < 0 && obj.collision) {
 					if(obj.moveable){
-						obj.setSpeedY(speed.y*1.75f);
-						speed.y += stopSpeed*7;
+						obj.setSpeedY(speed.y*obj.getSpeedMoveBoost());
+						speed.y -= speed.y*obj.getSpeedMoveBoost();
 						if(speed.y > 0) speed.y = 0;
 						temp.y = position.y+speed.y;
 						obj.checkTileMapCollision();
+						obj.checkRoomObjectsCollision(obj,collisionCheck);
 						// if map object is blocked by tile collision - block player by map object collision
-						if(obj.speed.y == 0){
-							temp.y = obj.gety() + obj.cheight / 2 + cheight / 2;
+						if(obj.speed.y >= speed.y){
+							temp.y = obj.getY() + obj.cheight / 2 + cheight / 2 - 1;
 						}
 					} else {
 						speed.y=0;
-						temp.y = obj.gety() + obj.cheight / 2 + cheight / 2;
+						temp.y = obj.getY() + obj.cheight / 2 + cheight / 2 - 1;
 					}
 				}
 			}
 
-			y = (int)position.y()+cheight/2 > (int)obj.gety()-obj.cheight/2 && (int)position.y()-cheight/2 < (int)obj.gety()+obj.cheight/2;
-			x = (int)dest.x()-cwidth/2 < (int)obj.getx()+obj.cwidth/2 && (int)dest.x()+cwidth/2 > (int)obj.getx()-obj.cwidth/2;
+			y = (int)position.y()+cheight/2- 1 > (int)obj.getY()-obj.cheight/2 && (int)position.y()-cheight/2 < (int)obj.getY()+obj.cheight/2- 1;
+			x = (int)dest.x()-cwidth/2 < (int)obj.getX()+obj.cwidth/2 - 1 && (int)dest.x()+cwidth/2 - 1 > (int)obj.getX()-obj.cwidth/2;
 
 			if (y && x) {
+
+				touchEvent = true;
+
 				if (speed.x > 0 && obj.collision) {
 					if(obj.moveable){
-						obj.setSpeedX(speed.x*1.75f);
-						speed.x -= stopSpeed*7;
+						obj.setSpeedX(speed.x*obj.getSpeedMoveBoost());
+						speed.x -= speed.x*obj.getSpeedMoveBoost();
 						if(speed.x < 0) speed.x = 0;
 						temp.x = position.x+speed.x;
 						obj.checkTileMapCollision();
+						obj.checkRoomObjectsCollision(obj,collisionCheck);
 						// if map object is blocked by tile collision - block player by map object collision
 
-						if(obj.speed.x == 0){
-							temp.x=obj.getx()-obj.cwidth/2-cwidth/2;
+						if(obj.speed.x <= speed.x){
+							temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
 						}
 					} else {
 						speed.x=0;
-						temp.x=obj.getx()-obj.cwidth/2-cwidth/2;
+						temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
 					}
 				} else if (speed.x < 0 && obj.collision) {
 					if(obj.moveable){
-						obj.setSpeedX(speed.x*1.75f);
-						speed.x += stopSpeed*7;
+						obj.setSpeedX(speed.x*obj.getSpeedMoveBoost());
+						speed.x -= speed.x*obj.getSpeedMoveBoost();
 						if(speed.x > 0) speed.x = 0;
 						temp.x = position.x+speed.x;
 						obj.checkTileMapCollision();
+						obj.checkRoomObjectsCollision(obj,collisionCheck);
 						// if map object is blocked by tile collision - block player by map object collision
-						if(obj.speed.x == 0){
-							temp.x=obj.getx()+obj.cwidth/2+cwidth/2;
+						if(obj.speed.x >= speed.x){
+							temp.x=obj.getX()+obj.cwidth/2+cwidth/2- 1;
 						}
 					} else {
 						speed.x=0;
-						temp.x=obj.getx()+obj.cwidth/2+cwidth/2;
+						temp.x=obj.getX()+obj.cwidth/2+cwidth/2- 1;
 					}
 				}
 			}
 
-			y = (int)dest.y()+cheight/2 > (int)obj.gety()-obj.cheight/2 && (int)dest.y()-cheight/2 < (int)obj.gety()+obj.cheight/2;
-			x = (int)dest.x()-cwidth/2 < (int)obj.getx()+obj.cwidth/2 && (int)dest.x()+cwidth/2 > (int)obj.getx()-obj.cwidth/2;
-
-			if(x && y ){
+			if(touchEvent){
 
 				obj.touchEvent();
 			}
 		}
 	}
-	
-	public float getx() { return position.x; }
-	public float gety() { return position.y; }
+	public void checkRoomObjectsCollision(MapObject previousObject, boolean[] collisionCheck){
+		ArrayList<RoomObject> mapObjects = tileMap.getRoomMapObjects();
+		for(int i = 0;i<mapObjects.size();i++){
+			RoomObject obj = mapObjects.get(i);
+			if(previousObject == obj) collisionCheck[i] = true;
+			if(collisionCheck[i]) continue;
+
+			boolean y = (int)dest.y()+cheight/2-1 > (int)obj.getY()-obj.cheight/2 && (int)dest.y()-cheight/2 < (int)obj.getY()+obj.cheight/2-1;
+			boolean x = (int)position.x()-cwidth/2 < (int)obj.getX()+obj.cwidth/2-1 && (int)position.x()+cwidth/2-1 > (int)obj.getX()-obj.cwidth/2;
+
+			if(x && y){
+				if (speed.y > 0 && obj.collision) {
+					if(obj.moveable){
+						obj.setSpeedY(speed.y);
+						if(speed.y < 0) speed.y = 0;
+						temp.y = position.y+speed.y;
+						// if map object is blocked by tile collision - block player by map object collision
+						if(obj.speed.y <= speed.y) {
+							temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
+						}
+						if(obj.speed.y == 0){
+							speed.y = 0;
+						}
+					} else {
+						speed.y=0;
+						temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
+					}
+				} else if (speed.y < 0 && obj.collision) {
+					if(obj.moveable){
+						obj.setSpeedY(speed.y);
+						if(speed.y > 0) speed.y = 0;
+						temp.y = position.y+speed.y;
+						obj.checkTileMapCollision();
+						obj.checkRoomObjectsCollision(this,collisionCheck);
+						// if map object is blocked by tile collision - block player by map object collision
+						if(obj.speed.y >= speed.y) {
+							temp.y = obj.getY() + obj.cheight / 2 + cheight / 2- 1;
+						}
+						if(obj.speed.y == 0){
+							speed.y = 0;
+						}
+					} else {
+						speed.y=0;
+						temp.y = obj.getY() + obj.cheight / 2 + cheight / 2- 1;
+					}
+				}
+			}
+
+			y = (int)position.y()+cheight/2-1 > (int)obj.getY()-obj.cheight/2 && (int)position.y()-cheight/2 < (int)obj.getY()+obj.cheight/2-1;
+			x = (int)dest.x()-cwidth/2 < (int)obj.getX()+obj.cwidth/2-1 && (int)dest.x()+cwidth/2-1 > (int)obj.getX()-obj.cwidth/2;
+
+			if (y && x) {
+				if (speed.x > 0 && obj.collision) {
+					if(obj.moveable){
+						obj.setSpeedX(speed.x);
+						if(speed.x < 0) speed.x = 0;
+						temp.x = position.x+speed.x;
+						obj.checkTileMapCollision();
+						obj.checkRoomObjectsCollision(this,collisionCheck);
+						// if map object is blocked by tile collision - block player by map object collision
+
+						if(obj.speed.x <= speed.x){
+							temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
+						}
+						if(obj.speed.x == 0){
+							speed.x = 0;
+						}
+					} else {
+						speed.x=0;
+						temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
+					}
+				} else if (speed.x < 0 && obj.collision) {
+					if(obj.moveable){
+						obj.setSpeedX(speed.x);
+						if(speed.x > 0) speed.x = 0;
+						temp.x = position.x+speed.x;
+						obj.checkTileMapCollision();
+						obj.checkRoomObjectsCollision(this,collisionCheck);
+						// if map object is blocked by tile collision - block player by map object collision
+						if(obj.speed.x >= speed.x){
+							temp.x=obj.getX()+obj.cwidth/2+cwidth/2-1;
+						}
+						if(obj.speed.x == 0){
+							speed.x = 0;
+						}
+					} else {
+						speed.x=0;
+						temp.x=obj.getX()+obj.cwidth/2+cwidth/2-1;
+					}
+				}
+			}
+		}
+	}
+	public float getX() { return position.x; }
+	public float getY() { return position.y; }
 
 	/**
 	 * @param x X location of MapObject

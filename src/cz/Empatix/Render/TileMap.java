@@ -2,6 +2,7 @@ package cz.Empatix.Render;
 
 
 import cz.Empatix.Entity.ItemDrops.ItemManager;
+import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
@@ -9,6 +10,10 @@ import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.Hud.Minimap.MiniMap;
+import cz.Empatix.Render.RoomObjects.Ladder;
+import cz.Empatix.Render.RoomObjects.PathWall;
+import cz.Empatix.Render.RoomObjects.RoomObject;
+import cz.Empatix.Render.RoomObjects.Spike;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -101,6 +106,21 @@ public class TileMap {
 
 		sideRooms = new Room[4];
 	}
+	public TileMap(int tileSize) {
+		this.tileSize = tileSize;
+		// 2x scale
+		numRowsToDraw = Camera.getHEIGHT() / (tileSize*2) + 2;
+		numColsToDraw = Camera.getWIDTH() / (tileSize*2) + 2;
+
+		position = new Vector3f(0,0,0);
+
+		this.camera = Camera.getInstance();
+		tween = 1;
+
+		target = new Matrix4f();
+		floor = 0;
+
+	}
 
 	public int getNumRows() {
 		return numRows;
@@ -185,6 +205,56 @@ public class TileMap {
 		idGen++;
 		return idGen;
 	}
+	public void loadProgressRoom(){
+		// id generator
+		idGen = 0;
+
+		int maxRooms = 1;
+
+		// room xy map
+		roomY = roomX = 1;
+		roomMap = new int[1][1];
+		sideRooms = new Room[4];
+
+
+		//arraylist filled with rooms
+		roomArrayList = new Room[maxRooms];
+
+		int id = getIdGen();
+
+		int x = roomX/2;
+		int y = roomY/2;
+
+		Room mistnost = new Room(Room.Progress,id,x,y);
+		currentRoom = mistnost;
+		MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX(),mistnost.getY());
+		mistnost.setMinimapRoom(mmRoom);
+
+		roomArrayList[0] = mistnost;
+		roomMap[y][x] = id;
+
+
+		mistnost.loadMap();
+		map = mistnost.getRoomMap();
+		numCols = mistnost.getNumCols();
+		numRows = mistnost.getNumRows();
+
+
+		playerStartX = numCols/2*tileSize;
+		playerStartY = numRows/2*tileSize;
+
+
+		xmin = (Camera.getWIDTH() - mistnost.getNumCols()*tileSize);
+		xmax = 0;
+
+		ymin = (Camera.getHEIGHT() - mistnost.getNumRows()*tileSize);
+		ymax = 0;
+
+
+		autoTile();
+
+		mistnost.createObjects(this);
+	}
 	public void loadMap() {
 		// room generation
 		generateRooms();
@@ -197,6 +267,11 @@ public class TileMap {
 
 		// converting 1 and 0 into tiles id textures
 		autoTile();
+
+		// create map objects into all rooms
+		for(Room room : roomArrayList){
+			room.createObjects(this);
+		}
 
 		// getting XY max/min
 		for (Room room : roomArrayList){
@@ -296,19 +371,19 @@ public class TileMap {
 						A: for(int i = 0;i < roomY;i++){
 							for(int j = 0;j <roomX;j++){
 								if(roomMap[i][j] == room.getId()){
-									if(roomY > i+1 && room.isBottom()){
+									if(roomY > i+1 && currentRoom.isBottom()){
 										sideRooms[0] = getRoom(roomMap[i+1][j]);
 									}
 									else sideRooms[0] = null;
-									if(0 <= i-1 && room.isTop()){
+									if(0 <= i-1 && currentRoom.isTop()){
 										sideRooms[1] = getRoom(roomMap[i-1][j]);
 									}
 									else sideRooms[1] = null;
-									if(roomX > j+1 && room.isRight()){
+									if(roomX > j+1 && currentRoom.isRight()){
 										sideRooms[2] = getRoom(roomMap[i][j+1]);
 									}
 									else sideRooms[2] = null;
-									if(0 <= j-1 && room.isLeft()){
+									if(0 <= j-1 && currentRoom.isLeft()){
 										sideRooms[3] = getRoom(roomMap[i][j-1]);
 									}
 									else sideRooms[3] = null;
@@ -548,7 +623,7 @@ public class TileMap {
 		// paths informations
 		int[] shiftsCols = new int[roomX*roomY];
 
-		for(int loop = 0;loop < 7;loop++) {
+		for(int loop = 0;loop < 6;loop++) {
 			// load every room maps
 			if (loop == 0){
 				for(Room room : roomArrayList){
@@ -752,7 +827,7 @@ public class TileMap {
 									for(int i = rows-1+shiftRows;i<numRows;i++){
 								 		if(paths >= 2) break B;
 										if(map[i][j] == Tile.NORMAL){
-											mistnost.addWall(this,j*tileSize+tileSize/2,(rows-1+shiftRows)*tileSize+tileSize/2,PathWall.BOTTOM);
+											mistnost.addWall(this,j*tileSize+tileSize/2,(rows-1+shiftRows)*tileSize+tileSize/2, PathWall.BOTTOM);
 											bottomRoom.addWall(this,j*tileSize+tileSize/2,(i-1)*tileSize+tileSize/2,PathWall.TOP);
 
 											break;
@@ -837,16 +912,11 @@ public class TileMap {
 					shiftRows += nextShiftRows;
 					shiftRows += 2;
 				}
-			} else if (loop == 5){
-				for(Room room : roomArrayList){
+			} else {
+				for (Room room : roomArrayList) {
 					room.unload();
 				}
-			} else{
-				for(Room room : roomArrayList){
-					room.createObjects(this);
-				}
 			}
-
 		}
 
 	}
@@ -1026,10 +1096,10 @@ public class TileMap {
 	}
 
 	public void drawObjects(){
-        currentRoom.drawObjects();
+        currentRoom.drawObjects(this);
 		for(Room r : sideRooms){
 			if(r != null) {
-				r.drawObjects();
+				r.drawObjects(this);
 			}
 		}
 
@@ -1194,5 +1264,9 @@ public class TileMap {
 
 	public Room getCurrentRoom() {
 		return currentRoom;
+	}
+
+	public void keyPressed(int k, Player p){
+		currentRoom.keyPressed(k,p);
 	}
 }

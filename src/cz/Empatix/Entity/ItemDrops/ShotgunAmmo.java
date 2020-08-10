@@ -27,7 +27,7 @@ public class ShotgunAmmo extends ItemDrop{
         scale = 1;
         facingRight = true;
 
-        amount = Random.nextInt(6) + 2;
+        amount = Random.nextInt(8) + 5;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\shotgun_bullet.tga");

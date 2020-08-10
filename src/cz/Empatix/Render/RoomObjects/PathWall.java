@@ -1,11 +1,13 @@
-package cz.Empatix.Render;
+package cz.Empatix.Render.RoomObjects;
 
 
 import cz.Empatix.Entity.Animation;
+import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -27,7 +29,7 @@ public class PathWall extends RoomObject {
         animation.setFrames(spritesheet.getSprites(d));
     }
 
-    PathWall(TileMap tm){
+    public PathWall(TileMap tm){
         super(tm);
         collision=false;
         moveable=false;
@@ -201,5 +203,8 @@ public class PathWall extends RoomObject {
     public void touchEvent() {
 
     }
+    @Override
+    public void keyPress() {
 
+    }
 }

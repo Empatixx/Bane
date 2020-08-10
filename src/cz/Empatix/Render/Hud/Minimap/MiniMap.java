@@ -11,6 +11,7 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
@@ -27,6 +28,8 @@ public class MiniMap {
     private int[] vboTextures;
     private int vboVertices;
     private Shader shader;
+
+    private boolean displayBigMap;
 
 
     private MMRoom[] rooms;
@@ -85,49 +88,118 @@ public class MiniMap {
         Room room = tm.getCurrentRoom();
         int x = room.getX() - 10;
         int y = room.getY() - 10;
-        playerIcon.setPosition(new Vector3f(1770+x*20,150+y*20,0));
-    }
-    public void draw(){
-        minimapBorders.draw();
-        shader.bind();
-        shader.setUniformi("sampler",0);
-        for(MMRoom room : rooms){
-            if(room.isDiscovered()){
-                Matrix4f matrixPos = new Matrix4f()
-                        .translate(new Vector3f(1770+room.getX()*20,150+room.getY()*20,0))
-                        .scale(1.25f);
-                Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
+        if(displayBigMap){
+            playerIcon.setPosition(new Vector3f(1000+x*80,500+y*80,0));
+        } else {
+            playerIcon.setPosition(new Vector3f(1770+x*20,150+y*20,0));
 
-                shader.setUniformm4f("projection",matrixPos);
-
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D,idTexture);
-
-                glEnableVertexAttribArray(0);
-                glEnableVertexAttribArray(1);
-
-
-                glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
-                glVertexAttribPointer(0,2,GL_INT,false,0,0);
-
-                glBindBuffer(GL_ARRAY_BUFFER,vboTextures[room.getType()]);
-                glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
-
-                glDrawArrays(GL_QUADS, 0, 4);
-
-                glBindBuffer(GL_ARRAY_BUFFER,0);
-
-                glDisableVertexAttribArray(0);
-                glDisableVertexAttribArray(1);
-
-            }
         }
-        shader.unbind();
-        glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
-        playerIcon.draw();
+    }
+    public void draw() {
+        if (displayBigMap) {
+            minimapBorders.draw();
+            shader.bind();
+            shader.setUniformi("sampler", 0);
+            for (MMRoom room : rooms) {
+                if (room.isDiscovered()) {
+                    Matrix4f matrixPos = new Matrix4f()
+                            .translate(new Vector3f(1000 + room.getX() * 80, 500 + room.getY() * 80, 0))
+                            .scale(5f);
+                    Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+
+                    shader.setUniformm4f("projection", matrixPos);
+
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, idTexture);
+
+                    glEnableVertexAttribArray(0);
+                    glEnableVertexAttribArray(1);
+
+
+                    glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
+                    glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
+
+                    glBindBuffer(GL_ARRAY_BUFFER, vboTextures[room.getType()]);
+                    glVertexAttribPointer(1, 2, GL_DOUBLE, false, 0, 0);
+
+                    glDrawArrays(GL_QUADS, 0, 4);
+
+                    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+                    glDisableVertexAttribArray(0);
+                    glDisableVertexAttribArray(1);
+
+                }
+            }
+            shader.unbind();
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glActiveTexture(0);
+            playerIcon.draw();
+        } else {
+
+            minimapBorders.draw();
+            shader.bind();
+            shader.setUniformi("sampler", 0);
+            for (MMRoom room : rooms) {
+                if (room.isDiscovered()) {
+                    Matrix4f matrixPos = new Matrix4f()
+                            .translate(new Vector3f(1770 + room.getX() * 20, 150 + room.getY() * 20, 0))
+                            .scale(1.25f);
+                    Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+
+                    shader.setUniformm4f("projection", matrixPos);
+
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, idTexture);
+
+                    glEnableVertexAttribArray(0);
+                    glEnableVertexAttribArray(1);
+
+
+                    glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
+                    glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
+
+                    glBindBuffer(GL_ARRAY_BUFFER, vboTextures[room.getType()]);
+                    glVertexAttribPointer(1, 2, GL_DOUBLE, false, 0, 0);
+
+                    glDrawArrays(GL_QUADS, 0, 4);
+
+                    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+                    glDisableVertexAttribArray(0);
+                    glDisableVertexAttribArray(1);
+
+                }
+            }
+            shader.unbind();
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glActiveTexture(0);
+            playerIcon.draw();
+        }
     }
     public void addRoom(MMRoom room, int number){
         rooms[number] = room;
+    }
+
+    public void keyPressed(int k){
+        if(k == GLFW.GLFW_KEY_TAB){
+            displayBigMap = true;
+            minimapBorders.setScale(7f);
+            minimapBorders.setPosition(new Vector3f(1000,500,0));
+
+            playerIcon.setScale(3.5f);
+            playerIcon.setPosition(new Vector3f(1000,500,0));
+        }
+    }
+    public void keyReleased(int k){
+        if(k == GLFW.GLFW_KEY_TAB){
+            displayBigMap = false;
+            minimapBorders.setScale(2);
+            minimapBorders.setPosition(new Vector3f(1770,150,0));
+
+            playerIcon.setScale(1f);
+            playerIcon.setPosition(new Vector3f(1770,150,0));
+
+        }
     }
 }

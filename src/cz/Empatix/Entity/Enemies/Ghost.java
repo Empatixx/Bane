@@ -13,40 +13,43 @@ import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 
-public class DemonEye extends Enemy {
+public class Ghost extends Enemy {
     private static final int IDLE = 0;
     private static final int DEAD = 1;
 
-    public DemonEye(TileMap tm, Player player) {
+    private long cdRush;
+    private boolean rush;
+
+    public Ghost(TileMap tm, Player player) {
 
         super(tm,player);
 
-        moveSpeed = 2f;
-        maxSpeed = 8.5f;
-        stopSpeed = 1.6f;
+        moveSpeed = 1.4f;
+        maxSpeed = 7.2f;
+        stopSpeed = 0.3f;
 
-        width = 76;
-        height = 64;
-        cwidth = 76;
-        cheight = 64;
-        scale = 2;
+        width = 22;
+        height = 28;
+        cwidth = 22;
+        cheight = 28;
+        scale = 5;
 
 
-        health = maxHealth = 12;
+        health = maxHealth = 12+(int)Math.ceil((int)Math.pow(tm.getFloor(),2)*0.5);
         damage = 2;
 
         type = melee;
         facingRight = true;
 
-        spriteSheetCols = 4;
-        spriteSheetRows = 1;
+        spriteSheetCols = 5;
+        spriteSheetRows = 2;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\demoneye.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\ghost.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\demoneye.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\ghost.tga");
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
                 //Sprite sprite = new Sprite(texCoords);
@@ -56,15 +59,13 @@ public class DemonEye extends Enemy {
             }
             spritesheet.addSprites(sprites);
 
-            /*sprites = new Sprite[4];
+            sprites = new Sprite[5];
             for(int i = 0; i < sprites.length; i++) {
                 Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
                 sprites[i] = sprite;
 
             }
             spritesheet.addSprites(sprites);
-
-             */
         }
         vboVerticles = ModelManager.getModel(width,height);
         if (vboVerticles == -1){
@@ -73,17 +74,17 @@ public class DemonEye extends Enemy {
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(125);
+        animation.setDelay(100);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\shader");
         }
-        // because of scaling image by 2x
-        width *= 2;
-        height *= 2;
-        cwidth *= 2;
-        cheight *= 2;
+        // because of scaling image
+        width *= scale;
+        height *= scale;
+        cwidth *= scale;
+        cheight *= scale;
 
     }
 
@@ -147,6 +148,14 @@ public class DemonEye extends Enemy {
         getNextPosition();
         checkTileMapCollision();
         setPosition(temp.x, temp.y);
+        if(System.currentTimeMillis()-cdRush-InGame.deltaPauseTime() > 3000){
+            cdRush = System.currentTimeMillis()-InGame.deltaPauseTime();
+            maxSpeed = 14.4f;
+            rush = true;
+        } else if (rush && System.currentTimeMillis()-cdRush-InGame.deltaPauseTime() > 700){
+            maxSpeed = 7.2f;
+            rush = false;
+        }
     }
 
     @Override
@@ -156,8 +165,8 @@ public class DemonEye extends Enemy {
         health -= damage;
         if(health < 0) health = 0;
         if(health == 0){
-            //animation.setDelay(100);
-            //animation.setFrames(spritesheet.getSprites(DEAD));
+            animation.setDelay(85);
+            animation.setFrames(spritesheet.getSprites(DEAD));
             speed.x = 0;
             speed.y = 0;
             dead = true;

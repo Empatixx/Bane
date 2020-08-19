@@ -2,13 +2,16 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
 import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -22,6 +25,8 @@ public class Submachine extends Weapon{
     private int dots;
 
     private ArrayList<Bullet> bullets;
+    private int firerateDelay;
+    private boolean chanceToNotConsumeAmmo;
 
     Submachine(TileMap tm){
         super(tm);
@@ -43,6 +48,22 @@ public class Submachine extends Weapon{
         weaponHud = new Image("Textures\\submachine.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1830,975,0),1f);
 
+        firerateDelay = 150;
+
+        int numUpgrades = GameStateManager.getDb().getValueUpgrade("luger","upgrades");
+        numUpgrades = 100;
+        if(numUpgrades >= 1){
+            firerateDelay = 105;
+        }
+        if(numUpgrades >= 2){
+            maxdamage++;
+        }
+        if(numUpgrades >= 3){
+            chanceToNotConsumeAmmo = true;
+        }
+        if(numUpgrades >= 4){
+            criticalHits = true;
+        }
     }
 
     @Override
@@ -73,9 +94,20 @@ public class Submachine extends Weapon{
                     Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                     bullet.setPosition(px, py);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                    if(criticalHits){
+                        if(Math.random() > 0.9){
+                            damage*=2;
+                        }
+                    }
                     bullet.setDamage(damage);
                     bullets.add(bullet);
-                    currentMagazineAmmo--;
+                    if(chanceToNotConsumeAmmo){
+                        if(Math.random() < 0.8){
+                            currentMagazineAmmo--;
+                        }
+                    } else {
+                        currentMagazineAmmo--;
+                    }
                     source.play(soundShoot);
                     GunsManager.bulletShooted++;
 
@@ -145,6 +177,16 @@ public class Submachine extends Weapon{
             for(Enemy enemy:enemies){
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     enemy.hit(bullet.getDamage());
+                    int cwidth = enemy.getCwidth();
+                    int cheight = enemy.getCheight();
+                    int x = -cwidth/4+Random.nextInt(cwidth/2);
+                    if(bullet.isCritical()){
+                        DamageIndicator.addCriticalDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                                ,new Vector2f(-x/25f,-1f));
+                    } else {
+                        DamageIndicator.addDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                                ,new Vector2f(-x/25f,-1f));
+                    }
                     bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;

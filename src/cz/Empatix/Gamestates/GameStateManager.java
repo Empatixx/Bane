@@ -1,6 +1,7 @@
 package cz.Empatix.Gamestates;
 
 import cz.Empatix.AudioManager.AudioManager;
+import cz.Empatix.Database.Database;
 import cz.Empatix.Render.Screanshot;
 import cz.Empatix.Render.Text.TextRender;
 import org.lwjgl.glfw.GLFW;
@@ -17,11 +18,16 @@ public class GameStateManager {
     protected static final int PROGRESSROOM = 2;
 
     private Screanshot screanshot;
+    private static Database db;
 
     public void pause(){
         if(currentState == INGAME){
             ((InGame)gameStates.get(currentState)).pause();
         }
+    }
+
+    public static Database getDb() {
+        return db;
     }
 
     public GameStateManager() {
@@ -41,6 +47,9 @@ public class GameStateManager {
         gameStates.add(new ProgressRoom(this));
 
         screanshot = new Screanshot();
+
+        db = new Database();
+        db.load();
     }
 
     public void setState(int state) {

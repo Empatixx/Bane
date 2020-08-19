@@ -18,6 +18,7 @@ public abstract class Weapon {
 
     protected float inaccuracy;
     protected long delay; // between shoots
+    protected boolean criticalHits;
 
     protected long reloadDelay;
     protected boolean reloading;

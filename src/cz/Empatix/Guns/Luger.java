@@ -2,13 +2,16 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
 import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -24,6 +27,8 @@ public class Luger extends Weapon {
     private ArrayList<Bullet> bullets;
 
     private int bonusShots;
+    private float chanceBonusShots;
+    private boolean bonusShotsAntiConsume; // bonus shots do not consume ammo
 
     Luger(TileMap tm){
         super(tm);
@@ -48,7 +53,23 @@ public class Luger extends Weapon {
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
 
         bonusShots = 0;
+        chanceBonusShots = 0.2f;
 
+        int numUpgrades = GameStateManager.getDb().getValueUpgrade("luger","upgrades");
+        numUpgrades = 100;
+        if(numUpgrades >= 1){
+            maxdamage++;
+            mindamage++;
+        }
+        if(numUpgrades >= 2){
+            chanceBonusShots+=0.1f;
+        }
+        if(numUpgrades >= 3){
+            bonusShotsAntiConsume = true;
+        }
+        if(numUpgrades >= 4){
+            criticalHits = true;
+        }
     }
 
     @Override
@@ -71,6 +92,12 @@ public class Luger extends Weapon {
             Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
             bullet.setPosition(px, py);
             bullet.setDamage(3);
+            if(criticalHits){
+                if(Math.random() > 0.9){
+                    bullet.setDamage(6);
+                    bullet.setCritical(true);
+                }
+            }
             bullets.add(bullet);
             GunsManager.bulletShooted++;
 
@@ -90,14 +117,20 @@ public class Luger extends Weapon {
                     Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                     bullet.setPosition(px, py);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                    if(criticalHits){
+                        if(Math.random() > 0.9){
+                            damage*=2;
+                            bullet.setCritical(true);
+                        }
+                    }
                     bullet.setDamage(damage);
                     bullets.add(bullet);
                     currentMagazineAmmo--;
                     GunsManager.bulletShooted++;
                     source.play(soundShoot[Random.nextInt(2)]);
-                    while(Math.random() > 0.8 && currentMagazineAmmo != 0){
+                    while(Math.random() > 1-chanceBonusShots && currentMagazineAmmo != 0){
                         bonusShots++;
-                        currentMagazineAmmo--;
+                        if(!bonusShotsAntiConsume)currentMagazineAmmo--;
                     }
                 }
             } else if (currentAmmo != 0) {
@@ -166,6 +199,16 @@ public class Luger extends Weapon {
             for(Enemy enemy:enemies){
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     enemy.hit(bullet.getDamage());
+                    int cwidth = enemy.getCwidth();
+                    int cheight = enemy.getCheight();
+                    int x = -cwidth/4+Random.nextInt(cwidth/2);
+                    if(bullet.isCritical()){
+                        DamageIndicator.addCriticalDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                                ,new Vector2f(-x/25f,-1f));
+                    } else {
+                        DamageIndicator.addDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                                ,new Vector2f(-x/25f,-1f));
+                    }
                     bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;

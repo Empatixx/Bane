@@ -4,14 +4,11 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
-import cz.Empatix.Java.Random;
-import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
-import org.joml.Vector2f;
 
 public class Rat extends Enemy {
     private static final int IDLE = 0;
@@ -162,9 +159,6 @@ public class Rat extends Enemy {
             speed.y = 0;
             dead = true;
         }
-        int x = -cwidth/4+Random.nextInt(cwidth/2);
-        DamageIndicator.addDamageShow(damage,(int)position.x-x,(int)position.y-cheight/3
-        ,new Vector2f(-x/25f,-1f));
 
     }
 }

@@ -5,8 +5,6 @@ import cz.Empatix.Entity.Enemies.Projectiles.Slimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
-import cz.Empatix.Java.Random;
-import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -14,7 +12,6 @@ import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
 import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
-import org.joml.Vector2f;
 
 import java.util.ArrayList;
 
@@ -193,7 +190,7 @@ public class Slime extends Enemy {
             final int tileEnemyX = (int)position.x/tileSize;
             final int tileEnemyY = (int)position.y/tileSize;
 
-            if (Math.abs(tileEnemyX - tileTargetX) <= 8 && Math.abs(tileEnemyY - tileTargetY) <= 8) {
+            if (Math.abs(tileEnemyX - tileTargetX) <= 12 && Math.abs(tileEnemyY - tileTargetY) <= 12) {
 
                 for (int i = 0; i < 5; i++) {
                     Slimebullet slimebullet = new Slimebullet(tileMap, px - position.x, py - position.y, 1.3 * i);
@@ -231,9 +228,6 @@ public class Slime extends Enemy {
             speed.y = 0;
             dead = true;
         }
-        int x = -cwidth/4+ Random.nextInt(cwidth/2);
-        DamageIndicator.addDamageShow(damage,(int)position.x-x,(int)position.y-cheight/2
-                ,new Vector2f(-x/25f,-1f));
     }
     @Override
     public boolean shouldRemove(){

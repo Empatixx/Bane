@@ -7,6 +7,8 @@ import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Random;
+import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -35,6 +37,7 @@ public class Grenadebullet extends MapObject {
     private Vector2f originalspeed;
 
     private int damage;
+    private boolean crit;
 
     public Grenadebullet(TileMap tm, double x, double y, double inaccuracy, int speed) {
 
@@ -148,6 +151,16 @@ public class Grenadebullet extends MapObject {
         for(Enemy e : EnemyManager.getEnemies()){
             if(Math.abs(position.x-e.getX()) < 250 && Math.abs(position.y-e.getY()) < 250){
                 e.hit(getDamage());
+                int cwidth = e.getCwidth();
+                int cheight = e.getCheight();
+                int x = -cwidth/4+ Random.nextInt(cwidth/2);
+                if(!isCritical()){
+                    DamageIndicator.addDamageShow(damage,(int)e.getX()-x,(int)e.getY()-cheight/3
+                            ,new Vector2f(-x/25f,-1f));
+                } else {
+                    DamageIndicator.addCriticalDamageShow(damage,(int)e.getX()-x,(int)e.getY()-cheight/3
+                            ,new Vector2f(-x/25f,-1f));
+                }
             }
         }
         for(RoomObject roomObject : tileMap.getRoomMapObjects()){
@@ -215,4 +228,9 @@ public class Grenadebullet extends MapObject {
     public void playEnemyHit(){
         source.play(soundhit);
     }
+
+    public boolean isCritical() {
+        return crit;
+    }
+    public void setCritical(boolean crit){this.crit = crit;}
 }

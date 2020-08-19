@@ -2,13 +2,16 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
 import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -22,6 +25,11 @@ public class Pistol extends Weapon {
     private int dots;
 
     private ArrayList<Bullet> bullets;
+
+    private boolean doubleShots;
+    private boolean secondShotReady;
+    private float lastX;
+    private float lastY;
 
     Pistol(TileMap tm){
         super(tm);
@@ -45,6 +53,21 @@ public class Pistol extends Weapon {
         weaponHud = new Image("Textures\\pistol.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
 
+        int numUpgrades = GameStateManager.getDb().getValueUpgrade("pistol","upgrades");
+        if(numUpgrades >= 1){
+            maxMagazineAmmo+=2;
+            currentMagazineAmmo = maxMagazineAmmo;
+        }
+        if(numUpgrades >= 2){
+            criticalHits = true;
+        }
+        if(numUpgrades >= 3){
+            mindamage++;
+        }
+        if(numUpgrades >= 4){
+            doubleShots = true;
+        }
+
     }
 
     @Override
@@ -60,12 +83,31 @@ public class Pistol extends Weapon {
 
     @Override
     public void shot(float x,float y,float px,float py) {
+        long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
+        if(doubleShots && delta > 75 && secondShotReady){
+            double inaccuracy = 0;
+            delay = System.currentTimeMillis() - InGame.deltaPauseTime();
+            Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,30);
+            bullet.setPosition(px, py);
+            int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+            if(criticalHits){
+                if(Math.random() > 0.9){
+                    damage*=2;
+                    bullet.setCritical(true);
+                }
+            }
+            bullet.setDamage(damage);
+            bullets.add(bullet);
+            currentMagazineAmmo--;
+            GunsManager.bulletShooted++;
+            source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
+            secondShotReady=false;
+        }
         if(isShooting()) {
             if (currentMagazineAmmo != 0) {
                 if (reloading) return;
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
-                long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
                 if (delta > 250) {
                     double inaccuracy = 0;
                     if (delta < 400) {
@@ -75,12 +117,21 @@ public class Pistol extends Weapon {
                     Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                     bullet.setPosition(px, py);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                    if(criticalHits){
+                        if(Math.random() > 0.9){
+                            damage*=2;
+                            bullet.setCritical(true);
+                        }
+                    }
                     bullet.setDamage(damage);
                     bullets.add(bullet);
                     currentMagazineAmmo--;
                     GunsManager.bulletShooted++;
                     source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
 
+                    lastX = x;
+                    lastY = y;
+                    if(currentMagazineAmmo > 0) secondShotReady = true;
                 }
             } else if (currentAmmo != 0) {
                 reload();
@@ -148,6 +199,16 @@ public class Pistol extends Weapon {
             for(Enemy enemy:enemies){
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     enemy.hit(bullet.getDamage());
+                    int cwidth = enemy.getCwidth();
+                    int cheight = enemy.getCheight();
+                    int x = -cwidth/4+Random.nextInt(cwidth/2);
+                    if(bullet.isCritical()){
+                        DamageIndicator.addCriticalDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                                ,new Vector2f(-x/25f,-1f));
+                    } else {
+                        DamageIndicator.addDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                                ,new Vector2f(-x/25f,-1f));
+                    }
                     bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;

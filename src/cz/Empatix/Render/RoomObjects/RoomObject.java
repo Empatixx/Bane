@@ -27,4 +27,7 @@ public abstract class RoomObject extends MapObject {
     }
     public boolean shouldRemove(){return remove;}
 
+    public void setMoveable(boolean moveable) {
+        this.moveable = moveable;
+    }
 }

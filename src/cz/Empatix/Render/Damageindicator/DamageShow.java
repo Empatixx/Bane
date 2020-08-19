@@ -33,6 +33,11 @@ public class DamageShow {
         pos.y+=dir.y;
     }
     void draw(){
-        TextRender.renderMapText(Integer.toString(dmg),pos,2,new Vector3f(0.937f, 0.223f, 0.223f));
+        if(crit){
+            TextRender.renderMapText(Integer.toString(dmg),pos,2,new Vector3f(0.917f, 0.631f, 0.121f));
+        } else {
+            TextRender.renderMapText(Integer.toString(dmg),pos,2,new Vector3f(0.937f, 0.223f, 0.223f));
+        }
     }
+
 }

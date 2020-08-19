@@ -2,6 +2,7 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
@@ -44,6 +45,24 @@ public class Grenadelauncher extends Weapon {
         weaponHud = new Image("Textures\\grenadelauncher.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\shotgun_bullet.tga",new Vector3f(1810,975,0),1f);
 
+
+        int numUpgrades = GameStateManager.getDb().getValueUpgrade("grenadelauncher","upgrades");
+        numUpgrades = 100;
+        if(numUpgrades >= 1){
+            maxAmmo+=4;
+            currentAmmo=maxAmmo;
+        }
+        if(numUpgrades >= 2){
+            maxMagazineAmmo+=3;
+            currentMagazineAmmo=maxMagazineAmmo;
+        }
+        if(numUpgrades >= 3){
+            maxdamage+=2;
+            mindamage+=2;
+        }
+        if(numUpgrades >= 4){
+            criticalHits=true;
+        }
     }
 
     @Override
@@ -71,6 +90,12 @@ public class Grenadelauncher extends Weapon {
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                     Grenadebullet bullet = new Grenadebullet(tm, x, y, inaccuracy,30);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                    if(criticalHits){
+                        if(Math.random() > 0.9){
+                            damage*=2;
+                            bullet.setCritical(true);
+                        }
+                    }
                     bullet.setDamage(damage);
                     bullet.setPosition(px, py);
                     bullets.add(bullet);

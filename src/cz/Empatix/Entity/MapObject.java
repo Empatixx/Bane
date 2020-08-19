@@ -237,11 +237,11 @@ public abstract class MapObject {
 						obj.checkRoomObjectsCollision(obj,collisionCheck);
 						// if map object is blocked by tile collision - block player by map object collision
 						if(obj.speed.y <= speed.y){
-							temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
+							temp.y = obj.getY() - obj.cheight / 2 - cheight / 2+ 1;
 						}
 					} else {
 						speed.y=0;
-						temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
+						temp.y = obj.getY() - obj.cheight / 2 - cheight / 2+ 1;
 					}
 				} else if (speed.y < 0 && obj.collision) {
 					if(obj.moveable){
@@ -280,11 +280,11 @@ public abstract class MapObject {
 						// if map object is blocked by tile collision - block player by map object collision
 
 						if(obj.speed.x <= speed.x){
-							temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
+							temp.x=obj.getX()-obj.cwidth/2-cwidth/2+ 1;
 						}
 					} else {
 						speed.x=0;
-						temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
+						temp.x=obj.getX()-obj.cwidth/2-cwidth/2+ 1;
 					}
 				} else if (speed.x < 0 && obj.collision) {
 					if(obj.moveable){
@@ -327,16 +327,18 @@ public abstract class MapObject {
 						obj.setSpeedY(speed.y);
 						if(speed.y < 0) speed.y = 0;
 						temp.y = position.y+speed.y;
+						obj.checkTileMapCollision();
+						obj.checkRoomObjectsCollision(this,collisionCheck);
 						// if map object is blocked by tile collision - block player by map object collision
 						if(obj.speed.y <= speed.y) {
-							temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
+							temp.y = obj.getY() - obj.cheight / 2 - cheight / 2+ 1;
 						}
 						if(obj.speed.y == 0){
 							speed.y = 0;
 						}
 					} else {
 						speed.y=0;
-						temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
+						temp.y = obj.getY() - obj.cheight / 2 - cheight / 2+ 1;
 					}
 				} else if (speed.y < 0 && obj.collision) {
 					if(obj.moveable){
@@ -373,14 +375,14 @@ public abstract class MapObject {
 						// if map object is blocked by tile collision - block player by map object collision
 
 						if(obj.speed.x <= speed.x){
-							temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
+							temp.x=obj.getX()-obj.cwidth/2-cwidth/2+ 1;
 						}
 						if(obj.speed.x == 0){
 							speed.x = 0;
 						}
 					} else {
 						speed.x=0;
-						temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
+						temp.x=obj.getX()-obj.cwidth/2-cwidth/2+ 1;
 					}
 				} else if (speed.x < 0 && obj.collision) {
 					if(obj.moveable){

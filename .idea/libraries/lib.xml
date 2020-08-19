@@ -13,6 +13,7 @@
       <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl/lwjgl.jar!/" />
       <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl/lwjgl-natives-windows.jar!/" />
       <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl/lwjgl-natives-windows-x86.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../sqljdbc_8.4/enu/mssql-jdbc-8.4.0.jre8.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl/lwjgl-javadoc.jar!/" />

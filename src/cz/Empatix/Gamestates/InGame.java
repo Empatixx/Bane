@@ -4,6 +4,7 @@ package cz.Empatix.Gamestates;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.AudioManager.Source;
+import cz.Empatix.Database.Database;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
@@ -140,6 +141,9 @@ public class InGame extends GameState {
         if(player.isDead()){
             float time = (System.currentTimeMillis()-player.getDeathTime());
             if(time > 5500){
+                Database db = GameStateManager.getDb();
+                int storedMoney = db.getValue("money","general");
+                db.setValue("money",player.getCoins()+storedMoney);
                 gsm.setState(GameStateManager.MENU);
                 glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
 
@@ -316,12 +320,12 @@ public class InGame extends GameState {
 
         if(player.isDead()){
             fadeFramebuffer.bindFBO();
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
         }
         else if(pause){
             pauseBlurFramebuffer.bindFBO();
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
         }
 

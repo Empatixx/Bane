@@ -2,11 +2,10 @@ package cz.Empatix.Render;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
-import cz.Empatix.Entity.Enemies.Shopkeeper;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
-import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Entity.Shopkeeper;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.RoomObjects.*;
 import cz.Empatix.Render.RoomObjects.ProgressRoom.Portal;
@@ -62,7 +61,6 @@ public class Room {
 
     private final ArrayList<RoomObject> mapObjects;
 
-    private MapObject shopkeeper;
 
     Room(int type, int id, int x, int y){
         entered = false;
@@ -335,20 +333,18 @@ public class Room {
         for(RoomObject object : mapObjects){
             if(!object.isPreDraw())object.draw();
         }
-        if(type == Starter && tm.getFloor() == 0){
-            int y=yMin + (yMax - yMin) / 2;
-            int x=xMin + (xMax - xMin) / 2;
-            float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
-            TextRender.renderMapText("WASD - Movement",new Vector3f(x,y,0),2,
-                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
-            TextRender.renderMapText("Mouse click - shoot",new Vector3f(x,y+50,0),2,
-                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
-            TextRender.renderMapText("1 and 2 - weapon slots",new Vector3f(x,y+100,0),2,
-                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
-            TextRender.renderMapText("E/Q - pickup/drop gun",new Vector3f(x,y+150,0),2,
-                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
-        } else if (type == Shop){
-            shopkeeper.draw();
+        if(type == Starter && tm.getFloor() == 0) {
+            int y = yMin + (yMax - yMin) / 2;
+            int x = xMin + (xMax - xMin) / 2;
+            float time = (float) Math.sin(System.currentTimeMillis() % 2000 / 600f) + (1 - (float) Math.cos((System.currentTimeMillis() % 2000 / 600f) + 0.5f));
+            TextRender.renderMapText("WASD - Movement", new Vector3f(x, y, 0), 2,
+                    new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
+            TextRender.renderMapText("Mouse click - shoot", new Vector3f(x, y + 50, 0), 2,
+                    new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
+            TextRender.renderMapText("1 and 2 - weapon slots", new Vector3f(x, y + 100, 0), 2,
+                    new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
+            TextRender.renderMapText("E/Q - pickup/drop gun", new Vector3f(x, y + 150, 0), 2,
+                    new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
         }
     }
     public void updateObjects(){
@@ -358,7 +354,7 @@ public class Room {
                 mapObjects.remove(i);
                 if(object instanceof DestroyableObject){
                     if(((DestroyableObject) object).isDestroyed()){
-                        if(((DestroyableObject) object).hasDrop() && Math.random() > 0.8){
+                        if(((DestroyableObject) object).hasDrop() && Math.random() > 0.6){
                             ItemManager.createDrop(object.getX(),object.getY());
                         }
                     }
@@ -372,9 +368,6 @@ public class Room {
             if (EnemyManager.areEnemiesDead()) {
                 lockRoom(false);
             }
-        }
-        if(type == Shop) {
-            ((Shopkeeper)shopkeeper).update();
         }
     }
     public void createObjects(TileMap tm) {
@@ -466,8 +459,9 @@ public class Room {
                 mapObjects.add(table);
 
                 if(i == 2){
-                    shopkeeper = new Shopkeeper(tm);
+                    Shopkeeper shopkeeper = new Shopkeeper(tm);
                     shopkeeper.setPosition(xMin+ (float) (xMax - xMin) / 4 * i,yMin + (float) (yMax - yMin) / 2 - 300);
+                    this.addObject(shopkeeper);
                 }
             }
         }
@@ -499,9 +493,20 @@ public class Room {
             Portal portal = new Portal(tm);
             portal.setPosition((float) (numCols*tileSize) / 2,  2*tileSize);
             mapObjects.add(portal);
+            // flags
             Flag flag = new Flag(tm);
-            flag.setPosition(x*tileSize+tileSize/2,y*tileSize-tileSize/2);
+            flag.setPosition(12*tileSize+tileSize/2,3*tileSize-tileSize/2);
             this.addObject(flag);
+            flag = new Flag(tm);
+            flag.setPosition(16*tileSize+tileSize/2,3*tileSize-tileSize/2);
+            this.addObject(flag);
+            // barrels
+            for(int i = 13;i<16;i++){
+                Barrel barrel = new Barrel(tm);
+                barrel.setPosition(i*tileSize+tileSize/2,7*tileSize+tileSize/2);
+                barrel.setMoveable(false);
+                this.addObject(barrel);
+            }
         }
 
     }

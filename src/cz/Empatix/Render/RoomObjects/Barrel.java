@@ -121,8 +121,6 @@ public class Barrel extends DestroyableObject {
 
     public void update(){
         // set location by player collisions
-        setPosition(temp.x, temp.y);
-
         setMapPosition();
         checkTileMapCollision();
 

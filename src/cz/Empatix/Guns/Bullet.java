@@ -28,12 +28,13 @@ public class Bullet extends MapObject {
     private final int soundEnemyhit;
 
     private int damage;
+    private boolean crit;
 
     public Bullet(TileMap tm, double x, double y,double inaccuracy, int speed) {
 
         super(tm);
         facingRight = true;
-
+        crit=false;
 
         width = 16;
         height = 16;
@@ -181,5 +182,13 @@ public class Bullet extends MapObject {
 
     public void playEnemyHit(){
         source.play(soundEnemyhit);
+    }
+
+    public boolean isCritical() {
+        return crit;
+    }
+
+    public void setCritical(boolean crit) {
+        this.crit = crit;
     }
 }

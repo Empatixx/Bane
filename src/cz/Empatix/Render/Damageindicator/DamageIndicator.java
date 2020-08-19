@@ -14,6 +14,12 @@ public class DamageIndicator {
         damageShows.add(damageShow);
 
     }
+    public static void addCriticalDamageShow(int dmg, int x, int y, Vector2f dir){
+        DamageShow damageShow = new DamageShow(dmg, x, y,dir);
+        damageShow.setCrit(true);
+        damageShows.add(damageShow);
+
+    }
     public void draw(){
 
         for(DamageShow show : damageShows){

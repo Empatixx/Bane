@@ -2,12 +2,16 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Random;
+import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
 import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -24,8 +28,10 @@ public class M4 extends Weapon{
     private float lastY;
 
     private ArrayList<Bullet> bullets;
+    private int speedBullet;
 
-    M4(TileMap tm){
+
+   M4(TileMap tm){
         super(tm);
         mindamage = 2;
         maxdamage = 2;
@@ -45,6 +51,23 @@ public class M4 extends Weapon{
         weaponHud = new Image("Textures\\M4.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1830,975,0),1f);
 
+        speedBullet = 30;
+
+        int numUpgrades = GameStateManager.getDb().getValueUpgrade("m4","upgrades");
+        numUpgrades = 100;
+        if(numUpgrades >= 1){
+            maxMagazineAmmo+=4;
+            currentMagazineAmmo = maxMagazineAmmo;
+        }
+        if(numUpgrades >= 2){
+            speedBullet = 36;
+        }
+        if(numUpgrades >= 3){
+            maxdamage++;
+        }
+        if(numUpgrades >= 4){
+            maxdamage++;
+        }
     }
 
     @Override
@@ -63,9 +86,10 @@ public class M4 extends Weapon{
         long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
         if(bonusShots > 0 && delta > 250-bonusShots*62.5 && delta < 550){
             double inaccuracy = 0;
-            Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,30);
+            Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,speedBullet);
             bullet.setPosition(px, py);
-            bullet.setDamage(2);
+            int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+            bullet.setDamage(damage);
             bullets.add(bullet);
             GunsManager.bulletShooted++;
             bonusShots--;
@@ -81,9 +105,10 @@ public class M4 extends Weapon{
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                     lastX = x;
                     lastY = y;
-                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,speedBullet);
                     bullet.setPosition(px, py);
-                    bullet.setDamage(2);
+                    int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                    bullet.setDamage(damage);
                     bullets.add(bullet);
                     currentMagazineAmmo--;
                     GunsManager.bulletShooted++;
@@ -157,6 +182,16 @@ public class M4 extends Weapon{
             for(Enemy enemy:enemies){
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     enemy.hit(bullet.getDamage());
+                    int cwidth = enemy.getCwidth();
+                    int cheight = enemy.getCheight();
+                    int x = -cwidth/4+ Random.nextInt(cwidth/2);
+                    if(bullet.isCritical()){
+                        DamageIndicator.addCriticalDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                                ,new Vector2f(-x/25f,-1f));
+                    } else {
+                        DamageIndicator.addDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                                ,new Vector2f(-x/25f,-1f));
+                    }
                     bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;

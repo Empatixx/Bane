@@ -1,6 +1,7 @@
 package cz.Empatix.Gamestates;
 
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Entity.ProgressNPC;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Framebuffer;
@@ -30,6 +31,8 @@ public class ProgressRoom extends GameState {
 
     private static boolean enterGame;
 
+    private ProgressNPC progressNPC;
+
     ProgressRoom(GameStateManager gsm){
         this.gsm = gsm;
     }
@@ -47,6 +50,7 @@ public class ProgressRoom extends GameState {
         // player
         // create player object
         player = new Player(tileMap);
+        player.setCoins(GameStateManager.getDb().getValue("money","general"));
 
         // generate map + create objects which needs item manager & gun manager created
         tileMap.loadProgressRoom();
@@ -61,18 +65,22 @@ public class ProgressRoom extends GameState {
 
         coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
 
+        progressNPC = new ProgressNPC(tileMap);
+        progressNPC.setPosition(23*tileMap.getTileSize(),9*tileMap.getTileSize()/2);
+
     }
 
     @Override
     void draw() {
         objectsFramebuffer.bindFBO();
         // clear framebuffer
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         tileMap.draw();
 
         tileMap.preDrawObjects();
+        progressNPC.draw();
 
         player.draw();
 
@@ -82,6 +90,8 @@ public class ProgressRoom extends GameState {
         objectsFramebuffer.unbindFBO();
 
         lightManager.draw(objectsFramebuffer);
+
+        progressNPC.drawHud();
 
         coin.draw();
         TextRender.renderText(""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
@@ -113,12 +123,15 @@ public class ProgressRoom extends GameState {
         );
         tileMap.updateObjects();
         player.update();
+        progressNPC.update(mouseX,mouseY);
+        progressNPC.touching(player);
         lightManager.update();
     }
     @Override
     void keyPressed(int k) {
         player.keyPressed(k);
         tileMap.keyPressed(k,player);
+        progressNPC.keyPress(k);
     }
 
     @Override
@@ -128,7 +141,7 @@ public class ProgressRoom extends GameState {
 
     @Override
     void mousePressed(int button) {
-
+        progressNPC.mousePressed(mouseX,mouseY,player);
     }
 
     @Override

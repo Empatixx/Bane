@@ -4,11 +4,13 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
 import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -146,6 +148,16 @@ public class Revolver extends Weapon {
             for(Enemy enemy:enemies){
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     enemy.hit(bullet.getDamage());
+                    int cwidth = enemy.getCwidth();
+                    int cheight = enemy.getCheight();
+                    int x = -cwidth/4+Random.nextInt(cwidth/2);
+                    if(bullet.isCritical()){
+                        DamageIndicator.addDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                                ,new Vector2f(-x/25f,-1f));
+                    } else {
+                        DamageIndicator.addCriticalDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                                ,new Vector2f(-x/25f,-1f));
+                    }
                     bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;

@@ -54,7 +54,6 @@ public class M4 extends Weapon{
         speedBullet = 30;
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("m4","upgrades");
-        numUpgrades = 100;
         if(numUpgrades >= 1){
             maxMagazineAmmo+=4;
             currentMagazineAmmo = maxMagazineAmmo;

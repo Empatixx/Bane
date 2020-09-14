@@ -80,6 +80,7 @@ public class Bat extends Enemy {
         cwidth *= 2;
         cheight *= 2;
 
+        createShadow();
     }
 
     private void getNextPosition() {
@@ -142,6 +143,7 @@ public class Bat extends Enemy {
         getNextPosition();
         checkTileMapCollision();
         setPosition(temp.x, temp.y);
+
     }
 
     @Override
@@ -158,5 +160,11 @@ public class Bat extends Enemy {
             dead = true;
 
         }
+    }
+
+    @Override
+    public void draw() {
+        drawShadow(5f);
+        super.draw();
     }
 }

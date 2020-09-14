@@ -152,4 +152,12 @@ public class Image {
     public Vector3f getPos() {
         return pos;
     }
+
+    public int getVboTextures() {
+        return vboTextures;
+    }
+
+    public int getVboVertices() {
+        return vboVertices;
+    }
 }

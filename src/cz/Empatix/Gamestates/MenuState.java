@@ -7,6 +7,7 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Background;
+import cz.Empatix.Render.Hud.CheckBox;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Hud.MenuBar;
 import cz.Empatix.Render.Hud.SliderBar;
@@ -32,6 +33,9 @@ public class MenuState extends GameState{
     // settings graphics
     private final static int LOWERRESOLUTION = 7;
     private final static int HIGHERRESOLUTION = 8;
+    private final static int LIGHTNING = 9;
+    private final static int VSYNC = 10;
+    private final static int BRIGHTNESS = 11;
     // settings audio
     private final static int OVERALL = 0;
     private final static int EFFECTS = 1;
@@ -45,6 +49,8 @@ public class MenuState extends GameState{
     private MenuBar[] settingsHuds;
     //   graphics
     private MenuBar[] graphicsHuds;
+    private CheckBox[] checkBoxes;
+    private SliderBar[] graphicsSliders;
     // audio
     private SliderBar[] audioSliders;
 
@@ -85,20 +91,71 @@ public class MenuState extends GameState{
             if(selectedSettings == GRAPHICS){
                 TextRender.renderText("Resolution:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 TextRender.renderText(Settings.WIDTH+"x"+Settings.HEIGHT,new Vector3f(1160,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+
+                TextRender.renderText("Lightning:",new Vector3f(460,525,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("V-Sync:",new Vector3f(460,600,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Brightness:",new Vector3f(460,675,0),3,new Vector3f(0.874f,0.443f,0.149f));
+
+
                 for(int j = 0;j < graphicsHuds.length;j++){
                     graphicsHuds[j].draw();
+                }
+                for(CheckBox box : checkBoxes){
+                    box.draw();
+                }
+                for(SliderBar hud : graphicsSliders){
+                    if(hud.isLocked()){
+                        Vector3f pos = hud.getPos();
+                        float value = hud.getValue();
+                        float b = 0f,r,g;
+                        if (value <= 0.5f){
+                            r = 1.f;
+                            g = 0.f + 2 * value;
+                        } else{
+                            r = 2 * (1-value);
+                            g = 1f;
+                        }
+                        TextRender.renderText((int)(value*100)+"%",new Vector3f(pos.x(),pos.y()-25,pos.z()),2, new Vector3f(r,g,b));
+                    }
+                    hud.draw();
                 }
             } else if (selectedSettings == AUDIO){
                 TextRender.renderText("Overall:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 TextRender.renderText("Sounds:",new Vector3f(460,550,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 TextRender.renderText("Music:",new Vector3f(460,650,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 for(SliderBar hud:audioSliders){
+                    if(hud.isLocked()){
+                        Vector3f pos = hud.getPos();
+                        float value = hud.getValue();
+                        float b = 0f,r,g;
+                        if (value <= 0.5f){
+                            r = 1.f;
+                            g = 0.f + 2 * value;
+                        } else{
+                            r = 2 * (1-value);
+                            g = 1f;
+                        }
+                        TextRender.renderText((int)(value*100)+"%",new Vector3f(pos.x(),pos.y()-25,pos.z()),2, new Vector3f(r,g,b));
+                    }
                     hud.draw();
                 }
             } else if (selectedSettings == CONTROLS){
-                TextRender.renderText("Coming soon...",new Vector3f(760,450,0),5,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Move Up",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Move Down",new Vector3f(460,500,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Move left",new Vector3f(460,550,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Move right",new Vector3f(460,600,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Object interact",new Vector3f(460,650,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Weapon drop",new Vector3f(460,700,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Shoot",new Vector3f(460,750,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Weapon slot 1",new Vector3f(460,800,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Weapon slot 2",new Vector3f(460,850,0),3,new Vector3f(0.874f,0.443f,0.149f));
+
+
+                TextRender.renderText("Reload",new Vector3f(1060,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                TextRender.renderText("Big map",new Vector3f(1060,500,0),3,new Vector3f(0.874f,0.443f,0.149f));
 
             }
+
 
 
         } else {
@@ -114,7 +171,11 @@ public class MenuState extends GameState{
         bg = new Background("Textures\\Menu\\bg.png");
         settingsHuds = new MenuBar[4];
         huds = new MenuBar[3];
+
         graphicsHuds = new MenuBar[2];
+        checkBoxes = new CheckBox[2];
+        graphicsSliders = new SliderBar[1];
+
         audioSliders = new SliderBar[3];
         title = new Image("Textures\\Menu\\logo.tga",new Vector3f(960,150,0),7);
         // the main menu
@@ -166,8 +227,24 @@ public class MenuState extends GameState{
         bar.setType(HIGHERRESOLUTION);
         graphicsHuds[1] = bar;
 
+        CheckBox checkbox = new CheckBox("Textures\\Menu\\checkbox.tga", new Vector3f(1220,505,0),1,64,64);
+        checkbox.setType(LIGHTNING);
+        checkbox.setSelected(Settings.LIGHTNING);
+        checkBoxes[0] = checkbox;
 
-        SliderBar sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1100,430,0),4);
+        checkbox = new CheckBox("Textures\\Menu\\checkbox.tga", new Vector3f(1220,580,0),1,64,64);
+        checkbox.setType(VSYNC);
+        checkbox.setSelected(Settings.VSYNC);
+        checkBoxes[1] = checkbox;
+
+
+        SliderBar sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1225,670,0),3);
+        sliderBar.setValue(Settings.BRIGHTNESS);
+        sliderBar.setType(BRIGHTNESS);
+        graphicsSliders[0] = sliderBar;
+
+
+        sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1100,430,0),4);
         sliderBar.setValue(Settings.OVERALL);
         sliderBar.setType(OVERALL);
         audioSliders[0] = sliderBar;
@@ -218,6 +295,9 @@ public class MenuState extends GameState{
                 }
             }
             if (selectedSettings == GRAPHICS) {
+                for(SliderBar sliderBar: graphicsSliders) {
+                    sliderBar.unlock();
+                }
                 for(MenuBar hud : graphicsHuds){
                     int type = hud.getType();
                     if(type == LOWERRESOLUTION){
@@ -231,6 +311,11 @@ public class MenuState extends GameState{
                             source.play(soundMenuClick);
                             Settings.higherResolution();
                         }
+                    }
+                }
+                for(CheckBox box : checkBoxes) {
+                    if(box.intersects(mouseX,mouseY)){
+                        box.setSelected(!box.isSelected());
                     }
                 }
             } else if (selectedSettings == AUDIO){
@@ -267,6 +352,12 @@ public class MenuState extends GameState{
                     sliderBar.setLocked(true);
                 }
             }
+        } else if(selectedSettings == GRAPHICS){
+            for(SliderBar sliderBar: graphicsSliders) {
+                if (sliderBar.intersects(mouseX, mouseY)) {
+                    sliderBar.setLocked(true);
+                }
+            }
         }
 
     }
@@ -299,7 +390,19 @@ public class MenuState extends GameState{
                         hud.setClick(false);
                     }
                 }
-            // audio sliders / huds
+                for(SliderBar sliderBar : graphicsSliders){
+                    if(sliderBar.isLocked()){
+                        sliderBar.update(mouseX);
+                        int type = sliderBar.getType();
+                        if(type == BRIGHTNESS) {
+                            Settings.BRIGHTNESS = sliderBar.getValue();
+                        }
+                    }
+                }
+                Settings.LIGHTNING = checkBoxes[0].isSelected();
+                Settings.VSYNC = checkBoxes[1].isSelected();
+
+                // audio sliders / huds
             } else if (selectedSettings == AUDIO){
                 for(SliderBar sliderBar : audioSliders){
                     if(sliderBar.isLocked()){

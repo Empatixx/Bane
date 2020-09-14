@@ -60,6 +60,7 @@ public class Player extends MapObject {
     private final Source sourcehealth;
     private final int soundLowHealth;
 
+    // visual
 
     public Player(TileMap tm) {
         super(tm);
@@ -173,6 +174,7 @@ public class Player extends MapObject {
 
         rolling = false;
 
+        createShadow();
     }
 
     public void update() {
@@ -313,6 +315,7 @@ public class Player extends MapObject {
     }
 
     public void draw() {
+        drawShadow(3f);
         super.draw();
     }
 

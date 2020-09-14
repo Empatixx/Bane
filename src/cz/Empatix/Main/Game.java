@@ -38,6 +38,8 @@ public class Game implements Runnable {
     private long lastDeltas;
     private long lastDeltas2;
 
+    private static int FPS;
+
     private GameStateManager gsm;
 
     // The window hoandle
@@ -177,7 +179,7 @@ public class Game implements Runnable {
         // Make the OpenGL context current
         glfwMakeContextCurrent(window);
         // Enable v-sync
-        glfwSwapInterval(1);
+        glfwSwapInterval(Settings.VSYNC ? 1 : 0);
 
         glfwFocusWindow(window);
 
@@ -266,6 +268,7 @@ public class Game implements Runnable {
             if (System.currentTimeMillis() - timer > 1000){
                 timer += 1000;
                 System.out.print("UPS: "+updates+"   "+"FPS: "+frames+"\n");
+                FPS = frames;
                 // GARBAGE COLLECTOR
                 System.gc();
 
@@ -311,6 +314,7 @@ public class Game implements Runnable {
         if(displayCollisions){
             TextRender.renderText("draw: "+(float)drawDelay/1000000+" ms",new Vector3f(200,300,0),2,new Vector3f(1.0f,1.0f,1.0f));
             TextRender.renderText("update: "+(float)updateDelay/1000000+" ms",new Vector3f(200, 350,0),2,new Vector3f(1.0f,1.0f,1.0f));
+            TextRender.renderText("FPS: "+FPS,new Vector3f(200, 400,0),2,new Vector3f(1.0f,1.0f,1.0f));
         }
 
         glfwSwapBuffers(window); // swap the color buffers

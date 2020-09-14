@@ -96,6 +96,8 @@ public class Slime extends Enemy {
 
         bullets = new ArrayList<>();
 
+        createShadow();
+
     }
 
     private void getNextPosition() {
@@ -213,7 +215,10 @@ public class Slime extends Enemy {
         for(Slimebullet bullet : bullets){
             bullet.draw();
         }
-        if(!disableDraw) super.draw();
+        if(!disableDraw){
+            drawShadow(5f);
+            super.draw();
+        }
     }
     @Override
     public void hit(int damage) {
@@ -233,5 +238,6 @@ public class Slime extends Enemy {
     public boolean shouldRemove(){
         return animation.hasPlayedOnce() && isDead() && bullets.size()==0;
     }
+
 }
 

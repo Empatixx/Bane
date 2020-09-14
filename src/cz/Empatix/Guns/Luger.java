@@ -28,7 +28,9 @@ public class Luger extends Weapon {
 
     private int bonusShots;
     private float chanceBonusShots;
-    private boolean bonusShotsAntiConsume; // bonus shots do not consume ammo
+    private boolean bonusShotsAntiConsume; // bonus shots do not consume amm
+    private int lastDamage;
+    private boolean lastDamageCrit;
 
     Luger(TileMap tm){
         super(tm);
@@ -56,13 +58,12 @@ public class Luger extends Weapon {
         chanceBonusShots = 0.2f;
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("luger","upgrades");
-        numUpgrades = 100;
         if(numUpgrades >= 1){
             maxdamage++;
             mindamage++;
         }
         if(numUpgrades >= 2){
-            chanceBonusShots+=0.1f;
+            chanceBonusShots+=0.2f;
         }
         if(numUpgrades >= 3){
             bonusShotsAntiConsume = true;
@@ -91,13 +92,8 @@ public class Luger extends Weapon {
             inaccuracy = 0.055 * delta / (250-bonusShots*16.6) * (Random.nextInt(2) * 2 - 1);
             Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
             bullet.setPosition(px, py);
-            bullet.setDamage(3);
-            if(criticalHits){
-                if(Math.random() > 0.9){
-                    bullet.setDamage(6);
-                    bullet.setCritical(true);
-                }
-            }
+            bullet.setDamage(lastDamage);
+            bullet.setCritical(lastDamageCrit);
             bullets.add(bullet);
             GunsManager.bulletShooted++;
 
@@ -117,12 +113,15 @@ public class Luger extends Weapon {
                     Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                     bullet.setPosition(px, py);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                    lastDamageCrit = false;
                     if(criticalHits){
                         if(Math.random() > 0.9){
                             damage*=2;
                             bullet.setCritical(true);
+                            lastDamageCrit = true;
                         }
                     }
+                    lastDamage = damage;
                     bullet.setDamage(damage);
                     bullets.add(bullet);
                     currentMagazineAmmo--;

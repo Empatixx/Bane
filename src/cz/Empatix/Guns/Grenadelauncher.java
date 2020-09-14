@@ -45,9 +45,7 @@ public class Grenadelauncher extends Weapon {
         weaponHud = new Image("Textures\\grenadelauncher.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\shotgun_bullet.tga",new Vector3f(1810,975,0),1f);
 
-
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("grenadelauncher","upgrades");
-        numUpgrades = 100;
         if(numUpgrades >= 1){
             maxAmmo+=4;
             currentAmmo=maxAmmo;
@@ -184,5 +182,4 @@ public class Grenadelauncher extends Weapon {
             }
         }
     }
-
 }

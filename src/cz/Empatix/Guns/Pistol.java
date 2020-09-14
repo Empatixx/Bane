@@ -100,7 +100,6 @@ public class Pistol extends Weapon {
             bullets.add(bullet);
             currentMagazineAmmo--;
             GunsManager.bulletShooted++;
-            source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
             secondShotReady=false;
         }
         if(isShooting()) {

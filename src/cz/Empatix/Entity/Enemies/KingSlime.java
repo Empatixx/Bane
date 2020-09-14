@@ -110,6 +110,9 @@ public class KingSlime extends Enemy {
         chestCreated=false;
 
         healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(1000,1000,0),7,50,4);
+
+        createShadow();
+
     }
 
     private void getNextPosition() {
@@ -275,6 +278,7 @@ public class KingSlime extends Enemy {
             bullet.draw();
         }
         if(!disableDraw){
+            drawShadow(11f);
             super.draw();
         }
 
@@ -308,4 +312,6 @@ public class KingSlime extends Enemy {
     public boolean shouldRemove(){
         return animation.hasPlayedOnce() && isDead() && bullets.size()==0;
     }
+
+
 }

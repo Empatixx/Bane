@@ -5,6 +5,7 @@ import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Java.RomanNumber;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -14,6 +15,7 @@ import cz.Empatix.Render.RoomObjects.Ladder;
 import cz.Empatix.Render.RoomObjects.PathWall;
 import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.RoomObjects.Spike;
+import cz.Empatix.Render.Text.TextRender;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -38,7 +40,6 @@ public class TileMap {
 	private final Vector3f position;
 	private final Camera camera;
 	private Shader shader;
-
 
 
 	// bounds
@@ -86,6 +87,8 @@ public class TileMap {
 	// starting XY room
 	private float playerStartX;
 	private float playerStartY;
+
+	private long nextFloorEnterTime;
 
 
 	public TileMap(int tileSize, InGame inGame, MiniMap miniMap) {
@@ -411,8 +414,6 @@ public class TileMap {
 
 	public ArrayList<RoomObject> getRoomMapObjects(){return currentRoom.getMapObjects();}
 
-
-
 	private void generateRooms(){
 		// id generator
 		idGen = 0;
@@ -521,15 +522,14 @@ public class TileMap {
 
 							Room mistnost = new Room(type,id,roomX,roomY-1);
 
-
-							roomArrayList[i].setTop(true);
-							mistnost.setBottom(true);
-
 							// adding to minimap
 							MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
 							roomArrayList[i].getMinimapRoom().addSideRoom(mmRoom,0);
 							mistnost.setMinimapRoom(mmRoom);
 							miniMap.addRoom(mmRoom,currentRooms+newRooms);
+
+							roomArrayList[i].setTop(true);
+							mistnost.setBottom(true);
 
 							roomArrayList[currentRooms+newRooms] = mistnost;
 							roomMap[roomY-1][roomX] = id;
@@ -540,15 +540,14 @@ public class TileMap {
 
 							Room mistnost = new Room(type,id,roomX,roomY+1);
 
-							roomArrayList[i].setBottom(true);
-							mistnost.setTop(true);
-
 							// adding to minimap
 							MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
 							roomArrayList[i].getMinimapRoom().addSideRoom(mmRoom,1);
 							mistnost.setMinimapRoom(mmRoom);
 							miniMap.addRoom(mmRoom,currentRooms+newRooms);
 
+							roomArrayList[i].setBottom(true);
+							mistnost.setTop(true);
 
 							roomArrayList[currentRooms+newRooms] = mistnost;
 							roomMap[roomY+1][roomX] = id;
@@ -559,14 +558,14 @@ public class TileMap {
 
 							Room mistnost = new Room(type,id,roomX-1,roomY);
 
-							mistnost.setRight(true);
-							roomArrayList[i].setLeft(true);
-
 							// adding to minimap
 							MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
 							roomArrayList[i].getMinimapRoom().addSideRoom(mmRoom,2);
 							mistnost.setMinimapRoom(mmRoom);
 							miniMap.addRoom(mmRoom,currentRooms+newRooms);
+
+							mistnost.setRight(true);
+							roomArrayList[i].setLeft(true);
 
 							roomArrayList[currentRooms+newRooms] = mistnost;
 							roomMap[roomY][roomX-1] = id;
@@ -577,14 +576,14 @@ public class TileMap {
 
 							Room mistnost = new Room(type,id,roomX+1,roomY);
 
-							mistnost.setLeft(true);
-							roomArrayList[i].setRight(true);
-
 							// adding to minimap
 							MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
 							roomArrayList[i].getMinimapRoom().addSideRoom(mmRoom,3);
 							mistnost.setMinimapRoom(mmRoom);
 							miniMap.addRoom(mmRoom,currentRooms+newRooms);
+
+							mistnost.setLeft(true);
+							roomArrayList[i].setRight(true);
 
 							roomArrayList[currentRooms+newRooms] = mistnost;
 							roomMap[roomY][roomX+1] = id;
@@ -1251,6 +1250,7 @@ public class TileMap {
 		ItemManager.clear();
 		loadMap();
 		inGame.nextFloor();
+		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();
 		floor++;
 	}
 
@@ -1268,5 +1268,15 @@ public class TileMap {
 
 	public void keyPressed(int k, Player p){
 		currentRoom.keyPressed(k,p);
+	}
+
+	// draw title if player entered new floor
+	public void drawTitle(){
+		if(System.currentTimeMillis() - InGame.deltaPauseTime() - nextFloorEnterTime < 1250){
+			float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
+
+			TextRender.renderText("Floor "+ RomanNumber.toRoman(floor+1),new Vector3f(930,400,0),5,
+					new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+		}
 	}
 }

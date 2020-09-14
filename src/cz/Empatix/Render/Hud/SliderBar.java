@@ -234,4 +234,8 @@ public class SliderBar {
     public int getType() {
         return type;
     }
+
+    public Vector3f getPos() {
+        return pos;
+    }
 }

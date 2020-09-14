@@ -152,10 +152,10 @@ public class Revolver extends Weapon {
                     int cheight = enemy.getCheight();
                     int x = -cwidth/4+Random.nextInt(cwidth/2);
                     if(bullet.isCritical()){
-                        DamageIndicator.addDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                        DamageIndicator.addCriticalDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
                                 ,new Vector2f(-x/25f,-1f));
                     } else {
-                        DamageIndicator.addCriticalDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                        DamageIndicator.addDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
                                 ,new Vector2f(-x/25f,-1f));
                     }
                     bullet.playEnemyHit();

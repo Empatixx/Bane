@@ -83,6 +83,8 @@ public class Ghost extends Enemy {
         cwidth *= scale;
         cheight *= scale;
 
+        createShadow();
+
     }
 
     private void getNextPosition() {
@@ -169,5 +171,11 @@ public class Ghost extends Enemy {
             dead = true;
 
         }
+    }
+
+    @Override
+    public void draw() {
+        drawShadow(3.5f);
+        super.draw();
     }
 }

@@ -17,7 +17,7 @@ public class GameStateManager {
     protected static final int INGAME = 1;
     protected static final int PROGRESSROOM = 2;
 
-    private Screanshot screanshot;
+    private Screanshot screenshot;
     private static Database db;
 
     public void pause(){
@@ -46,7 +46,7 @@ public class GameStateManager {
         gameStates.add(new InGame(this));
         gameStates.add(new ProgressRoom(this));
 
-        screanshot = new Screanshot();
+        screenshot = new Screanshot();
 
         db = new Database();
         db.load();
@@ -68,7 +68,7 @@ public class GameStateManager {
     public void keyPressed(int k) {
         gameStates.get(currentState).keyPressed(k);
         if(k == GLFW.GLFW_KEY_F2 || k == GLFW.GLFW_KEY_PRINT_SCREEN){
-            screanshot.keyPressed();
+            screenshot.keyPressed();
         }
     }
 

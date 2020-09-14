@@ -5,35 +5,32 @@ import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Guns.Weapon;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
 
 import java.awt.*;
-import java.nio.DoubleBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
 
 public class WeaponDrop extends ItemDrop {
-    private int vboVertices;
-    private int vboTextures;
-    private int vboVerticesHud;
+    private int vboVerticesWeapon;
+    private int vboTexturesWeapon;
     private int textureId;
 
     private boolean canPick;
 
-    private Weapon weapon;
+    private final Weapon weapon;
 
     private Shader outlineShader;
 
-    private int textureWidth;
-    private int textureHeight;
+    private final int textureWidth;
+    private final int textureHeight;
 
 
     public WeaponDrop(TileMap tm,Weapon weapon, float x,float y){
@@ -44,8 +41,10 @@ public class WeaponDrop extends ItemDrop {
         liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
         pickedUp = false;
 
-        width=cwidth=weapon.getWeaponHud().getWidth();
-        height=cheight=weapon.getWeaponHud().getHeight();
+        Image imageOfWeapon = weapon.getWeaponHud();
+
+        width=cwidth=imageOfWeapon.getWidth();
+        height=cheight=imageOfWeapon.getHeight();
         scale = 1.5f;
         facingRight = true;
 
@@ -53,37 +52,13 @@ public class WeaponDrop extends ItemDrop {
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\shader");
         }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1) {
-            vboVertices = ModelManager.createModel(width, height);
-        }
+        vboTexturesWeapon = imageOfWeapon.getVboTextures();
+        vboVerticesWeapon = imageOfWeapon.getVboVertices();
 
-        vboVerticesHud = ModelManager.getModel(width+10,height+10);
-        if (vboVerticesHud == -1) {
-            vboVerticesHud = ModelManager.createModel(width+10, height+10);
-        }
 
-        // clicking icon
-        double[] texCoords =
-                {
-                        0,0,
-                        0,1,
-                        1,1,
-                        1,0
-                };
-
-        DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
-        buffer.put(texCoords);
-        buffer.flip();
-        vboTextures = glGenBuffers();
-
-        glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
-        glBufferData(GL_ARRAY_BUFFER,buffer,GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER,0);
-
-        textureId = weapon.getWeaponHud().getIdTexture();
-        textureWidth = weapon.getWeaponHud().getWidth();
-        textureHeight = weapon.getWeaponHud().getHeight();
+        textureId = imageOfWeapon.getIdTexture();
+        textureWidth = width;
+        textureHeight = height;
 
         light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
 
@@ -99,15 +74,6 @@ public class WeaponDrop extends ItemDrop {
         if (outlineShader == null){
             outlineShader = ShaderManager.createShader("shaders\\outline");
         }
-/*
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\weapon_drop.tga");
-
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\weapon_drop.tga");
-        }
-*/
     }
     public WeaponDrop(TileMap tm,Weapon weapon){
         super(tm);
@@ -117,8 +83,10 @@ public class WeaponDrop extends ItemDrop {
         liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
         pickedUp = false;
 
-        width=cwidth=weapon.getWeaponHud().getWidth();
-        height=cheight=weapon.getWeaponHud().getHeight();
+        Image imageOfWeapon = weapon.getWeaponHud();
+
+        width=cwidth=imageOfWeapon.getWidth();
+        height=cheight=imageOfWeapon.getHeight();
         scale = 1.5f;
         facingRight = true;
 
@@ -126,42 +94,16 @@ public class WeaponDrop extends ItemDrop {
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\shader");
         }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1) {
-            vboVertices = ModelManager.createModel(width, height);
-        }
+        vboTexturesWeapon = imageOfWeapon.getVboTextures();
+        vboVerticesWeapon = imageOfWeapon.getVboVertices();
 
-        vboVerticesHud = ModelManager.getModel(width+10,height+10);
-        if (vboVerticesHud == -1) {
-            vboVerticesHud = ModelManager.createModel(width+10, height+10);
-        }
 
-        // clicking icon
-        double[] texCoords =
-                {
-                        0,0,
-                        0,1,
-                        1,1,
-                        1,0
-                };
-
-        DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
-        buffer.put(texCoords);
-        buffer.flip();
-        vboTextures = glGenBuffers();
-
-        glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
-        glBufferData(GL_ARRAY_BUFFER,buffer,GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER,0);
-
-        textureId = weapon.getWeaponHud().getIdTexture();
-        textureWidth = weapon.getWeaponHud().getWidth();
-        textureHeight = weapon.getWeaponHud().getHeight();
+        textureId = imageOfWeapon.getIdTexture();
+        textureWidth = width;
+        textureHeight = height;
 
         light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
 
-        maxSpeed = 10;
-        moveSpeed = 1;
         stopSpeed = 0.35f;
 
         cwidth*=scale;
@@ -171,15 +113,6 @@ public class WeaponDrop extends ItemDrop {
         if (outlineShader == null){
             outlineShader = ShaderManager.createShader("shaders\\outline");
         }
-/*
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\weapon_drop.tga");
-
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\weapon_drop.tga");
-        }
-*/
     }
     public void draw(){
 
@@ -217,11 +150,11 @@ public class WeaponDrop extends ItemDrop {
         glEnableVertexAttribArray(1);
 
 
-        glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
+        glBindBuffer(GL_ARRAY_BUFFER, vboVerticesWeapon);
         glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
 
-        glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
+        glBindBuffer(GL_ARRAY_BUFFER, vboTexturesWeapon);
         glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
@@ -248,11 +181,11 @@ public class WeaponDrop extends ItemDrop {
             glEnableVertexAttribArray(1);
 
 
-            glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
+            glBindBuffer(GL_ARRAY_BUFFER, vboVerticesWeapon);
             glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
 
-            glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
+            glBindBuffer(GL_ARRAY_BUFFER, vboTexturesWeapon);
             glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
 
             glDrawArrays(GL_QUADS, 0, 4);

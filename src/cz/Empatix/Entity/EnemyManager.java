@@ -135,7 +135,6 @@ public class EnemyManager {
         int cheight = instance.getCheight()/2;
 
 
-
         int leftTile = (x - cwidth / 2) / tileSize;
         int rightTile = (x + cwidth / 2 - 1) / tileSize;
         int topTile = (y - cheight / 2) / tileSize;
@@ -168,8 +167,6 @@ public class EnemyManager {
         }
 
         instance.setPosition(x,y);
-        instance.checkTileMapCollision();
-        instance.setPosition(instance.temp.x,instance.temp.y);
         enemies.add(instance);
     }
     public void addEnemy(int x, int y, String type,int count) {

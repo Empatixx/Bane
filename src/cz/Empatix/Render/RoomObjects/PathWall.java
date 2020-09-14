@@ -37,8 +37,8 @@ public class PathWall extends RoomObject {
         reverse=false;
         height = 64;
         width = 64;
-        cwidth = 64;
-        cheight = 64;
+        cwidth = 65;
+        cheight = 65;
         scale = 2;
         spriteSheetCols=4;
 
@@ -195,7 +195,6 @@ public class PathWall extends RoomObject {
             glDisableVertexAttribArray(1);
 
         }
-
 
     }
 

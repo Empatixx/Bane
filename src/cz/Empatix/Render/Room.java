@@ -223,18 +223,22 @@ public class Room {
     }
 
     void setTop(boolean top) {
+        minimapRoom.setTop(top);
         this.top = top;
     }
 
     void setLeft(boolean left) {
+        minimapRoom.setLeft(left);
         this.left = left;
     }
 
     void setBottom(boolean bottom) {
+        minimapRoom.setBottom(bottom);
         this.bottom = bottom;
     }
 
     void setRight(boolean right) {
+        minimapRoom.setRight(right);
         this.right = right;
     }
 

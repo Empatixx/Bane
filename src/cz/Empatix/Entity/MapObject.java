@@ -4,8 +4,11 @@ package cz.Empatix.Entity;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
+import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
+import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Postprocessing.Lightning.LightPoint;
 import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Tile;
@@ -84,7 +87,10 @@ public abstract class MapObject {
 
 	// lightning
 	public LightPoint light;
-
+	// shadow
+	public Spritesheet shadowSprite;
+    public int shadowVboVertices;
+    public boolean shadow;
 
 
 	// constructor
@@ -241,7 +247,7 @@ public abstract class MapObject {
 						}
 					} else {
 						speed.y=0;
-						temp.y = obj.getY() - obj.cheight / 2 - cheight / 2+ 1;
+						temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
 					}
 				} else if (speed.y < 0 && obj.collision) {
 					if(obj.moveable){
@@ -284,7 +290,7 @@ public abstract class MapObject {
 						}
 					} else {
 						speed.x=0;
-						temp.x=obj.getX()-obj.cwidth/2-cwidth/2+ 1;
+						temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
 					}
 				} else if (speed.x < 0 && obj.collision) {
 					if(obj.moveable){
@@ -338,7 +344,7 @@ public abstract class MapObject {
 						}
 					} else {
 						speed.y=0;
-						temp.y = obj.getY() - obj.cheight / 2 - cheight / 2+ 1;
+						temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
 					}
 				} else if (speed.y < 0 && obj.collision) {
 					if(obj.moveable){
@@ -382,7 +388,7 @@ public abstract class MapObject {
 						}
 					} else {
 						speed.x=0;
-						temp.x=obj.getX()-obj.cwidth/2-cwidth/2+ 1;
+						temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
 					}
 				} else if (speed.x < 0 && obj.collision) {
 					if(obj.moveable){
@@ -418,6 +424,9 @@ public abstract class MapObject {
 		position.y = y;
 		temp.x = x;
 		temp.y = y;
+		if(light != null){
+			light.update();
+		}
 	}
 	/**
 	 * Setting vector2 speed of MapObject
@@ -454,28 +463,34 @@ public abstract class MapObject {
 		}
 
 		// blikání - po hitu - hráč
+
 		if (flinching){
 			long elapsed = (System.nanoTime() - flinchingTimer) / 1000000;
 			if (elapsed / 100 % 2 == 0){
+				shader.unbind();
+				glBindTexture(GL_TEXTURE_2D,0);
+				glActiveTexture(0);
 				return;
 			}
 		}
-		Matrix4f target;
-		if (facingRight) {
-			target = new Matrix4f().translate(position)
-					.scale(scale);
-		} else {
-			target = new Matrix4f().translate(position)
-					.scale(scale)
-					.rotateY(3.14f);
 
-		}
-		Camera.getInstance().projection().mul(target,target);
+        Matrix4f target;
+        if (facingRight) {
+            target = new Matrix4f().translate(position)
+                    .scale(scale);
+        } else {
+            target = new Matrix4f().translate(position)
+                    .scale(scale)
+                    .rotateY(3.14f);
 
-		shader.bind();
-		shader.setUniformi("sampler",0);
+        }
+        Camera.getInstance().projection().mul(target,target);
+
+        shader.bind();
+        shader.setUniformi("sampler",0);
+        glActiveTexture(GL_TEXTURE0);
 		shader.setUniformm4f("projection",target);
-		glActiveTexture(GL_TEXTURE0);
+
 		spritesheet.bindTexture();
 
 		glEnableVertexAttribArray(0);
@@ -521,6 +536,42 @@ public abstract class MapObject {
 
 		}
 	}
+	public void drawShadow(float scale){
+        if (isNotOnScrean()){
+            return;
+        }
+        Vector3f shadowPos = new Vector3f(position.x,position.y+height/2,0);
+
+        Matrix4f shadowMatrixTarget = new Matrix4f().translate(shadowPos).scale(scale);
+        Camera.getInstance().projection().mul(shadowMatrixTarget,shadowMatrixTarget);
+        shader.bind();
+        shader.setUniformi("sampler",0);
+        shader.setUniformm4f("projection",shadowMatrixTarget);
+        glActiveTexture(GL_TEXTURE0);
+
+        shadowSprite.bindTexture();
+
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+        glBindBuffer(GL_ARRAY_BUFFER, shadowVboVertices);
+        glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+
+        glBindBuffer(GL_ARRAY_BUFFER,shadowSprite.getSprites(0)[0].getVbo());
+        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+
+        glDrawArrays(GL_QUADS, 0, 4);
+
+        glBindBuffer(GL_ARRAY_BUFFER,0);
+
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+
+        shader.unbind();
+        glBindTexture(GL_TEXTURE_2D,0);
+        glActiveTexture(0);
+    }
 
 	public void updateLight(){
 		light.setPos(position.x+xmap,position.y+ymap);
@@ -540,6 +591,30 @@ public abstract class MapObject {
 
 	public Vector3f getSpeed() {
 		return speed;
+	}
+
+	public void createShadow(){
+		shadow = true;
+		shadowSprite = SpritesheetManager.getSpritesheet("Textures\\shadow.tga");
+		if(shadowSprite == null){
+			shadowSprite = SpritesheetManager.createSpritesheet("Textures\\shadow.tga");
+		}
+		double[] texCoords =
+				{
+						0,0,
+						0,1,
+						1,1,
+						1,0
+				};
+		Sprite[] sprites = new Sprite[]{new Sprite(texCoords)};
+
+
+		shadowSprite.addSprites(sprites);
+
+		shadowVboVertices = ModelManager.getModel(32,16);
+		if (shadowVboVertices == -1){
+			shadowVboVertices = ModelManager.createModel(32,16);
+		}
 	}
 }
 

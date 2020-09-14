@@ -27,7 +27,9 @@ public class MiniMap {
     private int idTexture;
     private int[] vboTextures;
     private int vboVertices;
+    private int pathVboVertices;
     private Shader shader;
+    private Shader geometryShader;
 
     private boolean displayBigMap;
 
@@ -61,6 +63,10 @@ public class MiniMap {
         if (vboVertices == -1) {
             vboVertices = ModelManager.createModel(16, 16);
         }
+        pathVboVertices = ModelManager.getModel(4,4);
+        if (pathVboVertices == -1) {
+            pathVboVertices = ModelManager.createModel(4, 4);
+        }
         vboTextures = new int[5];
         for(int i = 0;i<5;i++) {
             double[] texCoords =
@@ -82,6 +88,10 @@ public class MiniMap {
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\shader");
+        }
+        geometryShader = ShaderManager.getShader("shaders\\geometry");
+        if (geometryShader == null){
+            geometryShader = ShaderManager.createShader("shaders\\geometry");
         }
     }
     public void update(TileMap tm){
@@ -106,7 +116,8 @@ public class MiniMap {
                             .translate(new Vector3f(1000 + room.getX() * 80, 500 + room.getY() * 80, 0))
                             .scale(5f);
                     Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
-
+                    shader.bind();
+                    shader.setUniformi("sampler", 0);
                     shader.setUniformm4f("projection", matrixPos);
 
                     glActiveTexture(GL_TEXTURE0);
@@ -134,6 +145,95 @@ public class MiniMap {
             shader.unbind();
             glBindTexture(GL_TEXTURE_2D, 0);
             glActiveTexture(0);
+
+            for (MMRoom room : rooms) {
+                if (room.isDiscovered()) {
+                    MMRoom[] sideRooms = room.getSideRooms();
+
+                    Matrix4f matrixPos;
+
+                    geometryShader.bind();
+                    geometryShader.setUniform3f("color", new Vector3f(0.886f,0.6f,0.458f));
+                    if(sideRooms[1] != null) {
+                        if (room.isBottom() && sideRooms[1].isDiscovered()) {
+                            matrixPos = new Matrix4f()
+                                    .translate(new Vector3f(1000 + room.getX() * 80, 500 + room.getY() * 80 + 40, 0))
+                                    .scale(5f);
+                            Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+                            geometryShader.setUniformm4f("projection", matrixPos);
+                            glEnableVertexAttribArray(0);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, pathVboVertices);
+                            glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
+
+                            glDrawArrays(GL_QUADS, 0, 4);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+                            glDisableVertexAttribArray(0);
+                        }
+                    }
+                    if(sideRooms[0] != null) {
+                        if (room.isTop() && sideRooms[0].isDiscovered()) {
+                            matrixPos = new Matrix4f()
+                                    .translate(new Vector3f(1000 + room.getX() * 80, 500 + room.getY() * 80 - 40, 0))
+                                    .scale(5f);
+                            Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+                            geometryShader.setUniformm4f("projection", matrixPos);
+                            glEnableVertexAttribArray(0);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, pathVboVertices);
+                            glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
+
+                            glDrawArrays(GL_QUADS, 0, 4);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+                            glDisableVertexAttribArray(0);
+                        }
+                    }
+                    if(sideRooms[2] != null) {
+                        if (room.isLeft() && sideRooms[2].isDiscovered()) {
+                            matrixPos = new Matrix4f()
+                                    .translate(new Vector3f(1000 + room.getX() * 80 - 40, 500 + room.getY() * 80, 0))
+                                    .scale(5f);
+                            Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+                            geometryShader.setUniformm4f("projection", matrixPos);
+                            glEnableVertexAttribArray(0);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, pathVboVertices);
+                            glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
+
+                            glDrawArrays(GL_QUADS, 0, 4);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+                            glDisableVertexAttribArray(0);
+                        }
+                    }
+                    if(sideRooms[3] != null) {
+                        if (room.isRight() && sideRooms[3].isDiscovered()) {
+                            matrixPos = new Matrix4f()
+                                    .translate(new Vector3f(1000 + room.getX() * 80 + 40, 500 + room.getY() * 80, 0))
+                                    .scale(5f);
+                            Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+                            geometryShader.setUniformm4f("projection", matrixPos);
+                            glEnableVertexAttribArray(0);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, pathVboVertices);
+                            glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
+
+                            glDrawArrays(GL_QUADS, 0, 4);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+                            glDisableVertexAttribArray(0);
+                        }
+                    }
+                }
+            }
+            geometryShader.unbind();
+
             playerIcon.draw();
         } else {
 
@@ -174,6 +274,95 @@ public class MiniMap {
             shader.unbind();
             glBindTexture(GL_TEXTURE_2D, 0);
             glActiveTexture(0);
+
+            for (MMRoom room : rooms) {
+                if (room.isDiscovered()) {
+                    MMRoom[] sideRooms = room.getSideRooms();
+
+                    Matrix4f matrixPos;
+
+                    geometryShader.bind();
+                    geometryShader.setUniform3f("color", new Vector3f(0.886f,0.6f,0.458f));
+                    if(sideRooms[1] != null) {
+                        if (room.isBottom() && sideRooms[1].isDiscovered()) {
+                            matrixPos = new Matrix4f()
+                                    .translate(new Vector3f(1770 + room.getX() * 20, 150 + room.getY() * 20 + 10, 0))
+                                    .scale(1.25f);
+                            Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+                            geometryShader.setUniformm4f("projection", matrixPos);
+                            glEnableVertexAttribArray(0);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, pathVboVertices);
+                            glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
+
+                            glDrawArrays(GL_QUADS, 0, 4);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+                            glDisableVertexAttribArray(0);
+                        }
+                    }
+                    if(sideRooms[0] != null) {
+                        if (room.isTop() && sideRooms[0].isDiscovered()) {
+                            matrixPos = new Matrix4f()
+                                    .translate(new Vector3f(1770 + room.getX() * 20, 150 + room.getY() * 20 - 10, 0))
+                                    .scale(1.25f);
+                            Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+                            geometryShader.setUniformm4f("projection", matrixPos);
+                            glEnableVertexAttribArray(0);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, pathVboVertices);
+                            glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
+
+                            glDrawArrays(GL_QUADS, 0, 4);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+                            glDisableVertexAttribArray(0);
+                        }
+                    }
+                    if(sideRooms[2] != null) {
+                        if (room.isLeft() && sideRooms[2].isDiscovered()) {
+                            matrixPos = new Matrix4f()
+                                    .translate(new Vector3f(1770 + room.getX() * 20 - 10, 150 + room.getY() * 20, 0))
+                                    .scale(1.25f);
+                            Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+                            geometryShader.setUniformm4f("projection", matrixPos);
+                            glEnableVertexAttribArray(0);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, pathVboVertices);
+                            glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
+
+                            glDrawArrays(GL_QUADS, 0, 4);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+                            glDisableVertexAttribArray(0);
+                        }
+                    }
+                    if(sideRooms[3] != null) {
+                        if (room.isRight() && sideRooms[3].isDiscovered()) {
+                            matrixPos = new Matrix4f()
+                                    .translate(new Vector3f(1770 + room.getX() * 20 + 10, 150 + room.getY() * 20, 0))
+                                    .scale(1.25f);
+                            Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+                            geometryShader.setUniformm4f("projection", matrixPos);
+                            glEnableVertexAttribArray(0);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, pathVboVertices);
+                            glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
+
+                            glDrawArrays(GL_QUADS, 0, 4);
+
+                            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+                            glDisableVertexAttribArray(0);
+                        }
+                    }
+                }
+            }
+            geometryShader.unbind();
+
             playerIcon.draw();
         }
     }

@@ -55,7 +55,6 @@ public class GunsManager {
         equipedweapons = new Weapon[2];
 
         equipedweapons[0] = weapons.get(0);
-        equipedweapons[1] = weapons.get(6);
 
         current = equipedweapons[FIRSTSLOT];
         currentslot = FIRSTSLOT;

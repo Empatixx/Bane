@@ -233,4 +233,5 @@ public class Grenadebullet extends MapObject {
         return crit;
     }
     public void setCritical(boolean crit){this.crit = crit;}
+
 }

@@ -333,13 +333,13 @@ public class InGame extends GameState {
         lightManager.draw(objectsFramebuffer);
 
         if (Game.displayCollisions){
-            TextRender.renderText("X: "+(int)player.getX(),new Vector3f(1650,200,0),3,new Vector3f(1.0f,1.0f,1.0f));
-            TextRender.renderText("Y: "+(int)player.getY(),new Vector3f(1650,300,0),3,new Vector3f(1.0f,1.0f,1.0f));
+            TextRender.renderText("X: "+(int)player.getX(),new Vector3f(200,550,0),3,new Vector3f(1.0f,1.0f,1.0f));
+            TextRender.renderText("Y: "+(int)player.getY(),new Vector3f(200,600,0),3,new Vector3f(1.0f,1.0f,1.0f));
         }
 
         gunsManager.drawHud();
         enemyManager.drawHud();
-
+        tileMap.drawTitle();
 
         player.drawVignette();
 
@@ -459,6 +459,8 @@ public class InGame extends GameState {
                 Camera.getHEIGHT() / 2f - player.getY()
         );
 
+        itemManager.update();
+
         if(pause){
             for(MenuBar hud:pauseBars){
                 hud.setClick(false);
@@ -504,8 +506,6 @@ public class InGame extends GameState {
 
             healthBar.update(player.getHealth(), player.getMaxHealth());
             armorBar.update(player.getArmor(),player.getMaxArmor());
-
-            itemManager.update();
         }
 
         gaussianBlur.update(pause);

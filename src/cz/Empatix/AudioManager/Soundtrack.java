@@ -14,6 +14,7 @@ public class Soundtrack {
     public static final int IDLE = 0;
     public static final int BOSS = 1;
     public static final int MENU = 2;
+    public static final int PROGRESSROOM = 3;
     // source
     private final Source source;
     // if soundtrack after pause should start on 0 second

@@ -81,7 +81,7 @@ public class UpgradeSideBar {
 
     public void mouseClick(float x, float y, Player p){
         if(buyButton.intersects(x,y)){
-            if(p.getCoins() >= price){
+            if(p.getCoins() >= price && !isBought()){
                 p.removeCoins(price);
                 Database database = GameStateManager.getDb();
                 int numUpgrades = database.getValueUpgrade(nameWeapon,"upgrades");

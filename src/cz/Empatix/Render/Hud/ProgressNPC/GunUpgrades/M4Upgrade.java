@@ -21,7 +21,7 @@ public class M4Upgrade extends UpgradeBar {
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"m4");
-        text = new String[]{"Speed of bullets will be faster by 20%"};
+        text = new String[]{"Speed of bullets will be increased by 20%"};
         bar.setText(text);
         bar.setType(UpgradeSideBar.ACCURACYUPGRADE);
         bar.setPrice(50);

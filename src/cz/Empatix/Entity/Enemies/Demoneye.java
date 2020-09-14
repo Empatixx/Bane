@@ -82,6 +82,8 @@ public class Demoneye extends Enemy {
         cwidth *= 2;
         cheight *= 2;
 
+        createShadow();
+
     }
 
     private void getNextPosition() {
@@ -161,5 +163,11 @@ public class Demoneye extends Enemy {
             dead = true;
 
         }
+    }
+
+    @Override
+    public void draw() {
+        drawShadow(5.5f);
+        super.draw();
     }
 }

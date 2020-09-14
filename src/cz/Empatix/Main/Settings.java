@@ -13,6 +13,12 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Settings {
     // grafics
     private static boolean fixedCameraSize;
+    public static float BRIGHTNESS;
+    public static boolean LIGHTNING;
+    public static boolean VSYNC;
+
+
+
     // viewport dimensions
     private static int maxWIDTH;
     private static int maxHEIGHT;
@@ -62,6 +68,10 @@ public class Settings {
             EFFECTS = Float.valueOf(Props.getProperty("effects"));
             MUSIC = Float.valueOf(Props.getProperty("music"));
 
+            VSYNC = Boolean.valueOf(Props.getProperty("vsync"));
+            LIGHTNING = Boolean.valueOf(Props.getProperty("lightning"));
+            BRIGHTNESS = Float.valueOf(Props.getProperty("brightness"));
+
         } catch (Exception e) {
             try {
 
@@ -77,6 +87,7 @@ public class Settings {
                 OVERALL = 1f;
                 EFFECTS = 1f;
                 MUSIC = 1f;
+                BRIGHTNESS = 0f;
 
                 Props.setProperty("width", Integer.toString(WIDTH));
                 Props.setProperty("height", Integer.toString(HEIGHT));
@@ -84,6 +95,10 @@ public class Settings {
                 Props.setProperty("overall", Float.toString(1f));
                 Props.setProperty("effects", Float.toString(1f));
                 Props.setProperty("music", Float.toString(1f));
+
+                Props.setProperty("vsync", Boolean.toString(true));
+                Props.setProperty("lightning", Boolean.toString(true));
+                Props.setProperty("brightness", Float.toString(0.f));
 
 
                 Props.storeToXML(new FileOutputStream("settings.xml"), "");
@@ -202,6 +217,10 @@ public class Settings {
         Props.setProperty("overall", Float.toString(OVERALL));
         Props.setProperty("effects", Float.toString(EFFECTS));
         Props.setProperty("music", Float.toString(MUSIC));
+
+        Props.setProperty("vsync", Boolean.toString(VSYNC));
+        Props.setProperty("lightning", Boolean.toString(LIGHTNING));
+        Props.setProperty("brightness", Float.toString(BRIGHTNESS));
 
         try{
             Props.storeToXML(new FileOutputStream("settings.xml"), "");

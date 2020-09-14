@@ -83,6 +83,8 @@ public class Rat extends Enemy {
         cwidth *= 2;
         cheight *= 2;
 
+        createShadow();
+
     }
 
     private void getNextPosition() {
@@ -160,5 +162,11 @@ public class Rat extends Enemy {
             dead = true;
         }
 
+    }
+
+    @Override
+    public void draw() {
+        drawShadow(6f);
+        super.draw();
     }
 }

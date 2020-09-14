@@ -1,5 +1,7 @@
 package cz.Empatix.Gamestates;
 
+import cz.Empatix.AudioManager.AudioManager;
+import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.ProgressNPC;
 import cz.Empatix.Main.Settings;
@@ -68,6 +70,8 @@ public class ProgressRoom extends GameState {
         progressNPC = new ProgressNPC(tileMap);
         progressNPC.setPosition(23*tileMap.getTileSize(),9*tileMap.getTileSize()/2);
 
+        AudioManager.playSoundtrack(Soundtrack.PROGRESSROOM);
+
     }
 
     @Override
@@ -126,6 +130,7 @@ public class ProgressRoom extends GameState {
         progressNPC.update(mouseX,mouseY);
         progressNPC.touching(player);
         lightManager.update();
+        AudioManager.update();
     }
     @Override
     void keyPressed(int k) {

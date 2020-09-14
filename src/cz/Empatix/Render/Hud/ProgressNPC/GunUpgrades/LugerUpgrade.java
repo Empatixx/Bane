@@ -23,7 +23,7 @@ public class LugerUpgrade extends UpgradeBar {
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"luger");
-        text = new String[]{"Increase chance of firing addional bullets by 10%"};
+        text = new String[]{"Increase chance of firing addional bullets by 20%"};
         bar.setText(text);
         bar.setPrice(45);
         bar.setType(UpgradeSideBar.OTHERUPGRADE);

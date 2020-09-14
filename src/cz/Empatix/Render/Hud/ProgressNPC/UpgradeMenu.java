@@ -24,6 +24,7 @@ public class UpgradeMenu {
         bars.add(new SubmachineUpgrade(3));
         bars.add(new M4Upgrade(4));
         bars.add(new GrenadelauncherUpgrade(5));
+        //bars.add(new RevolverUpgrade(6));
 
     }
     public void draw(){

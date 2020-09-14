@@ -40,6 +40,7 @@ public class AudioManager {
 
     public static void playSoundtrack(int soundtrack){
         if (hasAudio){
+            if(previousSoundtrack != -1) soundtracks.get(previousSoundtrack).pause();
             timeSoundtrackChange = System.currentTimeMillis();
 
             previousSoundtrack = currentSoundtrack;
@@ -87,6 +88,9 @@ public class AudioManager {
 
         Soundtrack soundtrack3 = new Soundtrack("Sounds\\intro.ogg",false);
         soundtracks.add(soundtrack3);
+
+        Soundtrack soundtrack4 = new Soundtrack("Sounds\\ambient.ogg",false);
+        soundtracks.add(soundtrack4);
     }
     public static int loadSound(String filename){
         if(buffers.containsKey(filename)){

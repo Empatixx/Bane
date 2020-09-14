@@ -33,7 +33,7 @@ public class Submachine extends Weapon{
         mindamage = 1;
         maxdamage = 2;
         inaccuracy = 0.5f;
-        maxAmmo = 400;
+        maxAmmo = 300;
         maxMagazineAmmo = 20;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
@@ -50,8 +50,7 @@ public class Submachine extends Weapon{
 
         firerateDelay = 150;
 
-        int numUpgrades = GameStateManager.getDb().getValueUpgrade("luger","upgrades");
-        numUpgrades = 100;
+        int numUpgrades = GameStateManager.getDb().getValueUpgrade("uzi","upgrades");
         if(numUpgrades >= 1){
             firerateDelay = 105;
         }
@@ -85,7 +84,7 @@ public class Submachine extends Weapon{
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
                 long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-                if (delta > 150) {
+                if (delta > firerateDelay) {
                     double inaccuracy = 0;
                     if (delta < 400) {
                         inaccuracy = (Math.random() * 0.155) * (Random.nextInt(2) * 2 - 1);
@@ -97,12 +96,13 @@ public class Submachine extends Weapon{
                     if(criticalHits){
                         if(Math.random() > 0.9){
                             damage*=2;
+                            bullet.setCritical(true);
                         }
                     }
                     bullet.setDamage(damage);
                     bullets.add(bullet);
                     if(chanceToNotConsumeAmmo){
-                        if(Math.random() < 0.8){
+                        if(Math.random() <= 0.8){
                             currentMagazineAmmo--;
                         }
                     } else {

@@ -78,11 +78,11 @@ public class LightManager {
         }
 
         shader.bind();
-
         shader.setUniformi("noise",1);
         shader.setUniformi("texture",0);
         shader.setUniformi("lightCount",lights.size());
-        //shader.setUniformf("iTime", (float) GLFW.glfwGetTime());
+        shader.setUniformi("enabled",Settings.LIGHTNING ? 1 : 0);
+        shader.setUniformf("brightness",Settings.BRIGHTNESS);
         shader.setUniform2f("size",new Vector2f(Settings.WIDTH, Settings.HEIGHT));
         shader.setUniformLights(lights.toArray());
 

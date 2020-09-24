@@ -3,6 +3,7 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.Tile;
@@ -23,10 +24,14 @@ public class Sniperrifle extends Weapon {
     private int dots;
 
     private boolean firstTickLaser;
-    private Vector2f startLaser;
-    private Vector2f endLaser;
+    private Vector2f projectileVector;
+    private Vector2f endProjectíle;
+    private Vector2f startProjectíle;
 
     private ArrayList<Bullet> bullets;
+
+    private int[] vboVerticesPoints;
+    private Shader shader;
 
     Sniperrifle(TileMap tm){
         super(tm);
@@ -48,8 +53,10 @@ public class Sniperrifle extends Weapon {
         weaponHud = new Image("Textures\\sniperrifle.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
 
-        startLaser = new Vector2f();
-        endLaser = new Vector2f();
+        projectileVector = new Vector2f();
+        endProjectíle = new Vector2f();
+        startProjectíle = new Vector2f();
+
     }
 
     @Override
@@ -77,59 +84,24 @@ public class Sniperrifle extends Weapon {
                     GunsManager.bulletShooted++;
                     source.play(soundShoot);
 
-                    startLaser.x = px;
-                    startLaser.y = py;
+                    projectileVector.x = x;
+                    projectileVector.y = y;
 
-                    endLaser.x = x+px;
-                    endLaser.y = y+py;
+                    startProjectíle.x = endProjectíle.x = px;
+                    startProjectíle.y = endProjectíle.y = py;
+
+
                     int tileSize = tm.getTileSize();
-                    Vector2f temp = new Vector2f(endLaser.x,endLaser.y);
-                    while(true){
-                        if(tm.getType((int)endLaser.y/tileSize,(int)endLaser.x/tileSize) == Tile.BLOCKED){
-                            if(px < temp.x) {
-                                endLaser.x = ((int)temp.x/tileSize) * tileSize;
-                            } else {
-                                endLaser.x = ((int)temp.x/tileSize +1) * tileSize;
-                            }
-                            if(py < endLaser.y) {
-                                endLaser.y = ((int)temp.y/tileSize) * tileSize;
-                            } else {
-                                endLaser.y = ((int)temp.y/tileSize + 1) * tileSize;
-                            }
+
+                    for(int i = 0;i<500;i++){
+                        endProjectíle.x = startProjectíle.x+i/100f*projectileVector.x;
+                        if(tm.getType((int)(endProjectíle.y/tileSize),(int)(endProjectíle.x/tileSize)) == Tile.BLOCKED){
                             break;
                         }
-                        double atan = Math.atan2(y,x);
-                        // 30 - speed of bullet
-                        float tileSizeX = (float)(Math.cos(atan) * tileSize);
-                        float tileSizeY = (float)(Math.sin(atan) * tileSize);
-                        if(x-960 < 0){
-                            temp.x+=tileSizeX;
-                        }else {
-                            temp.x-=tileSizeX;
-                        }
-                        if(tm.getType((int)endLaser.y/tileSize,(int)temp.x/tileSize) == Tile.BLOCKED){
-                            if(px < temp.x) {
-                                endLaser.x = ((int)temp.x/tileSize) * tileSize;
-                            } else {
-                                endLaser.x = ((int)temp.x/tileSize +1) * tileSize;
-                            }
+                        endProjectíle.y = startProjectíle.y+i/100f*projectileVector.y;
+                        if(tm.getType((int)(endProjectíle.y/tileSize),(int)(endProjectíle.x/tileSize)) == Tile.BLOCKED){
                             break;
                         }
-                        if(y-540 < 0){
-                            temp.y+=tileSizeY;
-                        }else {
-                            temp.y-=tileSizeY;
-                        }
-                        if(tm.getType((int)temp.y/tileSize,(int)endLaser.x/tileSize) == Tile.BLOCKED){
-                            if(py < temp.y) {
-                                endLaser.y = ((int)temp.y/tileSize) * tileSize;
-                            } else {
-                                endLaser.y = ((int)temp.y/tileSize + 1) * tileSize;
-                            }
-                            break;
-                        }
-                        endLaser.x = temp.x();
-                        endLaser.y = temp.y();
                     }
 
                 }
@@ -145,11 +117,13 @@ public class Sniperrifle extends Weapon {
 
     @Override
     public void drawAmmo() {
+
         glLineWidth(3f);
         glBegin(GL_LINES);
-        glVertex2f(startLaser.x+tm.getX(),startLaser.y+tm.getY());
-        glVertex2f(endLaser.x+tm.getX(),endLaser.y+tm.getY());
+        glVertex2f(startProjectíle.x+tm.getX(),startProjectíle.y+tm.getY());
+        glVertex2f(endProjectíle.x+tm.getX(),endProjectíle.y+tm.getY());
         glEnd();
+
     }
 
     @Override

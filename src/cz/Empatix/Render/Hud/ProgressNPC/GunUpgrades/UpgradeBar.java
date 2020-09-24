@@ -39,11 +39,13 @@ public abstract class UpgradeBar {
     private final float minY;
     private final float maxY;
 
+    private Vector3f position;
 
     ArrayList<UpgradeSideBar> sideBars;
 
     public UpgradeBar(String filepath, float weaponscale, int row){
         Vector3f pos = new Vector3f(680,240+row*120,0);
+        position = pos;
 
         weapon = new Image(filepath,pos,weaponscale);
         bar = new Image("Textures\\ProgressRoom\\upgradetab-guns.tga", pos,1.5f);
@@ -99,50 +101,52 @@ public abstract class UpgradeBar {
     public void draw(){
         if(clicked){
             clickedBar.draw();
-            boolean locked = false;
-            for (UpgradeSideBar sideBar:sideBars
-                 ) {
-                sideBar.draw(locked);
-                locked = !sideBar.isBought();
-                int type = sideBar.getType();
-                Vector3f pos = sideBar.getPosition();
-                Vector3f newPos = new Vector3f(pos.x-205,pos.y,pos.z);
-                Matrix4f target;
-                target = new Matrix4f().translate(newPos).scale(2);
-
-                Camera.getInstance().hardProjection().mul(target,target);
-                shader.bind();
-                shader.setUniformi("sampler",0);
-                shader.setUniformm4f("projection",target);
-                glActiveTexture(GL_TEXTURE0);
-                iconset.bindTexture();
-
-                glEnableVertexAttribArray(0);
-                glEnableVertexAttribArray(1);
-
-
-                glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
-                glVertexAttribPointer(0,2,GL_INT,false,0,0);
-
-
-                glBindBuffer(GL_ARRAY_BUFFER,iconset.getSprites(0)[type].getVbo());
-                glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
-
-                glDrawArrays(GL_QUADS, 0, 4);
-
-                glBindBuffer(GL_ARRAY_BUFFER,0);
-
-                glDisableVertexAttribArray(0);
-                glDisableVertexAttribArray(1);
-
-                shader.unbind();
-                glBindTexture(GL_TEXTURE_2D,0);
-                glActiveTexture(0);
-            }
         } else {
             bar.draw();
         }
         weapon.draw();
+    }
+    public void drawUpgrades(){
+        boolean locked = false;
+        for (UpgradeSideBar sideBar:sideBars
+        ) {
+            sideBar.draw(locked);
+            locked = !sideBar.isBought();
+            int type = sideBar.getType();
+            Vector3f pos = sideBar.getPosition();
+            Vector3f newPos = new Vector3f(pos.x-205,pos.y,pos.z);
+            Matrix4f target;
+            target = new Matrix4f().translate(newPos).scale(2);
+
+            Camera.getInstance().hardProjection().mul(target,target);
+            shader.bind();
+            shader.setUniformi("sampler",0);
+            shader.setUniformm4f("projection",target);
+            glActiveTexture(GL_TEXTURE0);
+            iconset.bindTexture();
+
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
+            glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER,iconset.getSprites(0)[type].getVbo());
+            glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+
+            glDrawArrays(GL_QUADS, 0, 4);
+
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+            glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(1);
+
+            shader.unbind();
+            glBindTexture(GL_TEXTURE_2D,0);
+            glActiveTexture(0);
+        }
     }
     public boolean intersects(float x, float y){
         return (x >= minX && x <= maxX && y >= minY && y <= maxY);
@@ -165,5 +169,12 @@ public abstract class UpgradeBar {
 
     public boolean isClicked() {
         return clicked;
+    }
+
+    public void update(float y) {
+        Vector3f pos = new Vector3f(position.x,position.y+y,0);
+        weapon.setPosition(pos);
+        bar.setPosition(pos);
+        clickedBar.setPosition(pos);
     }
 }

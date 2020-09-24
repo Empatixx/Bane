@@ -81,7 +81,7 @@ public class Room {
     void loadMap(){
         if(type == Classic) {
             try {
-                InputStream in = getClass().getResourceAsStream("/Map/currentmap" + (new Random().nextInt(2) + 1) + ".map");
+                InputStream in = getClass().getResourceAsStream("/Map/currentmap" + (new Random().nextInt(4) + 1) + ".map");
                 BufferedReader br = new BufferedReader(
                         new InputStreamReader(in)
                 );

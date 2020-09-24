@@ -58,12 +58,13 @@ public class AudioManager {
         soundtracks = new ArrayList<>();
         sources = new ArrayList<>();
         buffers = new HashMap<>();
-        String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
+        String defaultDeviceName = alcGetString(0, ALC_DEVICE_SPECIFIER);
 
         hasAudio = false;
 
         if(defaultDeviceName != null){
             long device  = alcOpenDevice(defaultDeviceName);
+            if(device  == 0) return;
 
             int[] attributes = {0};
             long  context    = alcCreateContext(device, attributes);
@@ -73,9 +74,9 @@ public class AudioManager {
 
             AL.createCapabilities(alcCapabilities);
 
-            addSoundtracks();
-
             hasAudio = true;
+
+            addSoundtracks();
         }
 
     }
@@ -93,6 +94,7 @@ public class AudioManager {
         soundtracks.add(soundtrack4);
     }
     public static int loadSound(String filename){
+        if(!hasAudio)return -1;
         if(buffers.containsKey(filename)){
             return buffers.get(filename);
         }
@@ -148,6 +150,7 @@ public class AudioManager {
     }
 
     public static void update(){
+        if(!hasAudio) return;
         double newVol = Settings.OVERALL*Settings.MUSIC;
         if(newVol != lastVolume){
             for(Soundtrack track :soundtracks){
@@ -185,8 +188,11 @@ public class AudioManager {
     }
 
     public static void cleanUpAllSources(){
-        for(Source s : sources){
-            s.delete();
+        if(hasAudio) {
+            for (Source s : sources) {
+                s.delete();
+            }
         }
     }
+    static boolean hasAudio(){ return hasAudio;}
 }

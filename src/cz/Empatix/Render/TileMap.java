@@ -1028,7 +1028,7 @@ public class TileMap {
 		if(position.y > ymax) position.y = ymax;
 	}
 	
-	public void draw() {
+	public void draw(int tileType) {
 		target = new Matrix4f()
 				.translate(colOffset*tileSize,rowOffset*tileSize,0)
 				.scale(2);
@@ -1051,10 +1051,9 @@ public class TileMap {
 				col < colOffset + numColsToDraw;
 				col++
 			) {
-
 				if(col >= numCols) break;
 
-				if(map[row][col] == -1) continue;
+				if(getType(row,col) != tileType) continue;
 
 				int rc = map[row][col];
 				int r = rc / numTilesAcross;

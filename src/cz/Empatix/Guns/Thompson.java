@@ -16,7 +16,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-public class Submachine extends Weapon{
+public class Thompson extends Weapon{
     // audio
     private final int soundShoot;
     private final int soundEmptyShoot;
@@ -25,15 +25,15 @@ public class Submachine extends Weapon{
     private int dots;
 
     private ArrayList<Bullet> bullets;
-    private int firerateDelay;
-    private boolean chanceToNotConsumeAmmo;
+    private boolean boostFirerate;
+    private int firerate;
 
-    Submachine(TileMap tm){
+    Thompson(TileMap tm){
         super(tm);
         mindamage = 1;
-        maxdamage = 2;
+        maxdamage = 3;
         inaccuracy = 0.5f;
-        maxAmmo = 300;
+        maxAmmo = 250;
         maxMagazineAmmo = 20;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
@@ -44,26 +44,30 @@ public class Submachine extends Weapon{
         // shooting without ammo
         soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
         soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
-        reloadsource.setPitch(1.5f);
+        reloadsource.setPitch(1.6f);
+        source.setPitch(1.75f);
 
-        weaponHud = new Image("Textures\\submachine.tga",new Vector3f(1600,975,0),2f);
+        weaponHud = new Image("Textures\\thompson.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1830,975,0),1f);
 
-        firerateDelay = 150;
 
-        int numUpgrades = GameStateManager.getDb().getValueUpgrade("uzi","upgrades");
+        int numUpgrades = GameStateManager.getDb().getValueUpgrade("thompson","upgrades");
         if(numUpgrades >= 1){
-            firerateDelay = 105;
+            mindamage+=1;
         }
         if(numUpgrades >= 2){
-            maxdamage++;
+            maxMagazineAmmo+=10;
+            currentMagazineAmmo = maxMagazineAmmo;
         }
         if(numUpgrades >= 3){
-            chanceToNotConsumeAmmo = true;
+            maxAmmo+=100;
+            currentAmmo = maxAmmo;
         }
         if(numUpgrades >= 4){
-            criticalHits = true;
+            boostFirerate = true;
         }
+
+        firerate = 200;
     }
 
     @Override
@@ -72,7 +76,7 @@ public class Submachine extends Weapon{
             reloadDelay = System.currentTimeMillis() - InGame.deltaPauseTime();
             reloadsource.play(soundReload);
             reloading = true;
-
+            firerate = 200;
             dots = 0;
         }
     }
@@ -85,10 +89,10 @@ public class Submachine extends Weapon{
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
                 long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-                if (delta > firerateDelay) {
+                if (delta > firerate) {
                     double inaccuracy = 0;
-                    if (delta < 400) {
-                        inaccuracy = (Math.random() * 0.155) * (Random.nextInt(2) * 2 - 1);
+                    if (delta < 200) {
+                        inaccuracy = (Math.random() * 0.085) * (Random.nextInt(2) * 2 - 1);
                     }
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                     Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
@@ -102,16 +106,12 @@ public class Submachine extends Weapon{
                     }
                     bullet.setDamage(damage);
                     bullets.add(bullet);
-                    if(chanceToNotConsumeAmmo){
-                        if(Math.random() <= 0.8){
-                            currentMagazineAmmo--;
-                        }
-                    } else {
-                        currentMagazineAmmo--;
-                    }
+                    currentMagazineAmmo--;
                     source.play(soundShoot);
                     GunsManager.bulletShooted++;
-
+                    firerate -= 5;
+                    System.out.println(firerate);
+                    if(firerate < 150) firerate = 150;
                 }
             } else if (currentAmmo != 0) {
                 reload();
@@ -119,6 +119,8 @@ public class Submachine extends Weapon{
                 source.play(soundEmptyShoot);
             }
 
+        } else {
+            firerate = 200;
         }
     }
 
@@ -148,7 +150,7 @@ public class Submachine extends Weapon{
     public void update() {
         float time = (float)(System.currentTimeMillis()-reloadDelay-InGame.deltaPauseTime())/1000;
         dots = (int)((time / 0.7f) / 0.2f);
-        if(reloading && time > 0.7f) {
+        if(reloading && time > 0.85f) {
             if (currentAmmo - maxMagazineAmmo+currentMagazineAmmo < 0) {
                 currentMagazineAmmo = currentAmmo;
                 currentAmmo = 0;
@@ -206,4 +208,5 @@ public class Submachine extends Weapon{
             }
         }
     }
+
 }

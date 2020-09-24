@@ -50,6 +50,7 @@ public class Luger extends Weapon {
         // shooting without ammo
         soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
         soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
+        reloadsource.setPitch(1.3f);
 
         weaponHud = new Image("Textures\\lahti.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
@@ -96,6 +97,8 @@ public class Luger extends Weapon {
             bullet.setCritical(lastDamageCrit);
             bullets.add(bullet);
             GunsManager.bulletShooted++;
+            source.setPitch(1.1f+0.15f*bonusShots);
+            source.play(soundShoot[Random.nextInt(2)]);
 
             bonusShots--;
         }
@@ -126,6 +129,7 @@ public class Luger extends Weapon {
                     bullets.add(bullet);
                     currentMagazineAmmo--;
                     GunsManager.bulletShooted++;
+                    source.setPitch(1.1f);
                     source.play(soundShoot[Random.nextInt(2)]);
                     while(Math.random() > 1-chanceBonusShots && currentMagazineAmmo != 0){
                         bonusShots++;

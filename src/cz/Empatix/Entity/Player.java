@@ -30,7 +30,7 @@ public class Player extends MapObject {
     private long deathTime;
 
     // vignette ( player hurt - effect )
-    private Background hitVignette;
+    private Background[] hitVignette;
     private long heartBeat;
     private boolean lowHealth;
 
@@ -155,8 +155,15 @@ public class Player extends MapObject {
 
 
         //hit vignette
-        hitVignette = new Background("Textures\\vignette.tga");
-        hitVignette.setFadeEffect(true);
+        hitVignette = new Background[2];
+
+        hitVignette[0] = new Background("Textures\\vignette.tga");
+        hitVignette[0].setFadeEffect(true);
+
+        // hit armor vignette
+        hitVignette[1] = new Background("Textures\\armorvignette.tga");
+        hitVignette[1].setFadeEffect(true);
+
 
         // audio
         soundPlayerhurt = new int[2];
@@ -207,7 +214,11 @@ public class Player extends MapObject {
 
         if (lowHealth && (float)(System.currentTimeMillis()-heartBeat-InGame.deltaPauseTime())/1000 > 0.85f){
             heartBeat = System.currentTimeMillis()-InGame.deltaPauseTime();
-            hitVignette.updateFadeTime();
+            if(armor > 0){
+                hitVignette[1].updateFadeTime();
+            } else {
+                hitVignette[0].updateFadeTime();
+            }
         }
 
         getMovementSpeed();
@@ -254,7 +265,11 @@ public class Player extends MapObject {
                 flinching = false;
             }
         }
-        hitVignette.update();
+        if(armor > 0){
+            hitVignette[1].update();
+        } else {
+            hitVignette[0].update();
+        }
 
     }
     public void checkCollision(ArrayList<Enemy> enemies){
@@ -320,7 +335,11 @@ public class Player extends MapObject {
     }
 
     public void drawVignette(){
-        hitVignette.draw();
+        if(armor > 0){
+            hitVignette[1].draw();
+        } else {
+            hitVignette[0].draw();
+        }
     }
 
     public void keyPressed(int key) {
@@ -375,7 +394,11 @@ public class Player extends MapObject {
         if (health == 0) dead = true;
         flinching = true;
         flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
-        hitVignette.updateFadeTime();
+        if(armor > 0){
+            hitVignette[1].updateFadeTime();
+        } else {
+            hitVignette[0].updateFadeTime();
+        }
         source.play(soundPlayerhurt[Random.nextInt(2)]);
 
         if(health <=0 )setDead();

@@ -89,6 +89,9 @@ public class Settings {
                 MUSIC = 1f;
                 BRIGHTNESS = 0f;
 
+                VSYNC = true;
+                LIGHTNING = true;
+
                 Props.setProperty("width", Integer.toString(WIDTH));
                 Props.setProperty("height", Integer.toString(HEIGHT));
 

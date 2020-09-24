@@ -20,11 +20,11 @@ public class SliderBar {
     private float value;
 
     // background slider
-    private final float minX;
-    private final float maxX;
+    private float minX;
+    private float maxX;
 
-    private final float minY;
-    private final float maxY;
+    private float minY;
+    private float maxY;
 
     private Shader shader;
     private int idTexture;
@@ -41,28 +41,34 @@ public class SliderBar {
     private float scale;
     private Vector3f pos;
 
-    private float sliderMinX;
-    private float sliderMaxX;
+    private float sliderMin;
+    private float sliderMax;
 
     private int type;
 
-
+    private float height;
+    private float width;
+    private int sliderWidth;
+    private int sliderHeight;
 
     private boolean locked;
+
+    private boolean vertical;
+
     public SliderBar(String file, Vector3f pos, float scale){
         this.pos = pos;
         this.scale = scale;
         ByteBufferImage decoder = new ByteBufferImage();
         ByteBuffer spritesheetImage = decoder.decodeImage(file+"_rail.tga");
 
-        int width = decoder.getWidth();
-        int height = decoder.getHeight();
+        width = decoder.getWidth();
+        height = decoder.getHeight();
 
-        minX = pos.x-width*scale/2;
-        minY = pos.y-height*scale/2;
+        minX = (int) (pos.x-width*scale/2);
+        minY = (int) (pos.y-height*scale/2);
 
-        maxY = pos.y + height*scale/2;
-        maxX = pos.x + width*scale/2;
+        maxY = (int) (pos.y + height*scale/2);
+        maxX = (int) (pos.x + width*scale/2);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
@@ -76,13 +82,13 @@ public class SliderBar {
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int) width,(int) height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
 
         STBImage.stbi_image_free(spritesheetImage);
 
-        vboVertices = ModelManager.getModel(width,height);
+        vboVertices = ModelManager.getModel((int) width,(int) height);
         if (vboVertices == -1) {
-            vboVertices = ModelManager.createModel(width, height);
+            vboVertices = ModelManager.createModel((int) width, (int)height);
         }
         // clicking icon
         double[] texCoords =
@@ -113,8 +119,8 @@ public class SliderBar {
         decoder = new ByteBufferImage();
         spritesheetImage = decoder.decodeImage(file+".tga");
 
-        width = decoder.getWidth();
-        height = decoder.getHeight();
+        this.sliderWidth = decoder.getWidth();
+        this.sliderHeight = decoder.getHeight();
 
         idTextureSlider = glGenTextures();
 
@@ -123,17 +129,17 @@ public class SliderBar {
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this.sliderWidth, sliderHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
 
         STBImage.stbi_image_free(spritesheetImage);
 
-        vboVerticesSlider = ModelManager.getModel(width,height);
+        vboVerticesSlider = ModelManager.getModel(sliderWidth,sliderHeight);
         if (vboVerticesSlider == -1) {
-            vboVerticesSlider = ModelManager.createModel(width, height);
+            vboVerticesSlider = ModelManager.createModel(sliderWidth, sliderHeight);
         }
 
-        sliderMinX = minX+width/2*scale;
-        sliderMaxX = maxX-width/2*scale;
+        sliderMin = (int) (minX+this.sliderWidth/2*scale);
+        sliderMax = (int) (maxX-this.sliderWidth/2*scale);
 
 
     }
@@ -141,12 +147,20 @@ public class SliderBar {
     public void setLocked(boolean locked) {
         this.locked = locked;
     }
-    public void update(float x){
+    public void update(float x, float y){
         // smooth movement - multiply 0.3
-        pos.x += (x-pos.x) * .3f;
-        if(pos.x>sliderMaxX) pos.x = sliderMaxX;
-        if(pos.x<sliderMinX) pos.x = sliderMinX;
-        value = (pos.x-sliderMinX)/(sliderMaxX-sliderMinX);
+        if(!vertical){
+            pos.x += (x-pos.x) * .3f;
+            if(pos.x> sliderMax) pos.x = sliderMax;
+            if(pos.x< sliderMin) pos.x = sliderMin;
+            value = (pos.x- sliderMin)/(sliderMax - sliderMin);
+        } else {
+            pos.y += (y-pos.y) * .3f;
+            if(pos.y> sliderMax) pos.y = sliderMax;
+            if(pos.y< sliderMin) pos.y = sliderMin;
+            value = (pos.y- sliderMin)/(sliderMax - sliderMin);
+        }
+
     }
     public void draw(){
 
@@ -176,7 +190,8 @@ public class SliderBar {
 
         Matrix4f target = new Matrix4f()
                 .translate(pos)
-                .scale(scale);
+                .scale(scale)
+                .rotateX(3.14f);
 
         Camera.getInstance().hardProjection().mul(target,target);
         shader.bind();
@@ -220,7 +235,11 @@ public class SliderBar {
 
     public void setValue(float value) {
         this.value = value;
-        pos.x = sliderMinX + (sliderMaxX-sliderMinX) * value;
+        if(vertical){
+            pos.y = sliderMin + (sliderMax - sliderMin) * value;
+        } else {
+            pos.x = sliderMin + (sliderMax - sliderMin) * value;
+        }
     }
 
     public float getValue() {
@@ -237,5 +256,65 @@ public class SliderBar {
 
     public Vector3f getPos() {
         return pos;
+    }
+
+    public void setLength(int size){
+        if(!vertical){
+            width = size/scale;
+
+            minX = pos.x - size/2;
+            maxX = pos.x + size/2;
+
+            sliderMin = (int)(minX+this.sliderWidth/2*scale);
+            sliderMax = (int)(maxX-this.sliderWidth/2*scale);
+
+            System.out.println(sliderMin+"/"+sliderMax);
+
+            vboVertices = ModelManager.getModel((int)width,(int) height);
+            if (vboVertices == -1) {
+                vboVertices = ModelManager.createModel((int) width, (int) height);
+            }
+        }
+
+    }
+
+    public void setVertical() {
+        this.vertical = true;
+
+        minX = pos.x - (int)(height * scale / 2);
+        minY = pos.y - (int)(width * scale / 2);
+
+        maxX = pos.x + (int)(height * scale / 2);
+        maxY = pos.y + (int)(width * scale / 2);
+
+        sliderMin = (int)(minY+this.sliderWidth/2*scale);
+        sliderMax = (int)(maxY-this.sliderWidth/2*scale);
+
+        vboVertices = ModelManager.getModel((int) height, (int)width);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel((int) height, (int) width);
+        }
+        vboVerticesSlider = ModelManager.getModel(sliderHeight, sliderWidth);
+        if (vboVerticesSlider == -1){
+            vboVerticesSlider = ModelManager.createModel(sliderHeight, sliderWidth);
+        }
+        glDeleteBuffers(vboTextures);
+        double[] texCoords =
+                {
+                        0, 1,
+                        1, 1,
+                        1, 0,
+                        0, 0
+
+                };
+
+        DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
+        buffer.put(texCoords);
+        buffer.flip();
+        vboTextures = glGenBuffers();
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboTextures);
+        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 }

@@ -126,5 +126,9 @@ public class ProgressNPC extends MapObject {
     public void mousePressed(float x, float y, Player p){
         if(canShowHud()) upgradeMenu.mousePressed(x,y, p);
     }
+    public void mouseReleased(float x, float y){
+        if(canShowHud()) upgradeMenu.mouseReleased(x,y);
+    }
+
 }
 

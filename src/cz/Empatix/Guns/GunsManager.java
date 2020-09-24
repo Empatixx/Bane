@@ -43,6 +43,7 @@ public class GunsManager {
         weapons.add(new Grenadelauncher(tileMap));
         weapons.add(new Luger(tileMap));
         weapons.add(new M4(tileMap));
+        weapons.add(new Thompson(tileMap));
         //weapons.add(new Sniperrifle(tileMap));
 
 

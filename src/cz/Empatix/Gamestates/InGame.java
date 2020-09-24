@@ -25,6 +25,7 @@ import cz.Empatix.Render.Postprocessing.Fade;
 import cz.Empatix.Render.Postprocessing.GaussianBlur;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.Text.TextRender;
+import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import cz.Empatix.Utility.Console;
 import org.joml.Vector3f;
@@ -301,7 +302,7 @@ public class InGame extends GameState {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        tileMap.draw();
+        tileMap.draw(Tile.NORMAL);
 
         tileMap.preDrawObjects();
 
@@ -315,6 +316,8 @@ public class InGame extends GameState {
         enemyManager.draw();
 
         gunsManager.draw();
+
+        tileMap.draw(Tile.BLOCKED);
 
         objectsFramebuffer.unbindFBO();
 

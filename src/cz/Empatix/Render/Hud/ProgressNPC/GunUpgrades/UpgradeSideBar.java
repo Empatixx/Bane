@@ -45,7 +45,7 @@ public class UpgradeSideBar {
         sideBar.draw();
         if(text != null){
             for(int i = 0; i< text.length; i++){
-                TextRender.renderText(text[i],new Vector3f(pos.x-115,pos.y-40+i*15,0),1,new Vector3f(0.686f,0.4f,0.258f));
+                TextRender.renderText(text[i],new Vector3f(pos.x-115,pos.y-40+i*20,0),1,new Vector3f(0.686f,0.4f,0.258f));
             }
         }
         if(bought){

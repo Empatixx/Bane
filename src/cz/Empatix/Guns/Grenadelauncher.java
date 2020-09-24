@@ -30,9 +30,9 @@ public class Grenadelauncher extends Weapon {
         mindamage = 4;
         maxdamage = 7;
         inaccuracy = 0.7f;
-        maxAmmo = 24;
+            maxAmmo = 24;
         maxMagazineAmmo = 6;
-        type = 3;
+        type = 4;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         bullets = new ArrayList<>();
@@ -43,7 +43,7 @@ public class Grenadelauncher extends Weapon {
         soundReload = AudioManager.loadSound("guns\\grenadelauncherreload.ogg");
 
         weaponHud = new Image("Textures\\grenadelauncher.tga",new Vector3f(1600,975,0),2f);
-        weaponAmmo = new Image("Textures\\shotgun_bullet.tga",new Vector3f(1810,975,0),1f);
+        weaponAmmo = new Image("Textures\\rocket-ammo.tga",new Vector3f(1830,975,0),2f);
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("grenadelauncher","upgrades");
         if(numUpgrades >= 1){

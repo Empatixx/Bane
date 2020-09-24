@@ -10,6 +10,7 @@ import cz.Empatix.Render.Graphics.Framebuffer;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.Text.TextRender;
+import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
@@ -81,15 +82,17 @@ public class ProgressRoom extends GameState {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        tileMap.draw();
+        tileMap.draw(Tile.NORMAL);
 
         tileMap.preDrawObjects();
         progressNPC.draw();
 
         player.draw();
 
-        // draw enemies
+        // draw objects
         tileMap.drawObjects();
+
+        tileMap.draw(Tile.BLOCKED);
 
         objectsFramebuffer.unbindFBO();
 
@@ -147,11 +150,12 @@ public class ProgressRoom extends GameState {
     @Override
     void mousePressed(int button) {
         progressNPC.mousePressed(mouseX,mouseY,player);
+        System.out.println(mouseX+" "+mouseY);
     }
 
     @Override
     void mouseReleased(int button) {
-
+        progressNPC.mouseReleased(mouseX,mouseY);
     }
 
     @Override

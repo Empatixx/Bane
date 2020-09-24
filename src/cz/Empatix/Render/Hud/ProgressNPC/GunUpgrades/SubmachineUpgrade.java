@@ -13,7 +13,7 @@ public class SubmachineUpgrade extends UpgradeBar {
         String[] text = new String[]{"Increase firerate by 30%"};
         bar.setText(text);
         bar.setType(UpgradeSideBar.ACCURACYUPGRADE);
-        bar.setPrice(20);
+        bar.setPrice(30);
         sideBars.add(bar);
         if(numUpgrades > 0){
             bar.setBought(true);

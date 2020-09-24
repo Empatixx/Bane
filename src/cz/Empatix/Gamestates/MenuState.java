@@ -263,7 +263,7 @@ public class MenuState extends GameState{
 
 
         // sounds
-        source = new Source(Source.EFFECTS,1f);
+        source = AudioManager.createSource(Source.EFFECTS,1f);
         soundMenuClick = AudioManager.loadSound("menuclick.ogg");
 
         setCursor(ARROW);
@@ -392,7 +392,7 @@ public class MenuState extends GameState{
                 }
                 for(SliderBar sliderBar : graphicsSliders){
                     if(sliderBar.isLocked()){
-                        sliderBar.update(mouseX);
+                        sliderBar.update(mouseX,mouseY);
                         int type = sliderBar.getType();
                         if(type == BRIGHTNESS) {
                             Settings.BRIGHTNESS = sliderBar.getValue();
@@ -406,7 +406,7 @@ public class MenuState extends GameState{
             } else if (selectedSettings == AUDIO){
                 for(SliderBar sliderBar : audioSliders){
                     if(sliderBar.isLocked()){
-                        sliderBar.update(mouseX);
+                        sliderBar.update(mouseX,mouseY);
                         int type = sliderBar.getType();
                         if(type == EFFECTS){
                             Settings.EFFECTS = sliderBar.getValue();

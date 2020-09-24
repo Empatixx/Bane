@@ -10,7 +10,7 @@ public class RevolverUpgrade extends UpgradeBar {
 
 
         UpgradeSideBar bar = new UpgradeSideBar(sideBars.size(),"revolver");
-        String[] text = new String[]{"Increase maximum damage by 2"};
+        String[] text = new String[]{"Your bullets can be affected by critical hits"};
         bar.setText(text);
         bar.setType(UpgradeSideBar.DAMAGEUPGRADE);
         bar.setPrice(20);
@@ -20,8 +20,8 @@ public class RevolverUpgrade extends UpgradeBar {
             numUpgrades--;
         }
 
-        bar = new UpgradeSideBar(sideBars.size(),"pistol");
-        text = new String[]{"Your bullets can be affected by critical hits"};
+        bar = new UpgradeSideBar(sideBars.size(),"revolver");
+        text = new String[]{"Increase maximum damage by 2"};
         bar.setText(text);
         bar.setType(UpgradeSideBar.DAMAGEUPGRADE);
         bar.setPrice(60);
@@ -31,10 +31,10 @@ public class RevolverUpgrade extends UpgradeBar {
             numUpgrades--;
         }
 
-        bar = new UpgradeSideBar(sideBars.size(),"pistol");
-        text = new String[]{"Increase firate by 10%"};
+        bar = new UpgradeSideBar(sideBars.size(),"revolver");
+        text = new String[]{"Each time your bullet is not critical","your critical chance for next bullet","is increased by 10%, effect stacks","","Critical hit resets bonus"};
         bar.setText(text);
-        bar.setType(UpgradeSideBar.ACCURACYUPGRADE);
+        bar.setType(UpgradeSideBar.OTHERUPGRADE);
         bar.setPrice(120);
         sideBars.add(bar);
         if(numUpgrades > 0){
@@ -42,7 +42,7 @@ public class RevolverUpgrade extends UpgradeBar {
             numUpgrades--;
         }
 
-        bar = new UpgradeSideBar(sideBars.size(),"pistol");
+        bar = new UpgradeSideBar(sideBars.size(),"revolver");
         text = new String[]{"Increase critical damage by 100%"};
         bar.setText(text);
         bar.setType(UpgradeSideBar.DAMAGEUPGRADE);
@@ -50,7 +50,6 @@ public class RevolverUpgrade extends UpgradeBar {
         sideBars.add(bar);
         if(numUpgrades > 0){
             bar.setBought(true);
-            numUpgrades--;
         }
     }
 

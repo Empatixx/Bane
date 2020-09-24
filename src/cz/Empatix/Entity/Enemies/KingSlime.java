@@ -109,7 +109,7 @@ public class KingSlime extends Enemy {
         angle=0;
         chestCreated=false;
 
-        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(1000,1000,0),7,50,4);
+        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,50,4);
 
         createShadow();
 

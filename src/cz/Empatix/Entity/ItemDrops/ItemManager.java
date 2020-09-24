@@ -63,7 +63,7 @@ public class ItemManager {
     }
 
     public static void createShopDrop(float x, float y) {
-        int drops = 5;
+        int drops = 6;
         int random = cz.Empatix.Java.Random.nextInt(drops);
 
         ItemDrop drop;
@@ -83,6 +83,10 @@ public class ItemManager {
             itemDrops.add(drop);
         } else if (random == 2) {
             drop = new HealingPot(tm);
+            drop.setPosition(x, y);
+            itemDrops.add(drop);
+        } else if (random == 5) {
+            drop = new ExplosiveAmmo(tm);
             drop.setPosition(x, y);
             itemDrops.add(drop);
         } else {
@@ -122,10 +126,13 @@ public class ItemManager {
                             drop = new PistolAmmo(tm);
                             drop.setPosition(x, y);
                             itemDrops.add(drop);
+                        } else if (type == ItemDrop.EXPLOSIVEAMMO){
+                            drop = new ExplosiveAmmo(tm);
+                            drop.setPosition(x, y);
+                            itemDrops.add(drop);
                         } else{
                             drop = new ShotgunAmmo(tm);
                             drop.setPosition(x, y);
-                            System.out.println(type+" test1");
                             itemDrops.add(drop);
                         }
                     }
@@ -139,10 +146,13 @@ public class ItemManager {
                     drop = new PistolAmmo(tm);
                     drop.setPosition(x, y);
                     itemDrops.add(drop);
+                } else if (type == ItemDrop.EXPLOSIVEAMMO){
+                    drop = new ExplosiveAmmo(tm);
+                    drop.setPosition(x, y);
+                    itemDrops.add(drop);
                 } else {
                     drop = new ShotgunAmmo(tm);
                     drop.setPosition(x, y);
-                    System.out.println(type+" test2");
                     itemDrops.add(drop);
                 }
             }
@@ -181,7 +191,7 @@ public class ItemManager {
                     shopHud.setPosition(new Vector3f(drop.getX() + tm.getX(), drop.getY() + tm.getY() - 125, 0));
                     shopItem = drop;
                 } else {
-                    if (type == ItemDrop.PISTOLAMMO || type == ItemDrop.SHOTGUNAMMO || type == ItemDrop.SUBMACHINE) {
+                    if (type == ItemDrop.PISTOLAMMO || type == ItemDrop.SHOTGUNAMMO || type == ItemDrop.EXPLOSIVEAMMO) {
                         boolean done = gm.addAmmo(drop.getAmount(), type);
                         if (done) {
                             drop.pickedUp = true;
@@ -252,12 +262,13 @@ public class ItemManager {
     }
 
     public static void createDrop(float x, float y, Vector2f speed) {
-        int random = cz.Empatix.Java.Random.nextInt(4);
+        int random = cz.Empatix.Java.Random.nextInt(5);
         if (random == 0) {
             ItemDrop drop = new PistolAmmo(tm);
             drop.setPosition(x, y);
             drop.setSpeed(speed.x, speed.y);
             itemDrops.add(drop);
+
         } else if (random == 1) {
             ItemDrop drop = new ShotgunAmmo(tm);
             drop.setPosition(x, y);
@@ -265,6 +276,11 @@ public class ItemManager {
             itemDrops.add(drop);
         } else if (random == 3) {
             ItemDrop drop = new HealingPot(tm);
+            drop.setPosition(x, y);
+            drop.setSpeed(speed.x, speed.y);
+            itemDrops.add(drop);
+        } else if (random == 4) {
+            ItemDrop drop = new ExplosiveAmmo(tm);
             drop.setPosition(x, y);
             drop.setSpeed(speed.x, speed.y);
             itemDrops.add(drop);

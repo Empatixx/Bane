@@ -2,6 +2,7 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
@@ -25,6 +26,10 @@ public class Revolver extends Weapon {
 
     private ArrayList<Bullet> bullets;
 
+    private boolean increasedCritDamage;
+    private boolean nextCritChanceEnabled;
+    private float nextCritChance;
+
     Revolver(TileMap tm){
         super(tm);
         mindamage = 4;
@@ -41,10 +46,27 @@ public class Revolver extends Weapon {
         // shooting without ammo
         soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
         soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
+        reloadsource.setPitch(0.75f);
+        source.setPitch(1.2f);
 
         weaponHud = new Image("Textures\\revolver.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
+        int numUpgrades = GameStateManager.getDb().getValueUpgrade("revolver","upgrades");
 
+        increasedCritDamage = false;
+
+        if(numUpgrades >= 1){
+            criticalHits = true;
+        }
+        if(numUpgrades >= 2){
+            maxdamage+=2;
+        }
+        if(numUpgrades >= 3){
+            nextCritChanceEnabled = true;
+        }
+        if(numUpgrades >= 4){
+            increasedCritDamage=true;
+        }
     }
 
     @Override
@@ -75,6 +97,15 @@ public class Revolver extends Weapon {
                     Bullet bullet = new Bullet(tm, x, y, inaccuracy,40);
                     bullet.setPosition(px, py);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                    if(criticalHits){
+                        if(Math.random() > 0.9-nextCritChance){
+                            damage*=increasedCritDamage ? 3 : 2;
+                            nextCritChance=0;
+                            bullet.setCritical(true);
+                        } else if(nextCritChanceEnabled){
+                            nextCritChance+=0.1f;
+                        }
+                    }
                     bullet.setDamage(damage);
                     bullets.add(bullet);
                     currentMagazineAmmo--;

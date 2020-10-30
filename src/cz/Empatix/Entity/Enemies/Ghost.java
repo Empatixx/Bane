@@ -32,7 +32,7 @@ public class Ghost extends Enemy {
         scale = 5;
 
 
-        health = maxHealth = 12+(int)Math.ceil((int)Math.pow(tm.getFloor(),2)*0.5);
+        health = maxHealth = (int)(12*(1+(tm.getFloor()-1)*0.12));
         damage = 2;
 
         type = melee;
@@ -64,9 +64,9 @@ public class Ghost extends Enemy {
             }
             spritesheet.addSprites(sprites);
         }
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();
@@ -177,5 +177,10 @@ public class Ghost extends Enemy {
     public void draw() {
         drawShadow(3.5f);
         super.draw();
+    }
+
+    @Override
+    public void drawShadow() {
+        drawShadow(3.5f);
     }
 }

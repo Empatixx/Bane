@@ -57,9 +57,9 @@ public class Coin extends ItemDrop{
             }
             spritesheet.addSprites(sprites);
         }
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();

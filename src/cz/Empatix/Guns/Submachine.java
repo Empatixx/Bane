@@ -25,7 +25,6 @@ public class Submachine extends Weapon{
     private int dots;
 
     private ArrayList<Bullet> bullets;
-    private int firerateDelay;
     private boolean chanceToNotConsumeAmmo;
 
     Submachine(TileMap tm){
@@ -35,6 +34,7 @@ public class Submachine extends Weapon{
         inaccuracy = 0.5f;
         maxAmmo = 300;
         maxMagazineAmmo = 20;
+        delayTime = 150;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         type = 1;
@@ -49,11 +49,9 @@ public class Submachine extends Weapon{
         weaponHud = new Image("Textures\\submachine.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1830,975,0),1f);
 
-        firerateDelay = 150;
-
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("uzi","upgrades");
         if(numUpgrades >= 1){
-            firerateDelay = 105;
+            delayTime = 105;
         }
         if(numUpgrades >= 2){
             maxdamage++;
@@ -85,7 +83,7 @@ public class Submachine extends Weapon{
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
                 long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-                if (delta > firerateDelay) {
+                if (delta > delayTime) {
                     double inaccuracy = 0;
                     if (delta < 400) {
                         inaccuracy = (Math.random() * 0.155) * (Random.nextInt(2) * 2 - 1);

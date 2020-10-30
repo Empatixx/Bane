@@ -29,7 +29,7 @@ public class Demoneye extends Enemy {
         scale = 2;
 
 
-        health = maxHealth = 12+(int)Math.ceil((int)Math.pow(tm.getFloor(),2)*0.5);
+        health = maxHealth = (int)(12*(1+(tm.getFloor()-1)*0.12));
         damage = 2;
 
         type = melee;
@@ -63,9 +63,9 @@ public class Demoneye extends Enemy {
 
              */
         }
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();
@@ -167,7 +167,10 @@ public class Demoneye extends Enemy {
 
     @Override
     public void draw() {
-        drawShadow(5.5f);
         super.draw();
+    }
+    @Override
+    public void drawShadow() {
+        drawShadow(5.5f);
     }
 }

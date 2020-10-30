@@ -3,6 +3,7 @@
 uniform sampler2D sampler;
 uniform vec2 resolution;
 uniform float value;
+uniform vec2 ratio;
 
 out vec4 gl_FragColor;
 
@@ -21,5 +22,5 @@ vec4 blur(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
     return color;
 }
 void main(){
-    gl_FragColor = blur(sampler, gl_FragCoord.xy/resolution, resolution, vec2(value));
+    gl_FragColor = blur(sampler, gl_FragCoord.xy/resolution, resolution, vec2(value*ratio.x,value*ratio.y));
 }

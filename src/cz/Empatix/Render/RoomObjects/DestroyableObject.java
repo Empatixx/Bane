@@ -21,6 +21,7 @@ public class DestroyableObject extends RoomObject {
     int maxHealth;
     boolean destroyed;
     boolean itemDrop;
+    boolean itemAlreadyDropped;
 
     protected long lastTimeDamaged;
     private Shader outlineShader;
@@ -30,6 +31,7 @@ public class DestroyableObject extends RoomObject {
 
         destroyed = false;
         itemDrop = true;
+        itemAlreadyDropped = false;
 
         outlineShader = ShaderManager.getShader("shaders\\outline");
         if (outlineShader == null){
@@ -89,7 +91,7 @@ public class DestroyableObject extends RoomObject {
             glEnableVertexAttribArray(1);
 
 
-            glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
+            glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
             glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
 
 
@@ -119,5 +121,6 @@ public class DestroyableObject extends RoomObject {
             destroyed = true;
         }
     }
-    public boolean hasDrop(){ return itemDrop;}
+    public boolean canDrop(){return destroyed && itemDrop && !itemAlreadyDropped; }
+    public void itemDropped(){itemAlreadyDropped = true;}
 }

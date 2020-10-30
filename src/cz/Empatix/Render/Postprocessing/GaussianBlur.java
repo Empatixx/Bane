@@ -6,11 +6,12 @@ public class GaussianBlur extends Postprocess {
     private float darkness;
     public GaussianBlur(String shader){
         super(shader);
+        darkness = 1f;
     }
 
     @Override
     public void draw(Framebuffer framebuffer) {
-        super.bind();
+        shader.bind();
         shader.setUniformf("darkness",darkness);
         super.draw(framebuffer);
         super.unbind();

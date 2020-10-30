@@ -43,7 +43,7 @@ public class Slime extends Enemy {
         cheight = 48;
         scale = 2;
 
-        health = maxHealth = 10+(int)Math.pow(tm.getFloor(),2);
+        health = maxHealth = (int)(10*(1+(tm.getFloor()-1)*0.12));
         damage = 1;
 
         type = melee;
@@ -75,9 +75,9 @@ public class Slime extends Enemy {
             spritesheet.addSprites(sprites);
 
         }
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();
@@ -216,7 +216,6 @@ public class Slime extends Enemy {
             bullet.draw();
         }
         if(!disableDraw){
-            drawShadow(5f);
             super.draw();
         }
     }
@@ -238,6 +237,9 @@ public class Slime extends Enemy {
     public boolean shouldRemove(){
         return animation.hasPlayedOnce() && isDead() && bullets.size()==0;
     }
-
+    @Override
+    public void drawShadow() {
+        if(!disableDraw) drawShadow(5f);
+    }
 }
 

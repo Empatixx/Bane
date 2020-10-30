@@ -33,6 +33,12 @@ public class Player extends MapObject {
     private Background[] hitVignette;
     private long heartBeat;
     private boolean lowHealth;
+    private DamageAbsorbedBy lastDamage;
+    // if damage was absorbed by health or armor
+    private enum DamageAbsorbedBy {
+        ARMOR,
+        HEALTH
+    }
 
     // STUFF
 
@@ -53,6 +59,9 @@ public class Player extends MapObject {
     private static final int DOWN = 2;
     private static final int UP = 3;
 
+    private ArrayList<SprintParticle> sprintParticles;
+    private long lastTimeSprintParticle;
+
     // audio
     private final int[] soundPlayerhurt;
     private final int soundPlayerdeath;
@@ -61,6 +70,7 @@ public class Player extends MapObject {
     private final int soundLowHealth;
 
     // visual
+
 
     public Player(TileMap tm) {
         super(tm);
@@ -75,9 +85,9 @@ public class Player extends MapObject {
         // COLLISION WIDTH/HEIGHT
         scale = 2;
 
-        moveSpeed = 0.68f;
+        moveSpeed = 0.8f;
         maxSpeed = 11.84f;
-        stopSpeed = 2.75f;
+        stopSpeed = 3.25f;
 
         health = maxHealth = 7;
         energy = maxEnergy = 100;
@@ -137,9 +147,9 @@ public class Player extends MapObject {
         animation.setFrames(spritesheet.getSprites(IDLE));
         animation.setDelay(100);
 
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         shader = ShaderManager.getShader("shaders\\shader");
@@ -181,6 +191,8 @@ public class Player extends MapObject {
 
         rolling = false;
 
+        sprintParticles = new ArrayList<>();
+
         createShadow();
     }
 
@@ -214,10 +226,40 @@ public class Player extends MapObject {
 
         if (lowHealth && (float)(System.currentTimeMillis()-heartBeat-InGame.deltaPauseTime())/1000 > 0.85f){
             heartBeat = System.currentTimeMillis()-InGame.deltaPauseTime();
-            if(armor > 0){
+            if(lastDamage == DamageAbsorbedBy.ARMOR){
                 hitVignette[1].updateFadeTime();
             } else {
                 hitVignette[0].updateFadeTime();
+            }
+        }
+        if(Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed){
+            float value = Math.abs(speed.x);
+            if(value < Math.abs(speed.y)) value = Math.abs(speed.y);
+            if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 400-value*20){
+                lastTimeSprintParticle = System.currentTimeMillis()- InGame.deltaPauseTime();
+                SprintParticle sprintParticle = new SprintParticle(tileMap);
+                if((up || down) && !left && !right){
+                    sprintParticle.setPosition(
+                            position.x+16*(float)Math.sin(2*Math.PI*((System.currentTimeMillis()%1000)/1000d)),
+                            position.y+height/2);
+                } else if((right || left) && !up && !down){
+                    sprintParticle.setPosition(
+                            position.x,
+                            position.y+height/2+16*(float)Math.sin(Math.PI*(1+((System.currentTimeMillis()%1000)/1000d))));
+                } else {
+                    sprintParticle.setPosition(position.x,position.y+height/2);
+
+                }
+                sprintParticles.add(sprintParticle);
+            }
+        }
+        for(int i = 0;i<sprintParticles.size();i++){
+            SprintParticle sprintParticle = sprintParticles.get(i);
+
+            sprintParticle.update();
+            if(sprintParticle.shouldRemove()){
+                sprintParticles.remove(i);
+                i--;
             }
         }
 
@@ -265,7 +307,7 @@ public class Player extends MapObject {
                 flinching = false;
             }
         }
-        if(armor > 0){
+        if(lastDamage == DamageAbsorbedBy.ARMOR){
             hitVignette[1].update();
         } else {
             hitVignette[0].update();
@@ -330,12 +372,11 @@ public class Player extends MapObject {
     }
 
     public void draw() {
-        drawShadow(3f);
         super.draw();
     }
 
     public void drawVignette(){
-        if(armor > 0){
+        if(lastDamage == DamageAbsorbedBy.ARMOR){
             hitVignette[1].draw();
         } else {
             hitVignette[0].draw();
@@ -381,20 +422,26 @@ public class Player extends MapObject {
     public void hit(int damage){
         if (flinching ||dead || rolling) return;
 
-        int newDamage = damage-armor;
+        int previousArmor = armor;
+        int previousHealth = health;
+
         armor-=damage;
         if(armor < 0){
             armor = 0;
         }
-        damage = newDamage;
+        damage-=previousArmor;
         if (damage < 0) damage = 0;
 
         health -= damage;
         if (health < 0) health = 0;
         if (health == 0) dead = true;
+
         flinching = true;
         flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
-        if(armor > 0){
+
+        if(previousHealth != health) lastDamage = DamageAbsorbedBy.HEALTH;
+        else if (previousArmor != armor) lastDamage = DamageAbsorbedBy.ARMOR;
+        if(lastDamage == DamageAbsorbedBy.ARMOR){
             hitVignette[1].updateFadeTime();
         } else {
             hitVignette[0].updateFadeTime();
@@ -474,4 +521,81 @@ public class Player extends MapObject {
         this.health = health;
         this.maxHealth = health;
     }
+
+    @Override
+    public void drawShadow() {
+        for(SprintParticle sprintParticle : sprintParticles){
+            sprintParticle.draw();
+        }
+        drawShadow(3f);
+    }
+    private static class SprintParticle extends MapObject{
+        // sprint particles
+        SprintParticle(TileMap tm){
+            super(tm);
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\sprint_particle.tga");
+
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\sprint_particle.tga");
+                for(int i = 0; i < 3; i++) {
+
+                    Sprite[] images = new Sprite[3];
+
+                    for (int j = 0; j < 3; j++) {
+
+                        double[] texCoords =
+                                {
+                                        (double) j / 3, 0,
+
+                                        (double) j / 3, 1,
+
+                                        (1.0 + j) / 3, 1,
+
+                                        (1.0 + j) / 3, 0
+                                };
+
+
+                        Sprite sprite = new Sprite(texCoords);
+
+                        images[j] = sprite;
+
+                    }
+
+                    spritesheet.addSprites(images);
+                }
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(0));
+            animation.setDelay(85);
+
+            vboVertices = ModelManager.getModel(16,16);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(16,16);
+            }
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+
+            facingRight = true;
+            scale = 4;
+        }
+        public boolean shouldRemove(){
+            return animation.hasPlayedOnce();
+        }
+        public void update(){
+            setMapPosition();
+            animation.update();
+        }
+        public void draw(){
+            super.draw();
+        }
+    }
+    public void setMaxSpeed(float maxSpeed){ this.maxSpeed = maxSpeed;}
+
+    public float getMaxSpeed(){return maxSpeed;}
 }

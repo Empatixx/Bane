@@ -60,9 +60,9 @@ public class LightPoint {
 
     public boolean isNotOnScreen(){
         return (
-                pos.x > Camera.getWIDTH() + 100 * intensity || pos.x < 0 - 100 * intensity
+                pos.x > Camera.getWIDTH() + 500 * intensity || pos.x < 0 - 500 * intensity
                         ||
-                pos.y > Camera.getHEIGHT() + 100 * intensity|| pos.y < 0 - 100 * intensity
+                pos.y > Camera.getHEIGHT() + 500 * intensity|| pos.y < 0 - 500 * intensity
         );
     }
 }

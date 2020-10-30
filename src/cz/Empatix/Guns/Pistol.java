@@ -38,6 +38,7 @@ public class Pistol extends Weapon {
         inaccuracy = 0.8f;
         maxAmmo = 120;
         maxMagazineAmmo = 7;
+        delayTime = 250;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         type = 1;
@@ -107,7 +108,7 @@ public class Pistol extends Weapon {
                 if (reloading) return;
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
-                if (delta > 250) {
+                if (delta > delayTime) {
                     double inaccuracy = 0;
                     if (delta < 400) {
                         inaccuracy = 0.055 * 400 / delta * (Random.nextInt(2) * 2 - 1);
@@ -225,5 +226,9 @@ public class Pistol extends Weapon {
                 }
             }
         }
+    }
+    @Override
+    public boolean canSwap() {
+        return !reloading && System.currentTimeMillis()  - InGame.deltaPauseTime()- delay > delayTime/2 && !secondShotReady;
     }
 }

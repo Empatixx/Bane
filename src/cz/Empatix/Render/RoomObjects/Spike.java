@@ -42,11 +42,11 @@ public class Spike extends RoomObject {
         preDraw = true;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\spike.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\spike.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\spike.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\spike.tga");
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
                 double[] texCoords =
@@ -66,9 +66,9 @@ public class Spike extends RoomObject {
             spritesheet.addSprites(sprites);
 
         }
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();
@@ -134,7 +134,7 @@ public class Spike extends RoomObject {
         glEnableVertexAttribArray(1);
 
 
-        glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
+        glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
         glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
 

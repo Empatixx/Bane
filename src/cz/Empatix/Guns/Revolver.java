@@ -37,6 +37,7 @@ public class Revolver extends Weapon {
         inaccuracy = 0.8f;
         maxAmmo = 60;
         maxMagazineAmmo = 5;
+        delayTime = 450;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         type = 1;
@@ -88,7 +89,7 @@ public class Revolver extends Weapon {
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
                 long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-                if (delta > 450) {
+                if (delta > delayTime) {
                     double inaccuracy = 0;
                     if (delta < 600) {
                         inaccuracy = 0.055 * 600 / delta * (Random.nextInt(2) * 2 - 1);

@@ -3,8 +3,9 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
-import cz.Empatix.Render.Graphics.Shaders.Shader;
+import cz.Empatix.Render.Graphics.Framebuffer;
 import cz.Empatix.Render.Hud.Image;
+import cz.Empatix.Render.Postprocessing.GaussianBlurAmmo;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
@@ -30,8 +31,8 @@ public class Sniperrifle extends Weapon {
 
     private ArrayList<Bullet> bullets;
 
-    private int[] vboVerticesPoints;
-    private Shader shader;
+    private GaussianBlurAmmo gaussianBlurAmmo;
+    private Framebuffer framebuffer;
 
     Sniperrifle(TileMap tm){
         super(tm);
@@ -57,6 +58,10 @@ public class Sniperrifle extends Weapon {
         endProjectíle = new Vector2f();
         startProjectíle = new Vector2f();
 
+        framebuffer = new Framebuffer();
+        gaussianBlurAmmo = new GaussianBlurAmmo("shaders\\ammoblur");
+
+
     }
 
     @Override
@@ -78,6 +83,7 @@ public class Sniperrifle extends Weapon {
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
                 long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
+                gaussianBlurAmmo.setValue(10f);
                 if (delta > 450) {
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                     currentMagazineAmmo--;
@@ -117,13 +123,14 @@ public class Sniperrifle extends Weapon {
 
     @Override
     public void drawAmmo() {
-
-        glLineWidth(3f);
-        glBegin(GL_LINES);
-        glVertex2f(startProjectíle.x+tm.getX(),startProjectíle.y+tm.getY());
-        glVertex2f(endProjectíle.x+tm.getX(),endProjectíle.y+tm.getY());
-        glEnd();
-
+        for(int i = 1;i<4;i++){
+            glLineWidth(1f);
+            glColor4f(1f,0.6f,0.1f,0.334f);
+            glBegin(GL_LINES);
+            glVertex2f(startProjectíle.x+tm.getX(),startProjectíle.y+tm.getY());
+            glVertex2f(endProjectíle.x+tm.getX(),endProjectíle.y+tm.getY());
+            glEnd();
+        }
     }
 
     @Override

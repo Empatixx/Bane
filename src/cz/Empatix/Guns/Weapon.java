@@ -3,6 +3,7 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 
@@ -18,6 +19,7 @@ public abstract class Weapon {
 
     protected float inaccuracy;
     protected long delay; // between shoots
+    protected int delayTime; // between shoots
     protected boolean criticalHits;
 
     protected long reloadDelay;
@@ -110,5 +112,9 @@ public abstract class Weapon {
     }
     public void despawn(){
         alreadyDropped = false;
+    }
+
+    public boolean canSwap(){
+        return !reloading && System.currentTimeMillis() - InGame.deltaPauseTime() - delay > delayTime/2;
     }
 }

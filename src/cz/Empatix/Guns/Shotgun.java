@@ -27,7 +27,6 @@ public class Shotgun extends Weapon {
     private final int soundReload;
 
     private int dots;
-    private int shootTime;
 
     private ArrayList<Bullet> bullets;
 
@@ -39,6 +38,7 @@ public class Shotgun extends Weapon {
         maxAmmo = 36;
         maxMagazineAmmo = 2;
         type = 3;
+        delayTime = 450;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         bullets = new ArrayList<>();
@@ -51,7 +51,6 @@ public class Shotgun extends Weapon {
         weaponHud = new Image("Textures\\shotgun.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\shotgun_bullet.tga",new Vector3f(1810,975,0),1f);
 
-        shootTime = 450;
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("shotgun","upgrades");
         if(numUpgrades >= 1){
@@ -65,7 +64,7 @@ public class Shotgun extends Weapon {
             maxdamage++;
         }
         if(numUpgrades >= 4){
-            shootTime = shootTime/2;
+            delayTime = delayTime/2;
         }
 
     }
@@ -88,7 +87,7 @@ public class Shotgun extends Weapon {
                 if (reloading) return;
                 // delta - time between shoots
                 long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-                if (delta > shootTime) {
+                if (delta > delayTime) {
                     source.play(soundShoot);
                     for (int i = 0; i < 4; ) {
                         double inaccuracy = 0.055 * i;

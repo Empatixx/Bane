@@ -110,9 +110,9 @@ public class Grenadebullet extends MapObject {
             spritesheet.addSprites(images);
         }
 
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();
@@ -149,7 +149,8 @@ public class Grenadebullet extends MapObject {
         if(hit) return;
         hit = true;
         for(Enemy e : EnemyManager.getEnemies()){
-            if(Math.abs(position.x-e.getX()) < 250 && Math.abs(position.y-e.getY()) < 250){
+            if(Math.abs(position.x-e.getX()) < 250 && Math.abs(position.y-e.getY()) < 250
+            && !e.isDead() && !e.isSpawning()){
                 e.hit(getDamage());
                 int cwidth = e.getCwidth();
                 int cheight = e.getCheight();

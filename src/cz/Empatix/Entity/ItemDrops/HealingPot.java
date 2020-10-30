@@ -19,11 +19,11 @@ public class HealingPot extends ItemDrop{
         liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
         pickedUp = false;
 
-        width = 30;
-        height = 37;
-        cwidth = 30;
-        cheight = 46;
-        scale = 1;
+        width = 32;
+        height = 32;
+        cwidth = 32;
+        cheight = 32;
+        scale = 2;
         facingRight = true;
 
         //amount = Random.nextInt(3) + 1;
@@ -49,9 +49,9 @@ public class HealingPot extends ItemDrop{
             sprites[0] = sprite;
             spritesheet.addSprites(sprites);
         }
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();

@@ -99,7 +99,7 @@ public class MiniMap {
         int x = room.getX() - 10;
         int y = room.getY() - 10;
         if(displayBigMap){
-            playerIcon.setPosition(new Vector3f(1000+x*80,500+y*80,0));
+            playerIcon.setPosition(new Vector3f(1000+x*64,500+y*64,0));
         } else {
             playerIcon.setPosition(new Vector3f(1770+x*20,150+y*20,0));
 
@@ -113,8 +113,8 @@ public class MiniMap {
             for (MMRoom room : rooms) {
                 if (room.isDiscovered()) {
                     Matrix4f matrixPos = new Matrix4f()
-                            .translate(new Vector3f(1000 + room.getX() * 80, 500 + room.getY() * 80, 0))
-                            .scale(5f);
+                            .translate(new Vector3f(1000 + room.getX() * 64, 500 + room.getY() * 64, 0))
+                            .scale(4f);
                     Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
                     shader.bind();
                     shader.setUniformi("sampler", 0);
@@ -157,8 +157,8 @@ public class MiniMap {
                     if(sideRooms[1] != null) {
                         if (room.isBottom() && sideRooms[1].isDiscovered()) {
                             matrixPos = new Matrix4f()
-                                    .translate(new Vector3f(1000 + room.getX() * 80, 500 + room.getY() * 80 + 40, 0))
-                                    .scale(5f);
+                                    .translate(new Vector3f(1000 + room.getX() * 64, 500 + room.getY() * 64 + 32, 0))
+                                    .scale(4f);
                             Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
                             geometryShader.setUniformm4f("projection", matrixPos);
                             glEnableVertexAttribArray(0);
@@ -176,8 +176,8 @@ public class MiniMap {
                     if(sideRooms[0] != null) {
                         if (room.isTop() && sideRooms[0].isDiscovered()) {
                             matrixPos = new Matrix4f()
-                                    .translate(new Vector3f(1000 + room.getX() * 80, 500 + room.getY() * 80 - 40, 0))
-                                    .scale(5f);
+                                    .translate(new Vector3f(1000 + room.getX() * 64, 500 + room.getY() * 64 - 32, 0))
+                                    .scale(4f);
                             Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
                             geometryShader.setUniformm4f("projection", matrixPos);
                             glEnableVertexAttribArray(0);
@@ -195,8 +195,8 @@ public class MiniMap {
                     if(sideRooms[2] != null) {
                         if (room.isLeft() && sideRooms[2].isDiscovered()) {
                             matrixPos = new Matrix4f()
-                                    .translate(new Vector3f(1000 + room.getX() * 80 - 40, 500 + room.getY() * 80, 0))
-                                    .scale(5f);
+                                    .translate(new Vector3f(1000 + room.getX() * 64 - 32, 500 + room.getY() * 64, 0))
+                                    .scale(4f);
                             Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
                             geometryShader.setUniformm4f("projection", matrixPos);
                             glEnableVertexAttribArray(0);
@@ -214,8 +214,8 @@ public class MiniMap {
                     if(sideRooms[3] != null) {
                         if (room.isRight() && sideRooms[3].isDiscovered()) {
                             matrixPos = new Matrix4f()
-                                    .translate(new Vector3f(1000 + room.getX() * 80 + 40, 500 + room.getY() * 80, 0))
-                                    .scale(5f);
+                                    .translate(new Vector3f(1000 + room.getX() * 64 + 32, 500 + room.getY() * 64, 0))
+                                    .scale(4f);
                             Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
                             geometryShader.setUniformm4f("projection", matrixPos);
                             glEnableVertexAttribArray(0);
@@ -376,7 +376,7 @@ public class MiniMap {
             minimapBorders.setScale(7f);
             minimapBorders.setPosition(new Vector3f(1000,500,0));
 
-            playerIcon.setScale(3.5f);
+            playerIcon.setScale(3f);
             playerIcon.setPosition(new Vector3f(1000,500,0));
         }
     }

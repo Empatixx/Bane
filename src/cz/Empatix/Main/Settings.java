@@ -17,13 +17,17 @@ public class Settings {
     public static boolean LIGHTNING;
     public static boolean VSYNC;
 
-
+    public static float preBRIGHTNESS;
+    public static boolean preLIGHTNING;
+    public static boolean preVSYNC;
 
     // viewport dimensions
     private static int maxWIDTH;
     private static int maxHEIGHT;
     public static int WIDTH;
     public static int HEIGHT;
+    public static int preWIDTH;
+    public static int preHEIGHT;
 
     // audio
     public static float OVERALL;
@@ -61,25 +65,24 @@ public class Settings {
         try {
             Props.loadFromXML(new FileInputStream("settings.xml"));
 
-            WIDTH = Integer.valueOf(Props.getProperty("width"));
-            HEIGHT = Integer.valueOf(Props.getProperty("height"));
+            preWIDTH = WIDTH = Integer.valueOf(Props.getProperty("width"));
+            preHEIGHT = HEIGHT = Integer.valueOf(Props.getProperty("height"));
 
             OVERALL = Float.valueOf(Props.getProperty("overall"));
             EFFECTS = Float.valueOf(Props.getProperty("effects"));
             MUSIC = Float.valueOf(Props.getProperty("music"));
 
-            VSYNC = Boolean.valueOf(Props.getProperty("vsync"));
-            LIGHTNING = Boolean.valueOf(Props.getProperty("lightning"));
-            BRIGHTNESS = Float.valueOf(Props.getProperty("brightness"));
+            preVSYNC = VSYNC = Boolean.valueOf(Props.getProperty("vsync"));
+            preLIGHTNING = LIGHTNING = Boolean.valueOf(Props.getProperty("lightning"));
+            preBRIGHTNESS = BRIGHTNESS = Float.valueOf(Props.getProperty("brightness"));
 
         } catch (Exception e) {
             try {
 
-                System.out.println("max "+maxWIDTH+" / "+maxHEIGHT);
                 for (int i = 0; i < supportedDimensions.length - 1; i++) {
                     if (maxWIDTH >= supportedDimensions[i] && maxHEIGHT >= supportedDimensions[i + 1]) {
-                        WIDTH = supportedDimensions[i];
-                        HEIGHT = supportedDimensions[i + 1];
+                        preWIDTH = WIDTH = supportedDimensions[i];
+                        preHEIGHT = HEIGHT = supportedDimensions[i + 1];
                         break;
                     }
                 }
@@ -87,10 +90,10 @@ public class Settings {
                 OVERALL = 1f;
                 EFFECTS = 1f;
                 MUSIC = 1f;
-                BRIGHTNESS = 0f;
+                preBRIGHTNESS = BRIGHTNESS = 0f;
 
-                VSYNC = true;
-                LIGHTNING = true;
+                preVSYNC =VSYNC = true;
+                preLIGHTNING = LIGHTNING = true;
 
                 Props.setProperty("width", Integer.toString(WIDTH));
                 Props.setProperty("height", Integer.toString(HEIGHT));
@@ -150,28 +153,13 @@ public class Settings {
                         800, 600,
                 };
         for (int i = 0; i < supportedDimensions.length; i += 2) {
-            if (WIDTH == supportedDimensions[i] && HEIGHT == supportedDimensions[i + 1]) {
+            if (preWIDTH == supportedDimensions[i] && preHEIGHT == supportedDimensions[i + 1]) {
                 if (i + 3 > supportedDimensions.length) return;
-                HEIGHT = supportedDimensions[i + 3];
-                WIDTH = supportedDimensions[i + 2];
+                preHEIGHT = supportedDimensions[i + 3];
+                preWIDTH = supportedDimensions[i + 2];
                 break;
             }
         }
-        int[] fixedSize =
-                {
-                        1600, 900,
-                        1440, 900,
-                        800, 600,
-
-                };
-        fixedCameraSize = false;
-        for (int j = 0; j < fixedSize.length; j += 2) {
-            if (WIDTH == fixedSize[j] && HEIGHT == fixedSize[j + 1]) {
-                fixedCameraSize = true;
-            }
-        }
-        GL12.glViewport(0, 0, WIDTH, HEIGHT);
-        glfwSetWindowSize(Game.window, WIDTH, HEIGHT);
     }
 
     public static void higherResolution() {
@@ -187,16 +175,18 @@ public class Settings {
                         800, 600,
                 };
         for (int i = 0; i < supportedDimensions.length; i += 2) {
-            if (WIDTH == supportedDimensions[i] && HEIGHT == supportedDimensions[i + 1]) {
+            if (preWIDTH == supportedDimensions[i] && preHEIGHT == supportedDimensions[i + 1]) {
                 if (i - 2 < 0) return;
                 int newHeight = supportedDimensions[i - 1];
                 int newWidth = supportedDimensions[i - 2];
                 if (maxWIDTH < newWidth || maxHEIGHT < newHeight) return;
-                HEIGHT = newHeight;
-                WIDTH = newWidth;
+                preHEIGHT = newHeight;
+                preWIDTH = newWidth;
                 break;
             }
         }
+    }
+    public static void confirmChanges(){
         int[] fixedSize =
                 {
                         1600, 900,
@@ -205,12 +195,53 @@ public class Settings {
                 };
         fixedCameraSize = false;
         for (int j = 0; j < fixedSize.length; j += 2) {
-            if (WIDTH == fixedSize[j] && HEIGHT == fixedSize[j + 1]) {
+            if (preWIDTH == fixedSize[j] && preHEIGHT == fixedSize[j + 1]) {
                 fixedCameraSize = true;
             }
         }
-        GL12.glViewport(0, 0, WIDTH, HEIGHT);
-        glfwSetWindowSize(Game.window, WIDTH, HEIGHT);
+        HEIGHT = preHEIGHT;
+        WIDTH = preWIDTH;
+        GL12.glViewport(0, 0, preWIDTH, preHEIGHT);
+        glfwSetWindowSize(Game.window, preWIDTH, preHEIGHT);
+
+        BRIGHTNESS = preBRIGHTNESS;
+        LIGHTNING = preLIGHTNING;
+        if(VSYNC != preVSYNC){
+            glfwSwapInterval(Settings.preVSYNC ? 1 : 0);
+        }
+        VSYNC = preVSYNC;
+    }
+    public static void cancelChanges(){
+        preHEIGHT = HEIGHT;
+        preWIDTH = WIDTH;
+
+        preBRIGHTNESS = BRIGHTNESS;
+        preLIGHTNING = LIGHTNING;
+        preVSYNC = VSYNC;
+    }
+    public static void reset(){
+        int[] supportedDimensions =
+                {
+                        1920, 1080,
+                        1600, 900,
+                        1440, 900,
+                        1440, 720,
+                        1366, 768,
+                        1280, 720,
+                        1024, 768,
+                        800, 600,
+                };
+        for (int i = 0; i < supportedDimensions.length - 1; i++) {
+            if (maxWIDTH >= supportedDimensions[i] && maxHEIGHT >= supportedDimensions[i + 1]) {
+                preWIDTH = WIDTH = supportedDimensions[i];
+                preHEIGHT = HEIGHT = supportedDimensions[i + 1];
+                break;
+            }
+        }
+        preBRIGHTNESS = BRIGHTNESS = 0f;
+
+        preVSYNC =VSYNC = true;
+        preLIGHTNING = LIGHTNING = true;
     }
     public static void save(){
         Properties Props = new Properties();

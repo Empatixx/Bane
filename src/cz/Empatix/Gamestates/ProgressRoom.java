@@ -84,15 +84,18 @@ public class ProgressRoom extends GameState {
 
         tileMap.draw(Tile.NORMAL);
 
-        tileMap.preDrawObjects();
-        progressNPC.draw();
+        player.drawShadow();
+
+        tileMap.draw(Tile.BLOCKED);
+
+        tileMap.preDrawObjects(false);
 
         player.draw();
 
+        progressNPC.draw();
+
         // draw objects
         tileMap.drawObjects();
-
-        tileMap.draw(Tile.BLOCKED);
 
         objectsFramebuffer.unbindFBO();
 

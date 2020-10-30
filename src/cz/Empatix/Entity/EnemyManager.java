@@ -72,6 +72,12 @@ public class EnemyManager {
             }
         }
     }
+    public void updateOnlyAnimations(){
+        for(int i = 0;i < enemies.size();i++) {
+            Enemy enemy = enemies.get(i);
+            enemy.animation.update();
+        }
+    }
 
     public static ArrayList<Enemy> getEnemies() {
         return enemies;
@@ -80,6 +86,11 @@ public class EnemyManager {
     public void draw(){
         for(Enemy e : enemies){
             e.draw();
+        }
+    }
+    public void drawShadow(){
+        for(Enemy e : enemies){
+            e.drawShadow();
         }
     }
     // not affected by lightning system
@@ -128,28 +139,29 @@ public class EnemyManager {
         }
         int tileSize = tileMap.getTileSize();
 
-        int x = getRandom(xMin+tileSize,xMax-tileSize);
-        int y = getRandom(yMin+tileSize,yMax-tileSize);
+        int x;
+        int y;
 
-        int cwidth = instance.getCwidth()/2;
-        int cheight = instance.getCheight()/2;
+        int cwidth = instance.getCwidth();
+        int cheight = instance.getCheight();
 
 
-        int leftTile = (x - cwidth / 2) / tileSize;
-        int rightTile = (x + cwidth / 2 - 1) / tileSize;
-        int topTile = (y - cheight / 2) / tileSize;
-        int bottomTile = (y + cheight / 2 - 1) / tileSize;
+        // tiles
+        int leftTile;
+        int rightTile;
+        int topTile;
+        int bottomTile;
 
 
         // getting type of tile
-        int tl = tileMap.getType(topTile, leftTile);
-        int tr = tileMap.getType(topTile, rightTile);
-        int bl = tileMap.getType(bottomTile, leftTile);
-        int br = tileMap.getType(bottomTile, rightTile);
+        int tl;
+        int tr;
+        int bl;
+        int br;
 
-        while(tl == Tile.BLOCKED || tr == Tile.BLOCKED || bl == Tile.BLOCKED || br == Tile.BLOCKED)
+        boolean loop;
+        do
         {
-
             x = getRandom(xMin,xMax);
             y = getRandom(yMin,yMax);
 
@@ -164,7 +176,9 @@ public class EnemyManager {
             tr = tileMap.getType(topTile, rightTile);
             bl = tileMap.getType(bottomTile, leftTile);
             br = tileMap.getType(bottomTile, rightTile);
-        }
+
+            loop = (tl == Tile.BLOCKED || tr == Tile.BLOCKED || bl == Tile.BLOCKED || br == Tile.BLOCKED);
+        }while(loop);
 
         instance.setPosition(x,y);
         enemies.add(instance);

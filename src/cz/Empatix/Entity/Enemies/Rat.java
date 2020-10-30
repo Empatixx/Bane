@@ -33,7 +33,7 @@ public class Rat extends Enemy {
         cheight=37;
         scale = 2;
 
-        health = maxHealth = 14+(int)Math.pow(tm.getFloor(),2);
+        health = maxHealth = (int)(14*(1+(tm.getFloor()-1)*0.12));
         damage = 1;
 
         type = melee;
@@ -64,9 +64,9 @@ public class Rat extends Enemy {
             }
             spritesheet.addSprites(sprites);
         }
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();
@@ -166,7 +166,10 @@ public class Rat extends Enemy {
 
     @Override
     public void draw() {
-        drawShadow(6f);
         super.draw();
+    }
+    @Override
+    public void drawShadow() {
+        drawShadow(6f);
     }
 }

@@ -12,6 +12,7 @@ public abstract class ItemDrop extends MapObject {
     static final int EXPLOSIVEAMMO = 4;
 
     static final int HP = 0;
+    static final int ARTEFACT = 8;
     static final int ARMOR = 7;
     static final int GUN = 6;
     static final int COIN = 5;

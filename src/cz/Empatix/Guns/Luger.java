@@ -39,6 +39,7 @@ public class Luger extends Weapon {
         inaccuracy = 0.8f;
         maxAmmo = 120;
         maxMagazineAmmo = 9;
+        delayTime = 250;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         type = 1;
@@ -88,9 +89,9 @@ public class Luger extends Weapon {
     @Override
     public void shot(float x,float y,float px,float py) {
         long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-        if(bonusShots > 0 && delta > 250-bonusShots*16.6 && delta < 250){
+        if(bonusShots > 0 && delta > delayTime-bonusShots*16.6 && delta < delayTime){
             double inaccuracy = 0;
-            inaccuracy = 0.055 * delta / (250-bonusShots*16.6) * (Random.nextInt(2) * 2 - 1);
+            inaccuracy = 0.055 * delta / (delayTime-bonusShots*16.6) * (Random.nextInt(2) * 2 - 1);
             Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
             bullet.setPosition(px, py);
             bullet.setDamage(lastDamage);
@@ -107,7 +108,7 @@ public class Luger extends Weapon {
                 if (reloading) return;
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
-                if (delta > 250) {
+                if (delta > delayTime) {
                     double inaccuracy = 0;
                     if (delta < 400) {
                         inaccuracy = 0.055 * 400 / delta * (Random.nextInt(2) * 2 - 1);
@@ -131,7 +132,7 @@ public class Luger extends Weapon {
                     GunsManager.bulletShooted++;
                     source.setPitch(1.1f);
                     source.play(soundShoot[Random.nextInt(2)]);
-                    while(Math.random() > 1-chanceBonusShots && currentMagazineAmmo != 0){
+                    while(Math.random() > 1-chanceBonusShots && currentMagazineAmmo != 0 && bonusShots < 9){
                         bonusShots++;
                         if(!bonusShotsAntiConsume)currentMagazineAmmo--;
                     }
@@ -229,5 +230,10 @@ public class Luger extends Weapon {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean canSwap() {
+        return !reloading && System.currentTimeMillis() - InGame.deltaPauseTime() - delay > delayTime/2 && bonusShots == 0;
     }
 }

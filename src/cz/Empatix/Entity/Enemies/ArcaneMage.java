@@ -77,9 +77,9 @@ public class ArcaneMage extends Enemy {
             spritesheet.addSprites(sprites);
 
         }
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();
@@ -118,7 +118,7 @@ public class ArcaneMage extends Enemy {
 
                     Chest chest = new Chest(tileMap);
                     chest.setPosition(position.x,position.y);
-                    chest.disableDropWeapon();
+                    chest.enableDropArtefact();
                     tileMap.addObject(chest);
 
                     tileMap.addLadder();

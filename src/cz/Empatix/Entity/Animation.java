@@ -1,5 +1,6 @@
 package cz.Empatix.Entity;
 
+import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 
 public class Animation {
@@ -20,7 +21,7 @@ public class Animation {
     public void setFrames(Sprite[] frames) {
         this.frames = frames;
         currentFrame = 0;
-        startTime = System.nanoTime();
+        startTime = System.currentTimeMillis() - InGame.deltaPauseTime();
         playedOnce = false;
         reverse = false;
     }
@@ -42,11 +43,11 @@ public class Animation {
 
         if(delay == -1) return;
 
-        long elapsed = (System.nanoTime() - startTime) / 1000000;
+        long elapsed = System.currentTimeMillis() - InGame.deltaPauseTime() - startTime;
         if(reverse){
             if (elapsed > delay) {
                 currentFrame--;
-                startTime = System.nanoTime();
+                startTime = System.currentTimeMillis() - InGame.deltaPauseTime();
             }
             if (currentFrame == -1) {
                 currentFrame = frames.length-1;
@@ -55,7 +56,7 @@ public class Animation {
         } else {
             if (elapsed > delay) {
                 currentFrame++;
-                startTime = System.nanoTime();
+                startTime = System.currentTimeMillis() - InGame.deltaPauseTime();
             }
             if (currentFrame == frames.length) {
                 currentFrame = 0;

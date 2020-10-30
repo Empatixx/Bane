@@ -56,9 +56,9 @@ public class ShopTable extends RoomObject{
             }
             spritesheet.addSprites(sprites);
         }
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();
@@ -136,7 +136,7 @@ public class ShopTable extends RoomObject{
         glEnableVertexAttribArray(1);
 
 
-        glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
+        glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
         glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
 

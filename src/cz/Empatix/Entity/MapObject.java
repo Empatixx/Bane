@@ -77,7 +77,7 @@ public abstract class MapObject {
 	protected boolean flinching;
 	protected long flinchingTimer;
 	// 3.0 modern opengl
-	protected int vboVerticles;
+	protected int vboVertices;
 	protected Shader shader;
 	protected Spritesheet spritesheet;
 	public float scale;
@@ -236,7 +236,7 @@ public abstract class MapObject {
 				if (speed.y > 0 && obj.collision) {
 					if(obj.moveable){
 						obj.setSpeedY(speed.y*obj.getSpeedMoveBoost());
-						speed.y -= stopSpeed*obj.getSpeedMoveBoost();
+						speed.y -= stopSpeed*2*obj.getSpeedMoveBoost();
 						if(speed.y < 0) speed.y = 0;
 						temp.y = position.y+speed.y;
 						obj.checkTileMapCollision();
@@ -252,7 +252,7 @@ public abstract class MapObject {
 				} else if (speed.y < 0 && obj.collision) {
 					if(obj.moveable){
 						obj.setSpeedY(speed.y*obj.getSpeedMoveBoost());
-						speed.y -= speed.y*obj.getSpeedMoveBoost();
+						speed.y += stopSpeed*2*obj.getSpeedMoveBoost();
 						if(speed.y > 0) speed.y = 0;
 						temp.y = position.y+speed.y;
 						obj.checkTileMapCollision();
@@ -278,7 +278,7 @@ public abstract class MapObject {
 				if (speed.x > 0 && obj.collision) {
 					if(obj.moveable){
 						obj.setSpeedX(speed.x*obj.getSpeedMoveBoost());
-						speed.x -= speed.x*obj.getSpeedMoveBoost();
+						speed.x -= stopSpeed*2*obj.getSpeedMoveBoost();
 						if(speed.x < 0) speed.x = 0;
 						temp.x = position.x+speed.x;
 						obj.checkTileMapCollision();
@@ -295,7 +295,7 @@ public abstract class MapObject {
 				} else if (speed.x < 0 && obj.collision) {
 					if(obj.moveable){
 						obj.setSpeedX(speed.x*obj.getSpeedMoveBoost());
-						speed.x -= speed.x*obj.getSpeedMoveBoost();
+						speed.x += stopSpeed*2*obj.getSpeedMoveBoost();
 						if(speed.x > 0) speed.x = 0;
 						temp.x = position.x+speed.x;
 						obj.checkTileMapCollision();
@@ -455,7 +455,8 @@ public abstract class MapObject {
 	void setRight(boolean b) { right = b; }
 	void setUp(boolean b) { up = b; }
 	void setDown(boolean b) { down 	= b; }
-
+	public void drawShadow() {
+	}
 	public void draw() {
 		// pokud neni object na obrazovce - zrusit
 		if (isNotOnScrean()){
@@ -497,7 +498,7 @@ public abstract class MapObject {
 		glEnableVertexAttribArray(1);
 
 
-		glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
+		glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
 		glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
 
@@ -615,6 +616,34 @@ public abstract class MapObject {
 		if (shadowVboVertices == -1){
 			shadowVboVertices = ModelManager.createModel(32,16);
 		}
+	}
+
+	public boolean isMovingRight() {
+		return right;
+	}
+
+	public boolean isMovingLeft() {
+		return left;
+	}
+
+	public boolean isMovingDown() {
+		return down;
+	}
+
+	public boolean isMovingUp() {
+		return up;
+	}
+
+	public Vector3f getPosition() {
+		return position;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
 	}
 }
 

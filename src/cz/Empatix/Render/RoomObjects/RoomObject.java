@@ -9,9 +9,11 @@ public abstract class RoomObject extends MapObject {
     public boolean preDraw;
     public float speedMoveBoost;
     public boolean remove;
+    public boolean behindCollision;
     public RoomObject(TileMap tm){
         super(tm);
         remove = false;
+        behindCollision=false;
     }
     public abstract void touchEvent();
     public abstract void update();
@@ -30,4 +32,8 @@ public abstract class RoomObject extends MapObject {
     public void setMoveable(boolean moveable) {
         this.moveable = moveable;
     }
+
+    public void delete(){remove = true;}
+
+    public boolean isBehindCollision(){return behindCollision;}
 }

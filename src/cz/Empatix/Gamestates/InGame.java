@@ -7,6 +7,7 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Database.Database;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
+import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.GunsManager;
@@ -81,6 +82,7 @@ public class InGame extends GameState {
 
 
     private ItemManager itemManager;
+    private ArtefactManager artefactManager;
     //
     // Paused game
     //
@@ -198,6 +200,10 @@ public class InGame extends GameState {
         tileMap.keyPressed(k,player);
         miniMap.keyPressed(k);
 
+        if(k == GLFW.GLFW_KEY_F){
+            artefactManager.activate();
+        }
+
     }
 
     @Override
@@ -222,19 +228,22 @@ public class InGame extends GameState {
         miniMap = new MiniMap();
 
         // Tile map
-        tileMap = new TileMap(64,this,miniMap);
+        tileMap = new TileMap(64,miniMap);
         tileMap.loadTiles("Textures\\tileset64.tga");
 
         // player
         // create player object
         player = new Player(tileMap);
+        tileMap.setPlayer(player);
 
         // weapons
         // load gun manager with tilemap object
         gunsManager = new GunsManager(tileMap);
+
+        artefactManager = new ArtefactManager(tileMap,player);
         // items drops
         // load item manager with instances of objects
-        itemManager = new ItemManager(tileMap,gunsManager,player);
+        itemManager = new ItemManager(tileMap,gunsManager,artefactManager,player);
 
         // generate map + create objects which needs item manager & gun manager created
         tileMap.loadMap();
@@ -293,6 +302,11 @@ public class InGame extends GameState {
         skullPlayerdead.setAlpha(0f);
 
         console = new Console(gunsManager,player,itemManager,enemyManager);
+
+        ItemManager.dropArtefact((int)player.getX(),(int)player.getY());
+        ItemManager.dropArtefact((int)player.getX(),(int)player.getY());
+        ItemManager.dropArtefact((int)player.getX(),(int)player.getY());
+
     }
 
     @Override
@@ -304,31 +318,35 @@ public class InGame extends GameState {
 
         tileMap.draw(Tile.NORMAL);
 
-        tileMap.preDrawObjects();
+        player.drawShadow();
+        enemyManager.drawShadow();
+        tileMap.preDrawObjects(true);
+
+        tileMap.draw(Tile.BLOCKED);
+
+        tileMap.preDrawObjects(false);
 
         itemManager.draw();
 
+        artefactManager.draw();
+
         player.draw();
 
-        // draw enemies
         tileMap.drawObjects();
 
         enemyManager.draw();
-
+        
         gunsManager.draw();
 
-        tileMap.draw(Tile.BLOCKED);
 
         objectsFramebuffer.unbindFBO();
 
         if(player.isDead()){
             fadeFramebuffer.bindFBO();
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
         }
-        else if(pause){
+        if(pause){
             pauseBlurFramebuffer.bindFBO();
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
         }
 
@@ -341,14 +359,16 @@ public class InGame extends GameState {
         }
 
         gunsManager.drawHud();
+        artefactManager.drawHud();
         enemyManager.drawHud();
-        tileMap.drawTitle();
 
         player.drawVignette();
 
+        tileMap.drawTitle();
+
         healthBar.draw();
         armorBar.draw();
-        miniMap.draw(); //TODO: dodelat mapu
+        miniMap.draw();
         damageIndicator.draw();
 
         console.draw();
@@ -365,7 +385,13 @@ public class InGame extends GameState {
             }
             float time = (System.currentTimeMillis()-player.getDeathTime());
             if(time > 3500){
-                TextRender.renderText("GAME OVER",new Vector3f( 800,340,0),5,new Vector3f((time-3800)/2000,(time-3800)/2000,(time-3800)/2000));
+                char[] gameOverTitle = "GAME OVER".toCharArray();
+                StringBuilder stringBuilder = new StringBuilder();
+                for(int i = 0;time > 3500+i*65 && i < gameOverTitle.length;i++){
+                    stringBuilder.append(gameOverTitle[i]);
+                }
+                TextRender.renderText(stringBuilder.toString(),new Vector3f( 800,340,0),5,new Vector3f(1f,0.25f,0f));
+                glColor4f(1f,1f,1f,1f);
                 glLineWidth(3f);
                 glBegin(GL_LINES);
                 float first = 960-(time-3500)/2.5f;
@@ -410,9 +436,11 @@ public class InGame extends GameState {
             }
 
         }
-        else if(pause){
+        if(pause){
             pauseBlurFramebuffer.unbindFBO();
+
             gaussianBlur.draw(pauseBlurFramebuffer);
+
             pauseBackground.draw();
             for(MenuBar bar: pauseBars){
                 bar.draw();
@@ -432,7 +460,7 @@ public class InGame extends GameState {
     void update() {
         AudioManager.update();
         if(player.isDead()){
-            enemyManager.update();
+            enemyManager.updateOnlyAnimations();
             fade.update();
             player.update();
             float time = (System.currentTimeMillis()-player.getDeathTime());
@@ -462,7 +490,7 @@ public class InGame extends GameState {
                 Camera.getHEIGHT() / 2f - player.getY()
         );
 
-        itemManager.update();
+        artefactManager.update();
 
         if(pause){
             for(MenuBar hud:pauseBars){
@@ -472,6 +500,8 @@ public class InGame extends GameState {
                 }
             }
         } else {
+            itemManager.update();
+
             ArrayList<Enemy> enemies = enemyManager.getEnemies();
 
             player.update();
@@ -524,7 +554,7 @@ public class InGame extends GameState {
     }
 
     public void pause(){
-        if(!pause) {
+        if(!pause && !player.isDead()) {
             setCursor(ARROW);
             pauseTimeStarted = System.currentTimeMillis();
             pause = true;
@@ -538,11 +568,6 @@ public class InGame extends GameState {
 
     }
 
-    public void nextFloor(){
-        tileMap.fillMiniMap();
-        player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
-        tileMap.setTween(0.10);
-    }
     public Player getPlayer(){return player;}
 
 

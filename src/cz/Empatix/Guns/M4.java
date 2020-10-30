@@ -38,6 +38,7 @@ public class M4 extends Weapon{
         inaccuracy = 0.5f;
         maxAmmo = 240;
         maxMagazineAmmo = 20;
+        delayTime = 750;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         type = 1;
@@ -99,7 +100,7 @@ public class M4 extends Weapon{
                 if (reloading) return;
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
-                if (delta > 750) {
+                if (delta > delayTime) {
                     double inaccuracy = 0;
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                     lastX = x;
@@ -208,5 +209,9 @@ public class M4 extends Weapon{
                 }
             }
         }
+    }
+    @Override
+    public boolean canSwap() {
+        return !reloading && System.currentTimeMillis() - InGame.deltaPauseTime() - delay > delayTime/2 && bonusShots == 0;
     }
 }

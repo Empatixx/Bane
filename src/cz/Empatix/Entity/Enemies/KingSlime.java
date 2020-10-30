@@ -53,7 +53,7 @@ public class KingSlime extends Enemy {
         cheight = 48;
         scale = 5;
 
-        health = maxHealth = 110+(int)Math.pow(tm.getFloor(),2)*20;
+        health = maxHealth = (int)(110*(1+(tm.getFloor()-1)*0.12));
         damage = 1;
 
         type = melee;
@@ -87,9 +87,9 @@ public class KingSlime extends Enemy {
             spritesheet.addSprites(sprites);
 
         }
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();
@@ -176,7 +176,7 @@ public class KingSlime extends Enemy {
 
                     Chest chest = new Chest(tileMap);
                     chest.setPosition(position.x,position.y);
-                    chest.disableDropWeapon();
+                    chest.enableDropArtefact();
                     tileMap.addObject(chest);
 
                     tileMap.addLadder();
@@ -278,7 +278,6 @@ public class KingSlime extends Enemy {
             bullet.draw();
         }
         if(!disableDraw){
-            drawShadow(11f);
             super.draw();
         }
 
@@ -313,5 +312,8 @@ public class KingSlime extends Enemy {
         return animation.hasPlayedOnce() && isDead() && bullets.size()==0;
     }
 
-
+    @Override
+    public void drawShadow() {
+        if(!disableDraw) drawShadow(11f);
+    }
 }

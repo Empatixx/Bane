@@ -34,6 +34,8 @@ public class Barrel extends DestroyableObject {
         preDraw = false;
         speedMoveBoost = 0.9f;
 
+        itemDrop = true;
+
         maxHealth = health = 4;
 
         // try to find spritesheet if it was created once
@@ -96,9 +98,9 @@ public class Barrel extends DestroyableObject {
             }
             spritesheet.addSprites(sprites);
         }
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();
@@ -134,6 +136,9 @@ public class Barrel extends DestroyableObject {
             animation.setFrames(spritesheet.getSprites(NORMAL));
             animation.setDelay(-1);
             currentAnimation = NORMAL;
+        }
+        if(destroyed && animation.getIndexOfFrame() == 3){
+            animation.setDelay(-1);
         }
 
         if (speed.x < 0){
@@ -177,6 +182,8 @@ public class Barrel extends DestroyableObject {
             animation.setFrames(spritesheet.getSprites(DESTROY));
             collision = false;
             moveable = false;
+            preDraw=true;
+            behindCollision=true;
             currentAnimation = DESTROY;
         } else if(currentAnimation == NORMAL) {
             animation.setFrames(spritesheet.getSprites(HIT));
@@ -187,10 +194,9 @@ public class Barrel extends DestroyableObject {
         lastTimeDamaged = System.currentTimeMillis()- InGame.deltaPauseTime();
 
     }
-    public boolean shouldRemove(){
-        return animation.hasPlayedOnce() && destroyed;
+
+    @Override
+    public boolean canDrop() {
+        return animation.getIndexOfFrame() == 3 && destroyed && !itemAlreadyDropped;
     }
-
-
-
 }

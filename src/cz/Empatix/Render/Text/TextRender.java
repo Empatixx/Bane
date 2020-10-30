@@ -26,6 +26,9 @@ public class TextRender {
     private static ArrayList<Font> fonts;
 
     private static Shader shader;
+    private static Shader testshader;
+
+
 
     public static void init(){
         fonts = new ArrayList<>();
@@ -33,6 +36,10 @@ public class TextRender {
         shader = ShaderManager.getShader("shaders\\text");
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\text");
+        }
+        testshader = ShaderManager.getShader("shaders\\geometry");
+        if (testshader == null){
+            testshader = ShaderManager.createShader("shaders\\geometry");
         }
     }
 
@@ -118,8 +125,15 @@ public class TextRender {
         shader.setUniformi("sampler",0);
         shader.setUniform3f("color",color);
         Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
+        Vector3f color2 = new Vector3f(1f,0f,0f);
 
         for(char c : text.toCharArray()){
+            shader.bind();
+
+            glActiveTexture(GL_TEXTURE0);
+            font.bindTexture();
+
+
             shader.setUniformm4f("projection",matrixPos);
             for (FontChar fontc : font.getChars()){
                 if (fontc.getChar() == c){
@@ -140,6 +154,7 @@ public class TextRender {
 
                     glDisableVertexAttribArray(0);
                     glDisableVertexAttribArray(1);
+
 
                     // shifting width of char
                     matrixPos.translate(fontc.getWidth(),0,0);
@@ -187,6 +202,16 @@ public class TextRender {
 
                     glDisableVertexAttribArray(0);
                     glDisableVertexAttribArray(1);
+
+                    glEnableClientState(GL_VERTEX_ARRAY);
+                    glBindBuffer(GL_ARRAY_BUFFER,fontc.getVerticlesVBO());
+                    glVertexPointer(2,GL_INT,0,0);
+
+                    glDrawArrays(GL_QUADS,0,4);
+
+                    glBindBuffer(GL_ARRAY_BUFFER,0);
+                    glDisableClientState(GL_VERTEX_ARRAY);
+
 
                     // shifting width of char
                     matrixPos.translate(fontc.getWidth(),0,0);

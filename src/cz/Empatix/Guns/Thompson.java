@@ -26,7 +26,6 @@ public class Thompson extends Weapon{
 
     private ArrayList<Bullet> bullets;
     private boolean boostFirerate;
-    private int firerate;
 
     Thompson(TileMap tm){
         super(tm);
@@ -35,6 +34,7 @@ public class Thompson extends Weapon{
         inaccuracy = 0.5f;
         maxAmmo = 250;
         maxMagazineAmmo = 20;
+        delayTime = 200;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         type = 1;
@@ -66,8 +66,6 @@ public class Thompson extends Weapon{
         if(numUpgrades >= 4){
             boostFirerate = true;
         }
-
-        firerate = 200;
     }
 
     @Override
@@ -76,7 +74,7 @@ public class Thompson extends Weapon{
             reloadDelay = System.currentTimeMillis() - InGame.deltaPauseTime();
             reloadsource.play(soundReload);
             reloading = true;
-            firerate = 200;
+            delayTime = 200;
             dots = 0;
         }
     }
@@ -89,7 +87,7 @@ public class Thompson extends Weapon{
                 // delta - time between shoots
                 // InGame.deltaPauseTime(); returns delayed time because of pause time
                 long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-                if (delta > firerate) {
+                if (delta > delayTime) {
                     double inaccuracy = 0;
                     if (delta < 200) {
                         inaccuracy = (Math.random() * 0.085) * (Random.nextInt(2) * 2 - 1);
@@ -109,9 +107,10 @@ public class Thompson extends Weapon{
                     currentMagazineAmmo--;
                     source.play(soundShoot);
                     GunsManager.bulletShooted++;
-                    firerate -= 5;
-                    System.out.println(firerate);
-                    if(firerate < 150) firerate = 150;
+                    if(boostFirerate){
+                        delayTime -= 5;
+                        if(delayTime < 150) delayTime = 150;
+                    }
                 }
             } else if (currentAmmo != 0) {
                 reload();
@@ -120,7 +119,10 @@ public class Thompson extends Weapon{
             }
 
         } else {
-            firerate = 200;
+            if(boostFirerate){
+                delayTime += 2;
+                if(delayTime > 200) delayTime = 200;
+            }
         }
     }
 

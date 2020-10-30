@@ -2,7 +2,6 @@ package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
-import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
@@ -27,6 +26,7 @@ public class Chest extends RoomObject {
 
     private boolean opened;
     private boolean dropGun;
+    private boolean dropArtefact;
 
 
     public Chest(TileMap tm){
@@ -91,9 +91,9 @@ public class Chest extends RoomObject {
             }
             spritesheet.addSprites(sprites);
         }
-        vboVerticles = ModelManager.getModel(width,height);
-        if (vboVerticles == -1){
-            vboVerticles = ModelManager.createModel(width,height);
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
         }
 
         animation = new Animation();
@@ -111,12 +111,15 @@ public class Chest extends RoomObject {
         cheight *= scale;
 
         stopSpeed = 0.55f;
-        dropGun= true;
+        dropGun= false;
+        dropArtefact = false;
     }
-    public void disableDropWeapon(){
-        dropGun = false;
+    public void enableDropWeapon(){
+        dropGun = true;
     }
-
+    public void enableDropArtefact(){
+        dropArtefact = true;
+    }
     public void update(){
         setMapPosition();
         checkTileMapCollision();
@@ -129,7 +132,8 @@ public class Chest extends RoomObject {
             float x = (float) Random.nextDouble()*(-1+Random.nextInt(2)*2);
             float y = (float)Random.nextDouble()*(-1+Random.nextInt(2)*2);
 
-            if(dropGun) GunsManager.dropGun((int)position.x,(int)position.y,speed);
+            if(dropGun) ItemManager.dropWeapon((int)position.x,(int)position.y,speed);
+            if(dropArtefact) ItemManager.dropArtefact((int)position.x,(int)position.y);
 
             for(int i = 0;i<5;i++){
                 double atan = Math.atan2(x,
@@ -201,7 +205,7 @@ public class Chest extends RoomObject {
         glEnableVertexAttribArray(1);
 
 
-        glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
+        glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
         glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
 

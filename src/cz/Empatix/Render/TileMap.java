@@ -14,7 +14,6 @@ import cz.Empatix.Render.Hud.Minimap.MiniMap;
 import cz.Empatix.Render.RoomObjects.Ladder;
 import cz.Empatix.Render.RoomObjects.PathWall;
 import cz.Empatix.Render.RoomObjects.RoomObject;
-import cz.Empatix.Render.RoomObjects.Spike;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -29,11 +28,11 @@ import static org.lwjgl.opengl.GL43.*;
 
 public class TileMap {
 	// gamestate
-	private InGame inGame;
 	private int floor;
 
-	// minimap
+	// instances
 	private MiniMap miniMap;
+	private Player player;
 
 
 	// position
@@ -91,8 +90,7 @@ public class TileMap {
 	private long nextFloorEnterTime;
 
 
-	public TileMap(int tileSize, InGame inGame, MiniMap miniMap) {
-		this.inGame = inGame;
+	public TileMap(int tileSize, MiniMap miniMap) {
 		this.tileSize = tileSize;
 		this.miniMap = miniMap;
 		// 2x scale
@@ -121,8 +119,11 @@ public class TileMap {
 		tween = 1;
 
 		target = new Matrix4f();
-		floor = 0;
+		floor = 1;
 
+	}
+	public void setPlayer(Player p){
+		this.player = p;
 	}
 
 	public int getNumRows() {
@@ -256,7 +257,7 @@ public class TileMap {
 
 		autoTile();
 
-		mistnost.createObjects(this);
+		mistnost.createObjects(this,null);
 	}
 	public void loadMap() {
 		// room generation
@@ -273,7 +274,7 @@ public class TileMap {
 
 		// create map objects into all rooms
 		for(Room room : roomArrayList){
-			room.createObjects(this);
+			room.createObjects(this,player);
 		}
 
 		// getting XY max/min
@@ -1102,11 +1103,16 @@ public class TileMap {
 		}
 
 	}
-	public void preDrawObjects(){
-		currentRoom.preDrawObjects();
+
+	/**
+	 *
+	 * @param behindCollision - if pre-draw objects should be drawn behind collision tiles
+	 */
+	public void preDrawObjects(boolean behindCollision){
+		currentRoom.preDrawObjects(behindCollision);
 		for(Room r : sideRooms){
 			if(r != null) {
-				r.preDrawObjects();
+				r.preDrawObjects(behindCollision);
 			}
 		}
 	}
@@ -1238,19 +1244,33 @@ public class TileMap {
 		ladder.setPosition(xMin + (float) (xMax - xMin) / 2, yMin + (float) (yMax - yMin) / 2);
 		addObject(ladder);
 	}
-	public void addSpike(float x, float y, Room room){
-
-		Spike spike = new Spike(this,inGame.getPlayer());
-		spike.setPosition(x,y);
-		room.addObject(spike);
-	}
 	public void newMap(){
 		tween = 1;
 		ItemManager.clear();
+		// deleting old room objects from previous floor
+		for(Room r: roomArrayList) {
+			for(RoomObject obj : r.getMapObjects()){
+				obj.delete();
+			}
+		}
 		loadMap();
-		inGame.nextFloor();
-		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();
+
+		this.fillMiniMap();
+		player.setPosition(this.getPlayerStartX(), this.getPlayerStartY());
+		this.setTween(0.10);
+
 		floor++;
+		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();
+	}
+	public void drawTitle(){
+		if(System.currentTimeMillis() - InGame.deltaPauseTime() - nextFloorEnterTime < 1250){
+			float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
+			TextRender.renderText("Floor "+RomanNumber.toRoman(floor+1),new Vector3f(950,540,0),5,
+					new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+
+			TextRender.renderText("Enemies health is increased by "+12*floor+"%",new Vector3f(775,650,0),2,
+					new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+		}
 	}
 
 	public int getFloor() {
@@ -1269,13 +1289,4 @@ public class TileMap {
 		currentRoom.keyPressed(k,p);
 	}
 
-	// draw title if player entered new floor
-	public void drawTitle(){
-		if(System.currentTimeMillis() - InGame.deltaPauseTime() - nextFloorEnterTime < 1250){
-			float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
-
-			TextRender.renderText("Floor "+ RomanNumber.toRoman(floor+1),new Vector3f(930,400,0),5,
-					new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
-		}
-	}
 }

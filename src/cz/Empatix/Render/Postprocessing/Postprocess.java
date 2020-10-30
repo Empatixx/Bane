@@ -46,9 +46,6 @@ public abstract class Postprocess {
 
 
     }
-    public void bind(){
-        shader.bind();
-    }
 
     public void draw(Framebuffer framebuffer){
         shader.setUniformi("sampler",0);

@@ -129,7 +129,7 @@ public abstract class  Enemy extends MapObject {
             glEnableVertexAttribArray(1);
 
 
-            glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
+            glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
             glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
 
@@ -153,7 +153,7 @@ public abstract class  Enemy extends MapObject {
 
         if (Game.displayCollisions){
             glColor3i(255,255,255);
-            glBegin(GL_LINE_LOOP);
+            glBegin(GL_LINE_LOOP);  
             // BOTTOM LEFT
             glVertex2f(position.x+xmap-cwidth/2,position.y+ymap-cheight/2);
             // TOP LEFT
@@ -191,7 +191,7 @@ public abstract class  Enemy extends MapObject {
             glEnableVertexAttribArray(1);
 
 
-            glBindBuffer(GL_ARRAY_BUFFER, vboVerticles);
+            glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
             glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
 
 

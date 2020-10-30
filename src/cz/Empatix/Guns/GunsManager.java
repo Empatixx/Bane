@@ -8,7 +8,6 @@ import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
@@ -22,14 +21,15 @@ public class GunsManager {
 
     private final static int FIRSTSLOT = 0;
     private final static int SECONDARYSLOT = 1;
+
     private int currentslot;
+    private Weapon current;
+
 
     private Weapon[] equipedweapons;
     private final int soundSwitchingGun;
     private final Source source;
     private long switchDelay;
-
-    private Weapon current;
 
     private Image weaponBorder_hud;
 
@@ -93,15 +93,25 @@ public class GunsManager {
 
     private void setCurrentWeapon(Weapon current, int slot) {
         if(System.currentTimeMillis()-InGame.deltaPauseTime()-switchDelay < 500) return;
-        if(this.current == null && current == null && slot == currentslot) return;
-        if(this.current != null){
-            if(this.current == current || this.current.isReloading()) return;
+        // when slot is same as current
+        if(currentslot == slot){
+            return;
         }
-        currentslot = slot;
-        switchDelay = System.currentTimeMillis()-InGame.deltaPauseTime();
-        this.current = current;
-        stopShooting();
-        source.play(soundSwitchingGun);
+        // when current gun is not realoding
+        if(this.current == null){
+            currentslot = slot;
+            switchDelay = System.currentTimeMillis()-InGame.deltaPauseTime();
+            this.current = current;
+            stopShooting();
+            source.play(soundSwitchingGun);
+        }
+        else if(this.current.canSwap()){
+            currentslot = slot;
+            switchDelay = System.currentTimeMillis()-InGame.deltaPauseTime();
+            this.current = current;
+            stopShooting();
+            source.play(soundSwitchingGun);
+        }
     }
     public void checkCollisions(ArrayList<Enemy> enemies){
         for(Weapon weapon:weapons){
@@ -180,14 +190,6 @@ public class GunsManager {
         ItemManager.dropPlayerWeapon(current,x,y);
         equipedweapons[currentslot] = weapon;
         current=weapon;
-    }
-    public static void dropGun(int x, int y, Vector2f speed){
-        Weapon weapon = weapons.get(1+Random.nextInt(weapons.size()-1));
-        while(weapon.hasAlreadyDropped()){
-            weapon = weapons.get(1+Random.nextInt(weapons.size()-1));
-        }
-        weapon.drop();
-        ItemManager.dropWeapon(weapon,x,y,speed);
     }
     public static Weapon randomGun(){
         Weapon weapon = weapons.get(1+Random.nextInt(weapons.size()-1));

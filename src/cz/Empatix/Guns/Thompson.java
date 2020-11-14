@@ -32,7 +32,7 @@ public class Thompson extends Weapon{
         mindamage = 1;
         maxdamage = 3;
         inaccuracy = 0.5f;
-        maxAmmo = 250;
+        maxAmmo = 180;
         maxMagazineAmmo = 20;
         delayTime = 200;
         currentAmmo = maxAmmo;
@@ -109,7 +109,7 @@ public class Thompson extends Weapon{
                     GunsManager.bulletShooted++;
                     if(boostFirerate){
                         delayTime -= 5;
-                        if(delayTime < 150) delayTime = 150;
+                        if(delayTime < 130) delayTime = 130;
                     }
                 }
             } else if (currentAmmo != 0) {

@@ -2,6 +2,7 @@ package cz.Empatix.Gamestates;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Database.Database;
+import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Screanshot;
 import cz.Empatix.Render.Text.TextRender;
 import org.lwjgl.glfw.GLFW;
@@ -19,6 +20,8 @@ public class GameStateManager {
 
     private Screanshot screenshot;
     private static Database db;
+
+    float mouseX,mouseY;
 
     public void pause(){
         if(currentState == INGAME){
@@ -50,6 +53,7 @@ public class GameStateManager {
 
         db = new Database();
         db.load();
+
     }
 
     public void setState(int state) {
@@ -88,4 +92,14 @@ public class GameStateManager {
         gameStates.get(currentState).mouseScroll(x,y);
     }
 
+    public float getMouseX(){
+        return mouseX;
+    }
+    public float getMouseY(){
+        return mouseY;
+    }
+    public void mousePos(double xpos, double ypos){
+        mouseX = (float)(xpos * Settings.scaleMouseX());
+        mouseY = (float)(ypos * Settings.scaleMouseY());
+    }
 }

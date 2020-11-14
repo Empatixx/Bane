@@ -1,10 +1,7 @@
 package cz.Empatix.AudioManager;
 
 import cz.Empatix.Main.Settings;
-import org.lwjgl.openal.AL;
-import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.ALC;
-import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
@@ -36,6 +33,7 @@ public class AudioManager {
     private static int previousSoundtrack;
 
     private static boolean hasAudio;
+    private static long device;
 
 
     public static void playSoundtrack(int soundtrack){
@@ -63,7 +61,7 @@ public class AudioManager {
         hasAudio = false;
 
         if(defaultDeviceName != null){
-            long device  = alcOpenDevice(defaultDeviceName);
+            device  = alcOpenDevice(defaultDeviceName);
             if(device  == 0) return;
 
             int[] attributes = {0};
@@ -179,6 +177,12 @@ public class AudioManager {
                 source.update();
             }
         }
+        int i = ALC11.alcGetInteger(device,EXTDisconnect.ALC_CONNECTED);
+        if(i != ALC_TRUE){
+            alcCloseDevice(device);
+            init();
+        }
+
     }
 
     public static Source createSource(int type,float volume){

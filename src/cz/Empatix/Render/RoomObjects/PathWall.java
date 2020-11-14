@@ -132,7 +132,7 @@ public class PathWall extends RoomObject {
         }
 
         animation = new Animation();
-        animation.setDelay(55);
+        animation.setDelay(75);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
@@ -146,7 +146,7 @@ public class PathWall extends RoomObject {
     }
     public void update() {
         setMapPosition();
-        if(collision && !reverse){
+        if(!collision && !reverse && animation.getIndexOfFrame() == 3){
             animation.reverse();
             reverse=true;
         }
@@ -159,7 +159,7 @@ public class PathWall extends RoomObject {
     }
     @Override
     public void draw() {
-        if(collision || animation.getIndexOfFrame() != 0){
+        if(collision || (animation.getIndexOfFrame() != 0 && reverse)){
             // pokud neni object na obrazovce - zrusit
             if (isNotOnScrean()){
                 return;

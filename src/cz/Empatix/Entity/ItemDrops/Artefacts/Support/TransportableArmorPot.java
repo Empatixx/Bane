@@ -17,7 +17,7 @@ public class TransportableArmorPot extends Artefact {
     public TransportableArmorPot(TileMap tm, Player p){
         super(tm,p);
         maxCharge = 4;
-        charge = 4;
+        charge = 0;
 
         scale = 3f;
 
@@ -30,7 +30,6 @@ public class TransportableArmorPot extends Artefact {
     }
     @Override
     protected void update() {
-        updateChargeAnimation();
     }
 
     @Override

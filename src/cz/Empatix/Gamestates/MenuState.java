@@ -14,8 +14,6 @@ import cz.Empatix.Render.Hud.SliderBar;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
-import java.awt.*;
-
 import static cz.Empatix.Main.Game.ARROW;
 import static cz.Empatix.Main.Game.setCursor;
 
@@ -406,9 +404,8 @@ public class MenuState extends GameState{
 
     @Override
     public void update() {
-        final Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
-        mouseX = mouseLoc.x * Settings.scaleMouseX();
-        mouseY = mouseLoc.y * Settings.scaleMouseY();
+        mouseX = gsm.getMouseX();
+        mouseY = gsm.getMouseY();
 
         AudioManager.update();
 

@@ -61,6 +61,9 @@ public class ItemManager {
             if (i instanceof WeaponDrop) {
                 ((WeaponDrop) i).despawn();
             }
+            if (i instanceof ArtefactDrop) {
+                ((ArtefactDrop) i).despawn();
+            }
             i.remove();
         }
         itemDrops.clear();

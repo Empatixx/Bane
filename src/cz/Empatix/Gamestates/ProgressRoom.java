@@ -4,7 +4,6 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.ProgressNPC;
-import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Framebuffer;
 import cz.Empatix.Render.Hud.Image;
@@ -13,8 +12,7 @@ import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
-
-import java.awt.*;
+import org.lwjgl.glfw.GLFW;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -116,9 +114,8 @@ public class ProgressRoom extends GameState {
             return;
         }
         // loc of mouse
-        final Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
-        mouseX = mouseLoc.x* Settings.scaleMouseX();
-        mouseY = mouseLoc.y*Settings.scaleMouseY();
+        mouseX = gsm.getMouseX();
+        mouseY = gsm.getMouseY();
 
         // mouse location-moving direction of mouse of tilemap
         tileMap.setPosition(
@@ -140,6 +137,9 @@ public class ProgressRoom extends GameState {
     }
     @Override
     void keyPressed(int k) {
+        if(k == GLFW.GLFW_KEY_ESCAPE && !progressNPC.isInteracting()){
+            gsm.setState(GameStateManager.MENU);
+        }
         player.keyPressed(k);
         tileMap.keyPressed(k,player);
         progressNPC.keyPress(k);
@@ -153,7 +153,6 @@ public class ProgressRoom extends GameState {
     @Override
     void mousePressed(int button) {
         progressNPC.mousePressed(mouseX,mouseY,player);
-        System.out.println(mouseX+" "+mouseY);
     }
 
     @Override

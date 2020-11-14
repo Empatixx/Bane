@@ -84,13 +84,27 @@ public class EnemyManager {
     }
 
     public void draw(){
-        for(Enemy e : enemies){
-            e.draw();
+        ArrayList<Enemy> enemiesleft = (ArrayList<Enemy>) enemies.clone();
+        for(int i = 0;i<enemies.size();i++){
+            Enemy drawnEnemy = null;
+            for(Enemy enemy : enemiesleft){
+                if(drawnEnemy == null) drawnEnemy = enemy;
+                else if(drawnEnemy.getY() > enemy.getY()) drawnEnemy = enemy;
+            }
+            drawnEnemy.draw();
+            enemiesleft.remove(drawnEnemy);
         }
     }
     public void drawShadow(){
-        for(Enemy e : enemies){
-            e.drawShadow();
+        ArrayList<Enemy> enemiesleft = (ArrayList<Enemy>) enemies.clone();
+        for(int i = 0;i<enemies.size();i++){
+            Enemy drawnEnemy = null;
+            for(Enemy enemy : enemiesleft){
+                if(drawnEnemy == null) drawnEnemy = enemy;
+                else if(drawnEnemy.getY() > enemy.getY()) drawnEnemy = enemy;
+            }
+            drawnEnemy.drawShadow();
+            enemiesleft.remove(drawnEnemy);
         }
     }
     // not affected by lightning system
@@ -210,4 +224,5 @@ public class EnemyManager {
             enemies.add(instance);
         }
     }
+
 }

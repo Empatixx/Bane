@@ -52,7 +52,8 @@ public abstract class Artefact {
         if(System.currentTimeMillis()- chargeTime > 250){
             chargeTime = System.currentTimeMillis() ;
             chargeAnimation++;
-            if(chargeAnimation==charge) chargeAnimation = 0;
+            if(chargeAnimation>=charge) chargeAnimation = 0;
+            System.out.println(chargeAnimation);
         }
     }
 
@@ -62,6 +63,9 @@ public abstract class Artefact {
     public float getScale() {
         return scale;
     }
-
+    public void despawn(){
+        dropped=false;
+        charge = 0;
+    }
 }
 

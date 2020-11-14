@@ -32,7 +32,7 @@ public class ThompsonUpgrade extends UpgradeBar {
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"thompson");
-        text = new String[]{"Increase maximum capacity of ammo by 100"};
+        text = new String[]{"Increase maximum capacity of ammo by 60"};
         bar.setText(text);
         bar.setType(UpgradeSideBar.AMMOUPGRADE);
         bar.setPrice(85);
@@ -43,10 +43,10 @@ public class ThompsonUpgrade extends UpgradeBar {
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"thompson");
-        text = new String[]{"Your fire rate slightly builts by firing","","Your firate can be increased up by 25%"};
+        text = new String[]{"Your fire rate slightly builts by firing","","Your firate can be increased up by 35%"};
         bar.setText(text);
         bar.setType(UpgradeSideBar.OTHERUPGRADE);
-        bar.setPrice(160);
+        bar.setPrice(175);
         sideBars.add(bar);
         if(numUpgrades > 0){
             bar.setBought(true);

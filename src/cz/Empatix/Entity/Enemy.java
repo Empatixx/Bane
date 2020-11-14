@@ -61,6 +61,9 @@ public abstract class  Enemy extends MapObject {
 
     protected long spawnTime;
 
+    private boolean lock;
+    private Thread thread;
+
 
     public Enemy(TileMap tm, Player player) {
         super(tm);
@@ -299,7 +302,6 @@ public abstract class  Enemy extends MapObject {
                         }
                     }
                 }
-
                 PathNode theClosest;
 
                 // setting max X/Y for pathnodes
@@ -339,7 +341,6 @@ public abstract class  Enemy extends MapObject {
                         if (x + tileSize < maxX) right = tileMap.getType(yTile,xTile + 1) == Tile.NORMAL;
                         if (y - tileSize >= 0) up = tileMap.getType(yTile - 1,xTile) == Tile.NORMAL;
                         if (y + tileSize < maxY) down = tileMap.getType(yTile + 1,xTile) == Tile.NORMAL;
-
 
                         PathNode temp;
                         // LEFT
@@ -425,7 +426,9 @@ public abstract class  Enemy extends MapObject {
                 setLeft(false);
                 setRight(false);
 
+                // when entity has next pathnode
                 boolean redo;
+                // booleans if entity passed current x/y coords
                 boolean preX,preY;
 
                 do {
@@ -491,12 +494,9 @@ public abstract class  Enemy extends MapObject {
                         if ((int) position.y >= y) {
                             preY=true;
                         }
-
                         int leftTile = (int) ((position.x - cwidth / 2) / tileSize);
                         int rightTile = (int) ((position.x + cwidth / 2 - 1) / tileSize);
                         int bottomTile = (int) ((position.y+1 + cheight / 2 - 1) / tileSize);
-
-
                         // getting type of tile
                         int bl = tileMap.getType(bottomTile, leftTile);
                         int br = tileMap.getType(bottomTile, rightTile);
@@ -525,7 +525,6 @@ public abstract class  Enemy extends MapObject {
                         int rightTile = (int) ((position.x + cwidth / 2 - 1) / tileSize);
                         int topTile = (int) ((position.y - 1 - cheight / 2) / tileSize);
 
-
                         // getting type of tile
                         int tl = tileMap.getType(topTile, leftTile);
                         int tr = tileMap.getType(topTile, rightTile);
@@ -553,7 +552,6 @@ public abstract class  Enemy extends MapObject {
                         int rightTile = (int) ((position.x+1 + cwidth / 2 - 1) / tileSize);
                         int topTile = (int) ((position.y - cheight / 2) / tileSize);
                         int bottomTile = (int) ((position.y + cheight / 2 - 1) / tileSize);
-
 
                         // getting type of tile
                         int tr = tileMap.getType(topTile, rightTile);
@@ -619,7 +617,6 @@ public abstract class  Enemy extends MapObject {
                 } while(redo);
             }
         }
-
     }
 
     private boolean doesntContain(List<PathNode> closedNodes, PathNode checkNode){
@@ -642,6 +639,7 @@ public abstract class  Enemy extends MapObject {
 
 
     }
+
     public void update() { }
     // ENEMY AI
 

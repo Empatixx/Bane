@@ -29,7 +29,7 @@ public class RingOfFire extends Artefact {
     public RingOfFire(TileMap tm, Player p){
         super(tm,p);
         maxCharge = 4;
-        charge = 4;
+        charge = 0;
 
         scale = 4;
 
@@ -44,7 +44,6 @@ public class RingOfFire extends Artefact {
     }
     @Override
     protected void update() {
-        updateChargeAnimation();
         for(int i = 0;i<bullets.size();i++){
             Bullet bullet = bullets.get(i);
             bullet.update();

@@ -23,6 +23,12 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class ArrowTrap extends RoomObject {
+
+    public final static int TOP = 0;
+    public final static int RIGHT = 1;
+    public final static int LEFT = 2;
+    private int type;
+
     public boolean remove;
     private ArrayList<Arrow> arrows;
     public long arrowShootCooldown;
@@ -31,11 +37,11 @@ public class ArrowTrap extends RoomObject {
         super(tm);
         this.player = p;
         arrows = new ArrayList<>();
-        width = 16;
-        height = 17;
-        cwidth = 8;
-        cheight = 8;
-        scale = 8;
+        width = 32;
+        height = 34;
+        cwidth = 32;
+        cheight = 34;
+        scale = 4;
 
         facingRight = true;
         flinching=false;
@@ -58,11 +64,29 @@ public class ArrowTrap extends RoomObject {
                         {
                                 (double) i/spriteSheetCols,0,
 
+                                (double)i/spriteSheetCols,0.5,
+
+                                (1.0+i)/spriteSheetCols,0.5,
+
+                                (1.0+i)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[2];
+            for(int i = 0; i < sprites.length; i++) {
+                double[] texCoords =
+                        {
+                                (double) i/spriteSheetCols,0.5,
+
                                 (double)i/spriteSheetCols,1,
 
                                 (1.0+i)/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,0
+                                (1.0+i)/spriteSheetCols,0.5
                         };
                 Sprite sprite = new Sprite(texCoords);
                 sprites[i] = sprite;
@@ -77,7 +101,6 @@ public class ArrowTrap extends RoomObject {
         }
 
         animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(0));
         animation.setDelay(2000);
 
         shader = ShaderManager.getShader("shaders\\shader");
@@ -106,22 +129,42 @@ public class ArrowTrap extends RoomObject {
                 arrows.remove(arrow);
                 i--;
             }
-            if(arrow.intersects(player) && !player.isFlinching() && !player.isDead()){
+            if(arrow.intersects(player) && !player.isFlinching() && !player.isDead() && !arrow.isHit()){
                 player.hit(1);
                 arrow.setHit();
             }
            for(RoomObject roomObject:objects){
-               if(!roomObject.moveable && roomObject.collision)
-               if(roomObject.intersects(arrow)){
-                   arrow.setHit();
+               if(roomObject.collision && roomObject != this && !arrow.isHit()){
+                   if (roomObject.intersects(arrow)){
+                       arrow.setHit();
+                       if (roomObject instanceof DestroyableObject){
+                           if (!((DestroyableObject) roomObject).isDestroyed()){
+                               ((DestroyableObject) roomObject).setHit(1);
+                           }
+                       }
+                   }
                }
            }
         }
         if(System.currentTimeMillis() - InGame.deltaPauseTime() - arrowShootCooldown > 4000 && animation.getIndexOfFrame() == 0){
+            if(type == TOP){
+                Arrow arrow = new Arrow(tileMap,false);
+                arrow.setPosition(position.x + 3,position.y + 10);
+                arrow.setSpeed(0,15);
+                arrows.add(arrow);
+            } else if(type == RIGHT){
+                Arrow arrow = new Arrow(tileMap,true);
+                arrow.setFacingRight(false);
+                arrow.setPosition(position.x - 2,position.y);
+                arrow.setSpeed(-15,0);
+                arrows.add(arrow);
+            } else if(type == LEFT){
+                Arrow arrow = new Arrow(tileMap,true);
+                arrow.setPosition(position.x + 2,position.y);
+                arrow.setSpeed(15,0);
+                arrows.add(arrow);
+            }
             arrowShootCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
-            Arrow arrow = new Arrow(tileMap);
-            arrow.setPosition(position.x + 3,position.y+10);
-            arrows.add(arrow);
         }
     }
 
@@ -210,30 +253,38 @@ public class ArrowTrap extends RoomObject {
     }
     public static class Arrow extends MapObject {
         // SPRITE VARS
-        private final static int sprites = 0;
-        private final static int hitSprites = 1;
-
+        private final static int verticalSprites = 0;
+        private final static int verticalHitSprites = 1;
+        private final static int horizontalSprites = 2;
+        private final static int horizontalHitSprites = 3;
         // BASIC VARS
         private boolean hit;
         private boolean remove;
 
         private long collisionBypass;
+        private boolean horizontal;
 
-        public Arrow(TileMap tm) {
+        public Arrow(TileMap tm, boolean horizontal) {
 
             super(tm);
+            this.horizontal = horizontal;
             facingRight = true;
 
-            width = 32;
-            height = 32;
+            if(horizontal){
+                width = 32;
+                height = 32;
 
-            cwidth = 14;
-            cheight = 24;
+                cwidth = 24;
+                cheight = 14;
+            }else {
+                width = 32;
+                height = 32;
+
+                cwidth = 14;
+                cheight = 24;
+            }
 
             scale = 4;
-
-            this.speed.y = 10f;
-
 
             // load sprites
             spriteSheetCols = 4;
@@ -285,15 +336,65 @@ public class ArrowTrap extends RoomObject {
 
                 }
                 spritesheet.addSprites(images);
+
+                // horizontal
+                images = new Sprite[3];
+
+                for(int i = 0; i < images.length; i++) {
+                    double[] texCoords =
+                            {
+                                    (i+1.0f)/spriteSheetCols,0,
+
+                                    (double)i/spriteSheetCols,0,
+
+                                    (double)i/spriteSheetCols,1.0/spriteSheetRows,
+
+                                    (i+1.0)/spriteSheetCols,1.0/spriteSheetRows,
+
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+
+                    images[i] = sprite;
+
+                }
+                spritesheet.addSprites(images);
+
+                images = new Sprite[3];
+
+                for(int i = 0; i < images.length; i++) {
+                    double[] texCoords =
+                            {
+                                    (i+1.0f)/spriteSheetCols,0.5,
+
+                                    (double)i/spriteSheetCols,0.5,
+
+                                    (double)i/spriteSheetCols,1.0,
+
+                                    (i+1.0)/spriteSheetCols,1.0
+
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+
+                    images[i] = sprite;
+
+                }
+                spritesheet.addSprites(images);
+
+
             }
 
-            vboVertices = ModelManager.getModel(width,height   );
+            vboVertices = ModelManager.getModel(width,height);
             if (vboVertices == -1){
                 vboVertices = ModelManager.createModel(width,height);
             }
 
             animation = new Animation();
-            animation.setFrames(spritesheet.getSprites(sprites));
+            if(horizontal){
+                animation.setFrames(spritesheet.getSprites(horizontalSprites));
+            } else {
+                animation.setFrames(spritesheet.getSprites(verticalSprites));
+            }
+
             animation.setDelay(140);
 
             shader = ShaderManager.getShader("shaders\\shader");
@@ -314,7 +415,11 @@ public class ArrowTrap extends RoomObject {
         public void setHit() {
             if(hit) return;
             hit = true;
-            animation.setFrames(spritesheet.getSprites(hitSprites));
+            if(horizontal){
+                animation.setFrames(spritesheet.getSprites(horizontalHitSprites));
+            } else {
+                animation.setFrames(spritesheet.getSprites(verticalHitSprites));
+            }
             animation.setDelay(90);
             speed.x = 0;
             speed.y = 0;
@@ -333,7 +438,7 @@ public class ArrowTrap extends RoomObject {
             }
             setPosition(temp.x, temp.y);
 
-            if(speed.y == 0 && !hit) {
+            if(speed.y == 0 && speed.x == 0 && !hit) {
                 setHit();
             }
 
@@ -350,5 +455,14 @@ public class ArrowTrap extends RoomObject {
             super.draw();
         }
         public boolean isHit() {return hit;}
+        public void setFacingRight(boolean facingRight){
+            this.facingRight = facingRight;
+        }
+    }
+    public void setType(int type){
+        animation.setFrames(spritesheet.getSprites(type == TOP ? 0 : 1));
+        if(type == RIGHT) facingRight = false;
+        else facingRight = true;
+        this.type = type;
     }
 }

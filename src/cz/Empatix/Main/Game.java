@@ -23,7 +23,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class Game implements Runnable {
+public class Game implements Runnable{
     public static int ARROW = 0;
     public static int CROSSHAIR = 1;
     private static long[] cursors;
@@ -45,10 +45,11 @@ public class Game implements Runnable {
     // The window hoandle
     public static long window;
     private GLFWMouseButtonCallback mouseButtonCallback;
+    private GLFWCursorPosCallback cursorPosCallback;
     private GLFWKeyCallback keyCallback;
 
-    private void start() {
-        if (thread == null) {
+    private void start(){
+        if(thread == null){
             thread = new Thread(this,"Game");
             thread.start();
         }
@@ -74,8 +75,9 @@ public class Game implements Runnable {
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_FOCUSED, GLFW_TRUE); // the window will be focused by windows
-
+        glfwWindowHint(GLFW_DECORATED,GLFW_FALSE);
+        glfwWindowHint(GLFW_FLOATING,GLFW_TRUE);
+        glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE); // the window will be focused by windows
 
 
         // Create the window
@@ -88,6 +90,12 @@ public class Game implements Runnable {
         mouseButtonCallback = new MouseInput(this);
         glfwSetKeyCallback(window, keyCallback); // keyboard input check
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
+        glfwSetCursorPosCallback(window, new GLFWCursorPosCallback(){
+            @Override
+            public void invoke(long window, double xpos, double ypos) {
+                gsm.mousePos(xpos,ypos);
+            }
+        });
         glfwSetWindowIconifyCallback(window, new GLFWWindowIconifyCallback() {
             @Override
             public void invoke(long window, boolean iconified) {
@@ -204,7 +212,6 @@ public class Game implements Runnable {
     /**
      * FPS SYSTEM
      */
-    @Override
     public void run() {
         Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
 
@@ -279,6 +286,7 @@ public class Game implements Runnable {
         Settings.save();
         keyCallback.free();
         mouseButtonCallback.free();
+        cursorPosCallback.free();
         GL.setCapabilities(null);
         AudioManager.cleanUp();
         glfwDestroyWindow(window);
@@ -355,8 +363,5 @@ public class Game implements Runnable {
 
         // Make the window visible
         glfwShowWindow(window);
-    }
-    public static void hideCursor(){
-        glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
     }
 }

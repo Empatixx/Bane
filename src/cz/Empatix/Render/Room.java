@@ -1,7 +1,5 @@
 package cz.Empatix.Render;
 
-import cz.Empatix.AudioManager.AudioManager;
-import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
@@ -281,7 +279,7 @@ public class Room {
             int x=xMin + (xMax - xMin) / 2;
             EnemyManager.spawnBoss(x,y);
 
-            AudioManager.playSoundtrack(Soundtrack.BOSS);
+            //AudioManager.playSoundtrack(Soundtrack.BOSS);
 
             lockRoom(true);
         }
@@ -482,26 +480,35 @@ public class Room {
                 }
             }
             // arrows traps
-            for(int i = 0;i<1;i++) {
+            for(int i = 0; i< cz.Empatix.Java.Random.nextInt(2); i++) {
                 int tileSize = tm.getTileSize();
 
                 int xMinTile = xMin/tileSize + 1;
                 int yMinTile = yMin/tileSize + 1;
 
-                int xMaxTile = xMax/tileSize - 1;
-                int yMaxTile = yMax/tileSize - 1;
+                int xMaxTile = xMax/tileSize - 2;
+                int yMaxTile = yMax/tileSize - 2;
 
-                int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                int x;
+                int y;
                 ArrowTrap arrowTrap = new ArrowTrap(tm,player);
-                while(tm.getType(y-1,x) != Tile.BLOCKED || tm.getType(y,x) == Tile.BLOCKED
-                || intersectsObjects(arrowTrap)){
+                do{
                     x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
                     y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-
-                    arrowTrap.setPosition(x*tileSize+tileSize/2,y*tileSize-tileSize/2);
-                }
-                arrowTrap.setPosition(x*tileSize+tileSize/2,y*tileSize-tileSize/2);
+                    if(tm.getType(y-1,x) == Tile.BLOCKED && tm.getType(y,x) != Tile.BLOCKED){
+                        arrowTrap.setPosition(x*tileSize+tileSize/2,y*tileSize-tileSize/2);
+                        arrowTrap.setType(ArrowTrap.TOP);
+                    } else if (tm.getType(y, x - 1) == Tile.BLOCKED && tm.getType(y +1, x - 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
+                        arrowTrap.setType(ArrowTrap.LEFT);
+                        arrowTrap.setPosition(x * tileSize - tileSize/6, y * tileSize + tileSize / 2);
+                    } else if (tm.getType(y, x + 1) == Tile.BLOCKED && tm.getType(y +1, x + 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
+                        arrowTrap.setType(ArrowTrap.RIGHT);
+                        arrowTrap.setPosition(x * tileSize + 6*tileSize/5 , y * tileSize + tileSize / 2);
+                    }
+                }while ((tm.getType(y-1,x) != Tile.BLOCKED || tm.getType(y,x) == Tile.BLOCKED) &&
+                        (tm.getType(y, x - 1) != Tile.BLOCKED || tm.getType(y +1, x - 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) &&
+                        (tm.getType(y, x + 1) != Tile.BLOCKED || tm.getType(y +1, x + 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED)  ||
+                        intersectsObjects(arrowTrap));
                 this.addObject(arrowTrap);
             }
             // torches
@@ -525,11 +532,11 @@ public class Room {
                         int type = Torch.TOP;
                         torch.setType(type);
                         torch.setPosition(x * tileSize + tileSize / 2, y * tileSize - tileSize / 2);
-                    } if (tm.getType(y, x - 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
+                    } else if (tm.getType(y, x - 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
                         int type = Torch.SIDERIGHT;
                         torch.setType(type);
                         torch.setPosition(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2);
-                    } if (tm.getType(y, x + 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
+                    } else if (tm.getType(y, x + 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
                         int type = Torch.SIDELEFT;
                         torch.setType(type);
                         torch.setPosition(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2);
@@ -539,6 +546,30 @@ public class Room {
                         (tm.getType(y, x + 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) ||
                         intersectsObjects(torch)) ;
                 addObject(torch);
+            }
+
+            if(Math.random() < 0.2){
+                if(left){
+                    int tileSize = tm.getTileSize();
+
+                    int xMinTile = xMin/tileSize - 2;
+                    int yMinTile = yMin/tileSize + 1;
+
+                    int xMaxTile = xMin/tileSize - 1;
+                    int yMaxTile = yMax/tileSize - 1;
+
+                    int x;
+                    int y;
+                    Flamethrower flamethrower = new Flamethrower(tm,player);
+                    flamethrower.setType(Flamethrower.VERTICAL);
+                    do{
+                        x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                        y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                        flamethrower.setPosition(x*tileSize+tileSize/2,y*tileSize);
+                    } while ((tm.getType(y - 1, x) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) ||
+                            intersectsObjects(flamethrower)) ;
+                    addObject(flamethrower);
+                }
             }
         }
         if (type == Loot) {

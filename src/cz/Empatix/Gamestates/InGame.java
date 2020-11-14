@@ -12,7 +12,6 @@ import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Main.Game;
-import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
@@ -32,7 +31,6 @@ import cz.Empatix.Utility.Console;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 import static cz.Empatix.Main.Game.ARROW;
@@ -43,6 +41,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class InGame extends GameState {
     private boolean pause;
+    private boolean endRewardEarned;
     private long gameStart;
     //
     // Main game
@@ -144,10 +143,7 @@ public class InGame extends GameState {
         if(player.isDead()){
             float time = (System.currentTimeMillis()-player.getDeathTime());
             if(time > 5500){
-                Database db = GameStateManager.getDb();
-                int storedMoney = db.getValue("money","general");
-                db.setValue("money",player.getCoins()+storedMoney);
-                gsm.setState(GameStateManager.MENU);
+                gsm.setState(GameStateManager.PROGRESSROOM);
                 glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
 
             }
@@ -215,6 +211,8 @@ public class InGame extends GameState {
         pauseTimeStarted=0;
         pause = false;
 
+        endRewardEarned = false;
+
         objectsFramebuffer = new Framebuffer();
         pauseBlurFramebuffer = new Framebuffer();
         fadeFramebuffer = new Framebuffer();
@@ -254,9 +252,11 @@ public class InGame extends GameState {
         tileMap.setTween(0.10);
 
         //health bar
-        healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,45,4);
+        healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,45,3);
+        healthBar.initHealth(player.getHealth(),player.getMaxHealth());
         //armor bar
         armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3);
+        armorBar.initArmor(player.getArmor(),player.getMaxArmor());
         //minimap
         tileMap.fillMiniMap();
         damageIndicator = new DamageIndicator();
@@ -294,18 +294,14 @@ public class InGame extends GameState {
 
         skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),1f);
         logos = new Image[4];
-        logos[0] = new Image("Textures\\killslogo.tga", new Vector3f(500,476,0),1.5f);
-        logos[1] = new Image("Textures\\coinlogo.tga", new Vector3f(500,576,0),1.5f);
+        logos[0] = new Image("Textures\\killslogo.tga", new Vector3f(500,576,0),1.5f);
+        logos[1] = new Image("Textures\\coinlogo.tga", new Vector3f(500,476,0),1.5f);
         logos[2] = new Image("Textures\\accuracylogo.tga", new Vector3f(500,676,0),1.5f);
         logos[3] = new Image("Textures\\timelogo.tga", new Vector3f(500,776,0),1.5f);
 
         skullPlayerdead.setAlpha(0f);
 
         console = new Console(gunsManager,player,itemManager,enemyManager);
-
-        ItemManager.dropArtefact((int)player.getX(),(int)player.getY());
-        ItemManager.dropArtefact((int)player.getX(),(int)player.getY());
-        ItemManager.dropArtefact((int)player.getX(),(int)player.getY());
 
     }
 
@@ -378,6 +374,27 @@ public class InGame extends GameState {
 
 
         if(player.isDead()){
+            int totalReward = 0;
+            int rewardAccuracy = 0;
+            int rewardKilledEnemies = (int)Math.sqrt(EnemyManager.enemiesKilled)*(int)((tileMap.getFloor()+1)/1.25);
+            int rewardFloor = (int)Math.pow(tileMap.getFloor(),1.5);
+            if(GunsManager.bulletShooted != 0){
+                int accuracy = (int)((float)GunsManager.hitBullets/GunsManager.bulletShooted*100);
+                if(accuracy > 90){
+                    rewardAccuracy= (int)(rewardKilledEnemies*0.8);
+                } else if (accuracy > 75){
+                    rewardAccuracy= rewardKilledEnemies/2;
+                } else if (accuracy > 45){
+                    rewardAccuracy= rewardKilledEnemies/4;
+                }
+            }
+            totalReward+=rewardAccuracy+rewardKilledEnemies+rewardFloor;
+            if(!endRewardEarned){
+                endRewardEarned = true;
+                Database db = GameStateManager.getDb();
+                int storedMoney = db.getValue("money","general");
+                db.setValue("money",totalReward+storedMoney);
+            }
             fadeFramebuffer.unbindFBO();
             fade.draw(fadeFramebuffer);
             if(player.isDead()){
@@ -406,8 +423,8 @@ public class InGame extends GameState {
                 for(Image img : logos){
                     img.draw();
                 }
-                TextRender.renderText("Enemies killed: "+EnemyManager.enemiesKilled,new Vector3f(600,500,0),3,new Vector3f(1f,1f,1f));
-                TextRender.renderText("Total coins: "+itemManager.getTotalCoins(),new Vector3f(600,600,0),3,new Vector3f(1f,1f,1f));
+                TextRender.renderText("Floor: "+(tileMap.getFloor()+1),new Vector3f(600,500,0),3,new Vector3f(1f,1f,1f));
+                TextRender.renderText("Enemies killed: "+EnemyManager.enemiesKilled,new Vector3f(600,600,0),3,new Vector3f(1f,1f,1f));
                 if(GunsManager.bulletShooted == 0){
                     TextRender.renderText("Accuracy: 0%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
 
@@ -427,6 +444,11 @@ public class InGame extends GameState {
                 }
                 livetime=livetime+sec+" sec";
                 TextRender.renderText(livetime,new Vector3f(600,800,0),3,new Vector3f(1f,1f,1f));
+
+                TextRender.renderText("+ "+rewardFloor,new Vector3f(1300,500,0),3,new Vector3f(0.831f, 0.658f, 0.031f));
+                TextRender.renderText("+ "+rewardKilledEnemies,new Vector3f(1300,600,0),3,new Vector3f(0.831f, 0.658f, 0.031f));
+                TextRender.renderText("+ "+rewardAccuracy,new Vector3f(1300,700,0),3,new Vector3f(0.831f, 0.658f, 0.031f));
+
             }
             if(time > 5500){
                 if(System.currentTimeMillis() / 500 % 2 == 0) {
@@ -463,6 +485,7 @@ public class InGame extends GameState {
             enemyManager.updateOnlyAnimations();
             fade.update();
             player.update();
+            healthBar.update(player.getHealth(), player.getMaxHealth());
             float time = (System.currentTimeMillis()-player.getDeathTime());
             if(time > 2000){
                 Vector3f pos = skullPlayerdead.getPos();
@@ -474,9 +497,8 @@ public class InGame extends GameState {
             return;
         }
         // loc of mouse
-        final Point mouseLoc = MouseInfo.getPointerInfo().getLocation();
-        mouseX = mouseLoc.x* Settings.scaleMouseX();
-        mouseY = mouseLoc.y*Settings.scaleMouseY();
+        mouseX = gsm.getMouseX();
+        mouseY = gsm.getMouseY();
 
         // mouse location-moving direction of mouse of tilemap
         tileMap.setPosition(
@@ -502,7 +524,7 @@ public class InGame extends GameState {
         } else {
             itemManager.update();
 
-            ArrayList<Enemy> enemies = enemyManager.getEnemies();
+            ArrayList<Enemy> enemies = EnemyManager.getEnemies();
 
             player.update();
 

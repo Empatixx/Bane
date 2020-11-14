@@ -109,7 +109,8 @@ public class KingSlime extends Enemy {
         angle=0;
         chestCreated=false;
 
-        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,50,4);
+        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,50,3);
+        healthBar.initHealth(health,maxHealth);
 
         createShadow();
 
@@ -162,9 +163,9 @@ public class KingSlime extends Enemy {
 
     public void update() {
         setMapPosition();
+        healthBar.update(health,maxHealth);
         if(isSpawning()) return;
         // update animation
-        healthBar.update(health,maxHealth);
         if(!isDead()){
             animation.update();
         } else if(!animation.hasPlayedOnce()) {

@@ -112,6 +112,7 @@ public class ProgressNPC extends MapObject {
 
     public void keyPress(int k) {
         if(k == GLFW.GLFW_KEY_E)interract = !interract;
+        else if(k == GLFW.GLFW_KEY_ESCAPE)interract = false;
     }
     public void touching(MapObject obj){
         if(this.intersects(obj)){
@@ -130,5 +131,8 @@ public class ProgressNPC extends MapObject {
         if(canShowHud()) upgradeMenu.mouseReleased(x,y);
     }
 
+    public boolean isInteracting(){
+        return interract;
+    }
 }
 

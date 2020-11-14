@@ -33,7 +33,7 @@ public class BerserkPot extends Artefact {
     public BerserkPot(TileMap tm, Player p){
         super(tm,p);
         maxCharge = 4;
-        charge = 4;
+        charge = 0;
 
         scale = 3f;
 
@@ -50,7 +50,6 @@ public class BerserkPot extends Artefact {
     @Override
     protected void update() {
 
-        updateChargeAnimation();
         if(!removedSpeed){
             if(System.currentTimeMillis() - time - InGame.deltaPauseTime() > 20000){
                 removedSpeed = true;

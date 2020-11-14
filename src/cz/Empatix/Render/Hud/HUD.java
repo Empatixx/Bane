@@ -57,7 +57,10 @@ public abstract class HUD {
                 vboVertices = ModelManager.createModel(width, height);
             }
         } else {
-            vboVertices = ModelManager.createChangingModel(width,height);
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1) {
+                vboVertices = ModelManager.createModel(width, height);
+            }
         }
 
 

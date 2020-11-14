@@ -268,8 +268,6 @@ public class SliderBar {
             sliderMin = (int)(minX+this.sliderWidth/2*scale);
             sliderMax = (int)(maxX-this.sliderWidth/2*scale);
 
-            System.out.println(sliderMin+"/"+sliderMax);
-
             vboVertices = ModelManager.getModel((int)width,(int) height);
             if (vboVertices == -1) {
                 vboVertices = ModelManager.createModel((int) width, (int) height);

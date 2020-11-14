@@ -217,4 +217,8 @@ public class ArtefactDrop extends ItemDrop {
         return artefact;
     }
 
+    public void despawn(){
+        artefact.despawn();
+    }
+
 }

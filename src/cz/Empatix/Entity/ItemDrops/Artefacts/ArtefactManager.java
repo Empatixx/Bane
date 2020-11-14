@@ -23,6 +23,8 @@ public class ArtefactManager {
     public ArtefactManager(TileMap tm, Player player){
         p = player;
         artefacts = new ArrayList<>();
+        // preventing to keeping artefact from previous game
+        currentArtefact = null;
 
         artefacts.add(new RingOfFire(tm,player));
         artefacts.add(new TransportableArmorPot(tm,player));
@@ -59,6 +61,9 @@ public class ArtefactManager {
     public void update(){
         for(Artefact artefact:artefacts){
             artefact.update();
+        }
+        if(currentArtefact != null){
+            currentArtefact.updateChargeAnimation();
         }
     }
     public static Artefact randomArtefact(){

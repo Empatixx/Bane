@@ -31,6 +31,8 @@ public class UpgradeSideBar {
 
     private boolean bought;
 
+    private TextRender renderText;
+
     UpgradeSideBar(int row, String nameWeapon){
         this.nameWeapon = nameWeapon;
         pos = new Vector3f(1122.5f,245+row*130,0);
@@ -40,12 +42,14 @@ public class UpgradeSideBar {
         coinImage = new Image("Textures\\coin.tga",new Vector3f(pos.x+115,pos.y+30,pos.z),1f);
         boughtButton = new MenuBar("Textures\\ProgressRoom\\bought-bar.tga",new Vector3f(pos.x+215,pos.y+30,pos.z),0.5f,200,100,false);
         lockedButton = new MenuBar("Textures\\ProgressRoom\\lockedbar.tga",new Vector3f(pos.x+215,pos.y+30,pos.z),0.5f,200,100,false);
+
+        renderText = new TextRender();
     }
     public void draw(boolean locked){
         sideBar.draw();
         if(text != null){
             for(int i = 0; i< text.length; i++){
-                TextRender.renderText(text[i],new Vector3f(pos.x-115,pos.y-40+i*20,0),1,new Vector3f(0.686f,0.4f,0.258f));
+                renderText.draw(text[i],new Vector3f(pos.x-115,pos.y-40+i*20,0),1,new Vector3f(0.686f,0.4f,0.258f));
             }
         }
         if(bought){
@@ -55,8 +59,8 @@ public class UpgradeSideBar {
         }
         else {
             buyButton.draw();
-            TextRender.renderText("Buy",new Vector3f(pos.x+220,pos.y+40,pos.z),2,new Vector3f(0.686f,0.4f,0.258f));
-            TextRender.renderText(""+price,new Vector3f(pos.x+75,pos.y+40,pos.z),2,new Vector3f(1.0f,0.947f,0.2f));
+            renderText.draw("Buy",new Vector3f(pos.x+220,pos.y+40,pos.z),2,new Vector3f(0.686f,0.4f,0.258f));
+            renderText.draw(""+price,new Vector3f(pos.x+75,pos.y+40,pos.z),2,new Vector3f(1.0f,0.947f,0.2f));
             coinImage.draw();
 
         }

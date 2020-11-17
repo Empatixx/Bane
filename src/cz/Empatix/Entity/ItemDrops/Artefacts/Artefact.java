@@ -53,7 +53,6 @@ public abstract class Artefact {
             chargeTime = System.currentTimeMillis() ;
             chargeAnimation++;
             if(chargeAnimation>=charge) chargeAnimation = 0;
-            System.out.println(chargeAnimation);
         }
     }
 

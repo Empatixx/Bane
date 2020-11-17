@@ -99,9 +99,13 @@ public class InGame extends GameState {
     private static long pauseTimeStarted;
     private static long pauseTimeEnded;
 
+    private TextRender[] textRender;
+
 
     InGame(GameStateManager gsm){
         this.gsm = gsm;
+        textRender = new TextRender[17];
+        for(int i = 0;i<17;i++) textRender[i] = new TextRender();
     }
 
     @Override
@@ -292,7 +296,7 @@ public class InGame extends GameState {
         source = new Source(Source.EFFECTS,0.35f);
         soundMenuClick = AudioManager.loadSound("menuclick.ogg");
 
-        skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),1f);
+        skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),15f);
         logos = new Image[4];
         logos[0] = new Image("Textures\\killslogo.tga", new Vector3f(500,576,0),1.5f);
         logos[1] = new Image("Textures\\coinlogo.tga", new Vector3f(500,476,0),1.5f);
@@ -350,8 +354,8 @@ public class InGame extends GameState {
         lightManager.draw(objectsFramebuffer);
 
         if (Game.displayCollisions){
-            TextRender.renderText("X: "+(int)player.getX(),new Vector3f(200,550,0),3,new Vector3f(1.0f,1.0f,1.0f));
-            TextRender.renderText("Y: "+(int)player.getY(),new Vector3f(200,600,0),3,new Vector3f(1.0f,1.0f,1.0f));
+            textRender[0].draw("X: "+(int)player.getX(),new Vector3f(200,550,0),3,new Vector3f(1.0f,1.0f,1.0f));
+            textRender[1].draw("Y: "+(int)player.getY(),new Vector3f(200,600,0),3,new Vector3f(1.0f,1.0f,1.0f));
         }
 
         gunsManager.drawHud();
@@ -370,7 +374,7 @@ public class InGame extends GameState {
         console.draw();
 
         coin.draw();
-        TextRender.renderText(""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
+        textRender[2].draw(""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
 
 
         if(player.isDead()){
@@ -407,7 +411,7 @@ public class InGame extends GameState {
                 for(int i = 0;time > 3500+i*65 && i < gameOverTitle.length;i++){
                     stringBuilder.append(gameOverTitle[i]);
                 }
-                TextRender.renderText(stringBuilder.toString(),new Vector3f( 800,340,0),5,new Vector3f(1f,0.25f,0f));
+                textRender[3].draw(stringBuilder.toString(),new Vector3f( 800,340,0),5,new Vector3f(1f,0.25f,0f));
                 glColor4f(1f,1f,1f,1f);
                 glLineWidth(3f);
                 glBegin(GL_LINES);
@@ -423,13 +427,13 @@ public class InGame extends GameState {
                 for(Image img : logos){
                     img.draw();
                 }
-                TextRender.renderText("Floor: "+(tileMap.getFloor()+1),new Vector3f(600,500,0),3,new Vector3f(1f,1f,1f));
-                TextRender.renderText("Enemies killed: "+EnemyManager.enemiesKilled,new Vector3f(600,600,0),3,new Vector3f(1f,1f,1f));
+                textRender[4].draw("Floor: "+(tileMap.getFloor()+1),new Vector3f(600,500,0),3,new Vector3f(1f,1f,1f));
+                textRender[5].draw("Enemies killed: "+EnemyManager.enemiesKilled,new Vector3f(600,600,0),3,new Vector3f(1f,1f,1f));
                 if(GunsManager.bulletShooted == 0){
-                    TextRender.renderText("Accuracy: 0%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
+                    textRender[6].draw("Accuracy: 0%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
 
                 } else {
-                    TextRender.renderText("Accuracy: "+(int)((float)GunsManager.hitBullets/GunsManager.bulletShooted*100)+"%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
+                    textRender[7].draw("Accuracy: "+(int)((float)GunsManager.hitBullets/GunsManager.bulletShooted*100)+"%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
                 }
                 long sec = (player.getDeathTime()-gameStart)/1000%60;
                 long min = ((player.getDeathTime()-gameStart)/1000/60)%60;
@@ -443,16 +447,16 @@ public class InGame extends GameState {
                     livetime=livetime+min+" min  ";
                 }
                 livetime=livetime+sec+" sec";
-                TextRender.renderText(livetime,new Vector3f(600,800,0),3,new Vector3f(1f,1f,1f));
+                textRender[8].draw(livetime,new Vector3f(600,800,0),3,new Vector3f(1f,1f,1f));
 
-                TextRender.renderText("+ "+rewardFloor,new Vector3f(1300,500,0),3,new Vector3f(0.831f, 0.658f, 0.031f));
-                TextRender.renderText("+ "+rewardKilledEnemies,new Vector3f(1300,600,0),3,new Vector3f(0.831f, 0.658f, 0.031f));
-                TextRender.renderText("+ "+rewardAccuracy,new Vector3f(1300,700,0),3,new Vector3f(0.831f, 0.658f, 0.031f));
+                textRender[9].draw("+ "+rewardFloor,new Vector3f(1300,500,0),3,new Vector3f(0.831f, 0.658f, 0.031f));
+                textRender[10].draw("+ "+rewardKilledEnemies,new Vector3f(1300,600,0),3,new Vector3f(0.831f, 0.658f, 0.031f));
+                textRender[11].draw("+ "+rewardAccuracy,new Vector3f(1300,700,0),3,new Vector3f(0.831f, 0.658f, 0.031f));
 
             }
             if(time > 5500){
                 if(System.currentTimeMillis() / 500 % 2 == 0) {
-                    TextRender.renderText("Press anything to continue...",new Vector3f(1500,1000,0),2,new Vector3f(1f,1f,1f));
+                    textRender[12].draw("Press anything to continue...",new Vector3f(1500,1000,0),2,new Vector3f(1f,1f,1f));
 
                 }
             }
@@ -467,10 +471,12 @@ public class InGame extends GameState {
             for(MenuBar bar: pauseBars){
                 bar.draw();
             }
-            TextRender.renderText("Pause",new Vector3f(925,300,0),7,new Vector3f(0.874f,0.443f,0.149f));
-            TextRender.renderText("Resume",new Vector3f(905,465,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            TextRender.renderText("Save",new Vector3f(955,655,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            TextRender.renderText("Exit",new Vector3f(975,845,0),4,new Vector3f(0.874f,0.443f,0.149f));
+
+            textRender[13].draw("Pause",new Vector3f(925,300,0),7,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[14].draw("Resume",new Vector3f(905,465,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[15].draw("Save",new Vector3f(955,655,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[16].draw("Exit",new Vector3f(975,845,0),4,new Vector3f(0.874f,0.443f,0.149f));
+
 
         }
 

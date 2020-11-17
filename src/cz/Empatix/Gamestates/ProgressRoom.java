@@ -34,8 +34,13 @@ public class ProgressRoom extends GameState {
 
     private ProgressNPC progressNPC;
 
+    private TextRender textRender;
+
     ProgressRoom(GameStateManager gsm){
         this.gsm = gsm;
+
+        textRender = new TextRender();
+
     }
 
     @Override
@@ -102,7 +107,7 @@ public class ProgressRoom extends GameState {
         progressNPC.drawHud();
 
         coin.draw();
-        TextRender.renderText(""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
+        textRender.draw(""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
 
 
     }
@@ -157,7 +162,7 @@ public class ProgressRoom extends GameState {
 
     @Override
     void mouseReleased(int button) {
-        progressNPC.mouseReleased(mouseX,mouseY);
+        if(false)progressNPC.mouseReleased(mouseX,mouseY);
     }
 
     @Override

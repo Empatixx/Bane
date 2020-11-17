@@ -14,7 +14,6 @@ import org.lwjgl.stb.STBImage;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
@@ -25,7 +24,6 @@ public class ArmorBar extends HUD{
     private int maxArmor;
 
     private int vboVerticesBar;
-    private final int idTextureBar;
     private final int width;
     private final int height;
     private int scale;
@@ -49,15 +47,6 @@ public class ArmorBar extends HUD{
 
         int width = decoder.getWidth();
         int height = decoder.getHeight();
-
-        idTextureBar = glGenTextures();
-
-        glBindTexture(GL_TEXTURE_2D, idTextureBar);
-
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
 
         STBImage.stbi_image_free(spritesheetImage);
 
@@ -98,9 +87,7 @@ public class ArmorBar extends HUD{
         barShader.setUniformf("maxY",maxY);
         barShader.setUniformf("stepSize",(float)height*scale/4);
         barShader.setUniform3f("color", new Vector3f(0.603f, 0.670f, 0.709f));
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,idTextureBar);
+        
 
         glEnableVertexAttribArray(0);
 

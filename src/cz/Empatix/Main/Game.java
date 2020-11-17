@@ -33,11 +33,6 @@ public class Game implements Runnable{
     private static boolean running;
     private Thread thread;
 
-    private long updateDelay;
-    private long drawDelay;
-    private long lastDeltas;
-    private long lastDeltas2;
-
     private static int FPS;
 
     private GameStateManager gsm;
@@ -47,6 +42,8 @@ public class Game implements Runnable{
     private GLFWMouseButtonCallback mouseButtonCallback;
     private GLFWCursorPosCallback cursorPosCallback;
     private GLFWKeyCallback keyCallback;
+
+    private TextRender text;
 
     private void start(){
         if(thread == null){
@@ -76,8 +73,8 @@ public class Game implements Runnable{
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_DECORATED,GLFW_FALSE);
-        glfwWindowHint(GLFW_FLOATING,GLFW_TRUE);
         glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE); // the window will be focused by windows
+        //glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
 
         // Create the window
@@ -88,6 +85,7 @@ public class Game implements Runnable{
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         keyCallback = new KeyboardInput(this);
         mouseButtonCallback = new MouseInput(this);
+        // TODO: cursor callback is null
         glfwSetKeyCallback(window, keyCallback); // keyboard input check
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
         glfwSetCursorPosCallback(window, new GLFWCursorPosCallback(){
@@ -241,6 +239,22 @@ public class Game implements Runnable{
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
+
+        /*glEnable(GL_DEBUG_OUTPUT);
+        glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        //KHRDebug.glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_PERFORMANCE, GL_DEBUG_SEVERITY_HIGH, 0,
+        //        true);
+        KHRDebug.glDebugMessageCallback(new GLDebugMessageCallback() {
+            @Override
+            public void invoke(int source, int type, int id, int severity, int length, long message, long userParam) {
+                if(type == GL_DEBUG_TYPE_PERFORMANCE){
+                    System.out.println(GLDebugMessageCallback.getMessage(length,message));
+
+                }
+            }
+        },NULL);
+*/
+
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
         glMatrixMode(GL_MODELVIEW);
@@ -249,11 +263,10 @@ public class Game implements Runnable{
         // GAMESTATE / RUNNING
         initGame();
 
+        text = new TextRender();
+
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-        lastDeltas = System.nanoTime();
-        lastDeltas2 = System.nanoTime();
 
         while ( running ) {
             if(glfwWindowShouldClose(window)){
@@ -293,36 +306,21 @@ public class Game implements Runnable{
 
     }
     private void update() {
-        long updateStart = System.nanoTime();
         // Poll for window events. The key callback above will only be
         // invoked during this call.
         glfwPollEvents();
 
         // gamestate update
         gsm.update();
-
-        if(System.nanoTime() - lastDeltas > 100000000){
-            updateDelay = System.nanoTime()-updateStart;
-            lastDeltas=System.nanoTime();
-        }
     }
 
     private void draw() {
-        long drawStart = System.nanoTime();
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
         // gamestate draw
         gsm.draw();
 
-        if(System.nanoTime() - lastDeltas2 > 100000000){
-            drawDelay = System.nanoTime()-drawStart;
-            lastDeltas2=System.nanoTime();
-
-        }
         if(displayCollisions){
-            TextRender.renderText("draw: "+(float)drawDelay/1000000+" ms",new Vector3f(200,300,0),2,new Vector3f(1.0f,1.0f,1.0f));
-            TextRender.renderText("update: "+(float)updateDelay/1000000+" ms",new Vector3f(200, 350,0),2,new Vector3f(1.0f,1.0f,1.0f));
-            TextRender.renderText("FPS: "+FPS,new Vector3f(200, 400,0),2,new Vector3f(1.0f,1.0f,1.0f));
+            text.draw("FPS: "+FPS,new Vector3f(200, 400,0),2,new Vector3f(1.0f,1.0f,1.0f));
         }
 
         glfwSwapBuffers(window); // swap the color buffers

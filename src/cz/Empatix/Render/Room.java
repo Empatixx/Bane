@@ -1,5 +1,7 @@
 package cz.Empatix.Render;
 
+import cz.Empatix.AudioManager.AudioManager;
+import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
@@ -61,6 +63,8 @@ public class Room {
 
     private final ArrayList<RoomObject> mapObjects;
 
+    private TextRender[] texts;
+
 
     Room(int type, int id, int x, int y){
         entered = false;
@@ -77,6 +81,12 @@ public class Room {
 
         mapObjects = new ArrayList<>();
 
+        if(type == Starter){
+            texts = new TextRender[5];
+            for(int i = 0;i<5;i++){
+                texts[i] = new TextRender();
+            }
+        }
     }
 
     void loadMap(){
@@ -279,7 +289,7 @@ public class Room {
             int x=xMin + (xMax - xMin) / 2;
             EnemyManager.spawnBoss(x,y);
 
-            //AudioManager.playSoundtrack(Soundtrack.BOSS);
+            AudioManager.playSoundtrack(Soundtrack.BOSS);
 
             lockRoom(true);
         }
@@ -340,17 +350,23 @@ public class Room {
             if(!object.isPreDraw())object.draw();
         }
         if(type == Starter && tm.getFloor() == 0) {
-            int y = yMin + (yMax - yMin) / 2;
-            int x = xMin + (xMax - xMin) / 2;
-            float time = (float) Math.sin(System.currentTimeMillis() % 2000 / 600f) + (1 - (float) Math.cos((System.currentTimeMillis() % 2000 / 600f) + 0.5f));
-            TextRender.renderMapText("WASD - Movement", new Vector3f(x, y, 0), 2,
-                    new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
-            TextRender.renderMapText("Mouse click - shoot", new Vector3f(x, y + 50, 0), 2,
-                    new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
-            TextRender.renderMapText("1 and 2 - weapon slots", new Vector3f(x, y + 100, 0), 2,
-                    new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
-            TextRender.renderMapText("E/Q - pickup/drop gun", new Vector3f(x, y + 150, 0), 2,
-                    new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
+            if(tm.getCurrentRoom() == this){
+                int y = yMin + (yMax - yMin) / 2;
+                int x = xMin + (xMax - xMin) / 2;
+
+                float time = (float) Math.sin(System.currentTimeMillis() % 2000 / 600f) + (1 - (float) Math.cos((System.currentTimeMillis() % 2000 / 600f) + 0.5f));
+                texts[0].drawMap("WASD - Movement", new Vector3f(x, y, 0), 2,
+                        new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
+                texts[1].drawMap("Mouse click - shoot", new Vector3f(x, y + 50, 0), 2,
+                        new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
+                texts[2].drawMap("1 and 2 - weapon slots", new Vector3f(x, y + 100, 0), 2,
+                        new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
+                texts[3].drawMap("E/Q - pickup/drop gun", new Vector3f(x, y + 150, 0), 2,
+                        new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
+                texts[4].drawMap("F - use artefact", new Vector3f(x, y + 200, 0), 2,
+                        new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
+
+            }
         }
     }
     public void updateObjects(){

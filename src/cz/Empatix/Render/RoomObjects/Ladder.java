@@ -23,6 +23,8 @@ public class Ladder extends RoomObject {
     private Spritesheet spritesheetArrowPointer;
     private Animation animationPointer;
 
+    private TextRender textRender;
+
     public Ladder(TileMap tm){
         super(tm);
         width = 32;
@@ -115,6 +117,8 @@ public class Ladder extends RoomObject {
         height *= scale;
         cwidth *= scale;
         cheight *= scale;
+
+        textRender = new TextRender();
     }
 
     public void update(){
@@ -174,7 +178,7 @@ public class Ladder extends RoomObject {
         glActiveTexture(0);
         float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
 
-        TextRender.renderMapText("Press E to enter next layer",new Vector3f(position.x-145,position.y+100,0),2,
+        textRender.drawMap("Press E to enter next layer",new Vector3f(position.x-145,position.y+100,0),2,
                 new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
     }
     public boolean shouldRemove(){

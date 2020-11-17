@@ -27,6 +27,8 @@ public class Portal extends RoomObject {
     private static final int IDLE = 0;
     private boolean message;
 
+    private TextRender textRender;
+
     public Portal(TileMap tm){
         super(tm);
         width = 86;
@@ -91,6 +93,8 @@ public class Portal extends RoomObject {
 
         stopSpeed = 0.55f;
         light = LightManager.createLight(new Vector3f(0.466f, 0.043f, 0.596f),new Vector2f(0,0),8f,this);
+
+        textRender = new TextRender();
     }
 
     public void update(){
@@ -114,7 +118,8 @@ public class Portal extends RoomObject {
         }
         if(message){
             float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
-            TextRender.renderMapText("Press E to enter game",new Vector3f(position.x-125,position.y+155,0),2,
+
+            textRender.drawMap("Press E to enter game",new Vector3f(position.x-125,position.y+155,0),2,
                     new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
         }
 

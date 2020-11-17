@@ -21,6 +21,8 @@ public class Console {
     private ItemManager itemManager;
     private EnemyManager em;
 
+    private TextRender textRender;
+
     public Console(GunsManager gunsManager, Player p, ItemManager itemManager, EnemyManager em){
         stringbuilder = new StringBuilder();
         time = System.currentTimeMillis();
@@ -29,6 +31,8 @@ public class Console {
         this.em = em;
         this.p = p;
         this.itemManager = itemManager;
+
+        textRender = new TextRender();
     }
 
     public boolean isEnabled() {
@@ -127,9 +131,9 @@ public class Console {
     public void draw(){
         if(enabled) {
             if (dot) {
-                TextRender.renderText(stringbuilder.toString() + "/", new Vector3f(50, 50, 0), 2, new Vector3f(1f, 1f, 1f));
+                textRender.draw(stringbuilder.toString() + "/", new Vector3f(50, 50, 0), 2, new Vector3f(1f, 1f, 1f));
             } else {
-                TextRender.renderText(stringbuilder.toString(), new Vector3f(50, 50, 0), 2, new Vector3f(1f, 1f, 1f));
+                textRender.draw(stringbuilder.toString(), new Vector3f(50, 50, 0), 2, new Vector3f(1f, 1f, 1f));
             }
         }
     }

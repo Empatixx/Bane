@@ -69,10 +69,15 @@ public class MenuState extends GameState{
     private Source source;
     private int soundMenuClick;
 
+    private TextRender[] textRender;
+
     MenuState(GameStateManager gsm){
         this.gsm = gsm;
-        this.
+        textRender = new TextRender[26];
+        for(int i = 0;i<26;i++) textRender[i] = new TextRender();
         init();
+
+
 
     }
 
@@ -85,23 +90,24 @@ public class MenuState extends GameState{
             for (int i = 0; i < settingsHuds.length;i++){
                 settingsHuds[i].draw();
             }
-            TextRender.renderText("Graphics",new Vector3f(550,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            TextRender.renderText("Audio",new Vector3f(940,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            TextRender.renderText("Controls",new Vector3f(1260,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[0].draw("Graphics",new Vector3f(550,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[1].draw("Audio",new Vector3f(940,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[2].draw("Controls",new Vector3f(1260,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
 
             if(selectedSettings == GRAPHICS){
                 for(int j = 0;j < graphicsHuds.length;j++){
                     graphicsHuds[j].draw();
                 }
-                TextRender.renderText("Resolution:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText(Settings.preWIDTH+"x"+Settings.preHEIGHT,new Vector3f(1160,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
 
-                TextRender.renderText("Lightning:",new Vector3f(460,525,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("V-Sync:",new Vector3f(460,600,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Brightness:",new Vector3f(460,675,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[3].draw("Resolution:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[4].draw(Settings.preWIDTH+"x"+Settings.preHEIGHT,new Vector3f(1160,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
 
-                TextRender.renderText("Reset",new Vector3f(1495,855,0),2,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Confirm",new Vector3f(1320,855,0),2,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[5].draw("Lightning:",new Vector3f(460,525,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[6].draw("V-Sync:",new Vector3f(460,600,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[7].draw("Brightness:",new Vector3f(460,675,0),3,new Vector3f(0.874f,0.443f,0.149f));
+
+                textRender[8].draw("Reset",new Vector3f(1495,855,0),2,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[9].draw("Confirm",new Vector3f(1320,855,0),2,new Vector3f(0.874f,0.443f,0.149f));
 
                 for(CheckBox box : checkBoxes){
                     box.draw();
@@ -118,14 +124,16 @@ public class MenuState extends GameState{
                             r = 2 * (1-value);
                             g = 1f;
                         }
-                        TextRender.renderText((int)(value*100)+"%",new Vector3f(pos.x(),pos.y()-25,pos.z()),2, new Vector3f(r,g,b));
+                        textRender[10].draw((int)(value*100)+"%",new Vector3f(pos.x(),pos.y()-25,pos.z()),2, new Vector3f(r,g,b));
                     }
                     hud.draw();
                 }
             } else if (selectedSettings == AUDIO){
-                TextRender.renderText("Overall:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Sounds:",new Vector3f(460,550,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Music:",new Vector3f(460,650,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[10].draw("Overall:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[11].draw("Sounds:",new Vector3f(460,550,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[12].draw("Music:",new Vector3f(460,650,0),3,new Vector3f(0.874f,0.443f,0.149f));
+
+
                 for(SliderBar hud:audioSliders){
                     if(hud.isLocked()){
                         Vector3f pos = hud.getPos();
@@ -138,24 +146,24 @@ public class MenuState extends GameState{
                             r = 2 * (1-value);
                             g = 1f;
                         }
-                        TextRender.renderText((int)(value*100)+"%",new Vector3f(pos.x(),pos.y()-25,pos.z()),2, new Vector3f(r,g,b));
+                        textRender[13].draw((int)(value*100)+"%",new Vector3f(pos.x(),pos.y()-25,pos.z()),2, new Vector3f(r,g,b));
                     }
                     hud.draw();
                 }
             } else if (selectedSettings == CONTROLS){
-                TextRender.renderText("Move Up",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Move Down",new Vector3f(460,500,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Move left",new Vector3f(460,550,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Move right",new Vector3f(460,600,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Object interact",new Vector3f(460,650,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Weapon drop",new Vector3f(460,700,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Shoot",new Vector3f(460,750,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Weapon slot 1",new Vector3f(460,800,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Weapon slot 2",new Vector3f(460,850,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[14].draw("Move Up",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[15].draw("Move Down",new Vector3f(460,500,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[16].draw("Move left",new Vector3f(460,550,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[17].draw("Move right",new Vector3f(460,600,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[18].draw("Object interact",new Vector3f(460,650,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[19].draw("Weapon drop",new Vector3f(460,700,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[20].draw("Shoot",new Vector3f(460,750,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[21].draw("Weapon slot 1",new Vector3f(460,800,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[23].draw("Weapon slot 2",new Vector3f(460,850,0),3,new Vector3f(0.874f,0.443f,0.149f));
 
 
-                TextRender.renderText("Reload",new Vector3f(1060,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                TextRender.renderText("Big map",new Vector3f(1060,500,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[24].draw("Reload",new Vector3f(1060,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[25].draw("Big map",new Vector3f(1060,500,0),3,new Vector3f(0.874f,0.443f,0.149f));
 
             }
 

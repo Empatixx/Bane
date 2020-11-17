@@ -11,11 +11,15 @@ public class DamageShow {
     private boolean crit;
     private Vector3f pos;
     private Vector2f dir;
+
+    private TextRender textRender;
     DamageShow(int dmg, int x, int y, Vector2f dir){
         this.dmg = dmg;
         pos = new Vector3f(x,y,0);
         time = System.currentTimeMillis() - InGame.deltaPauseTime();
         this.dir = dir;
+
+        textRender = new TextRender();
     }
 
     void setCrit(boolean crit) {
@@ -34,9 +38,10 @@ public class DamageShow {
     }
     void draw(){
         if(crit){
-            TextRender.renderMapText(Integer.toString(dmg),pos,2,new Vector3f(0.917f, 0.631f, 0.121f));
+            textRender.drawMap(Integer.toString(dmg),pos,2,new Vector3f(0.917f, 0.631f, 0.121f));
         } else {
-            TextRender.renderMapText(Integer.toString(dmg),pos,2,new Vector3f(0.937f, 0.223f, 0.223f));
+            textRender.drawMap(Integer.toString(dmg),pos,2,new Vector3f(0.937f, 0.223f, 0.223f));
+
         }
     }
 

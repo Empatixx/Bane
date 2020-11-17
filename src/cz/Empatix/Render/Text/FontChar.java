@@ -4,31 +4,33 @@ class FontChar {
     private char c;
     private int width;
 
-    private int verticlesVBO;
 
-    private int texcoordsVBO;
+    private double[] texCoords;
+    private int[] vertices;
 
-    FontChar(char c,int width,int verticles,int texcoords){
+
+    FontChar(char c,int width,int[] vertices,double[] texcoords){
         this.c = c;
         this.width = width;
+        texCoords = texcoords;
+        this.vertices = vertices;
 
-        this.verticlesVBO = verticles;
-        this.texcoordsVBO = texcoords;
-    }
 
-    int getWidth() {
-        return width;
-    }
-
-    int getTexcoordsVBO() {
-        return texcoordsVBO;
-    }
-
-    int getVerticlesVBO() {
-        return verticlesVBO;
     }
 
     char getChar() {
         return c;
+    }
+
+    public double[] getTexCoords() {
+        return texCoords;
+    }
+
+    public int[] getVertices() {
+        return vertices;
+    }
+
+    public int getWidth() {
+        return width;
     }
 }

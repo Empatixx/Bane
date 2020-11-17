@@ -2,7 +2,6 @@ package cz.Empatix.Render.Text;
 
 
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import org.joml.Matrix4f;
@@ -13,34 +12,31 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.nio.DoubleBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 
 
 public class TextRender {
 
-    private static Matrix4f matrixPos;
-
     private static ArrayList<Font> fonts;
 
-    private static Shader shader;
-    private static Shader testshader;
+    private String text;
+    private final int vboVertices;
+    private final int vboTexCoords;
 
-
+    private Shader shader;
+    private Matrix4f matrixPos;
 
     public static void init(){
         fonts = new ArrayList<>();
         loadFont("Textures\\font");
-        shader = ShaderManager.getShader("shaders\\text");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\text");
-        }
-        testshader = ShaderManager.getShader("shaders\\geometry");
-        if (testshader == null){
-            testshader = ShaderManager.createShader("shaders\\geometry");
-        }
+
     }
 
     private static void loadFont(String file){
@@ -69,10 +65,16 @@ public class TextRender {
 
             for(int i = 0;i < createdFont.sizeOfChars();i++){
 
-                int vboVertexes = ModelManager.getModel(data[2],data[3]);
-                if (vboVertexes == -1){
-                    vboVertexes = ModelManager.createModel(data[2],data[3]);
-                }
+                int[] vertices =
+                        {
+                                -data[2]/2,-data[3]/2, // BOTTOM LEFT
+                                -data[2]/2,data[3]/2, // BOTTOM TOP
+                                data[2]/2,data[3]/2, // RIGHT TOP
+                                data[2]/2,-data[3]/2 // BOTTOM RIGHT
+
+
+
+                        };
 
                 int currentRow = i/cols;
                 int currentCol = i%cols;
@@ -88,16 +90,8 @@ public class TextRender {
                                 (currentCol+1.0) / cols, (double) currentRow / rows
                         };
 
-                DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
-                buffer.put(texCoords);
-                buffer.flip();
-                int vboTextures = glGenBuffers();
 
-                glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
-                glBufferData(GL_ARRAY_BUFFER,buffer,GL_STATIC_DRAW);
-                glBindBuffer(GL_ARRAY_BUFFER,0);
-
-                FontChar createdChar = new FontChar((char)(offsetChar+i),widths[offsetChar+i],vboVertexes,vboTextures);
+                FontChar createdChar = new FontChar((char)(offsetChar+i),widths[offsetChar+i],vertices,texCoords);
                 createdFont.setChar(createdChar,i);
             }
 
@@ -107,126 +101,240 @@ public class TextRender {
         }
     }
 
-    /**
-     *
-     * @param text - String that we want to render
-     * @param pos - Position of text
-     * @param scale - Scaling of text
-     */
-    public static void renderText(String text,Vector3f pos, int scale, Vector3f color){
-        Font font = fonts.get(0);
-        matrixPos = new Matrix4f().translate(pos).scale(scale);
-
-        shader.bind();
-
-        glActiveTexture(GL_TEXTURE0);
-        font.bindTexture();
-
-        shader.setUniformi("sampler",0);
-        shader.setUniform3f("color",color);
-        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
-        Vector3f color2 = new Vector3f(1f,0f,0f);
-
-        for(char c : text.toCharArray()){
-            shader.bind();
-
-            glActiveTexture(GL_TEXTURE0);
-            font.bindTexture();
-
-
-            shader.setUniformm4f("projection",matrixPos);
-            for (FontChar fontc : font.getChars()){
-                if (fontc.getChar() == c){
-
-                    glEnableVertexAttribArray(0);
-                    glEnableVertexAttribArray(1);
-
-
-                    glBindBuffer(GL_ARRAY_BUFFER,fontc.getVerticlesVBO());
-                    glVertexAttribPointer(0,2,GL_INT,false,0,0);
-
-                    glBindBuffer(GL_ARRAY_BUFFER,fontc.getTexcoordsVBO());
-                    glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
-
-                    glDrawArrays(GL_QUADS, 0, 4);
-
-                    glBindBuffer(GL_ARRAY_BUFFER,0);
-
-                    glDisableVertexAttribArray(0);
-                    glDisableVertexAttribArray(1);
-
-
-                    // shifting width of char
-                    matrixPos.translate(fontc.getWidth(),0,0);
-                    break;
-                }
-            }
-
-        }
-        shader.unbind();
-        glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
-
-    }
-    public static void renderMapText(String text,Vector3f pos, int scale, Vector3f color){
-        Font font = fonts.get(0);
-        matrixPos = new Matrix4f().translate(pos).scale(scale);
-
-        shader.bind();
-
-        glActiveTexture(GL_TEXTURE0);
-        font.bindTexture();
-
-        shader.setUniformi("sampler",0);
-        shader.setUniform3f("color",color);
-        Camera.getInstance().projection().mul(matrixPos,matrixPos);
-
-        for(char c : text.toCharArray()){
-            shader.setUniformm4f("projection",matrixPos);
-            for (FontChar fontc : font.getChars()){
-                if (fontc.getChar() == c){
-
-                    glEnableVertexAttribArray(0);
-                    glEnableVertexAttribArray(1);
-
-
-                    glBindBuffer(GL_ARRAY_BUFFER,fontc.getVerticlesVBO());
-                    glVertexAttribPointer(0,2,GL_INT,false,0,0);
-
-                    glBindBuffer(GL_ARRAY_BUFFER,fontc.getTexcoordsVBO());
-                    glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
-
-                    glDrawArrays(GL_QUADS, 0, 4);
-
-                    glBindBuffer(GL_ARRAY_BUFFER,0);
-
-                    glDisableVertexAttribArray(0);
-                    glDisableVertexAttribArray(1);
-
-                    glEnableClientState(GL_VERTEX_ARRAY);
-                    glBindBuffer(GL_ARRAY_BUFFER,fontc.getVerticlesVBO());
-                    glVertexPointer(2,GL_INT,0,0);
-
-                    glDrawArrays(GL_QUADS,0,4);
-
-                    glBindBuffer(GL_ARRAY_BUFFER,0);
-                    glDisableClientState(GL_VERTEX_ARRAY);
-
-
-                    // shifting width of char
-                    matrixPos.translate(fontc.getWidth(),0,0);
-                    break;
-                }
-            }
-
-        }
-        shader.unbind();
-        glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
-
-    }
     private static int flipEndian(int val) {
         return (val >>> 24) | (val << 24) | ((val << 8) & 0x00FF0000)
                 | ((val >> 8) & 0x0000FF00);
+    }
+
+    public TextRender(){
+        vboTexCoords = glGenBuffers();
+        vboVertices = glGenBuffers();
+
+        shader = ShaderManager.getShader("shaders\\text");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\text");
+        }
+        shader.setUniformi("sampler",0);
+    }
+
+    public void draw(String text, Vector3f pos, int scale, Vector3f color){
+        Font font = fonts.get(0);
+
+        if(this.text == null){
+            DoubleBuffer textureBuffer = BufferUtils.createDoubleBuffer(text.length()*8);
+            IntBuffer verticesBuffer = BufferUtils.createIntBuffer(text.length()*8);
+
+
+            int shiftWidth = 0;
+
+
+            for(char c : text.toCharArray()){
+                for(FontChar fontChar : font.getChars()){
+                    if(fontChar.getChar() == c){
+                        int[] vertices = fontChar.getVertices().clone();
+                        for(int i = 0;i<8;i+=2){
+                            vertices[i]+=shiftWidth;
+                        }
+                        shiftWidth+=fontChar.getWidth();
+                        verticesBuffer.put(vertices);
+                        textureBuffer.put(fontChar.getTexCoords());
+                        break;
+                    }
+                }
+            }
+
+            textureBuffer.flip();
+            verticesBuffer.flip();
+
+
+            glBindBuffer(GL_ARRAY_BUFFER,vboTexCoords);
+            glBufferData(GL_ARRAY_BUFFER,textureBuffer,GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER,vboVertices);
+            glBufferData(GL_ARRAY_BUFFER,verticesBuffer,GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+            this.text = text;
+        } else if(!this.text.equals(text)){
+            DoubleBuffer textureBuffer = BufferUtils.createDoubleBuffer(text.length()*8);
+            IntBuffer verticesBuffer = BufferUtils.createIntBuffer(text.length()*8);
+
+
+            int shiftWidth = 0;
+
+
+            for(char c : text.toCharArray()){
+                for(FontChar fontChar : font.getChars()){
+                    if(fontChar.getChar() == c){
+                        int[] vertices = fontChar.getVertices().clone();
+                        for(int i = 0;i<8;i+=2){
+                            vertices[i]+=shiftWidth;
+                        }
+                        shiftWidth+=fontChar.getWidth();
+                        verticesBuffer.put(vertices);
+                        textureBuffer.put(fontChar.getTexCoords());
+                        break;
+                    }
+                }
+            }
+
+            textureBuffer.flip();
+            verticesBuffer.flip();
+
+
+            glBindBuffer(GL_ARRAY_BUFFER,vboTexCoords);
+            glBufferData(GL_ARRAY_BUFFER,textureBuffer,GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER,vboVertices);
+            glBufferData(GL_ARRAY_BUFFER,verticesBuffer,GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+            this.text = text;
+        }
+
+        matrixPos = new Matrix4f().translate(pos).scale(scale);
+
+        shader.bind();
+        glActiveTexture(GL_TEXTURE0);
+        font.bindTexture();
+
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
+        shader.setUniform3f("color",color);
+        shader.setUniformm4f("projection",matrixPos);
+
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER,vboVertices);
+        glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+        glBindBuffer(GL_ARRAY_BUFFER,vboTexCoords);
+        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+
+        glDrawArrays(GL_QUADS, 0, text.length()*4);
+
+        glBindBuffer(GL_ARRAY_BUFFER,0);
+
+
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+
+        shader.unbind();
+        glBindTexture(GL_TEXTURE_2D,0);
+        glActiveTexture(0);
+
+    }
+    public void drawMap(String text, Vector3f pos, int scale, Vector3f color){
+        Font font = fonts.get(0);
+
+        if(this.text == null){
+            DoubleBuffer textureBuffer = BufferUtils.createDoubleBuffer(text.length()*8);
+            IntBuffer verticesBuffer = BufferUtils.createIntBuffer(text.length()*8);
+
+
+            int shiftWidth = 0;
+
+
+            for(char c : text.toCharArray()){
+                for(FontChar fontChar : font.getChars()){
+                    if(fontChar.getChar() == c){
+                        int[] vertices = fontChar.getVertices().clone();
+                        for(int i = 0;i<8;i+=2){
+                            vertices[i]+=shiftWidth;
+                        }
+                        shiftWidth+=fontChar.getWidth();
+                        verticesBuffer.put(vertices);
+                        textureBuffer.put(fontChar.getTexCoords());
+                        break;
+                    }
+                }
+            }
+
+            textureBuffer.flip();
+            verticesBuffer.flip();
+
+
+            glBindBuffer(GL_ARRAY_BUFFER,vboTexCoords);
+            glBufferData(GL_ARRAY_BUFFER,textureBuffer,GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER,vboVertices);
+            glBufferData(GL_ARRAY_BUFFER,verticesBuffer,GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+            this.text = text;
+        } else if(!this.text.equals(text)){
+            DoubleBuffer textureBuffer = BufferUtils.createDoubleBuffer(text.length()*8);
+            IntBuffer verticesBuffer = BufferUtils.createIntBuffer(text.length()*8);
+
+
+            int shiftWidth = 0;
+
+
+            for(char c : text.toCharArray()){
+                for(FontChar fontChar : font.getChars()){
+                    if(fontChar.getChar() == c){
+                        int[] vertices = fontChar.getVertices().clone();
+                        for(int i = 0;i<8;i+=2){
+                            vertices[i]+=shiftWidth;
+                        }
+                        shiftWidth+=fontChar.getWidth();
+                        verticesBuffer.put(vertices);
+                        textureBuffer.put(fontChar.getTexCoords());
+                        break;
+                    }
+                }
+            }
+
+            textureBuffer.flip();
+            verticesBuffer.flip();
+
+
+            glBindBuffer(GL_ARRAY_BUFFER,vboTexCoords);
+            glBufferData(GL_ARRAY_BUFFER,textureBuffer,GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER,vboVertices);
+            glBufferData(GL_ARRAY_BUFFER,verticesBuffer,GL_DYNAMIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+            this.text = text;
+        }
+
+        matrixPos = new Matrix4f().translate(pos).scale(scale);
+
+        shader.bind();
+        glActiveTexture(GL_TEXTURE0);
+        font.bindTexture();
+
+        Camera.getInstance().projection().mul(matrixPos,matrixPos);
+        shader.setUniform3f("color",color);
+        shader.setUniformm4f("projection",matrixPos);
+
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER,vboVertices);
+        glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+        glBindBuffer(GL_ARRAY_BUFFER,vboTexCoords);
+        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+
+        glDrawArrays(GL_QUADS, 0, text.length()*4);
+
+        glBindBuffer(GL_ARRAY_BUFFER,0);
+
+
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+
+        shader.unbind();
+        glBindTexture(GL_TEXTURE_2D,0);
+        glActiveTexture(0);
+
     }
 }

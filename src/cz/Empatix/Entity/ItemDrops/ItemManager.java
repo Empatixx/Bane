@@ -37,6 +37,8 @@ public class ItemManager {
 
     private int totalCoins;
 
+    private TextRender[] textRender;
+
     public ItemManager(TileMap tm, GunsManager gm,ArtefactManager am, Player player) {
         ItemManager.tm = tm;
         ItemManager.gm = gm;
@@ -54,6 +56,9 @@ public class ItemManager {
         soundShopBuy = AudioManager.loadSound("buy.ogg");
 
         totalCoins = 0;
+
+        textRender = new TextRender[2];
+        for(int i=0;i<2;i++) textRender[i] = new TextRender();
     }
 
     public static void clear() {
@@ -255,23 +260,23 @@ public class ItemManager {
         for (ItemDrop drop : itemDrops) {
             drop.draw();
         }
-        if (showShopHud) {
+        if (showShopHud){
             shopHud.draw();
 
-            TextRender.renderMapText("" + shopItem.getPrice(), new Vector3f(
+            textRender[0].drawMap("" + shopItem.getPrice(), new Vector3f(
                             shopItem.getX() + shopHud.getWidth() + 3,
                             shopItem.getY() - 110,
                             0),
                     3,
                     new Vector3f(0.986f, 0.7f, 0.458f));
 
-            float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
-            TextRender.renderMapText("Press E to buy",new Vector3f(
+            float time = (float) Math.sin(System.currentTimeMillis() % 2000 / 600f) + (1 - (float) Math.cos((System.currentTimeMillis() % 2000 / 600f) + 0.5f));
+            textRender[1].drawMap("Press E to buy", new Vector3f(
                             shopItem.getX() - 65,
                             shopItem.getY() + 140,
                             0),
                     2,
-                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+                    new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
         }
     }
 

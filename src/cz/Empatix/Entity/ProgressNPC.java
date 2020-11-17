@@ -20,6 +20,8 @@ public class ProgressNPC extends MapObject {
 
     private UpgradeMenu upgradeMenu;
 
+    private TextRender textRender;
+
     public ProgressNPC(TileMap tm) {
         super(tm);
 
@@ -75,6 +77,8 @@ public class ProgressNPC extends MapObject {
 
         reverse = false;
         upgradeMenu = new UpgradeMenu();
+
+        textRender = new TextRender();
     }
 
     public void update(float x,float y) {
@@ -100,7 +104,8 @@ public class ProgressNPC extends MapObject {
         super.draw();
         if(touching && !interract) {
             float time = (float) Math.sin(System.currentTimeMillis() % 2000 / 600f) + (1 - (float) Math.cos((System.currentTimeMillis() % 2000 / 600f) + 0.5f));
-            TextRender.renderMapText("Press E to talk",new Vector3f(position.x-80,position.y+cheight/2,position.z),2,
+
+            textRender.draw("Press E to talk",new Vector3f(position.x-80,position.y+cheight/2,position.z),2,
                     new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
         }
     }

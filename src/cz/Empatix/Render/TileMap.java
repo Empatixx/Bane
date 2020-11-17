@@ -21,6 +21,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
@@ -62,12 +63,17 @@ public class TileMap {
 	// drawing
 	private int rowOffset;
 	private int colOffset;
+
+	private int previousrowOffset;
+	private int previouscolOffset;
+
 	private final int numRowsToDraw;
 	private final int numColsToDraw;
 
 	// opengl id of texture (tileset)
 	private int tilesetId;
-	private int vboVertexes;
+	private int vboVertices[];
+	private int vboTexCoords[];
 	//matrix4f opengl
 	private Matrix4f target;
 
@@ -88,6 +94,7 @@ public class TileMap {
 	private float playerStartY;
 
 	private long nextFloorEnterTime;
+	private TextRender[] title;
 
 
 	public TileMap(int tileSize, MiniMap miniMap) {
@@ -106,6 +113,10 @@ public class TileMap {
 		floor = 0;
 
 		sideRooms = new Room[4];
+		title = new TextRender[2];
+		for(int i = 0;i<2;i++){
+			title[i] = new TextRender();
+		}
 	}
 	public TileMap(int tileSize) {
 		this.tileSize = tileSize;
@@ -119,7 +130,7 @@ public class TileMap {
 		tween = 1;
 
 		target = new Matrix4f();
-		floor = 1;
+		floor = 0;
 
 	}
 	public void setPlayer(Player p){
@@ -134,6 +145,9 @@ public class TileMap {
 	}
 
 	public void loadTiles(String s) {
+		vboTexCoords = new int[]{glGenBuffers(),glGenBuffers()};
+		vboVertices = new int[]{glGenBuffers(),glGenBuffers()};
+
 		ByteBufferImage decoder = new ByteBufferImage();
 		ByteBuffer tileset = decoder.decodeImage(s);
 
@@ -174,34 +188,14 @@ public class TileMap {
 		}
 		STBImage.stbi_image_free(tileset);
 
-        int[] vertices =
-                {
-                        0,0, // BOTTOM LEFT
-						0,tileSize, // BOTTOM TOP
-                        tileSize,tileSize, // RIGHT TOP
-                        tileSize,0 // BOTTOM RIGHT
-
-
-
-                };
-
-        IntBuffer buffer = BufferUtils.createIntBuffer(vertices.length);
-        buffer.put(vertices);
-        buffer.flip();
-
-        vboVertexes = glGenBuffers();
-
-        glBindBuffer(GL_ARRAY_BUFFER,vboVertexes);
-        glBufferData(GL_ARRAY_BUFFER,buffer,GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER,0);
-
-
 		shader = ShaderManager.getShader("shaders\\shader");
 		if (shader == null){
 			shader = ShaderManager.createShader("shaders\\shader");
 		}
+		shader.setUniformi("sampler",0);
 
-        // because we are scaling image by 2x we must increase size of tileSize
+
+		// because we are scaling image by 2x we must increase size of tileSize
         tileSize *=2;
 
 	}
@@ -254,8 +248,8 @@ public class TileMap {
 		ymin = (Camera.getHEIGHT() - mistnost.getNumRows()*tileSize);
 		ymax = 0;
 
-
 		autoTile();
+
 
 		mistnost.createObjects(this,null);
 	}
@@ -271,6 +265,7 @@ public class TileMap {
 
 		// converting 1 and 0 into tiles id textures
 		autoTile();
+
 
 		// create map objects into all rooms
 		for(Room room : roomArrayList){
@@ -1030,68 +1025,93 @@ public class TileMap {
 	}
 	
 	public void draw(int tileType) {
-		target = new Matrix4f()
-				.translate(colOffset*tileSize,rowOffset*tileSize,0)
-				.scale(2);
 		Matrix4f projection = camera.projection();
 		shader.bind();
-		shader.setUniformi("sampler",0);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, tilesetId);
+		target = new Matrix4f()
+				.scale(2); // scaling image by 2
 
-		for(
-			int row = rowOffset;
-			row < rowOffset + numRowsToDraw;
-			row++
-		) {
+		projection.mul(target,target);
+		shader.setUniformm4f("projection",target);
 
-			if(row >= numRows) break;
-
-			for(
-				int col = colOffset;
-				col < colOffset + numColsToDraw;
-				col++
-			) {
-				if(col >= numCols) break;
-
-				if(getType(row,col) != tileType) continue;
-
-				int rc = map[row][col];
-				int r = rc / numTilesAcross;
-				int c = rc % numTilesAcross;
-
-				target = new Matrix4f()
-							.translate(col * tileSize,row * tileSize,0) // shift
-							.scale(2); // scaling image by 2
-
-				projection.mul(target,target);
-
-				shader.setUniformm4f("projection",target);
-
-				glEnableVertexAttribArray(0);
-				glEnableVertexAttribArray(1);
-
-				glBindBuffer(GL_ARRAY_BUFFER,vboVertexes);
-				glVertexAttribPointer(0,2,GL_INT,false,0,0);
-
-				glBindBuffer(GL_ARRAY_BUFFER,tiles[r][c].getVbo());
-				glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
-
-				glDrawArrays(GL_QUADS, 0, 4);
-
-				glBindBuffer(GL_ARRAY_BUFFER,0);
-
-				glDisableVertexAttribArray(0);
-				glDisableVertexAttribArray(1);
-
+		int count = 0;
+		for(int row = rowOffset; row < rowOffset + numRowsToDraw; row++) {
+			if (row >= numRows) break;
+			for (int col = colOffset; col < colOffset + numColsToDraw; col++) {
+				if (col >= numCols) break;
+				if(getType(row,col) == tileType){
+					count++;
+				}
 			}
-
-
 		}
+
+		if(previouscolOffset != colOffset || previousrowOffset != rowOffset){
+			IntBuffer verticesBuffer = BufferUtils.createIntBuffer(count*8);
+			DoubleBuffer texCoordsBuffer = BufferUtils.createDoubleBuffer(count*8);
+
+			for(int row = rowOffset; row < rowOffset + numRowsToDraw; row++) {
+				if (row >= numRows) break;
+				for (int col = colOffset; col < colOffset + numColsToDraw; col++) {
+					if (col >= numCols) break;
+					if(getType(row,col) != tileType ) continue;
+					int[] vertices =
+							{
+									col*tileSize/2,row*tileSize/2, // BOTTOM LEFT
+									col*tileSize/2,tileSize/2+row*tileSize/2, // BOTTOM TOP
+									tileSize/2+col*tileSize/2,tileSize/2+row*tileSize/2, // RIGHT TOP
+									tileSize/2+col*tileSize/2,row*tileSize/2 // BOTTOM RIGHT
+							};
+
+					int rc = map[row][col];
+					int r = rc / numTilesAcross;
+					int c = rc % numTilesAcross;
+
+					verticesBuffer.put(vertices);
+					texCoordsBuffer.put(tiles[r][c].getTexCoords());
+				}
+			}
+			texCoordsBuffer.flip();
+			verticesBuffer.flip();
+
+			glBindBuffer(GL_ARRAY_BUFFER, vboVertices[tileType]);
+			glBufferData(GL_ARRAY_BUFFER,verticesBuffer,GL_DYNAMIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER,0);
+
+			glBindBuffer(GL_ARRAY_BUFFER, vboTexCoords[tileType]);
+			glBufferData(GL_ARRAY_BUFFER,texCoordsBuffer,GL_DYNAMIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER,0);
+
+			if(tileType == Tile.BLOCKED){
+				previouscolOffset = colOffset;
+				previousrowOffset = rowOffset;
+			}
+		}
+
+
+
+
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vboVertices[tileType]);
+		glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+		glBindBuffer(GL_ARRAY_BUFFER,vboTexCoords[tileType]);
+		glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+
+		glDrawArrays(GL_QUADS, 0, count*4);
+
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
 
 		shader.unbind();
 		glBindTexture(GL_TEXTURE_2D,0);
 		glActiveTexture(0);
+
+
 	}
 
 	public void drawObjects(){
@@ -1265,11 +1285,13 @@ public class TileMap {
 	public void drawTitle(){
 		if(System.currentTimeMillis() - InGame.deltaPauseTime() - nextFloorEnterTime < 1250){
 			float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
-			TextRender.renderText("Floor "+RomanNumber.toRoman(floor+1),new Vector3f(950,540,0),5,
-					new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
 
-			TextRender.renderText("Enemies health is increased by "+12*floor+"%",new Vector3f(775,650,0),2,
-					new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+			 title[0].draw("Floor "+RomanNumber.toRoman(floor+1),new Vector3f(950,540,0),5,
+					 new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+
+			 title[1].draw("Enemies health is increased by "+12*floor+"%",new Vector3f(775,650,0),2,
+					 new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+
 		}
 	}
 

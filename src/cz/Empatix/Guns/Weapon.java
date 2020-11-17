@@ -5,6 +5,7 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Hud.Image;
+import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 
 import java.util.ArrayList;
@@ -37,6 +38,8 @@ public abstract class Weapon {
 
     Image weaponHud;
     Image weaponAmmo;
+    
+    TextRender textRender;
 
 
     /*
@@ -52,6 +55,8 @@ public abstract class Weapon {
         this.tm = tm;
         source = AudioManager.createSource(Source.EFFECTS,0.35f);
         reloadsource = AudioManager.createSource(Source.EFFECTS,0.35f);
+
+        textRender = new TextRender();
     }
 
 

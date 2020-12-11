@@ -52,7 +52,6 @@ public class Settings {
                         1366, 768,
                         1280, 720,
                         1024, 768,
-                        800, 600,
                 };
 
         // Load Settings
@@ -105,6 +104,7 @@ public class Settings {
                 Props.setProperty("vsync", Boolean.toString(true));
                 Props.setProperty("lightning", Boolean.toString(true));
                 Props.setProperty("brightness", Float.toString(0.f));
+                Props.setProperty("gamma", Float.toString(1.f));
 
 
                 Props.storeToXML(new FileOutputStream("settings.xml"), "");
@@ -117,7 +117,6 @@ public class Settings {
                 {
                         1600, 900,
                         1440, 900,
-                        800, 600,
 
                 };
         fixedCameraSize = false;
@@ -150,7 +149,6 @@ public class Settings {
                         1366, 768,
                         1280, 720,
                         1024, 768,
-                        800, 600,
                 };
         for (int i = 0; i < supportedDimensions.length; i += 2) {
             if (preWIDTH == supportedDimensions[i] && preHEIGHT == supportedDimensions[i + 1]) {
@@ -171,8 +169,7 @@ public class Settings {
                         1440, 900,
                         1366, 768,
                         1280, 720,
-                        1024, 768,
-                        800, 600,
+                        1024, 768
                 };
         for (int i = 0; i < supportedDimensions.length; i += 2) {
             if (preWIDTH == supportedDimensions[i] && preHEIGHT == supportedDimensions[i + 1]) {
@@ -190,8 +187,7 @@ public class Settings {
         int[] fixedSize =
                 {
                         1600, 900,
-                        1440, 900,
-                        800, 600,
+                        1440, 900
                 };
         fixedCameraSize = false;
         for (int j = 0; j < fixedSize.length; j += 2) {
@@ -210,6 +206,7 @@ public class Settings {
             glfwSwapInterval(Settings.preVSYNC ? 1 : 0);
         }
         VSYNC = preVSYNC;
+
     }
     public static void cancelChanges(){
         preHEIGHT = HEIGHT;
@@ -229,7 +226,6 @@ public class Settings {
                         1366, 768,
                         1280, 720,
                         1024, 768,
-                        800, 600,
                 };
         for (int i = 0; i < supportedDimensions.length - 1; i++) {
             if (maxWIDTH >= supportedDimensions[i] && maxHEIGHT >= supportedDimensions[i + 1]) {
@@ -239,9 +235,10 @@ public class Settings {
             }
         }
         preBRIGHTNESS = BRIGHTNESS = 0f;
-
         preVSYNC =VSYNC = true;
         preLIGHTNING = LIGHTNING = true;
+
+        confirmChanges();
     }
     public static void save(){
         Properties Props = new Properties();

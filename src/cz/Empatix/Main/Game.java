@@ -2,6 +2,7 @@ package cz.Empatix.Main;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.LoadingScreen;
@@ -23,7 +24,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class Game implements Runnable{
+public class Game{
     public static int ARROW = 0;
     public static int CROSSHAIR = 1;
     private static long[] cursors;
@@ -44,14 +45,6 @@ public class Game implements Runnable{
     private GLFWKeyCallback keyCallback;
 
     private TextRender text;
-
-    private void start(){
-        if(thread == null){
-            thread = new Thread(this,"Game");
-            thread.start();
-        }
-    }
-
 
     /**
      * creating a main window of game
@@ -88,12 +81,14 @@ public class Game implements Runnable{
         // TODO: cursor callback is null
         glfwSetKeyCallback(window, keyCallback); // keyboard input check
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
-        glfwSetCursorPosCallback(window, new GLFWCursorPosCallback(){
+        cursorPosCallback = new GLFWCursorPosCallback() {
             @Override
             public void invoke(long window, double xpos, double ypos) {
                 gsm.mousePos(xpos,ypos);
+
             }
-        });
+        };
+        glfwSetCursorPosCallback(window,cursorPosCallback);
         glfwSetWindowIconifyCallback(window, new GLFWWindowIconifyCallback() {
             @Override
             public void invoke(long window, boolean iconified) {
@@ -229,16 +224,53 @@ public class Game implements Runnable{
         // Without this won't opengl work
         GL.createCapabilities();
 
-        loading();
-
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0,1920,1080,0,1,-1);
-        glViewport(0,0,Settings.WIDTH,Settings.HEIGHT);
+        Loader.init();
+        LoadingScreen loadingScreen = new LoadingScreen();
 
         glEnable(GL_TEXTURE_2D);
-        glEnable(GL_LINE_SMOOTH);
         glEnable(GL_BLEND);
+        glEnable(GL_LINE_SMOOTH);
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
+
+        // Make the window visible
+        glfwShowWindow(window);
+
+        // LOADING GAME LOOP
+        TextRender textRender = new TextRender();
+        while(!Loader.isDone()){
+            if(glfwWindowShouldClose(window)){
+                running=false;
+            }
+            long now = System.nanoTime();
+            delta += (now-lastTime) / ns;
+            lastTime = now;
+
+            while (delta >= 1){
+                loadingScreen.update();
+                updates++;
+                delta--;
+
+            }
+            frames++;
+            glClear(GL_COLOR_BUFFER_BIT); // clear the framebuffer
+            loadingScreen.draw();
+            textRender.draw(Loader.rendering(),new Vector3f(860,950,0),3,new Vector3f(0.874f,0.443f,0.149f));
+            glfwSwapBuffers(window);
+
+            if (System.currentTimeMillis() - timer > 1000){
+                timer += 1000;
+                System.out.print("UPS: "+updates+"   "+"FPS: "+frames+"\n");
+                FPS = frames;
+                // GARBAGE COLLECTOR
+                frames = 0;
+                updates = 0;
+            }
+        }
+
+        glOrtho(0,1920,1080,0,1,-1);
+        glViewport(0,0, Settings.WIDTH,Settings.HEIGHT);
 
         /*glEnable(GL_DEBUG_OUTPUT);
         glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -254,11 +286,6 @@ public class Game implements Runnable{
             }
         },NULL);
 */
-
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
 
         // GAMESTATE / RUNNING
         initGame();
@@ -297,9 +324,11 @@ public class Game implements Runnable{
             }
         }
         Settings.save();
+        Loader.unload();
         keyCallback.free();
         mouseButtonCallback.free();
         cursorPosCallback.free();
+        //cursorPosCallback.free();
         GL.setCapabilities(null);
         AudioManager.cleanUp();
         glfwDestroyWindow(window);
@@ -315,7 +344,7 @@ public class Game implements Runnable{
     }
 
     private void draw() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+        glClear(GL_COLOR_BUFFER_BIT); // clear the framebuffer
         // gamestate draw
         gsm.draw();
 
@@ -342,7 +371,7 @@ public class Game implements Runnable{
     }
 
     public static void main(String[] args){
-        new Game().start();
+        new Game().run();
     }
 
     public static void stopGame(){
@@ -352,14 +381,5 @@ public class Game implements Runnable{
     public static void setCursor(int type){
         GLFW.glfwSetCursor(window, cursors[type]);
 
-
-    }
-    public void loading(){
-        LoadingScreen loadingScreen = new LoadingScreen();
-        loadingScreen.draw();
-        glfwSwapBuffers(window);
-
-        // Make the window visible
-        glfwShowWindow(window);
     }
 }

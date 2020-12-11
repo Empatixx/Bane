@@ -162,7 +162,7 @@ public class ProgressRoom extends GameState {
 
     @Override
     void mouseReleased(int button) {
-        if(false)progressNPC.mouseReleased(mouseX,mouseY);
+        progressNPC.mouseReleased(mouseX,mouseY);
     }
 
     @Override

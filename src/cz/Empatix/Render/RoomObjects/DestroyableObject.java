@@ -96,7 +96,7 @@ public class DestroyableObject extends RoomObject {
 
 
             glBindBuffer(GL_ARRAY_BUFFER, animation.getFrame().getVbo());
-            glVertexAttribPointer(1, 2, GL_DOUBLE, false, 0, 0);
+            glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
 
             glDrawArrays(GL_QUADS, 0, 4);
 

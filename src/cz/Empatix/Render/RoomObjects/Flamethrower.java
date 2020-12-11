@@ -3,6 +3,7 @@ package cz.Empatix.Render.RoomObjects;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -20,6 +21,9 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Flamethrower extends RoomObject {
+    public static void load(){
+        Loader.loadImage("Textures\\Sprites\\flamethrower.tga");
+    }
     public boolean remove;
     private Player player;
     private boolean damageAnimation;
@@ -59,15 +63,15 @@ public class Flamethrower extends RoomObject {
             spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\flamethrower.tga");
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (double) i/spriteSheetCols,0,
+                                (float) i/spriteSheetCols,0,
 
-                                (double)i/spriteSheetCols,1,
+                                (float)i/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,1,
+                                (1.0f+i)/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,0
+                                (1.0f+i)/spriteSheetCols,0
                         };
                 Sprite sprite = new Sprite(texCoords);
                 sprites[i] = sprite;
@@ -77,15 +81,15 @@ public class Flamethrower extends RoomObject {
 
             sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (1.0+i)/spriteSheetCols,0,
+                                (1.0f+i)/spriteSheetCols,0,
 
-                                (double) i/spriteSheetCols,0,
+                                (float) i/spriteSheetCols,0,
 
-                                (double)i/spriteSheetCols,1,
+                                (float)i/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,1
+                                (1.0f+i)/spriteSheetCols,1
 
                         };
                 Sprite sprite = new Sprite(texCoords);
@@ -181,7 +185,7 @@ public class Flamethrower extends RoomObject {
 
 
         glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 

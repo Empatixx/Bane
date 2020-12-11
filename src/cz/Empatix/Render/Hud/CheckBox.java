@@ -1,5 +1,6 @@
 package cz.Empatix.Render.Hud;
 
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -8,14 +9,16 @@ import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
 
 public class CheckBox {
+    public static void load(){
+        Loader.loadImage("Textures\\Menu\\checkbox.tga");
+    }
 
     private final float minX;
     private final float maxX;
@@ -37,15 +40,15 @@ public class CheckBox {
 
     /**
      *
-     * @param file - path of texture
      * @param pos - position of menu bar
      * @param scale - scaling of texture(width*scale,height*scale)
      * @param width - width on screen
      * @param height- height on screen
      */
-    public CheckBox(String file, Vector3f pos, float scale, int width, int height){
-        ByteBufferImage decoder = new ByteBufferImage();
-        ByteBuffer spritesheetImage = decoder.decodeImage(file);
+    public CheckBox(Vector3f pos, float scale, int width, int height){
+        String file = "Textures\\Menu\\checkbox.tga";
+        ByteBufferImage decoder = Loader.getImage(file);
+        ByteBuffer spritesheetImage = decoder.getBuffer();
 
 
         minX = (int)pos.x-width*scale/2;
@@ -68,8 +71,6 @@ public class CheckBox {
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
 
-        STBImage.stbi_image_free(spritesheetImage);
-
         vboVertices = ModelManager.getModel(width,height);
         if (vboVertices == -1) {
             vboVertices = ModelManager.createModel(width, height);
@@ -77,15 +78,15 @@ public class CheckBox {
         vboTextures = new int[2];
         for(int i = 0;i<2;i++){
             // clicking icon
-            double[] texCoords2 =
+            float[] texCoords2 =
                         {
-                                0,i*0.5,
-                                0,0.5+i*0.5,
-                                1,0.5+i*0.5,
-                                1,i*0.5
+                                0,i*0.5f,
+                                0,0.5f+i*0.5f,
+                                1,0.5f+i*0.5f,
+                                1,i*0.5f
                         };
 
-            DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords2.length);
+            FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords2.length);
             buffer.put(texCoords2);
             buffer.flip();
             vboTextures[i] = glGenBuffers();
@@ -117,7 +118,7 @@ public class CheckBox {
         glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
         glBindBuffer(GL_ARRAY_BUFFER,selected ? vboTextures[1] : vboTextures[0]);
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 

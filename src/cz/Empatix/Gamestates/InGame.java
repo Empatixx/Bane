@@ -11,6 +11,7 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.GunsManager;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
@@ -40,6 +41,17 @@ import static org.lwjgl.opengl.GL11.*;
 
 
 public class InGame extends GameState {
+    public static void load(){
+        Loader.loadImage("Textures\\Menu\\pausemenu.tga");
+        Loader.loadImage("Textures\\Menu\\bg.png");
+        Loader.loadImage("Textures\\skull.tga");
+        Loader.loadImage("Textures\\killslogo.tga");
+        Loader.loadImage("Textures\\coinlogo.tga");
+        Loader.loadImage("Textures\\accuracylogo.tga");
+        Loader.loadImage("Textures\\timelogo.tga");
+
+    }
+
     private boolean pause;
     private boolean endRewardEarned;
     private long gameStart;
@@ -178,10 +190,8 @@ public class InGame extends GameState {
         if(player.isDead()) return;
         if(pause) return;
 
-        if (k == GLFW.GLFW_KEY_F1){
-            Game.displayCollisions = !Game.displayCollisions;
-        }
-        if (k == GLFW.GLFW_KEY_F2){
+
+        if (k == GLFW.GLFW_KEY_F3){
             console.setEnabled(!console.isEnabled());
         }
 

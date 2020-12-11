@@ -4,6 +4,7 @@ package cz.Empatix.Gamestates;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.AudioManager.Source;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Background;
@@ -18,6 +19,11 @@ import static cz.Empatix.Main.Game.ARROW;
 import static cz.Empatix.Main.Game.setCursor;
 
 public class MenuState extends GameState{
+    public static void load(){
+        Loader.loadImage("Textures\\Menu\\logo.tga");
+        Loader.loadImage("Textures\\Menu\\bg.png");
+        Loader.loadImage("Textures\\Menu\\settings.tga");
+    }
     // main menu
     private final static int BEGIN = 0;
     private final static int SETTINGS = 1;
@@ -34,6 +40,7 @@ public class MenuState extends GameState{
     private final static int LIGHTNING = 9;
     private final static int VSYNC = 10;
     private final static int BRIGHTNESS = 11;
+    private final static int CONTRAST = 14;
     private final static int CONFIRMCHANGES = 12;
     private final static int RESETCHANGES = 13;
 
@@ -105,6 +112,7 @@ public class MenuState extends GameState{
                 textRender[5].draw("Lightning:",new Vector3f(460,525,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 textRender[6].draw("V-Sync:",new Vector3f(460,600,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 textRender[7].draw("Brightness:",new Vector3f(460,675,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                //textRender[26].draw("Contrast:",new Vector3f(460,750,0),3,new Vector3f(0.874f,0.443f,0.149f));
 
                 textRender[8].draw("Reset",new Vector3f(1495,855,0),2,new Vector3f(0.874f,0.443f,0.149f));
                 textRender[9].draw("Confirm",new Vector3f(1320,855,0),2,new Vector3f(0.874f,0.443f,0.149f));
@@ -124,14 +132,14 @@ public class MenuState extends GameState{
                             r = 2 * (1-value);
                             g = 1f;
                         }
-                        textRender[10].draw((int)(value*100)+"%",new Vector3f(pos.x(),pos.y()-25,pos.z()),2, new Vector3f(r,g,b));
+                        textRender[11].draw((int)(value*100)+"%",new Vector3f(pos.x(),pos.y()-25,pos.z()),2, new Vector3f(r,g,b));
                     }
                     hud.draw();
                 }
             } else if (selectedSettings == AUDIO){
-                textRender[10].draw("Overall:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[11].draw("Sounds:",new Vector3f(460,550,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[12].draw("Music:",new Vector3f(460,650,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[11].draw("Overall:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[12].draw("Sounds:",new Vector3f(460,550,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[13].draw("Music:",new Vector3f(460,650,0),3,new Vector3f(0.874f,0.443f,0.149f));
 
 
                 for(SliderBar hud:audioSliders){
@@ -146,19 +154,19 @@ public class MenuState extends GameState{
                             r = 2 * (1-value);
                             g = 1f;
                         }
-                        textRender[13].draw((int)(value*100)+"%",new Vector3f(pos.x(),pos.y()-25,pos.z()),2, new Vector3f(r,g,b));
+                        textRender[14].draw((int)(value*100)+"%",new Vector3f(pos.x(),pos.y()-25,pos.z()),2, new Vector3f(r,g,b));
                     }
                     hud.draw();
                 }
             } else if (selectedSettings == CONTROLS){
-                textRender[14].draw("Move Up",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[15].draw("Move Down",new Vector3f(460,500,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[16].draw("Move left",new Vector3f(460,550,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[17].draw("Move right",new Vector3f(460,600,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[18].draw("Object interact",new Vector3f(460,650,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[19].draw("Weapon drop",new Vector3f(460,700,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[20].draw("Shoot",new Vector3f(460,750,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[21].draw("Weapon slot 1",new Vector3f(460,800,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[15].draw("Move Up",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[16].draw("Move Down",new Vector3f(460,500,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[17].draw("Move left",new Vector3f(460,550,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[18].draw("Move right",new Vector3f(460,600,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[19].draw("Object interact",new Vector3f(460,650,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[20].draw("Weapon drop",new Vector3f(460,700,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[21].draw("Shoot",new Vector3f(460,750,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[22].draw("Weapon slot 1",new Vector3f(460,800,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 textRender[23].draw("Weapon slot 2",new Vector3f(460,850,0),3,new Vector3f(0.874f,0.443f,0.149f));
 
 
@@ -249,34 +257,38 @@ public class MenuState extends GameState{
         graphicsHuds[3] = bar;
 
 
-        CheckBox checkbox = new CheckBox("Textures\\Menu\\checkbox.tga", new Vector3f(1220,505,0),1,64,64);
+        CheckBox checkbox = new CheckBox(new Vector3f(1220,505,0),1,64,64);
         checkbox.setType(LIGHTNING);
         checkbox.setSelected(Settings.preLIGHTNING);
         checkBoxes[0] = checkbox;
 
-        checkbox = new CheckBox("Textures\\Menu\\checkbox.tga", new Vector3f(1220,580,0),1,64,64);
+        checkbox = new CheckBox(new Vector3f(1220,580,0),1,64,64);
         checkbox.setType(VSYNC);
         checkbox.setSelected(Settings.preVSYNC);
         checkBoxes[1] = checkbox;
 
 
-        SliderBar sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1225,670,0),3);
+        SliderBar sliderBar = new SliderBar(new Vector3f(1225,670,0),3);
         sliderBar.setValue(Settings.preBRIGHTNESS);
         sliderBar.setType(BRIGHTNESS);
         graphicsSliders[0] = sliderBar;
 
+        //sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1225,730,0),3);
+        //sliderBar.setValue(Settings.preGAMMA);
+        //sliderBar.setType(GAMMA);
+        //graphicsSliders[1] = sliderBar;
 
-        sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1100,430,0),4);
+        sliderBar = new SliderBar(new Vector3f(1100,430,0),4);
         sliderBar.setValue(Settings.OVERALL);
         sliderBar.setType(OVERALL);
         audioSliders[0] = sliderBar;
 
-        sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1100,530,0),4);
+        sliderBar = new SliderBar(new Vector3f(1100,530,0),4);
         sliderBar.setValue(Settings.EFFECTS);
         sliderBar.setType(EFFECTS);
         audioSliders[1] = sliderBar;
 
-        sliderBar = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(1100,630,0),4);
+        sliderBar = new SliderBar(new Vector3f(1100,630,0),4);
         sliderBar.setValue(Settings.MUSIC);
         sliderBar.setType(MUSIC);
         audioSliders[2] = sliderBar;
@@ -369,10 +381,12 @@ public class MenuState extends GameState{
                         }
                     } else if (type == CONFIRMCHANGES){
                         if (hud.intersects(mouseX, mouseY)){
+                            source.play(soundMenuClick);
                             Settings.confirmChanges();
                         }
                     } else if (type == RESETCHANGES){
                         if(hud.intersects(mouseX,mouseY)){
+                            source.play(soundMenuClick);
                             Settings.reset();
                             checkBoxes[0].setSelected(Settings.LIGHTNING);
                             checkBoxes[1].setSelected(Settings.VSYNC);
@@ -443,6 +457,9 @@ public class MenuState extends GameState{
                         int type = sliderBar.getType();
                         if(type == BRIGHTNESS) {
                             Settings.preBRIGHTNESS = sliderBar.getValue();
+                        }
+                        if(type == CONTRAST) {
+                            //Settings.CONTRAST = sliderBar.getValue();
                         }
                     }
                 }

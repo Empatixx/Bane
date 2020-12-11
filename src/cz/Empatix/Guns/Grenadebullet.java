@@ -7,6 +7,7 @@ import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -22,6 +23,9 @@ import org.joml.Vector3f;
 
 
 public class Grenadebullet extends MapObject {
+    public static void load(){
+        Loader.loadImage("Textures\\Sprites\\Player\\explosion.tga");
+    }
     // SPRITE VARS
     private final static int sprites = 0;
     private final static int explosion = 1;
@@ -72,13 +76,13 @@ public class Grenadebullet extends MapObject {
             Sprite[] images = new Sprite[4];
 
             for(int i = 0; i < images.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (double)i/spriteSheetCols,0,
+                                (float)i/spriteSheetCols,0,
 
-                                (double)i/spriteSheetCols,1.0/spriteSheetRows,
+                                (float)i/spriteSheetCols,1.0f/spriteSheetRows,
 
-                                (i+1.0)/spriteSheetCols,1.0/spriteSheetRows,
+                                (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows,
 
                                 (i+1.0f)/spriteSheetCols,0
                         };
@@ -92,15 +96,15 @@ public class Grenadebullet extends MapObject {
             images = new Sprite[12];
 
             for(int i = 0; i < images.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (double)i/spriteSheetCols,0.5,
+                                (float)i/spriteSheetCols,0.5f,
 
-                                (double)i/spriteSheetCols,1.0,
+                                (float)i/spriteSheetCols,1.0f,
 
-                                (i+1.0)/spriteSheetCols,1.0,
+                                (i+1.0f)/spriteSheetCols,1.0f,
 
-                                (i+1.0f)/spriteSheetCols,0.5
+                                (i+1.0f)/spriteSheetCols,0.5f
                         };
                 Sprite sprite = new Sprite(texCoords);
 

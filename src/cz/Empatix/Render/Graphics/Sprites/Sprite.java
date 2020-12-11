@@ -2,14 +2,16 @@ package cz.Empatix.Render.Graphics.Sprites;
 
 import org.lwjgl.BufferUtils;
 
-import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL15.*;
 
 public class Sprite {
     private final int vboTextures;
-    public Sprite(double[] texCoords){
-        DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
+    private float[] texCoords;
+    public Sprite(float[] texCoords){
+        this.texCoords = texCoords;
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords.length);
         buffer.put(texCoords);
         buffer.flip();
         vboTextures = glGenBuffers();
@@ -22,17 +24,18 @@ public class Sprite {
     public Sprite(int padding,int curCol,int curRow,int width,int height, int rows,int cols){
         int maxWidth = (cols+1)*padding+cols*width;
         int maxHeight = (rows+1)*padding+rows*height;
-        double[] texCoords =
+        float[] texCoords =
                 {
-                        (double)(curCol*width+padding*(curCol+1))/maxWidth,(double)(padding*(curRow+1)+height*curRow)/maxHeight,
+                        (float)(curCol*width+padding*(curCol+1))/maxWidth,(float)(padding*(curRow+1)+height*curRow)/maxHeight,
 
-                        (double)(curCol*width+padding*(curCol+1))/maxWidth,(double)((padding+height)*(curRow+1))/maxHeight,
+                        (float)(curCol*width+padding*(curCol+1))/maxWidth,(float)((padding+height)*(curRow+1))/maxHeight,
 
-                        (double)((curCol+1)*width+padding*(curCol+1))/maxWidth,(double)((padding+height)*(curRow+1))/maxHeight,
+                        (float)((curCol+1)*width+padding*(curCol+1))/maxWidth,(float)((padding+height)*(curRow+1))/maxHeight,
 
-                        (double)((curCol+1)*width+padding*(curCol+1))/maxWidth,(double)(padding*(curRow+1)+height*curRow)/maxHeight
+                        (float)((curCol+1)*width+padding*(curCol+1))/maxWidth,(float)(padding*(curRow+1)+height*curRow)/maxHeight
                 };
-        DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
+        this.texCoords = texCoords;
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords.length);
         buffer.put(texCoords);
         buffer.flip();
         vboTextures = glGenBuffers();
@@ -44,5 +47,9 @@ public class Sprite {
     }
     public int getVbo() {
         return vboTextures;
+    }
+
+    public float[] getTexCoords() {
+        return texCoords;
     }
 }

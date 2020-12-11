@@ -1,5 +1,6 @@
 package cz.Empatix.Render.Hud.Minimap;
 
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -12,16 +13,20 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 
 public class MiniMap {
+    public static void load(){
+        Loader.loadImage("Textures\\minimap.tga");
+        Loader.loadImage("Textures\\player-icon.tga");
+        Loader.loadImage("Textures\\minimap-icons.tga");
+    }
     private Image minimapBorders;
     private Image playerIcon;
     private int idTexture;
@@ -43,8 +48,8 @@ public class MiniMap {
         rooms = new MMRoom[9];
         idTexture = glGenTextures();
 
-        ByteBufferImage decoder = new ByteBufferImage();
-        ByteBuffer spritesheetImage = decoder.decodeImage("Textures\\minimap-icons.tga");
+        ByteBufferImage decoder = Loader.getImage("Textures\\minimap-icons.tga");
+        ByteBuffer spritesheetImage = decoder.getBuffer();
 
         glBindTexture(GL_TEXTURE_2D, idTexture);
 
@@ -57,8 +62,6 @@ public class MiniMap {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
 
 
-        STBImage.stbi_image_free(spritesheetImage);
-
         vboVertices = ModelManager.getModel(16,16);
         if (vboVertices == -1) {
             vboVertices = ModelManager.createModel(16, 16);
@@ -69,14 +72,14 @@ public class MiniMap {
         }
         vboTextures = new int[5];
         for(int i = 0;i<5;i++) {
-            double[] texCoords =
+            float[] texCoords =
                     {
-                            (double) i / 5, 0,
-                            (double) i / 5, 1.0,
-                            (i + 1.0) / 5, 1.0,
-                            (i + 1.0) / 5, 0
+                            (float) i / 5, 0,
+                            (float) i / 5, 1.0f,
+                            (i + 1.0f) / 5, 1.0f,
+                            (i + 1.0f) / 5, 0
                     };
-            DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
+            FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords.length);
             buffer.put(texCoords);
             buffer.flip();
             vboTextures[i] = glGenBuffers();
@@ -131,7 +134,7 @@ public class MiniMap {
                     glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
 
                     glBindBuffer(GL_ARRAY_BUFFER, vboTextures[room.getType()]);
-                    glVertexAttribPointer(1, 2, GL_DOUBLE, false, 0, 0);
+                    glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
 
                     glDrawArrays(GL_QUADS, 0, 4);
 
@@ -144,7 +147,7 @@ public class MiniMap {
             }
             shader.unbind();
             glBindTexture(GL_TEXTURE_2D, 0);
-            glActiveTexture(0);
+            glActiveTexture(GL_TEXTURE0);
 
             for (MMRoom room : rooms) {
                 if (room.isDiscovered()) {
@@ -260,7 +263,7 @@ public class MiniMap {
                     glVertexAttribPointer(0, 2, GL_INT, false, 0, 0);
 
                     glBindBuffer(GL_ARRAY_BUFFER, vboTextures[room.getType()]);
-                    glVertexAttribPointer(1, 2, GL_DOUBLE, false, 0, 0);
+                    glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
 
                     glDrawArrays(GL_QUADS, 0, 4);
 
@@ -273,7 +276,7 @@ public class MiniMap {
             }
             shader.unbind();
             glBindTexture(GL_TEXTURE_2D, 0);
-            glActiveTexture(0);
+            glActiveTexture(GL_TEXTURE0);
 
             for (MMRoom room : rooms) {
                 if (room.isDiscovered()) {

@@ -1,6 +1,7 @@
 package cz.Empatix.Render.Text;
 
 
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -23,6 +24,9 @@ import static org.lwjgl.opengl.GL20.*;
 
 
 public class TextRender {
+    public static void load(){
+        Loader.loadImage("Textures\\font.tga");
+    }
 
     private static ArrayList<Font> fonts;
 
@@ -114,7 +118,9 @@ public class TextRender {
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\text");
         }
+        shader.bind();
         shader.setUniformi("sampler",0);
+        shader.unbind();
     }
 
     public void draw(String text, Vector3f pos, int scale, Vector3f color){
@@ -224,7 +230,7 @@ public class TextRender {
 
         shader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0);
 
     }
     public void drawMap(String text, Vector3f pos, int scale, Vector3f color){
@@ -334,7 +340,7 @@ public class TextRender {
 
         shader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0);
 
     }
 }

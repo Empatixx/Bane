@@ -5,6 +5,7 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Support.BerserkPot;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
@@ -13,6 +14,12 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 
 public class ArtefactManager {
+    public static void load(){
+        Loader.loadImage("Textures\\Artefacts\\artefacthud.tga");
+        RingOfFire.load();
+        BerserkPot.load();
+        TransportableArmorPot.load();
+    }
     private static ArrayList<Artefact> artefacts;
 
     public Image artefactHud;

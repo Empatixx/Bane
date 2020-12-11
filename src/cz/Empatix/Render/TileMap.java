@@ -4,6 +4,7 @@ package cz.Empatix.Render;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Java.RomanNumber;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
@@ -18,7 +19,6 @@ import cz.Empatix.Render.Text.TextRender;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import static org.lwjgl.opengl.GL43.*;
 
 public class TileMap {
+	public static void load(){
+		Loader.loadImage("Textures\\tileset64.tga");
+	}
 	// gamestate
 	private int floor;
 
@@ -148,8 +151,8 @@ public class TileMap {
 		vboTexCoords = new int[]{glGenBuffers(),glGenBuffers()};
 		vboVertices = new int[]{glGenBuffers(),glGenBuffers()};
 
-		ByteBufferImage decoder = new ByteBufferImage();
-		ByteBuffer tileset = decoder.decodeImage(s);
+		ByteBufferImage decoder = Loader.getImage("Textures\\tileset64.tga");
+		ByteBuffer tileset = decoder.getBuffer();
 
 		tilesetId = glGenTextures();
 
@@ -186,7 +189,6 @@ public class TileMap {
 					};
 			tiles[1][col] = new Tile(texCoordsCol, Tile.BLOCKED);
 		}
-		STBImage.stbi_image_free(tileset);
 
 		shader = ShaderManager.getShader("shaders\\shader");
 		if (shader == null){
@@ -299,8 +301,6 @@ public class TileMap {
 
 		}
 		setPosition(Camera.getWIDTH() / 2f - playerStartX,Camera.getHEIGHT() / 2f - playerStartY);
-
-
 	}
 
 	public void updateCurrentRoom(int x, int y){
@@ -1109,7 +1109,7 @@ public class TileMap {
 
 		shader.unbind();
 		glBindTexture(GL_TEXTURE_2D,0);
-		glActiveTexture(0);
+		glActiveTexture(GL_TEXTURE0);
 
 
 	}

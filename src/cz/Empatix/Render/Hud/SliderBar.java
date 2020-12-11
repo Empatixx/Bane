@@ -1,5 +1,6 @@
 package cz.Empatix.Render.Hud;
 
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -8,14 +9,17 @@ import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
 
 public class SliderBar {
+    public static void load(){
+        Loader.loadImage("Textures\\Menu\\volume_slider.tga");
+        Loader.loadImage("Textures\\Menu\\volume_slider_rail.tga");
+    }
     // value that is affected by slider
     private float value;
 
@@ -55,11 +59,12 @@ public class SliderBar {
 
     private boolean vertical;
 
-    public SliderBar(String file, Vector3f pos, float scale){
+    public SliderBar(Vector3f pos, float scale){
+        String file = "Textures\\Menu\\volume_slider";
         this.pos = pos;
         this.scale = scale;
-        ByteBufferImage decoder = new ByteBufferImage();
-        ByteBuffer spritesheetImage = decoder.decodeImage(file+"_rail.tga");
+        ByteBufferImage decoder = Loader.getImage(file+"_rail.tga");
+        ByteBuffer spritesheetImage = decoder.getBuffer();
 
         width = decoder.getWidth();
         height = decoder.getHeight();
@@ -84,14 +89,12 @@ public class SliderBar {
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int) width,(int) height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
 
-        STBImage.stbi_image_free(spritesheetImage);
-
         vboVertices = ModelManager.getModel((int) width,(int) height);
         if (vboVertices == -1) {
             vboVertices = ModelManager.createModel((int) width, (int)height);
         }
         // clicking icon
-        double[] texCoords =
+        float[] texCoords =
                     {
                             0,0,
                             0,1,
@@ -99,7 +102,7 @@ public class SliderBar {
                             1,0
                     };
 
-        DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords.length);
         buffer.put(texCoords);
         buffer.flip();
         vboTextures = glGenBuffers();
@@ -116,8 +119,8 @@ public class SliderBar {
 
         ///
         ///
-        decoder = new ByteBufferImage();
-        spritesheetImage = decoder.decodeImage(file+".tga");
+        decoder = Loader.getImage(file+".tga");
+        spritesheetImage = decoder.getBuffer();
 
         this.sliderWidth = decoder.getWidth();
         this.sliderHeight = decoder.getHeight();
@@ -130,8 +133,6 @@ public class SliderBar {
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this.sliderWidth, sliderHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
-
-        STBImage.stbi_image_free(spritesheetImage);
 
         vboVerticesSlider = ModelManager.getModel(sliderWidth,sliderHeight);
         if (vboVerticesSlider == -1) {
@@ -178,7 +179,7 @@ public class SliderBar {
         glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
         glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 
@@ -207,7 +208,7 @@ public class SliderBar {
         glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
         glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 
@@ -218,7 +219,7 @@ public class SliderBar {
 
         shader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0);
 
 
     }
@@ -297,7 +298,7 @@ public class SliderBar {
             vboVerticesSlider = ModelManager.createModel(sliderHeight, sliderWidth);
         }
         glDeleteBuffers(vboTextures);
-        double[] texCoords =
+        float[] texCoords =
                 {
                         0, 1,
                         1, 1,
@@ -306,7 +307,7 @@ public class SliderBar {
 
                 };
 
-        DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords.length);
         buffer.put(texCoords);
         buffer.flip();
         vboTextures = glGenBuffers();

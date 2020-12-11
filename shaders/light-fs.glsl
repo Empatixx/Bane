@@ -28,6 +28,9 @@ void main()
     } else {
 
         vec3 lAtt = vec3(5.5,0.001,0.0003);
+
+        lAtt*=vec3(1920/size.x);
+
         //vec3 lAtt = vec3(0.96,0.001,0.0005);
 
         // coords of screen

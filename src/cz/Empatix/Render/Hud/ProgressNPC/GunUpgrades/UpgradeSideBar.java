@@ -3,13 +3,20 @@ package cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades;
 import cz.Empatix.Database.Database;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Hud.MenuBar;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
 public class UpgradeSideBar {
-
+    public static void load(){
+        Loader.loadImage("Textures\\Menu\\menu_bar.tga");
+        Loader.loadImage("Textures\\ProgressRoom\\upgrademenu-guns-sidebar.tga");
+        Loader.loadImage("Textures\\coin.tga");
+        Loader.loadImage("Textures\\ProgressRoom\\bought-bar.tga");
+        Loader.loadImage("Textures\\ProgressRoom\\lockedbar.tga");
+    }
     private Image sideBar;
     private String[] text;
     private Vector3f pos;

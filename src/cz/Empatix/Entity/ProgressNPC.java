@@ -1,5 +1,6 @@
 package cz.Empatix.Entity;
 
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -21,6 +22,10 @@ public class ProgressNPC extends MapObject {
     private UpgradeMenu upgradeMenu;
 
     private TextRender textRender;
+
+    public static void load(){
+        Loader.loadImage("Textures\\Sprites\\Enemies\\shopkeeper.tga");
+    }
 
     public ProgressNPC(TileMap tm) {
         super(tm);
@@ -105,7 +110,7 @@ public class ProgressNPC extends MapObject {
         if(touching && !interract) {
             float time = (float) Math.sin(System.currentTimeMillis() % 2000 / 600f) + (1 - (float) Math.cos((System.currentTimeMillis() % 2000 / 600f) + 0.5f));
 
-            textRender.draw("Press E to talk",new Vector3f(position.x-80,position.y+cheight/2,position.z),2,
+            textRender.drawMap("Press E to talk",new Vector3f(position.x-80,position.y+cheight/2,0),2,
                     new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
         }
     }
@@ -116,7 +121,10 @@ public class ProgressNPC extends MapObject {
     }
 
     public void keyPress(int k) {
-        if(k == GLFW.GLFW_KEY_E)interract = !interract;
+        if(k == GLFW.GLFW_KEY_E){
+            interract = !interract;
+            upgradeMenu.unlockSlider();
+        }
         else if(k == GLFW.GLFW_KEY_ESCAPE)interract = false;
     }
     public void touching(MapObject obj){

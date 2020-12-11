@@ -1,6 +1,7 @@
 package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -21,6 +22,9 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Torch extends RoomObject {
+    public static void load(){
+        Loader.loadImage("Textures\\Sprites\\torch.tga");
+    }
     public static final int SIDELEFT = 0;
     public static final int SIDERIGHT = 1;
     public static final int TOP = 2;
@@ -53,15 +57,15 @@ public class Torch extends RoomObject {
                 Sprite[] sprites = new Sprite[4];
 
                 for(int i = 0; i < sprites.length; i++) {
-                    double[] texCoords =
+                    float[] texCoords =
                             {
-                                    (double) i / spriteSheetCols, (double)j/spriteSheetRows,
+                                    (float) i / spriteSheetCols, (float)j/spriteSheetRows,
 
-                                    (double) i / spriteSheetCols, (double)(j+1)/spriteSheetRows,
+                                    (float) i / spriteSheetCols, (float)(j+1)/spriteSheetRows,
 
-                                    (1.0 + i) / spriteSheetCols, (double)(j+1)/spriteSheetRows,
+                                    (1.0f + i) / spriteSheetCols, (float)(j+1)/spriteSheetRows,
 
-                                    (1.0 + i) / spriteSheetCols, (double)j/spriteSheetRows
+                                    (1.0f + i) / spriteSheetCols, (float)j/spriteSheetRows
                             };
                     Sprite sprite = new Sprite(texCoords);
                     sprites[i] = sprite;
@@ -145,7 +149,7 @@ public class Torch extends RoomObject {
 
 
         glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 

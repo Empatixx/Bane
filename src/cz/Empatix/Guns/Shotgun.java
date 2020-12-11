@@ -4,6 +4,7 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
@@ -16,6 +17,10 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 
 public class Shotgun extends Weapon {
+    public static void load(){
+        Loader.loadImage("Textures\\shotgun.tga");
+        Loader.loadImage("Textures\\shotgun_bullet.tga");
+    }
     // map push when player shoot
     private int push;
     private double pushX;

@@ -5,6 +5,7 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -23,6 +24,10 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class BerserkPot extends Artefact {
+    public static void load(){
+        Loader.loadImage("Textures\\artefacts\\berserkpot.tga");
+        Loader.loadImage("Textures\\artefacts\\artifactcharge.tga");
+    }
     private long time;
     private float bonusSpeed;
     private boolean removedSpeed;
@@ -172,15 +177,15 @@ public class BerserkPot extends Artefact {
 
                     for (int j = 0; j < 3; j++) {
 
-                        double[] texCoords =
+                        float[] texCoords =
                                 {
-                                        (double) j / 3, 0,
+                                        (float) j / 3, 0,
 
-                                        (double) j / 3, 1,
+                                        (float) j / 3, 1,
 
-                                        (1.0 + j) / 3, 1,
+                                        (1.0f + j) / 3, 1,
 
-                                        (1.0 + j) / 3, 0
+                                        (1.0f + j) / 3, 0
                                 };
 
 

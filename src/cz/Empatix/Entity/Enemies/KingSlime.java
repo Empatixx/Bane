@@ -7,6 +7,7 @@ import cz.Empatix.Entity.Enemies.Projectiles.KingSlimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -39,7 +40,9 @@ public class KingSlime extends Enemy {
     private final ArrayList<KingSlimebullet> bullets;
     private HealthBar healthBar;
 
-
+    public static void load(){
+        Loader.loadImage("Textures\\Sprites\\Enemies\\slimeking.tga");
+    }
     public KingSlime(TileMap tm, Player player) {
         super(tm,player);
 
@@ -58,7 +61,7 @@ public class KingSlime extends Enemy {
 
         type = melee;
         facingRight = true;
-        bullets=new ArrayList<>();
+        bullets=new ArrayList<>(100);
 
         spriteSheetCols = 6;
         spriteSheetRows = 2;

@@ -70,6 +70,6 @@ public abstract class Postprocess {
     public void unbind(){
         shader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0);
     }
 }

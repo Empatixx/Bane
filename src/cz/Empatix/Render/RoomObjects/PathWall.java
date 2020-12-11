@@ -2,6 +2,7 @@ package cz.Empatix.Render.RoomObjects;
 
 
 import cz.Empatix.Entity.Animation;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -18,6 +19,9 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class PathWall extends RoomObject {
+    public static void load(){
+        Loader.loadImage("Textures\\Sprites\\wall.tga");
+    }
     public static final int TOP = 0;
     public static final int LEFT = 1;
     public static final int BOTTOM = 2;
@@ -51,15 +55,15 @@ public class PathWall extends RoomObject {
             // TOP
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (double) i/spriteSheetCols,0,
+                                (float) i/spriteSheetCols,0,
 
-                                (double)i/spriteSheetCols,1,
+                                (float)i/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,1,
+                                (1.0f+i)/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,0
+                                (1.0f+i)/spriteSheetCols,0
                         };
                 Sprite sprite = new Sprite(texCoords);
                 sprites[i] = sprite;
@@ -69,15 +73,15 @@ public class PathWall extends RoomObject {
             // LEFT
             sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (1.0+i)/spriteSheetCols,0,
+                                (1.0f+i)/spriteSheetCols,0,
 
-                                (double) i/spriteSheetCols,0,
+                                (float) i/spriteSheetCols,0,
 
-                                (double)i/spriteSheetCols,1,
+                                (float)i/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,1
+                                (1.0f+i)/spriteSheetCols,1
 
                         };
                 Sprite sprite = new Sprite(texCoords);
@@ -88,15 +92,15 @@ public class PathWall extends RoomObject {
             // BOTTOM
             sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (1.0+i)/spriteSheetCols,1,
+                                (1.0f+i)/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,0,
+                                (1.0f+i)/spriteSheetCols,0,
 
-                                (double) i/spriteSheetCols,0,
+                                (float) i/spriteSheetCols,0,
 
-                                (double)i/spriteSheetCols,1
+                                (float)i/spriteSheetCols,1
 
 
                         };
@@ -108,15 +112,15 @@ public class PathWall extends RoomObject {
             // RIGHT
             sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (double)i/spriteSheetCols,1,
+                                (float)i/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,1,
+                                (1.0f+i)/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,0,
+                                (1.0f+i)/spriteSheetCols,0,
 
-                                (double) i/spriteSheetCols,0
+                                (float) i/spriteSheetCols,0
 
 
                         };
@@ -185,7 +189,7 @@ public class PathWall extends RoomObject {
 
 
             glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
-            glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+            glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
             glDrawArrays(GL_QUADS, 0, 4);
 

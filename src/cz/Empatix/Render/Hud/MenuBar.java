@@ -1,5 +1,6 @@
 package cz.Empatix.Render.Hud;
 
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -8,14 +9,26 @@ import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
 
 public class MenuBar {
+    public static void load(){
+        Loader.loadImage("Textures\\Menu\\menu_bar_start.tga");
+        Loader.loadImage("Textures\\Menu\\menu_bar_settings.tga");
+        Loader.loadImage("Textures\\Menu\\menu_bar_exit.tga");
+        Loader.loadImage("Textures\\Menu\\menu_bar.tga");
+        Loader.loadImage("Textures\\Menu\\menu_bar.tga");
+        Loader.loadImage("Textures\\Menu\\settings_exit.tga");
+        Loader.loadImage("Textures\\Menu\\arrow_left.tga");
+        Loader.loadImage("Textures\\Menu\\arrow_right.tga");
+        Loader.loadImage("Textures\\ProgressRoom\\bought-bar.tga");
+        Loader.loadImage("Textures\\ProgressRoom\\lockedbar.tga");
+
+    }
 
     private final float minX;
     private final float maxX;
@@ -48,8 +61,8 @@ public class MenuBar {
      */
     public MenuBar(String file, Vector3f pos, float scale, int width, int height, boolean animated){
         this.animated = animated;
-        ByteBufferImage decoder = new ByteBufferImage();
-        ByteBuffer spritesheetImage = decoder.decodeImage(file);
+        ByteBufferImage decoder = Loader.getImage(file);
+        ByteBuffer spritesheetImage = decoder.getBuffer();
 
 
         minX = (int)pos.x-width*scale/2;
@@ -72,8 +85,6 @@ public class MenuBar {
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
 
-        STBImage.stbi_image_free(spritesheetImage);
-
         vboVertices = ModelManager.getModel(width,height);
         if (vboVertices == -1) {
             vboVertices = ModelManager.createModel(width, height);
@@ -82,15 +93,15 @@ public class MenuBar {
             vboTextures = new int[2];
             for(int i = 0;i<2;i++){
                 // clicking icon
-                double[] texCoords2 =
+                float[] texCoords2 =
                         {
-                                0,i*0.5,
-                                0,0.5+i*0.5,
-                                1,0.5+i*0.5,
-                                1,i*0.5
+                                0,i*0.5f,
+                                0,0.5f+i*0.5f,
+                                1,0.5f+i*0.5f,
+                                1,i*0.5f
                         };
 
-                DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords2.length);
+                FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords2.length);
                 buffer.put(texCoords2);
                 buffer.flip();
                 vboTextures[i] = glGenBuffers();
@@ -103,7 +114,7 @@ public class MenuBar {
         else{
             vboTextures = new int[1];
             // clicking icon
-            double[] texCoords2 =
+            float[] texCoords2 =
                     {
                             0,0,
                             0,1,
@@ -111,7 +122,7 @@ public class MenuBar {
                             1,0
                     };
 
-            DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords2.length);
+            FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords2.length);
             buffer.put(texCoords2);
             buffer.flip();
             vboTextures[0] = glGenBuffers();
@@ -148,7 +159,7 @@ public class MenuBar {
             glBindBuffer(GL_ARRAY_BUFFER,vboTextures[0]);
 
         }
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 
@@ -159,7 +170,7 @@ public class MenuBar {
 
         shader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0);
     }
 
     public void setType(int type) {

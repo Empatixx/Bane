@@ -3,6 +3,7 @@ package cz.Empatix.Entity;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -19,8 +20,14 @@ import java.util.ArrayList;
 
 import static cz.Empatix.Main.Game.window;
 import static org.lwjgl.glfw.GLFW.*;
-
 public class Player extends MapObject {
+    public static void load(){
+        Loader.loadImage("Textures\\Sprites\\Player\\player64.tga");
+        Loader.loadImage("Textures\\vignette.tga");
+        Loader.loadImage("Textures\\armorvignette.tga");
+        Loader.loadImage("Textures\\Sprites\\Player\\sprint_particle.tga");
+        Loader.loadImage("Textures\\shadow.tga");
+    }
     // roll
     private long rollCooldown;
     private boolean rolling;
@@ -107,7 +114,6 @@ public class Player extends MapObject {
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\player64.tga");
 
-
         // creating a new spritesheet
         if (spritesheet == null){
             spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\player64.tga");
@@ -117,15 +123,15 @@ public class Player extends MapObject {
 
                 for (int j = 0; j < numFrames[i]; j++) {
 
-                    double[] texCoords =
+                    float[] texCoords =
                             {
-                                    (double) j / spriteSheetCols, (double) i / spriteSheetRows,
+                                    (float) j / spriteSheetCols, (float) i / spriteSheetRows,
 
-                                    (double) j / spriteSheetCols, (1.0 + i) / spriteSheetRows,
+                                    (float) j / spriteSheetCols, (1.0f + i) / spriteSheetRows,
 
-                                    (1.0 + j) / spriteSheetCols, (1.0 + i) / spriteSheetRows,
+                                    (1.0f + j) / spriteSheetCols, (1.0f + i) / spriteSheetRows,
 
-                                    (1.0 + j) / spriteSheetCols, (double) i / spriteSheetRows
+                                    (1.0f + j) / spriteSheetCols, (float) i / spriteSheetRows
                             };
 
 
@@ -138,8 +144,6 @@ public class Player extends MapObject {
                 spritesheet.addSprites(images);
             }
         }
-
-
 
         currentAction = IDLE;
 
@@ -162,7 +166,6 @@ public class Player extends MapObject {
         height *= scale;
         cwidth *= scale;
         cheight *= scale;
-
 
         //hit vignette
         hitVignette = new Background[2];
@@ -191,7 +194,7 @@ public class Player extends MapObject {
 
         rolling = false;
 
-        sprintParticles = new ArrayList<>();
+        sprintParticles = new ArrayList<>(5);
 
         createShadow();
     }
@@ -546,15 +549,15 @@ public class Player extends MapObject {
 
                     for (int j = 0; j < 3; j++) {
 
-                        double[] texCoords =
+                        float[] texCoords =
                                 {
-                                        (double) j / 3, 0,
+                                        (float) j / 3, 0,
 
-                                        (double) j / 3, 1,
+                                        (float) j / 3, 1,
 
-                                        (1.0 + j) / 3, 1,
+                                        (1.0f + j) / 3, 1,
 
-                                        (1.0 + j) / 3, 0
+                                        (1.0f + j) / 3, 0
                                 };
 
 

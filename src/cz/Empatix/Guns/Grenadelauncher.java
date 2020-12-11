@@ -4,6 +4,7 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
@@ -14,6 +15,10 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 
 public class Grenadelauncher extends Weapon {
+    public static void load(){
+        Loader.loadImage("Textures\\grenadelauncher.tga");
+        Loader.loadImage("Textures\\rocket-ammo.tga");
+    }
     // map push when player shoot
     // audio
     private final int soundShoot;

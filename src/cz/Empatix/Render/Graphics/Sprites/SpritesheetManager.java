@@ -1,7 +1,7 @@
 package cz.Empatix.Render.Graphics.Sprites;
 
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
-import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -16,8 +16,8 @@ public class SpritesheetManager {
     }
 
     public static Spritesheet createSpritesheet(String filepath){
-        ByteBufferImage decoder = new ByteBufferImage();
-        ByteBuffer spritesheetImage = decoder.decodeImage(filepath);
+        ByteBufferImage decoder = Loader.getImage(filepath);
+        ByteBuffer spritesheetImage = decoder.getBuffer();
         int channels = decoder.getChannels();
         if(channels == 4){
             int idTexture = glGenTextures();
@@ -34,8 +34,6 @@ public class SpritesheetManager {
             Spritesheet spritesheet = new Spritesheet(idTexture);
             spritesheets.put(filepath,spritesheet);
 
-            STBImage.stbi_image_free(spritesheetImage);
-
             return spritesheet;
         } else {
             int idTexture = glGenTextures();
@@ -51,8 +49,6 @@ public class SpritesheetManager {
 
             Spritesheet spritesheet = new Spritesheet(idTexture);
             spritesheets.put(filepath,spritesheet);
-
-            STBImage.stbi_image_free(spritesheetImage);
 
             return spritesheet;
         }

@@ -113,7 +113,7 @@ public class ArtefactDrop extends ItemDrop {
 
 
         glBindBuffer(GL_ARRAY_BUFFER, vboTexturesWeapon);
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 
@@ -144,7 +144,7 @@ public class ArtefactDrop extends ItemDrop {
 
 
             glBindBuffer(GL_ARRAY_BUFFER, vboTexturesWeapon);
-            glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+            glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
             glDrawArrays(GL_QUADS, 0, 4);
 

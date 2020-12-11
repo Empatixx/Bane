@@ -1,6 +1,7 @@
 package cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades;
 
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -23,6 +24,11 @@ import static org.lwjgl.opengl.GL20.*;
 
 
 public abstract class UpgradeBar {
+    public static void load(){
+        Loader.loadImage("Textures\\ProgressRoom\\upgradetab-guns.tga");
+        Loader.loadImage("Textures\\ProgressRoom\\upgradetab-guns-clicked.tga");
+        Loader.loadImage("Textures\\ProgressRoom\\upgradeicons.tga");
+    }
     private Spritesheet iconset;
     private Shader shader;
     private int vboVerticles;
@@ -83,12 +89,12 @@ public abstract class UpgradeBar {
 
             for (int j = 0; j < 4; j++) {
 
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (double) j / 4, 0,
-                                (double) j / 4, 1,
-                                (1.0 + j) / 4, 1,
-                                (1.0 + j) / 4, 0
+                                (float) j / 4, 0,
+                                (float) j / 4, 1,
+                                (1.0f + j) / 4, 1,
+                                (1.0f + j) / 4, 0
                         };
                 Sprite sprite = new Sprite(texCoords);
 
@@ -134,7 +140,7 @@ public abstract class UpgradeBar {
 
 
             glBindBuffer(GL_ARRAY_BUFFER,iconset.getSprites(0)[type].getVbo());
-            glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+            glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
             glDrawArrays(GL_QUADS, 0, 4);
 

@@ -1,6 +1,7 @@
 package cz.Empatix.Render.Hud.ProgressNPC;
 
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades.*;
 import cz.Empatix.Render.Hud.SliderBar;
@@ -11,6 +12,9 @@ import java.util.ArrayList;
 import static org.lwjgl.opengl.GL11.*;
 
 public class UpgradeMenu {
+    public static void load(){
+        Loader.loadImage("Textures\\ProgressRoom\\upgrademenu-guns.tga");
+    }
     private Background background;
     private ArrayList<UpgradeBar> bars;
 
@@ -33,7 +37,7 @@ public class UpgradeMenu {
         bars.add(new RevolverUpgrade(6));
         bars.add(new ThompsonUpgrade(7));
 
-        weaponSlider = new SliderBar("Textures\\Menu\\volume_slider",new Vector3f(842f,540,0),3f);
+        weaponSlider = new SliderBar(new Vector3f(842f,540,0),3f);
         weaponSlider.setLength(730);
         weaponSlider.setVertical();
         weaponSlider.setValue(0f);
@@ -90,6 +94,9 @@ public class UpgradeMenu {
         }
     }
     public void mouseReleased(float x, float y){
+        unlockSlider();
+    }
+    public void unlockSlider(){
         weaponSlider.setLocked(false);
     }
 }

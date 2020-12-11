@@ -106,7 +106,7 @@ public class LightManager {
 
         shader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0);
     }
     public static LightPoint createLight(Vector3f color, Vector2f pos, float intensity, MapObject object){
         LightPoint light = new LightPoint(pos,color,intensity,object);

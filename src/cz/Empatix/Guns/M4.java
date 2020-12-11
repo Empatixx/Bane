@@ -4,6 +4,7 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
@@ -16,6 +17,10 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 
 public class M4 extends Weapon{
+    public static void load(){
+        Loader.loadImage("Textures\\M4.tga");
+        Loader.loadImage("Textures\\pistol_bullet.tga");
+    }
     // audio
     private final int soundShoot;
     private final int soundEmptyShoot;
@@ -211,6 +216,6 @@ public class M4 extends Weapon{
     }
     @Override
     public boolean canSwap() {
-        return !reloading && System.currentTimeMillis() - InGame.deltaPauseTime() - delay > delayTime/2 && bonusShots == 0;
+        return !reloading && System.currentTimeMillis() - InGame.deltaPauseTime() - delay > delayTime/2 && bonusShots <= 0;
     }
 }

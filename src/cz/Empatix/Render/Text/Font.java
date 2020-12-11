@@ -1,7 +1,7 @@
 package cz.Empatix.Render.Text;
 
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
-import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
 
@@ -23,8 +23,8 @@ public class Font {
         int size = width/cwidth*height/cheight;
         chars = new FontChar[size];
 
-        ByteBufferImage decoder = new ByteBufferImage();
-        ByteBuffer spritesheetImage = decoder.decodeImage(file+".tga");
+        ByteBufferImage decoder = Loader.getImage(file+".tga");
+        ByteBuffer spritesheetImage = decoder.getBuffer();
 
         int idTexture = glGenTextures();
 
@@ -38,7 +38,6 @@ public class Font {
         this.idTexture = idTexture;
         this.cellWidth = cwidth;
         this.cellHeight = cheight;
-        STBImage.stbi_image_free(spritesheetImage);
     }
     void bindTexture(){
         glBindTexture(GL_TEXTURE_2D, idTexture);

@@ -1,5 +1,6 @@
 package cz.Empatix.Render.Hud;
 
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -8,10 +9,9 @@ import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -41,8 +41,8 @@ public class Image {
      * @param scale - scaling of texture(width*scale,height*scale)
      */
     public Image(String file, Vector3f pos, float scale){
-        ByteBufferImage decoder = new ByteBufferImage();
-        ByteBuffer spritesheetImage = decoder.decodeImage(file);
+        ByteBufferImage decoder = Loader.getImage(file);
+        ByteBuffer spritesheetImage = decoder.getBuffer();
 
         shader = ShaderManager.getShader("shaders\\image");
         if (shader == null){
@@ -61,15 +61,12 @@ public class Image {
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
 
-
-        STBImage.stbi_image_free(spritesheetImage);
-
         vboVertices = ModelManager.getModel(width,height);
         if (vboVertices == -1) {
             vboVertices = ModelManager.createModel(width, height);
         }
         // clicking icon
-        double[] texCoords =
+        float[] texCoords =
                 {
                         0,0,
                         0,1,
@@ -77,7 +74,7 @@ public class Image {
                         1,0
                 };
 
-        DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords.length);
         buffer.put(texCoords);
         buffer.flip();
         vboTextures = glGenBuffers();
@@ -113,7 +110,7 @@ public class Image {
         glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
         glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 
@@ -124,7 +121,7 @@ public class Image {
 
         shader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0);
     }
 
     public int getIdTexture() {

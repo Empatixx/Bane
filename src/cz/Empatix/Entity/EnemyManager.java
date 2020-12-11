@@ -1,13 +1,11 @@
 package cz.Empatix.Entity;
 
-import cz.Empatix.Entity.Enemies.ArcaneMage;
-import cz.Empatix.Entity.Enemies.KingSlime;
+import cz.Empatix.Entity.Enemies.*;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 public class EnemyManager {
@@ -103,7 +101,6 @@ public class EnemyManager {
                 if(drawnEnemy == null) drawnEnemy = enemy;
                 else if(drawnEnemy.getY() > enemy.getY()) drawnEnemy = enemy;
             }
-            drawnEnemy.drawShadow();
             enemiesleft.remove(drawnEnemy);
         }
     }
@@ -143,14 +140,30 @@ public class EnemyManager {
         }
         int enemyType = cz.Empatix.Java.Random.nextInt(defaultsize);
         Enemy instance = null;
-        try{
-            String enemy = "cz.Empatix.Entity.Enemies."+enemiesList.get(enemyType);
-            Class<?> clazz = Class.forName(enemy);
-            Constructor<?> constructor = clazz.getConstructor(TileMap.class,Player.class);
-            instance = (Enemy)constructor.newInstance(tileMap,player);
-        } catch (Exception e){
-            e.printStackTrace();
+        String enemy = enemiesList.get(enemyType);
+        switch (enemy){
+            case "Slime":{
+                instance = new Slime(tileMap,player);
+                break;
+            }
+            case "Rat":{
+                instance = new Rat(tileMap,player);
+                break;
+            }
+            case "Bat":{
+                instance = new Bat(tileMap,player);
+                break;
+            }
+            case "Demoneye":{
+                instance = new Demoneye(tileMap,player);
+                break;
+            }
+            case "Ghost":{
+                instance = new Ghost(tileMap,player);
+                break;
+            }
         }
+
         int tileSize = tileMap.getTileSize();
 
         int x;
@@ -196,33 +209,6 @@ public class EnemyManager {
 
         instance.setPosition(x,y);
         enemies.add(instance);
-    }
-    public void addEnemy(int x, int y, String type,int count) {
-        boolean canContinue = false;
-        type = type.substring(0,1).toUpperCase() + type.substring(1).toLowerCase();
-        for (String enemy : enemiesList) {
-            if (enemy.equals(type)) {
-                canContinue = true;
-            }
-        }
-        if (!canContinue) return;
-        for (int i = 0; i < count; i++) {
-
-            Enemy instance = null;
-            try {
-                String enemy = "cz.Empatix.Entity.Enemies." + type;
-                Class<?> clazz = Class.forName(enemy);
-                Constructor<?> constructor = clazz.getConstructor(TileMap.class, Player.class);
-                instance = (Enemy) constructor.newInstance(tileMap, player);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            instance.setPosition(x, y);
-            instance.checkTileMapCollision();
-            instance.setPosition(instance.temp.x, instance.temp.y);
-            enemies.add(instance);
-        }
     }
 
 }

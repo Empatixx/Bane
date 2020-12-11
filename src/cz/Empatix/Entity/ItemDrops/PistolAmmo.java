@@ -2,6 +2,7 @@ package cz.Empatix.Entity.ItemDrops;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -13,7 +14,9 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class PistolAmmo extends ItemDrop {
-
+    public static void load(){
+        Loader.loadImage("Textures\\pistol_bullet.tga");
+    }
     public PistolAmmo(TileMap tm){
         super(tm);
         type = PISTOLAMMO;
@@ -37,15 +40,15 @@ public class PistolAmmo extends ItemDrop {
         if (spritesheet == null){
             spritesheet = SpritesheetManager.createSpritesheet("Textures\\pistol_bullet.tga");
             Sprite[] sprites = new Sprite[1];
-            double[] texCoords =
+            float[] texCoords =
                         {
-                                0.,0.,
+                                0,0,
 
-                                0.,1.,
+                                0,1,
 
-                                1.,1.,
+                                1,1,
 
-                                1.,0.
+                                1,0
                         };
             Sprite sprite = new Sprite(texCoords);
             sprites[0] = sprite;

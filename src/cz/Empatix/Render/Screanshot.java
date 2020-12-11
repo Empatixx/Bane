@@ -36,9 +36,13 @@ public class Screanshot extends Thread{
         GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer );
         Thread t = new Thread(() -> {
             int screanNum = 0;
-            File file = new File("screanshots\\"+LocalDate.now()+".png"); // The file to save to.
+            File screensFolder = new File("Screenshots");
+            if(!screensFolder.exists()){
+                screensFolder.mkdir();
+            }
+            File file = new File("Screenshots\\"+LocalDate.now()+".png"); // The file to save to.
             while (file.exists()) {
-                file = new File("screanshots\\"+LocalDate.now()+"-"+screanNum+".png");
+                file = new File("Screenshots\\"+LocalDate.now()+"-"+screanNum+".png");
                 screanNum++;
             }
             String format = "png"; // Example: "PNG" or "JPG"

@@ -2,6 +2,7 @@ package cz.Empatix.Render;
 
 
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -9,10 +10,9 @@ import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -32,8 +32,8 @@ public class Background {
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\background");
         }
-        ByteBufferImage decoder = new ByteBufferImage();
-        ByteBuffer spritesheetImage = decoder.decodeImage(filepath);
+        ByteBufferImage decoder = Loader.getImage(filepath);
+        ByteBuffer spritesheetImage = decoder.getBuffer();
         int channels = decoder.getChannels();
         if(channels == 3) {
             int width = decoder.getWidth();
@@ -48,8 +48,6 @@ public class Background {
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, spritesheetImage);
 
-            STBImage.stbi_image_free(spritesheetImage);
-
             int vbo;
             vbo = ModelManager.getModel(Camera.getWIDTH(), Camera.getHEIGHT());
             if (vbo == -1) {
@@ -57,12 +55,12 @@ public class Background {
             }
             vboVertices = vbo;
 
-            double[] texCoords =
+            float[] texCoords =
                     {
                             0, 0, 0, 1, 1, 1, 1, 0
                     };
 
-            DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
+            FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords.length);
             buffer.put(texCoords);
             buffer.flip();
             vboTextures = glGenBuffers();
@@ -86,8 +84,6 @@ public class Background {
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
 
-            STBImage.stbi_image_free(spritesheetImage);
-
             int vbo;
             vbo = ModelManager.getModel(Camera.getWIDTH(), Camera.getHEIGHT());
             if (vbo == -1) {
@@ -95,12 +91,12 @@ public class Background {
             }
             vboVertices = vbo;
 
-            double[] texCoords =
+            float[] texCoords =
                     {
                             0, 0, 0, 1, 1, 1, 1, 0
                     };
 
-            DoubleBuffer buffer = BufferUtils.createDoubleBuffer(texCoords.length);
+            FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords.length);
             buffer.put(texCoords);
             buffer.flip();
             vboTextures = glGenBuffers();
@@ -147,7 +143,7 @@ public class Background {
         glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
         glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 
@@ -158,7 +154,7 @@ public class Background {
 
         shader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0);
     }
 
     public void setFadeEffect(boolean fadeEffect) {

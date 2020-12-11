@@ -12,9 +12,9 @@ public class ByteBufferImage {
     private int width;
     private int height;
     private int channels;
+    private ByteBuffer buffer;
 
     public ByteBuffer decodeImage(String filepath){
-        ByteBuffer buffer;
 
         try (MemoryStack stack = MemoryStack.stackPush()){
             IntBuffer w = stack.mallocInt(1);
@@ -40,6 +40,10 @@ public class ByteBufferImage {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public ByteBuffer getBuffer() {
+        return buffer;
     }
 
     public int getHeight() {

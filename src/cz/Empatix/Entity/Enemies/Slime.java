@@ -5,6 +5,7 @@ import cz.Empatix.Entity.Enemies.Projectiles.Slimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -28,7 +29,9 @@ public class Slime extends Enemy {
 
     private ArrayList<Slimebullet> bullets;
 
-
+    public static void load(){
+        Loader.loadImage("Textures\\Sprites\\Enemies\\slime.tga");
+    }
     public Slime(TileMap tm, Player player) {
 
         super(tm,player);
@@ -94,7 +97,7 @@ public class Slime extends Enemy {
         cwidth *= 2;
         cheight *= 2;
 
-        bullets = new ArrayList<>();
+        bullets = new ArrayList<>(20);
 
         createShadow();
 

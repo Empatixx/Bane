@@ -155,7 +155,7 @@ public class WeaponDrop extends ItemDrop {
 
 
         glBindBuffer(GL_ARRAY_BUFFER, vboTexturesWeapon);
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 
@@ -186,7 +186,7 @@ public class WeaponDrop extends ItemDrop {
 
 
             glBindBuffer(GL_ARRAY_BUFFER, vboTexturesWeapon);
-            glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+            glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
             glDrawArrays(GL_QUADS, 0, 4);
 
@@ -198,7 +198,7 @@ public class WeaponDrop extends ItemDrop {
 
         shader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0);
 
         if (Game.displayCollisions){
             glColor3i(255,255,255);

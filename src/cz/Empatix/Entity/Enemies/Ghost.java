@@ -4,6 +4,7 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -16,7 +17,9 @@ public class Ghost extends Enemy {
 
     private long cdRush;
     private boolean rush;
-
+    public static void load(){
+        Loader.loadImage("Textures\\Sprites\\Enemies\\ghost.tga");
+    }
     public Ghost(TileMap tm, Player player) {
 
         super(tm,player);

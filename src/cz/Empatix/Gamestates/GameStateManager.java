@@ -2,9 +2,9 @@ package cz.Empatix.Gamestates;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Database.Database;
+import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Screanshot;
-import cz.Empatix.Render.Text.TextRender;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -34,26 +34,21 @@ public class GameStateManager {
     }
 
     public GameStateManager() {
-        // openGL matrix4f
-        // audio
-        AudioManager.init();
-        AudioManager.setListenerData(0,0);
-
-        //text render init
-        TextRender.init();
-
         gameStates = new ArrayList<>();
 
         currentState = MENU;
         gameStates.add(new MenuState(this));
         gameStates.add(new InGame(this));
         gameStates.add(new ProgressRoom(this));
-
         screenshot = new Screanshot();
-
+    }
+    public static void loadDatabase(){
         db = new Database();
         db.load();
-
+    }
+    public static void loadAudio(){
+        AudioManager.init();
+        AudioManager.setListenerData(0,0);
     }
 
     public void setState(int state) {
@@ -70,10 +65,13 @@ public class GameStateManager {
     }
 
     public void keyPressed(int k) {
-        gameStates.get(currentState).keyPressed(k);
         if(k == GLFW.GLFW_KEY_F2 || k == GLFW.GLFW_KEY_PRINT_SCREEN){
             screenshot.keyPressed();
         }
+        if (k == GLFW.GLFW_KEY_F1){
+            Game.displayCollisions = !Game.displayCollisions;
+        }
+        gameStates.get(currentState).keyPressed(k);
     }
 
     public void keyReleased(int k) {

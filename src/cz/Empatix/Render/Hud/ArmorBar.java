@@ -1,6 +1,7 @@
 package cz.Empatix.Render.Hud;
 
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
@@ -9,9 +10,6 @@ import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.stb.STBImage;
-
-import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
@@ -20,6 +18,10 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class ArmorBar extends HUD{
+    public static void load(){
+        Loader.loadImage("Textures\\armorbar.tga");
+        Loader.loadImage("Textures\\armorbar-bar.tga");
+    }
     private int armor;
     private int maxArmor;
 
@@ -36,19 +38,17 @@ public class ArmorBar extends HUD{
     private final Matrix4f matrixPos;
 
     public ArmorBar(String file, Vector3f pos, int scale){
-        super(file+".tga", pos, scale,HUD.Static);
+        super(file+".tga", pos, scale);
         barShader = ShaderManager.getShader("shaders\\healthbar");
         if (barShader == null){
             barShader = ShaderManager.createShader("shaders\\healthbar");
         }
 
-        ByteBufferImage decoder = new ByteBufferImage();
-        ByteBuffer spritesheetImage = decoder.decodeImage(file+"-bar.tga");
+        ByteBufferImage decoder = Loader.getImage("Textures\\armorbar-bar.tga");
 
         int width = decoder.getWidth();
         int height = decoder.getHeight();
 
-        STBImage.stbi_image_free(spritesheetImage);
 
         vboVerticesBar = ModelManager.getModel(width,height);
         if (vboVerticesBar == -1){
@@ -56,7 +56,7 @@ public class ArmorBar extends HUD{
         }
 
         pos.x+=18;
-        pos.y+=6;
+        pos.y+=4;
         matrixPos = new Matrix4f().translate(pos).scale(scale);
         Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
 
@@ -73,19 +73,17 @@ public class ArmorBar extends HUD{
         // rendering bar
         barShader.bind();
         barShader.setUniformm4f("projection",matrixPos);
-
-        float minX = pos.x - (float)(width * scale)/2;
-        float maxX = minX + (width*scale) * armor/maxArmor;
-        float premaxX = minX + (width*scale) * (delayedArmor)/maxArmor;
+        float minX = pos.x * (float)Settings.WIDTH/1920 - (float)(width * scale)/2*(float)Settings.WIDTH/1920;
+        float maxX = minX + (width*scale) * ((float)armor/maxArmor)*(float)Settings.WIDTH/1920;
+        float premaxX = minX + (width*scale) * (delayedArmor/maxArmor)*(float)Settings.WIDTH/1920;
         // revert height coords because opengl is from down to up 0-1
-        float maxY = Settings.HEIGHT - pos.y + (float)(height * scale)/2;
+        float maxY = Settings.HEIGHT - pos.y * (float)Settings.HEIGHT/1080 + (float)((height * scale)/2)*(float)Settings.HEIGHT/1080;
 
-        barShader.setUniformi("resolutionY", Settings.HEIGHT);
         barShader.setUniformf("maxX",maxX);
         // new health removed or added visual
         barShader.setUniformf("premaxX",premaxX);
         barShader.setUniformf("maxY",maxY);
-        barShader.setUniformf("stepSize",(float)height*scale/4);
+        barShader.setUniformf("stepSize",(float)height*scale/4*(float)Settings.HEIGHT/1080);
         barShader.setUniform3f("color", new Vector3f(0.603f, 0.670f, 0.709f));
         
 
@@ -102,7 +100,7 @@ public class ArmorBar extends HUD{
 
         barShader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0);
 
         // rendering hud of healthbar
         super.draw();

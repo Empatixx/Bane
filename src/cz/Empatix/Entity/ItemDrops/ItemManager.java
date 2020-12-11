@@ -7,6 +7,7 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Guns.Weapon;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
@@ -18,6 +19,15 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 
 public class ItemManager {
+    public static void load(){
+        Loader.loadImage("Textures\\shophud.tga");
+        ArmorPot.load();
+        Coin.load();
+        ExplosiveAmmo.load();
+        HealingPot.load();
+        ShotgunAmmo.load();
+        PistolAmmo.load();
+    }
     private static ArrayList<ItemDrop> itemDrops;
     private static TileMap tm;
     private static GunsManager gm;

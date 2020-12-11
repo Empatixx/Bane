@@ -1,6 +1,7 @@
 package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -20,6 +21,10 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Ladder extends RoomObject {
+    public static void load(){
+        Loader.loadImage("Textures\\ladder.tga");
+        Loader.loadImage("Textures\\arrowpointer.tga");
+    }
     private Spritesheet spritesheetArrowPointer;
     private Animation animationPointer;
 
@@ -51,15 +56,15 @@ public class Ladder extends RoomObject {
             spritesheet = SpritesheetManager.createSpritesheet("Textures\\ladder.tga");
             Sprite[] sprites = new Sprite[1];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (double) i/spriteSheetCols,0,
+                                (float) i/spriteSheetCols,0,
 
-                                (double)i/spriteSheetCols,1,
+                                (float)i/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,1,
+                                (1.0f+i)/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,0
+                                (1.0f+i)/spriteSheetCols,0
                         };
                 Sprite sprite = new Sprite(texCoords);
                 sprites[i] = sprite;
@@ -77,15 +82,15 @@ public class Ladder extends RoomObject {
             spritesheetArrowPointer = SpritesheetManager.createSpritesheet("Textures\\arrowpointer.tga");
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (double) i/4,0,
+                                (float) i/4,0,
 
-                                (double)i/4,1,
+                                (float)i/4,1,
 
-                                (1.0+i)/4,1,
+                                (1.0f+i)/4,1,
 
-                                (1.0+i)/4,0
+                                (1.0f+i)/4,0
                         };
                 Sprite sprite = new Sprite(texCoords);
                 sprites[i] = sprite;
@@ -164,7 +169,7 @@ public class Ladder extends RoomObject {
 
 
         glBindBuffer(GL_ARRAY_BUFFER,animationPointer.getFrame().getVbo());
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 

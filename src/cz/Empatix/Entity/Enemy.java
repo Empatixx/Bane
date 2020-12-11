@@ -137,7 +137,7 @@ public abstract class  Enemy extends MapObject {
 
 
             glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
-            glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+            glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
             glDrawArrays(GL_QUADS, 0, 4);
 
@@ -148,7 +148,8 @@ public abstract class  Enemy extends MapObject {
 
             spawnShader.unbind();
             glBindTexture(GL_TEXTURE_2D,0);
-            glActiveTexture(0);
+            glActiveTexture(GL_TEXTURE0);
+
 
         } else {
             super.draw();
@@ -199,7 +200,7 @@ public abstract class  Enemy extends MapObject {
 
 
             glBindBuffer(GL_ARRAY_BUFFER, animation.getFrame().getVbo());
-            glVertexAttribPointer(1, 2, GL_DOUBLE, false, 0, 0);
+            glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
 
             glDrawArrays(GL_QUADS, 0, 4);
 
@@ -210,7 +211,8 @@ public abstract class  Enemy extends MapObject {
 
             outlineShader.unbind();
             glBindTexture(GL_TEXTURE_2D, 0);
-            glActiveTexture(0);
+            glActiveTexture(GL_TEXTURE0);
+
         }
     }
 
@@ -265,8 +267,8 @@ public abstract class  Enemy extends MapObject {
                 playerTileY = pTileY;
 
 
-                ArrayList<PathNode> closed = new ArrayList<>();
-                ArrayList<PathNode> opened = new ArrayList<>();
+                ArrayList<PathNode> closed = new ArrayList<>(50);
+                ArrayList<PathNode> opened = new ArrayList<>(50);
 
                 boolean endFound = false;
 

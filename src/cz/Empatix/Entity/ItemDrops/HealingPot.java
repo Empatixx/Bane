@@ -2,6 +2,7 @@ package cz.Empatix.Entity.ItemDrops;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -12,6 +13,9 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class HealingPot extends ItemDrop{
+    public static void load(){
+        Loader.loadImage("Textures\\healingpot.tga");
+    }
     public HealingPot(TileMap tm){
         super(tm);
         type = HP;
@@ -35,15 +39,15 @@ public class HealingPot extends ItemDrop{
         if (spritesheet == null){
             spritesheet = SpritesheetManager.createSpritesheet("Textures\\healingpot.tga");
             Sprite[] sprites = new Sprite[1];
-            double[] texCoords =
+            float[] texCoords =
                     {
-                            0.,0.,
+                            0.f,0.f,
 
-                            0.,1.,
+                            0.f,1.f,
 
-                            1.,1.,
+                            1.f,1.f,
 
-                            1.,0.
+                            1.f,0.f
                     };
             Sprite sprite = new Sprite(texCoords);
             sprites[0] = sprite;

@@ -1,5 +1,6 @@
 package cz.Empatix.Entity;
 
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -11,6 +12,9 @@ public class Shopkeeper extends RoomObject {
     private static final int IDLE = 0;
 
     private boolean reverse;
+    public static void load(){
+        Loader.loadImage("Textures\\Sprites\\Enemies\\shopkeeper.tga");
+    }
 
     public Shopkeeper(TileMap tm) {
         super(tm);

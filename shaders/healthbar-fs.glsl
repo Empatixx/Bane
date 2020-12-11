@@ -1,6 +1,5 @@
 #version 330
 
-uniform int resolutionY;
 uniform float maxX;
 uniform float premaxX;
 uniform float maxY;

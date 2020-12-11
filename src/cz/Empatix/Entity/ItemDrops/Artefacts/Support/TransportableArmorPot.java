@@ -2,6 +2,7 @@ package cz.Empatix.Entity.ItemDrops.Artefacts.Support;
 
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
@@ -14,6 +15,10 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class TransportableArmorPot extends Artefact {
+    public static void load(){
+        Loader.loadImage("Textures\\artefacts\\tap.tga");
+        Loader.loadImage("Textures\\artefacts\\artifactcharge.tga");
+    }
     public TransportableArmorPot(TileMap tm, Player p){
         super(tm,p);
         maxCharge = 4;

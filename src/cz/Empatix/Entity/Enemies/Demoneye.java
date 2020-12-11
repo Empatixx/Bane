@@ -4,6 +4,7 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -13,7 +14,9 @@ import cz.Empatix.Render.TileMap;
 public class Demoneye extends Enemy {
     private static final int IDLE = 0;
     private static final int DEAD = 1;
-
+    public static void load(){
+        Loader.loadImage("Textures\\Sprites\\Enemies\\demoneye.tga");
+    }
     public Demoneye(TileMap tm, Player player) {
 
         super(tm,player);

@@ -2,6 +2,7 @@ package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -9,6 +10,9 @@ import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
 
 public class Barrel extends DestroyableObject {
+    public static void load(){
+        Loader.loadImage("Textures\\Sprites\\barrel.tga");
+    }
     private static final int NORMAL = 0;
     private static final int HIT = 1;
     private static final int DESTROY = 2;
@@ -46,15 +50,15 @@ public class Barrel extends DestroyableObject {
             spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\barrel.tga");
             Sprite[] sprites = new Sprite[1];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (double) i/spriteSheetCols,0,
+                                (float) i/spriteSheetCols,0,
 
-                                (double)i/spriteSheetCols,0.5,
+                                (float)i/spriteSheetCols,0.5f,
 
-                                (1.0+i)/spriteSheetCols,0.5,
+                                (1.0f+i)/spriteSheetCols,0.5f,
 
-                                (1.0+i)/spriteSheetCols,0
+                                (1.0f+i)/spriteSheetCols,0
                         };
                 Sprite sprite = new Sprite(texCoords);
                 sprites[i] = sprite;
@@ -64,15 +68,15 @@ public class Barrel extends DestroyableObject {
 
             sprites = new Sprite[3];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (double) i/spriteSheetCols,0,
+                                (float)i/spriteSheetCols,0,
 
-                                (double)i/spriteSheetCols,0.5,
+                                (float)i/spriteSheetCols,0.5f,
 
-                                (1.0+i)/spriteSheetCols,0.5,
+                                (1.0f+i)/spriteSheetCols,0.5f,
 
-                                (1.0+i)/spriteSheetCols,0
+                                (1.0f+i)/spriteSheetCols,0
                         };
                 Sprite sprite = new Sprite(texCoords);
                 sprites[i] = sprite;
@@ -82,15 +86,15 @@ public class Barrel extends DestroyableObject {
 
             sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
-                double[] texCoords =
+                float[] texCoords =
                         {
-                                (double) i/spriteSheetCols,0.5,
+                                (float) i/spriteSheetCols,0.5f,
 
-                                (double)i/spriteSheetCols,1,
+                                (float) i/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,1,
+                                (1.0f+i)/spriteSheetCols,1,
 
-                                (1.0+i)/spriteSheetCols,0.5
+                                (1.0f+i)/spriteSheetCols,0.5f
                         };
                 Sprite sprite = new Sprite(texCoords);
                 sprites[i] = sprite;

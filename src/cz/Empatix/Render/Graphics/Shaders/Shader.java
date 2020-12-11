@@ -177,4 +177,7 @@ public class Shader {
     public void unbind(){
         glUseProgram(0);
     }
+    public void setAttribute(int indexAttribute, String attribute){
+        glBindAttribLocation(program,indexAttribute,attribute);
+    }
 }

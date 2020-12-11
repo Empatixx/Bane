@@ -6,6 +6,7 @@ import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.Bullet;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
@@ -25,6 +26,10 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class RingOfFire extends Artefact {
+    public static void load(){
+        Loader.loadImage("Textures\\artefacts\\rof.tga");
+        Loader.loadImage("Textures\\artefacts\\artifactcharge.tga");
+    }
     private ArrayList<Bullet> bullets;
     public RingOfFire(TileMap tm, Player p){
         super(tm,p);
@@ -39,7 +44,7 @@ public class RingOfFire extends Artefact {
                 2.6f);
         rarity = 1;
 
-        bullets = new ArrayList<>();
+        bullets = new ArrayList<>(50);
 
     }
     @Override

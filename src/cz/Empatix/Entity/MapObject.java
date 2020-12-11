@@ -2,6 +2,7 @@ package cz.Empatix.Entity;
 
 
 import cz.Empatix.AudioManager.Source;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -23,6 +24,9 @@ import java.util.ArrayList;
 import static org.lwjgl.opengl.GL20.*;
 
 public abstract class MapObject {
+	public static void load(){
+		Loader.loadImage("Textures\\shadow.tga");
+	}
 	
 	// tile stuff
 	protected final TileMap tileMap;
@@ -470,7 +474,8 @@ public abstract class MapObject {
 			if (elapsed / 100 % 2 == 0){
 				shader.unbind();
 				glBindTexture(GL_TEXTURE_2D,0);
-				glActiveTexture(0);
+				glActiveTexture(GL_TEXTURE0);
+
 				return;
 			}
 		}
@@ -503,7 +508,7 @@ public abstract class MapObject {
 
 
 		glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
-		glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+		glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
 		glDrawArrays(GL_QUADS, 0, 4);
 
@@ -514,7 +519,8 @@ public abstract class MapObject {
 
 		shader.unbind();
 		glBindTexture(GL_TEXTURE_2D,0);
-		glActiveTexture(0);
+		glActiveTexture(GL_TEXTURE0);
+
 		if (Game.displayCollisions){
 			glColor3i(255,255,255);
 			glBegin(GL_LINE_LOOP);
@@ -560,7 +566,7 @@ public abstract class MapObject {
 
 
         glBindBuffer(GL_ARRAY_BUFFER,shadowSprite.getSprites(0)[0].getVbo());
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 
@@ -571,8 +577,9 @@ public abstract class MapObject {
 
         shader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
-    }
+		glActiveTexture(GL_TEXTURE0);
+
+	}
 
 	public void updateLight(){
 		light.setPos(position.x+xmap,position.y+ymap);
@@ -599,19 +606,18 @@ public abstract class MapObject {
 		shadowSprite = SpritesheetManager.getSpritesheet("Textures\\shadow.tga");
 		if(shadowSprite == null){
 			shadowSprite = SpritesheetManager.createSpritesheet("Textures\\shadow.tga");
+
+			float[] texCoords =
+					{
+							0,0,
+							0,1,
+							1,1,
+							1,0
+					};
+			Sprite[] sprites = new Sprite[]{new Sprite(texCoords)};
+
+			shadowSprite.addSprites(sprites);
 		}
-		double[] texCoords =
-				{
-						0,0,
-						0,1,
-						1,1,
-						1,0
-				};
-		Sprite[] sprites = new Sprite[]{new Sprite(texCoords)};
-
-
-		shadowSprite.addSprites(sprites);
-
 		shadowVboVertices = ModelManager.getModel(32,16);
 		if (shadowVboVertices == -1){
 			shadowVboVertices = ModelManager.createModel(32,16);

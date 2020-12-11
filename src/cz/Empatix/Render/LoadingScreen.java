@@ -1,13 +1,14 @@
 package cz.Empatix.Render;
 
+import cz.Empatix.Entity.Animation;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -21,6 +22,9 @@ public class    LoadingScreen {
     private final int idTexture;
     private int vboVertices;
     private int vboTextures;
+
+    private Animation animation;
+    private Sprite[] sprites;
 
     public LoadingScreen() {
         shader = ShaderManager.getShader("shaders\\loading");
@@ -49,26 +53,26 @@ public class    LoadingScreen {
         glBindBuffer(GL_ARRAY_BUFFER,0);
 
 
-        double[] texCoords =
-                {
-                        0,0,
-                        0,1,
-                        1,1,
-                        1,0,
+        sprites = new Sprite[8];
+        for(int i = 0; i < sprites.length; i++) {
+            float[] texCoords =
+                    {
+                            (float) i/8,0,
 
-                };
+                            (float)i/8,1F,
 
-        DoubleBuffer buffer2 = BufferUtils.createDoubleBuffer(texCoords.length);
-        buffer2.put(texCoords);
-        buffer2.flip();
-        vboTextures = glGenBuffers();
+                            (1.0f+i)/8,1f,
 
-        glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
-        glBufferData(GL_ARRAY_BUFFER,buffer2,GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER,0);
+                            (1.0f+i)/8,0
+                    };
+            Sprite sprite = new Sprite(texCoords);
+            sprites[i] = sprite;
+
+        }
 
         ByteBufferImage decoder = new ByteBufferImage();
         ByteBuffer image = decoder.decodeImage("Textures\\Menu\\loading.tga");
+
         idTexture = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, idTexture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE,image);
@@ -77,6 +81,10 @@ public class    LoadingScreen {
         glBindTexture(GL_TEXTURE_2D, 0);
 
         STBImage.stbi_image_free(image);
+
+        animation = new Animation();
+        animation.setFrames(sprites);
+        animation.setDelay(100);
     }
 
     public void draw() {
@@ -92,8 +100,8 @@ public class    LoadingScreen {
         glBindBuffer(GL_ARRAY_BUFFER,vboVertices);
         glVertexAttribPointer(0,2,GL_FLOAT,false,0,0);
 
-        glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
-        glVertexAttribPointer(1,2,GL_DOUBLE,false,0,0);
+        glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 
@@ -104,11 +112,14 @@ public class    LoadingScreen {
 
         shader.unbind();
         glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
+        glActiveTexture(GL_TEXTURE0);
     }
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
+    }
+    public void update(){
+        animation.update();
     }
 }

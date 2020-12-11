@@ -92,6 +92,7 @@ public class AudioManager {
         soundtracks.add(soundtrack4);
     }
     public static int loadSound(String filename){
+
         if(!hasAudio)return -1;
         if(buffers.containsKey(filename)){
             return buffers.get(filename);

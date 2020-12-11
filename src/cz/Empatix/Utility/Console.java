@@ -84,7 +84,7 @@ public class Console {
                         if(args.length < 3){
                             break;
                         }
-                        em.addEnemy((int)p.getX(),(int)p.getY(),args[1],Integer.parseInt(args[2]));
+                        //em.addEnemy((int)p.getX(),(int)p.getY(),args[1],Integer.parseInt(args[2]));
                         break;
                     }
                     case "dropgun":{

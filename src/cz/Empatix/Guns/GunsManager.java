@@ -5,6 +5,7 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
@@ -14,6 +15,20 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 
 public class GunsManager {
+    public static void load(){
+        Loader.loadImage("Textures\\weapon_hud.tga");
+        Bullet.load();
+        Grenadebullet.load();
+
+        Luger.load();
+        Grenadelauncher.load();
+        M4.load();
+        Pistol.load();
+        Revolver.load();
+        Shotgun.load();
+        Submachine.load();
+        Thompson.load();
+    }
     public static int bulletShooted;
     public static int hitBullets;
 

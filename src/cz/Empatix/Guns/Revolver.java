@@ -22,9 +22,9 @@ public class Revolver extends Weapon {
         Loader.loadImage("Textures\\pistol_bullet.tga");
     }
     // audio
-    private final int soundShoot;
-    private final int soundEmptyShoot;
-    private final int soundReload;
+    private int soundShoot;
+    private int soundEmptyShoot;
+    private int soundReload;
 
     private int dots;
 
@@ -210,6 +210,25 @@ public class Revolver extends Weapon {
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    public void loadSave() {
+        super.loadSave();
+
+        // shooting
+        soundShoot = AudioManager.loadSound("guns\\shootrevolver.ogg");
+        // shooting without ammo
+        soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
+        soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
+        reloadsource.setPitch(0.75f);
+        source.setPitch(1.2f);
+
+        weaponHud = new Image("Textures\\revolver.tga",new Vector3f(1600,975,0),2f);
+        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
+        for(Bullet bullet : bullets){
+            bullet.loadSave();
         }
     }
 }

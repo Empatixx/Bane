@@ -3,7 +3,7 @@ package cz.Empatix.Entity;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 
-public class Animation {
+public class Animation{
 
     private Sprite[] frames;
     private int currentFrame;
@@ -25,7 +25,9 @@ public class Animation {
         playedOnce = false;
         reverse = false;
     }
-
+    public void updateFrames(Sprite[] frames) {
+        this.frames = frames;
+    }
     public void setDelay(long d) { delay = d; }
     public void setFrame(int i) { currentFrame = i; }
 
@@ -75,4 +77,5 @@ public class Animation {
     public int getIndexOfFrame(){
         return currentFrame;
     }
+    public boolean isPlayingLastFrame(){return currentFrame == frames.length-1;}
 }

@@ -38,7 +38,7 @@ public class KingSlime extends Enemy {
     private boolean chestCreated;
 
     private final ArrayList<KingSlimebullet> bullets;
-    private HealthBar healthBar;
+    private transient HealthBar healthBar;
 
     public static void load(){
         Loader.loadImage("Textures\\Sprites\\Enemies\\slimeking.tga");
@@ -169,22 +169,18 @@ public class KingSlime extends Enemy {
         healthBar.update(health,maxHealth);
         if(isSpawning()) return;
         // update animation
-        if(!isDead()){
-            animation.update();
-        } else if(!animation.hasPlayedOnce()) {
-            animation.update();
-            if(animation.getIndexOfFrame() == 5){
-                disableDraw = true;
-                if(!chestCreated){
-                    chestCreated=true;
+        animation.update();
+        if(isDead() && animation.hasPlayedOnce()){
+            disableDraw = true;
+            if(!chestCreated){
+                chestCreated=true;
 
-                    Chest chest = new Chest(tileMap);
-                    chest.setPosition(position.x,position.y);
-                    chest.enableDropArtefact();
-                    tileMap.addObject(chest);
+                Chest chest = new Chest(tileMap);
+                chest.setPosition(position.x,position.y);
+                chest.enableDropArtefact();
+                tileMap.addObject(chest);
 
-                    tileMap.addLadder();
-                }
+                tileMap.addLadder();
             }
         }
 
@@ -319,5 +315,63 @@ public class KingSlime extends Enemy {
     @Override
     public void drawShadow() {
         if(!disableDraw) drawShadow(11f);
+    }
+
+    @Override
+    public void loadSave() {
+        super.loadSave();
+        width = 64;
+        height = 48;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slimeking.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slimeking.tga");
+            Sprite[] sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                Sprite sprite = new Sprite(5,i,0,32,24,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[6];
+            for(int i = 0; i < sprites.length; i++) {
+                Sprite sprite = new Sprite(5,i,1,32,24,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+
+            }
+            spritesheet.addSprites(sprites);
+
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(175);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 2x
+        width *= scale;
+        height *= scale;
+
+        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,49,3);
+        healthBar.initHealth(health,maxHealth);
+
+        createShadow();
+
+        for(KingSlimebullet kingSlimebullet : bullets){
+            kingSlimebullet.loadSave();
+        }
+
     }
 }

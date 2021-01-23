@@ -28,8 +28,10 @@ public class PathWall extends RoomObject {
     public static final int RIGHT = 3;
 
     private boolean reverse;
+    private int direction;
 
     public void setDirection(int d){
+        direction = d;
         animation.setFrames(spritesheet.getSprites(d));
     }
 
@@ -148,6 +150,114 @@ public class PathWall extends RoomObject {
         cwidth *= scale;
         cheight *= scale;
     }
+
+    @Override
+    public void loadSave() {
+        height = 64;
+        width = 64;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\wall.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\wall.tga");
+            // TOP
+            Sprite[] sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (float) i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+            // LEFT
+            sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (1.0f+i)/spriteSheetCols,0,
+
+                                (float) i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,1
+
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+            // BOTTOM
+            sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (1.0f+i)/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,0,
+
+                                (float) i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,1
+
+
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+            // RIGHT
+            sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (float)i/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,0,
+
+                                (float) i/spriteSheetCols,0
+
+
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(direction));
+        animation.setDelay(75);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 8x
+        width *= scale;
+        height *= scale;
+    }
+
     public void update() {
         setMapPosition();
         if(!collision && !reverse && animation.getIndexOfFrame() == 3){

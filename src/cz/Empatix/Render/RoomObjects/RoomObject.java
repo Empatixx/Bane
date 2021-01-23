@@ -3,7 +3,9 @@ package cz.Empatix.Render.RoomObjects;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Render.TileMap;
 
-public abstract class RoomObject extends MapObject {
+import java.io.Serializable;
+
+public abstract class RoomObject extends MapObject implements Serializable {
     public boolean moveable;
     public boolean collision;
     public boolean preDraw;
@@ -36,4 +38,6 @@ public abstract class RoomObject extends MapObject {
     public void delete(){remove = true;}
 
     public boolean isBehindCollision(){return behindCollision;}
+
+    public abstract void loadSave();
 }

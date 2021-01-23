@@ -21,7 +21,7 @@ public class Portal extends RoomObject {
     private static final int IDLE = 0;
     private boolean message;
 
-    private TextRender textRender;
+    transient private TextRender textRender;
 
     public Portal(TileMap tm){
         super(tm);
@@ -85,7 +85,57 @@ public class Portal extends RoomObject {
         cwidth *= scale;
         cheight *= scale;
 
-        stopSpeed = 0.55f;
+        light = LightManager.createLight(new Vector3f(0.466f, 0.043f, 0.596f),new Vector2f(0,0),8f,this);
+
+        textRender = new TextRender();
+    }
+
+    @Override
+    public void loadSave() {
+        width = 86;
+        height = 80;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\portal.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\portal.tga");
+            Sprite[] sprites = new Sprite[8];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (float) i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(125);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 8x
+        width *= scale;
+        height *= scale;
+
         light = LightManager.createLight(new Vector3f(0.466f, 0.043f, 0.596f),new Vector2f(0,0),8f,this);
 
         textRender = new TextRender();

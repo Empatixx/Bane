@@ -12,9 +12,10 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class GunsManager {
+public class GunsManager implements Serializable {
     public static void load(){
         Loader.loadImage("Textures\\weapon_hud.tga");
         Bullet.load();
@@ -32,7 +33,7 @@ public class GunsManager {
     public static int bulletShooted;
     public static int hitBullets;
 
-    private static ArrayList<Weapon> weapons;
+    private ArrayList<Weapon> weapons;
 
     private final static int FIRSTSLOT = 0;
     private final static int SECONDARYSLOT = 1;
@@ -42,11 +43,11 @@ public class GunsManager {
 
 
     private Weapon[] equipedweapons;
-    private final int soundSwitchingGun;
-    private final Source source;
+    private int soundSwitchingGun;
+    transient private Source source;
     private long switchDelay;
 
-    private Image weaponBorder_hud;
+    transient private Image weaponBorder_hud;
 
 
     public GunsManager(TileMap tileMap){
@@ -77,6 +78,15 @@ public class GunsManager {
 
         bulletShooted = 0;
         hitBullets = 0;
+    }
+    public void loadSave(){
+        weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);
+
+        soundSwitchingGun = AudioManager.loadSound("guns\\switchgun.ogg");
+        source = AudioManager.createSource(Source.EFFECTS,0.35f);
+        for(Weapon weapon: weapons){
+            weapon.loadSave();
+        }
     }
     public void shot(float x,float y,float px,float py){
         if(current == null) return;
@@ -139,7 +149,8 @@ public class GunsManager {
             case GLFW.GLFW_KEY_Q: {
                 if(current != null){
                     stopShooting();
-                    ItemManager.dropPlayerWeapon(current, x,y);
+                    ItemManager itemManager = ItemManager.getInstance();
+                    itemManager.dropPlayerWeapon(current, x,y);
                 }
                 current = null;
                 equipedweapons[currentslot] = null;
@@ -202,11 +213,12 @@ public class GunsManager {
             }
         }
         // if player's slots are already filled
-        ItemManager.dropPlayerWeapon(current,x,y);
+        ItemManager itemManager = ItemManager.getInstance();
+        itemManager.dropPlayerWeapon(current,x,y);
         equipedweapons[currentslot] = weapon;
         current=weapon;
     }
-    public static Weapon randomGun(){
+    public Weapon randomGun(){
         Weapon weapon = weapons.get(1+Random.nextInt(weapons.size()-1));
         while(weapon.hasAlreadyDropped()){
             weapon = weapons.get(1+Random.nextInt(weapons.size()-1));

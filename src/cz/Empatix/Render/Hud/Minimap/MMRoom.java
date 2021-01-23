@@ -1,6 +1,8 @@
 package cz.Empatix.Render.Hud.Minimap;
 
-public class MMRoom {
+import java.io.Serializable;
+
+public class MMRoom implements Serializable {
     private int type;
     private int x;
     private int y;

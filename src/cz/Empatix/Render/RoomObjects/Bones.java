@@ -80,6 +80,55 @@ public class Bones extends RoomObject {
         remove = false;
     }
 
+    @Override
+    public void loadSave() {
+        width = 16;
+        height = 16;
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\bones.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\bones.tga");
+            for(int j = 0;j < spriteSheetRows;j++){
+                Sprite[] sprites = new Sprite[1];
+
+                float[] texCoords =
+                        {
+                                0, (float)j/spriteSheetRows,
+
+                                0, (float)(j+1)/spriteSheetRows,
+
+                                1, (float)(j+1)/spriteSheetRows,
+
+                                1, (float)j/spriteSheetRows,
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[0] = sprite;
+
+                spritesheet.addSprites(sprites);
+
+            }
+
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(Random.nextInt(2)));
+        animation.setDelay(-1);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 8x
+        width *= scale;
+        height *= scale;
+    }
+
     public void update(){
         setMapPosition();
 

@@ -7,7 +7,9 @@ import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 
-public abstract class Artefact {
+import java.io.Serializable;
+
+public abstract class Artefact implements Serializable {
     protected int maxCharge;
     protected int charge;
 
@@ -19,10 +21,10 @@ public abstract class Artefact {
     protected float scale;
 
     protected int rarity;
-    protected Image imageArtefact;
-    protected Image chargeBar;
-    protected Shader geometryShader;
-    protected int vboVertices;
+    transient protected Image imageArtefact;
+    transient protected Image chargeBar;
+    transient protected Shader geometryShader;
+    transient protected int vboVertices;
 
     protected TileMap tm;
     protected Player p;
@@ -66,5 +68,6 @@ public abstract class Artefact {
         dropped=false;
         charge = 0;
     }
+    public abstract void loadSave();
 }
 

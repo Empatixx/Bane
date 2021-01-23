@@ -11,18 +11,19 @@ import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ArtefactManager {
+public class ArtefactManager implements Serializable {
     public static void load(){
         Loader.loadImage("Textures\\Artefacts\\artefacthud.tga");
         RingOfFire.load();
         BerserkPot.load();
         TransportableArmorPot.load();
     }
-    private static ArrayList<Artefact> artefacts;
+    private ArrayList<Artefact> artefacts;
 
-    public Image artefactHud;
+    transient private Image artefactHud;
 
     private static Artefact currentArtefact;
 
@@ -39,6 +40,13 @@ public class ArtefactManager {
 
         artefactHud = new Image("Textures\\Artefacts\\artefacthud.tga",new Vector3f(1400,975,0),2.6f);
     }
+    public void loadSave(){
+        artefactHud = new Image("Textures\\Artefacts\\artefacthud.tga",new Vector3f(1400,975,0),2.6f);
+        for(Artefact artefact:artefacts){
+            artefact.loadSave();
+        }
+    }
+
 
     public void draw(){
         for(Artefact artefact:artefacts){
@@ -73,7 +81,7 @@ public class ArtefactManager {
             currentArtefact.updateChargeAnimation();
         }
     }
-    public static Artefact randomArtefact(){
+    public Artefact randomArtefact(){
         Artefact artefact = artefacts.get(Random.nextInt(artefacts.size()));
         while(currentArtefact == artefact || artefact.dropped){
             artefact = artefacts.get(Random.nextInt(artefacts.size()));
@@ -84,7 +92,8 @@ public class ArtefactManager {
 
     public void setCurrentArtefact(Artefact currentArtefact) {
         if(ArtefactManager.currentArtefact != null){
-            ItemManager.dropArtefact(ArtefactManager.currentArtefact,(int)p.getX(),(int)p.getY());
+            ItemManager itemManager = ItemManager.getInstance();
+            itemManager.dropArtefact(ArtefactManager.currentArtefact,(int)p.getX(),(int)p.getY());
         }
         ArtefactManager.currentArtefact = currentArtefact;
 

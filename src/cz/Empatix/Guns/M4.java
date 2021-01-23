@@ -16,15 +16,15 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-public class M4 extends Weapon{
+public class M4 extends Weapon {
     public static void load(){
         Loader.loadImage("Textures\\M4.tga");
         Loader.loadImage("Textures\\pistol_bullet.tga");
     }
     // audio
-    private final int soundShoot;
-    private final int soundEmptyShoot;
-    private final int soundReload;
+    private int soundShoot;
+    private int soundEmptyShoot;
+    private int soundReload;
 
     private int dots;
     private int bonusShots;
@@ -217,5 +217,22 @@ public class M4 extends Weapon{
     @Override
     public boolean canSwap() {
         return !reloading && System.currentTimeMillis() - InGame.deltaPauseTime() - delay > delayTime/2 && bonusShots <= 0;
+    }
+
+    @Override
+    public void loadSave() {
+        super.loadSave();
+
+        // shooting
+        soundShoot = AudioManager.loadSound("guns\\shootM4.ogg");
+        // shooting without ammo
+        soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
+        soundReload = AudioManager.loadSound("guns\\reloadM4.ogg");
+
+        weaponHud = new Image("Textures\\M4.tga",new Vector3f(1600,975,0),2f);
+        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1830,975,0),1f);
+        for(Bullet bullet : bullets){
+            bullet.loadSave();
+        }
     }
 }

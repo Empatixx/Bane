@@ -187,4 +187,9 @@ public class Sniperrifle extends Weapon {
             }
         }
     }
+
+    @Override
+    public void loadSave() {
+
+    }
 }

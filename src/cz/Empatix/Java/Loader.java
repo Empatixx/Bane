@@ -20,6 +20,7 @@ import cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades.UpgradeBar;
 import cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades.UpgradeSideBar;
 import cz.Empatix.Render.Hud.ProgressNPC.UpgradeMenu;
 import cz.Empatix.Render.RoomObjects.*;
+import cz.Empatix.Render.RoomObjects.ProgressRoom.Bookshelf;
 import cz.Empatix.Render.RoomObjects.ProgressRoom.Portal;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
@@ -103,6 +104,7 @@ public class Loader {
         Slimebullet.load();
         KingSlimebullet.load();
         MapObject.load();
+        Golem.load();
         // ENTITIES
         Shopkeeper.load();
         ProgressNPC.load();
@@ -135,6 +137,7 @@ public class Loader {
         Spike.load();
         Torch.load();
         TileMap.load();
+        Bookshelf.load();
         // states
         InGame.load();
         MenuState.load();

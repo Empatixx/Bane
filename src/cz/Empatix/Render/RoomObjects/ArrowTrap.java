@@ -11,6 +11,7 @@ import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ArrowTrap extends RoomObject {
@@ -110,6 +111,76 @@ public class ArrowTrap extends RoomObject {
         remove = false;
     }
 
+    @Override
+    public void loadSave() {
+        width = 32;
+        height = 34;
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\arrowtrap.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\arrowtrap.tga");
+            Sprite[] sprites = new Sprite[2];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (float) i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,0.5f,
+
+                                (1.0f+i)/spriteSheetCols,0.5f,
+
+                                (1.0f+i)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[2];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (float) i/spriteSheetCols,0.5f,
+
+                                (float)i/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,0.5f
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setDelay(2000);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 8x
+        width *= scale;
+        height *= scale;
+        for(Arrow a: arrows){
+            a.loadSave();
+        }
+        animation.setFrames(spritesheet.getSprites(type == TOP ? 0 : 1));
+        if(type == RIGHT) facingRight = false;
+        else facingRight = true;
+    }
+
     public void update(){
         setMapPosition();
         animation.update();
@@ -181,7 +252,7 @@ public class ArrowTrap extends RoomObject {
     public void keyPress() {
 
     }
-    public static class Arrow extends MapObject {
+    public static class Arrow extends MapObject implements Serializable {
         // SPRITE VARS
         private final static int verticalSprites = 0;
         private final static int verticalHitSprites = 1;
@@ -340,6 +411,133 @@ public class ArrowTrap extends RoomObject {
 
             collisionBypass = System.currentTimeMillis() - InGame.deltaPauseTime();
 
+        }
+        public void loadSave(){
+            if(horizontal){
+                width = 32;
+                height = 32;
+            }else {
+                width = 32;
+                height = 32;
+
+            }
+
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\arrow.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\arrow.tga");
+
+                Sprite[] images = new Sprite[4];
+
+                for(int i = 0; i < images.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float) i/spriteSheetCols,0,
+
+                                    (float) i/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                    (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                    (i+1.0f)/spriteSheetCols,0
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+
+                    images[i] = sprite;
+
+                }
+                spritesheet.addSprites(images);
+
+                images = new Sprite[3];
+
+                for(int i = 0; i < images.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float)i/spriteSheetCols,0.5f,
+
+                                    (float)i/spriteSheetCols,1.0f,
+
+                                    (i+1.0f)/spriteSheetCols,1.0f,
+
+                                    (i+1.0f)/spriteSheetCols,0.5f
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+
+                    images[i] = sprite;
+
+                }
+                spritesheet.addSprites(images);
+
+                // horizontal
+                images = new Sprite[3];
+
+                for(int i = 0; i < images.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (i+1.0f)/spriteSheetCols,0,
+
+                                    (float)i/spriteSheetCols,0,
+
+                                    (float)i/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                    (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows,
+
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+
+                    images[i] = sprite;
+
+                }
+                spritesheet.addSprites(images);
+
+                images = new Sprite[3];
+
+                for(int i = 0; i < images.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (i+1.0f)/spriteSheetCols,0.5f,
+
+                                    (float)i/spriteSheetCols,0.5f,
+
+                                    (float)i/spriteSheetCols,1.0f,
+
+                                    (i+1.0f)/spriteSheetCols,1.0f
+
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+
+                    images[i] = sprite;
+
+                }
+                spritesheet.addSprites(images);
+
+
+            }
+
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            if(horizontal){
+                animation.setFrames(spritesheet.getSprites(horizontalSprites));
+            } else {
+                animation.setFrames(spritesheet.getSprites(verticalSprites));
+            }
+
+            animation.setDelay(140);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+
+            // because of scaling image by 2x
+            width *= scale;
+            height *= scale;
         }
 
         public void setHit() {

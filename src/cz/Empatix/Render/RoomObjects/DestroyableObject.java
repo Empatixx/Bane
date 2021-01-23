@@ -16,7 +16,7 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
-public class DestroyableObject extends RoomObject {
+public abstract class DestroyableObject extends RoomObject {
     int health;
     int maxHealth;
     boolean destroyed;
@@ -24,7 +24,7 @@ public class DestroyableObject extends RoomObject {
     boolean itemAlreadyDropped;
 
     protected long lastTimeDamaged;
-    private Shader outlineShader;
+    transient private Shader outlineShader;
 
     public DestroyableObject(TileMap tm){
         super(tm);
@@ -33,6 +33,14 @@ public class DestroyableObject extends RoomObject {
         itemDrop = true;
         itemAlreadyDropped = false;
 
+        outlineShader = ShaderManager.getShader("shaders\\outline");
+        if (outlineShader == null){
+            outlineShader = ShaderManager.createShader("shaders\\outline");
+        }
+    }
+
+    @Override
+    public void loadSave() {
         outlineShader = ShaderManager.getShader("shaders\\outline");
         if (outlineShader == null){
             outlineShader = ShaderManager.createShader("shaders\\outline");
@@ -123,4 +131,5 @@ public class DestroyableObject extends RoomObject {
     }
     public boolean canDrop(){return destroyed && itemDrop && !itemAlreadyDropped; }
     public void itemDropped(){itemAlreadyDropped = true;}
+
 }

@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact name="Game:jar3">
-    <output-path>$PROJECT_DIR$/out/artifacts/Game_jar3</output-path>
+  <artifact name="Windows">
+    <output-path>$PROJECT_DIR$/out/artifacts/Windows</output-path>
     <root id="root">
       <element id="archive" name="Game.jar">
         <element id="directory" name="META-INF">

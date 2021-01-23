@@ -4,7 +4,7 @@ import cz.Empatix.Main.Settings;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-public class Camera {
+public class Camera{
     private final static Camera thisInstance = new Camera(1920,1080);
 
     private final Vector3f position;

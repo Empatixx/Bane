@@ -81,10 +81,10 @@ public class Console {
                         break;
                     }
                     case "spawnenemy":{
-                        if(args.length < 3){
+                        if(args.length < 2){
                             break;
                         }
-                        //em.addEnemy((int)p.getX(),(int)p.getY(),args[1],Integer.parseInt(args[2]));
+                        em.addEnemy(args[1]);
                         break;
                     }
                     case "dropgun":{
@@ -93,31 +93,38 @@ public class Console {
                         }
                         switch (args[1]){
                             case "pistol":{
-                                ItemManager.dropWeapon(gunsManager.getWeapon(0),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                ItemManager itemManager = ItemManager.getInstance();
+                                itemManager.dropWeapon(gunsManager.getWeapon(0),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
                                 break;
                             }
                             case "shotgun":{
-                                ItemManager.dropWeapon(gunsManager.getWeapon(1),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                ItemManager itemManager = ItemManager.getInstance();
+                                itemManager.dropWeapon(gunsManager.getWeapon(1),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
                                 break;
                             }
                             case "uzi":{
-                                ItemManager.dropWeapon(gunsManager.getWeapon(2),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                ItemManager itemManager = ItemManager.getInstance();
+                                itemManager.dropWeapon(gunsManager.getWeapon(2),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
                                 break;
                             }
                             case "revolver":{
-                                ItemManager.dropWeapon(gunsManager.getWeapon(3),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                ItemManager itemManager = ItemManager.getInstance();
+                                itemManager.dropWeapon(gunsManager.getWeapon(3),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
                                 break;
                             }
                             case "grenadelauncher":{
-                                ItemManager.dropWeapon(gunsManager.getWeapon(4),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                ItemManager itemManager = ItemManager.getInstance();
+                                itemManager.dropWeapon(gunsManager.getWeapon(4),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
                                 break;
                             }
                             case "luger":{
-                                ItemManager.dropWeapon(gunsManager.getWeapon(5),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                ItemManager itemManager = ItemManager.getInstance();
+                                itemManager.dropWeapon(gunsManager.getWeapon(5),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
                                 break;
                             }
                             case "m4":{
-                                ItemManager.dropWeapon(gunsManager.getWeapon(6),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                ItemManager itemManager = ItemManager.getInstance();
+                                itemManager.dropWeapon(gunsManager.getWeapon(6),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
                                 break;
                             }
                         }

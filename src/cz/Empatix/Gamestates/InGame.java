@@ -12,6 +12,7 @@ import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Main.DataManager;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
@@ -32,6 +33,7 @@ import cz.Empatix.Utility.Console;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static cz.Empatix.Main.Game.ARROW;
@@ -40,7 +42,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 
-public class InGame extends GameState {
+public class InGame extends GameState implements Serializable {
     public static void load(){
         Loader.loadImage("Textures\\Menu\\pausemenu.tga");
         Loader.loadImage("Textures\\Menu\\bg.png");
@@ -52,16 +54,16 @@ public class InGame extends GameState {
 
     }
 
-    private boolean pause;
-    private boolean endRewardEarned;
-    private long gameStart;
+    private transient boolean pause;
+    private transient boolean endRewardEarned;
+    private transient long gameStart;
     //
     // Main game
     //
 
     // death menu
-    private Image skullPlayerdead;
-    private Image[] logos;
+    private transient Image skullPlayerdead;
+    private transient Image[] logos;
 
     private Player player;
 
@@ -69,26 +71,26 @@ public class InGame extends GameState {
 
     private GunsManager gunsManager;
 
-    private float mouseX;
-    private float mouseY;
+    private transient float mouseX;
+    private transient float mouseY;
 
     // ingame huds
-    private HealthBar healthBar;
-    private ArmorBar armorBar;
+    private transient HealthBar healthBar;
+    private transient ArmorBar armorBar;
     private MiniMap miniMap;
-    private DamageIndicator damageIndicator;
-    private cz.Empatix.Render.Hud.Image coin;
-    private Console console;
+    private transient DamageIndicator damageIndicator;
+    private transient cz.Empatix.Render.Hud.Image coin;
+    private transient Console console;
 
     private EnemyManager enemyManager;
 
     // post processing
-    private Framebuffer objectsFramebuffer;
-    private Framebuffer pauseBlurFramebuffer;
-    private Framebuffer fadeFramebuffer;
-    private Fade fade;
-    private GaussianBlur gaussianBlur;
-    private LightManager lightManager;
+    private transient Framebuffer objectsFramebuffer;
+    private transient Framebuffer pauseBlurFramebuffer;
+    private transient Framebuffer fadeFramebuffer;
+    private transient Fade fade;
+    private transient GaussianBlur gaussianBlur;
+    private transient LightManager lightManager;
 
 
 
@@ -97,27 +99,25 @@ public class InGame extends GameState {
     //
     // Paused game
     //
-    private Background pauseBackground;
-    private MenuBar[] pauseBars;
+    private transient Background pauseBackground;
+    private transient MenuBar[] pauseBars;
     // bars types
-    private final static int PAUSEEXIT = 2;
-    private final static int PAUSESETTINGS = 1;
-    private final static int PAUSERESUME = 0;
+    private transient final static int PAUSEEXIT = 2;
+    private transient final static int PAUSESETTINGS = 1;
+    private transient final static int PAUSERESUME = 0;
 
-    private int soundMenuClick;
-    private Source source;
+    private transient int soundMenuClick;
+    private transient Source source;
 
     // pause time deltas
-    private static long pauseTimeStarted;
-    private static long pauseTimeEnded;
+    private transient static long pauseTimeEnded;
+    private transient static long pauseTimeStarted;
 
-    private TextRender[] textRender;
+    private transient TextRender[] textRender;
 
 
     InGame(GameStateManager gsm){
         this.gsm = gsm;
-        textRender = new TextRender[17];
-        for(int i = 0;i<17;i++) textRender[i] = new TextRender();
     }
 
     @Override
@@ -135,6 +135,7 @@ public class InGame extends GameState {
                         gunsManager.stopShooting();
                         setCursor(Game.CROSSHAIR);
                     } else{
+                        DataManager.saveGame(this);
                         // TODO: save menu
                     }
                 }
@@ -215,9 +216,105 @@ public class InGame extends GameState {
         }
 
     }
+    void loadGame(GameStateManager gsm){
+        this.gsm = gsm;
+        textRender = new TextRender[17];
+        for(int i = 0;i<17;i++) textRender[i] = new TextRender();
+
+        AudioManager.cleanUpAllSources();
+
+        gameStart = System.currentTimeMillis();
+        pauseTimeEnded=0;
+        pauseTimeStarted=0;
+        pause = false;
+
+        endRewardEarned = false;
+
+        objectsFramebuffer = new Framebuffer();
+        pauseBlurFramebuffer = new Framebuffer();
+        fadeFramebuffer = new Framebuffer();
+        lightManager = new LightManager();
+        fade = new Fade("shaders\\fade");
+        gaussianBlur = new GaussianBlur("shaders\\blur");
+
+
+        setCursor(Game.CROSSHAIR);
+
+        // Tile map
+        tileMap.loadSave();
+
+        // player
+        // create player object
+        player.loadSave();
+
+        // weapons
+        // load gun manager with tilemap object
+        gunsManager.loadSave();
+
+        artefactManager.loadSave();
+        // items drops
+        // load item manager with instances of objects
+        itemManager.loadSave();
+        ItemManager.init(itemManager);
+
+        miniMap.loadSave();
+        //health bar
+        healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,45,3);
+        healthBar.initHealth(player.getHealth(),player.getMaxHealth());
+        //armor bar
+        armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3);
+        armorBar.initArmor(player.getArmor(),player.getMaxArmor());
+        //minimap
+        damageIndicator = new DamageIndicator();
+        // coin
+        coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
+
+        //audio
+        AudioManager.playSoundtrack(Soundtrack.IDLE);
+
+        enemyManager.loadSave();
+        EnemyManager.init(enemyManager);
+
+
+        // pause menu
+        pauseBackground = new Background("Textures\\Menu\\pausemenu.tga");
+        pauseBackground.setDimensions(500,800);
+        pauseBars = new MenuBar[3];
+
+        String defaultBar = "Textures\\Menu\\menu_bar.tga";
+        MenuBar bar;
+        bar = new MenuBar(defaultBar,new Vector3f(960,455,0),1.70f,200,100,true);
+        bar.setType(PAUSERESUME);
+        pauseBars[0] = bar;
+
+        bar = new MenuBar(defaultBar,new Vector3f(960,645,0),1.70f,200,100,true);
+        bar.setType(PAUSESETTINGS);
+        pauseBars[1] = bar;
+
+        bar = new MenuBar(defaultBar,new Vector3f(960,835,0),1.70f,200,100,true);
+        bar.setType(PAUSEEXIT);
+        pauseBars[2] = bar;
+
+        source = new Source(Source.EFFECTS,0.35f);
+        soundMenuClick = AudioManager.loadSound("menuclick.ogg");
+
+        skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),15f);
+        logos = new Image[4];
+        logos[0] = new Image("Textures\\killslogo.tga", new Vector3f(500,576,0),1.5f);
+        logos[1] = new Image("Textures\\coinlogo.tga", new Vector3f(500,476,0),1.5f);
+        logos[2] = new Image("Textures\\accuracylogo.tga", new Vector3f(500,676,0),1.5f);
+        logos[3] = new Image("Textures\\timelogo.tga", new Vector3f(500,776,0),1.5f);
+
+        skullPlayerdead.setAlpha(0f);
+
+        console = new Console(gunsManager,player,itemManager,enemyManager);
+    }
 
     @Override
     void init() {
+        textRender = new TextRender[17];
+        for(int i = 0;i<17;i++) textRender[i] = new TextRender();
+
         AudioManager.cleanUpAllSources();
 
         gameStart = System.currentTimeMillis();
@@ -256,6 +353,7 @@ public class InGame extends GameState {
         // items drops
         // load item manager with instances of objects
         itemManager = new ItemManager(tileMap,gunsManager,artefactManager,player);
+        ItemManager.init(itemManager);
 
         // generate map + create objects which needs item manager & gun manager created
         tileMap.loadMap();
@@ -281,6 +379,7 @@ public class InGame extends GameState {
         AudioManager.playSoundtrack(Soundtrack.IDLE);
 
         enemyManager = new EnemyManager(player,tileMap);
+        EnemyManager.init(enemyManager);
 
 
 
@@ -540,7 +639,7 @@ public class InGame extends GameState {
         } else {
             itemManager.update();
 
-            ArrayList<Enemy> enemies = EnemyManager.getEnemies();
+            ArrayList<Enemy> enemies = EnemyManager.getInstance().getEnemies();
 
             player.update();
 

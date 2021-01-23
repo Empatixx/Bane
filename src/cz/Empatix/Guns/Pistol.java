@@ -22,9 +22,9 @@ public class Pistol extends Weapon {
         Loader.loadImage("Textures\\pistol_bullet.tga");
     }
     // audio
-    private final int[] soundShoot;
-    private final int soundEmptyShoot;
-    private final int soundReload;
+    private int[] soundShoot;
+    private int soundEmptyShoot;
+    private int soundReload;
 
     private int dots;
 
@@ -234,5 +234,23 @@ public class Pistol extends Weapon {
     @Override
     public boolean canSwap() {
         return !reloading && System.currentTimeMillis()  - InGame.deltaPauseTime()- delay > delayTime/2 && !secondShotReady;
+    }
+
+    @Override
+    public void loadSave() {
+        super.loadSave();
+
+        soundShoot = new int[2];
+        soundShoot[0] = AudioManager.loadSound("guns\\shootpistol_1.ogg");
+        soundShoot[1] = AudioManager.loadSound("guns\\shootpistol_2.ogg");
+        // shooting without ammo
+        soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
+        soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
+
+        weaponHud = new Image("Textures\\pistol.tga",new Vector3f(1600,975,0),2f);
+        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
+        for(Bullet bullet : bullets){
+            bullet.loadSave();
+        }
     }
 }

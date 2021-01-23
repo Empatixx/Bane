@@ -78,7 +78,6 @@ public class Game{
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         keyCallback = new KeyboardInput(this);
         mouseButtonCallback = new MouseInput(this);
-        // TODO: cursor callback is null
         glfwSetKeyCallback(window, keyCallback); // keyboard input check
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
         cursorPosCallback = new GLFWCursorPosCallback() {

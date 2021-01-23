@@ -14,6 +14,7 @@ import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
@@ -21,20 +22,20 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 
-public class MiniMap {
+public class MiniMap implements Serializable {
     public static void load(){
         Loader.loadImage("Textures\\minimap.tga");
         Loader.loadImage("Textures\\player-icon.tga");
         Loader.loadImage("Textures\\minimap-icons.tga");
     }
-    private Image minimapBorders;
-    private Image playerIcon;
-    private int idTexture;
-    private int[] vboTextures;
-    private int vboVertices;
-    private int pathVboVertices;
-    private Shader shader;
-    private Shader geometryShader;
+    transient private Image minimapBorders;
+    transient private Image playerIcon;
+    transient private int idTexture;
+    transient private int[] vboTextures;
+    transient private int vboVertices;
+    transient private int pathVboVertices;
+    transient private Shader shader;
+    transient private Shader geometryShader;
 
     private boolean displayBigMap;
 
@@ -46,6 +47,60 @@ public class MiniMap {
         minimapBorders = new Image("Textures\\minimap.tga",new Vector3f(1770,150,0),2);
         playerIcon = new Image("Textures\\player-icon.tga",new Vector3f(1770,150,0),1);
         rooms = new MMRoom[9];
+        idTexture = glGenTextures();
+
+        ByteBufferImage decoder = Loader.getImage("Textures\\minimap-icons.tga");
+        ByteBuffer spritesheetImage = decoder.getBuffer();
+
+        glBindTexture(GL_TEXTURE_2D, idTexture);
+
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        int width = decoder.getWidth();
+        int height = decoder.getHeight();
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
+
+
+        vboVertices = ModelManager.getModel(16,16);
+        if (vboVertices == -1) {
+            vboVertices = ModelManager.createModel(16, 16);
+        }
+        pathVboVertices = ModelManager.getModel(4,4);
+        if (pathVboVertices == -1) {
+            pathVboVertices = ModelManager.createModel(4, 4);
+        }
+        vboTextures = new int[5];
+        for(int i = 0;i<5;i++) {
+            float[] texCoords =
+                    {
+                            (float) i / 5, 0,
+                            (float) i / 5, 1.0f,
+                            (i + 1.0f) / 5, 1.0f,
+                            (i + 1.0f) / 5, 0
+                    };
+            FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords.length);
+            buffer.put(texCoords);
+            buffer.flip();
+            vboTextures[i] = glGenBuffers();
+
+            glBindBuffer(GL_ARRAY_BUFFER,vboTextures[i]);
+            glBufferData(GL_ARRAY_BUFFER,buffer,GL_STATIC_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+        }
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        geometryShader = ShaderManager.getShader("shaders\\geometry");
+        if (geometryShader == null){
+            geometryShader = ShaderManager.createShader("shaders\\geometry");
+        }
+    }
+    public void loadSave(){
+        minimapBorders = new Image("Textures\\minimap.tga",new Vector3f(1770,150,0),2);
+        playerIcon = new Image("Textures\\player-icon.tga",new Vector3f(1770,150,0),1);
         idTexture = glGenTextures();
 
         ByteBufferImage decoder = Loader.getImage("Textures\\minimap-icons.tga");

@@ -91,7 +91,7 @@ public class HealthBar extends HUD{
 
         float minX = pos.x * (float)Settings.WIDTH/1920 - (float)(width * scale)/2*(float)Settings.WIDTH/1920;
         float maxX = minX + (width*scale) * ((float)health/maxHealth)*(float)Settings.WIDTH/1920;
-        float premaxX = minX + (width*scale) * (delayedHealth/maxHealth)*(float)Settings.WIDTH/1920;
+        float premaxX = minX + (float)Math.floor((width*scale) * (delayedHealth/maxHealth)*(float)Settings.WIDTH/1920);
         // revert height coords because opengl is from down to up 0-1
         float maxY = Settings.HEIGHT - pos.y * (float)Settings.HEIGHT/1080 + (float)((height * scale)/2)*(float)Settings.HEIGHT/1080;
 

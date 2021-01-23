@@ -28,6 +28,8 @@ public class Torch extends RoomObject {
     public static final int SIDELEFT = 0;
     public static final int SIDERIGHT = 1;
     public static final int TOP = 2;
+
+    private int type;
     public Torch(TileMap tm){
         super(tm);
         width = 16;
@@ -101,6 +103,66 @@ public class Torch extends RoomObject {
         // because of light bug - not updated when not seen
         xmap = -100000000;
         ymap = -100000000;
+    }
+
+    @Override
+    public void loadSave() {
+        width = 16;
+        height = 16;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\torch.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\torch.tga");
+            for(int j = 0;j < spriteSheetRows;j++){
+
+                Sprite[] sprites = new Sprite[4];
+
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float) i / spriteSheetCols, (float)j/spriteSheetRows,
+
+                                    (float) i / spriteSheetCols, (float)(j+1)/spriteSheetRows,
+
+                                    (1.0f + i) / spriteSheetCols, (float)(j+1)/spriteSheetRows,
+
+                                    (1.0f + i) / spriteSheetCols, (float)j/spriteSheetRows
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+                }
+
+                spritesheet.addSprites(sprites);
+
+            }
+
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setDelay(150);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 8x
+        width *= scale;
+        height *= scale;
+
+        remove = false;
+
+        light = LightManager.createLight(new Vector3f(0.905f, 0.788f, 0.450f),new Vector2f(position.x+xmap,position.y+ymap),2f,this);
+
+        animation.setFrames(spritesheet.getSprites(type == TOP ? 1 : 0));
+        if(type == SIDELEFT) facingRight = false;
+        else facingRight = true;
     }
 
     public void update(){
@@ -191,6 +253,7 @@ public class Torch extends RoomObject {
 
     }
     public void setType(int type){
+        this.type = type;
         animation.setFrames(spritesheet.getSprites(type == TOP ? 1 : 0));
         if(type == SIDELEFT) facingRight = false;
         else facingRight = true;

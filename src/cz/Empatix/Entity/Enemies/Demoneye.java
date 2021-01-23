@@ -176,4 +176,55 @@ public class Demoneye extends Enemy {
     public void drawShadow() {
         drawShadow(5.5f);
     }
+
+    @Override
+    public void loadSave() {
+        super.loadSave();
+        width = 76;
+        height = 64;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\demoneye.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\demoneye.tga");
+            Sprite[] sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                //Sprite sprite = new Sprite(texCoords);
+                Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            /*sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+             */
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(125);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 2x
+        width *= 2;
+        height *= 2;
+
+        createShadow();
+    }
 }

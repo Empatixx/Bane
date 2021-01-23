@@ -108,6 +108,72 @@ public class Chest extends RoomObject {
         dropGun= false;
         dropArtefact = false;
     }
+
+    @Override
+    public void loadSave() {
+        width = 16;
+        height = 16;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\chest.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\chest.tga");
+            Sprite[] sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (float) i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,0.5f,
+
+                                (1.0f+i)/spriteSheetCols,0.5f,
+
+                                (1.0f+i)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (float) i/spriteSheetCols,0.5f,
+
+                                (float)i/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,0.5f
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(175);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 8x
+        width *= scale;
+        height *= scale;
+    }
+
     public void enableDropWeapon(){
         dropGun = true;
     }
@@ -126,15 +192,17 @@ public class Chest extends RoomObject {
             float x = (float) Random.nextDouble()*(-1+Random.nextInt(2)*2);
             float y = (float)Random.nextDouble()*(-1+Random.nextInt(2)*2);
 
-            if(dropGun) ItemManager.dropWeapon((int)position.x,(int)position.y,speed);
-            if(dropArtefact) ItemManager.dropArtefact((int)position.x,(int)position.y);
+            ItemManager itemManager = ItemManager.getInstance();
+
+            if(dropGun) itemManager.dropWeapon((int)position.x,(int)position.y,speed);
+            if(dropArtefact) itemManager.dropArtefact((int)position.x,(int)position.y);
 
             for(int i = 0;i<5;i++){
                 double atan = Math.atan2(x,
                         y) + 1.3 * i;
                 speed.x = (float)(Math.cos(atan) * 10);
                 speed.y = (float)(Math.sin(atan) * 10);
-                ItemManager.createDrop(position.x,position.y,speed);
+                itemManager.createDrop(position.x,position.y,speed);
             }
         }
 

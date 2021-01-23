@@ -33,6 +33,15 @@ public class TransportableArmorPot extends Artefact {
         rarity = 1;
 
     }
+
+    @Override
+    public void loadSave() {
+        imageArtefact = new Image("Textures\\artefacts\\tap.tga",new Vector3f(1403,975,0),
+                scale  );
+        chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
+                2.6f);
+    }
+
     @Override
     protected void update() {
     }

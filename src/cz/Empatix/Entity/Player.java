@@ -16,11 +16,12 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static cz.Empatix.Main.Game.window;
 import static org.lwjgl.glfw.GLFW.*;
-public class Player extends MapObject {
+public class Player extends MapObject implements Serializable {
     public static void load(){
         Loader.loadImage("Textures\\Sprites\\Player\\player64.tga");
         Loader.loadImage("Textures\\vignette.tga");
@@ -37,7 +38,7 @@ public class Player extends MapObject {
     private long deathTime;
 
     // vignette ( player hurt - effect )
-    private Background[] hitVignette;
+    transient private Background[] hitVignette;
     private long heartBeat;
     private boolean lowHealth;
     private DamageAbsorbedBy lastDamage;
@@ -66,15 +67,15 @@ public class Player extends MapObject {
     private static final int DOWN = 2;
     private static final int UP = 3;
 
-    private ArrayList<SprintParticle> sprintParticles;
+    transient ArrayList<SprintParticle> sprintParticles;
     private long lastTimeSprintParticle;
 
     // audio
-    private final int[] soundPlayerhurt;
-    private final int soundPlayerdeath;
+    private  int[] soundPlayerhurt;
+    private int soundPlayerdeath;
 
-    private final Source sourcehealth;
-    private final int soundLowHealth;
+    transient private Source sourcehealth;
+    private int soundLowHealth;
 
     // visual
 
@@ -190,9 +191,97 @@ public class Player extends MapObject {
         soundLowHealth = AudioManager.loadSound("lowhealth.ogg");
         sourcehealth.setLooping(true);
 
-        light = LightManager.createLight(new Vector3f(1.0f,1.0f,1.0f),new Vector2f(0,0),5f,this);
+        light = LightManager.createLight(new Vector3f(0.905f, 0.788f, 0.450f),new Vector2f(0,0),4f,this);
 
         rolling = false;
+
+        sprintParticles = new ArrayList<>(5);
+
+        createShadow();
+    }
+    public void loadSave(){
+        width = cwidth= 32;
+        height = cheight = 72;
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\player64.tga");
+        final int[] numFrames = {
+                6, 6, 6, 6
+        };
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\player64.tga");
+            for(int i = 0; i < spriteSheetRows; i++) {
+
+                Sprite[] images = new Sprite[numFrames[i]];
+
+                for (int j = 0; j < numFrames[i]; j++) {
+
+                    float[] texCoords =
+                            {
+                                    (float) j / spriteSheetCols, (float) i / spriteSheetRows,
+
+                                    (float) j / spriteSheetCols, (1.0f + i) / spriteSheetRows,
+
+                                    (1.0f + j) / spriteSheetCols, (1.0f + i) / spriteSheetRows,
+
+                                    (1.0f + j) / spriteSheetCols, (float) i / spriteSheetRows
+                            };
+
+
+                    Sprite sprite = new Sprite(texCoords);
+
+                    images[j] = sprite;
+
+                }
+
+                spritesheet.addSprites(images);
+            }
+        }
+
+        currentAction = IDLE;
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(100);
+
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 5x
+        width *= scale;
+        height *= scale;
+        cwidth *= scale;
+        cheight *= scale;
+        //hit vignette
+        hitVignette = new Background[2];
+
+        hitVignette[0] = new Background("Textures\\vignette.tga");
+        hitVignette[0].setFadeEffect(true);
+
+        // hit armor vignette
+        hitVignette[1] = new Background("Textures\\armorvignette.tga");
+        hitVignette[1].setFadeEffect(true);
+
+
+        // audio
+        soundPlayerhurt = new int[2];
+        soundPlayerhurt[0] = AudioManager.loadSound("playerhurt_1.ogg");
+        soundPlayerhurt[1] = AudioManager.loadSound("playerhurt_2.ogg");
+        soundPlayerdeath = AudioManager.loadSound("playerdeath.ogg");
+
+
+        sourcehealth = AudioManager.createSource(Source.EFFECTS,1f);
+        source = AudioManager.createSource(Source.EFFECTS,0.35f);
+        soundLowHealth = AudioManager.loadSound("lowhealth.ogg");
+        sourcehealth.setLooping(true);
+
+        light = LightManager.createLight(new Vector3f(1.0f,1.0f,1.0f),new Vector2f(position.x+xmap,position.y+ymap),5f,this);
 
         sprintParticles = new ArrayList<>(5);
 

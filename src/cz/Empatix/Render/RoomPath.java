@@ -1,6 +1,8 @@
 package cz.Empatix.Render;
 
-class RoomPath {
+import java.io.Serializable;
+
+class RoomPath implements Serializable {
     // corners of room
     private int yMin;
     private int yMax;

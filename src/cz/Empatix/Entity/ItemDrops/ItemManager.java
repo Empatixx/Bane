@@ -16,9 +16,16 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ItemManager {
+public class ItemManager implements Serializable {
+    private static ItemManager itemManager;
+    public static void init(ItemManager itemManager
+    ){
+        ItemManager.itemManager = itemManager;
+    }
+    public static ItemManager getInstance(){return itemManager;}
     public static void load(){
         Loader.loadImage("Textures\\shophud.tga");
         ArmorPot.load();
@@ -28,32 +35,32 @@ public class ItemManager {
         ShotgunAmmo.load();
         PistolAmmo.load();
     }
-    private static ArrayList<ItemDrop> itemDrops;
-    private static TileMap tm;
-    private static GunsManager gm;
-    private static ArtefactManager am;
-    private static Player player;
+    private ArrayList<ItemDrop> itemDrops;
+    private TileMap tm;
+    private GunsManager gm;
+    private ArtefactManager am;
+    private Player player;
 
 
-    private final int pickupSound;
-    private final int pickupCoinSound;
-    private final Source source;
-    private final Source buysource;
+    private  int pickupSound;
+    private int pickupCoinSound;
+    transient private Source source;
+    transient private Source buysource;
 
-    private Image shopHud;
+    transient private Image shopHud;
     private boolean showShopHud;
     private ItemDrop shopItem;
-    private final int soundShopBuy;
+    private int soundShopBuy;
 
     private int totalCoins;
 
-    private TextRender[] textRender;
+    transient private TextRender[] textRender;
 
     public ItemManager(TileMap tm, GunsManager gm,ArtefactManager am, Player player) {
-        ItemManager.tm = tm;
-        ItemManager.gm = gm;
-        ItemManager.am = am;
-        ItemManager.player = player;
+        this.tm = tm;
+        this.gm = gm;
+        this.am = am;
+        this.player = player;
         itemDrops = new ArrayList<>();
         pickupSound = AudioManager.loadSound("pickup.ogg");
         pickupCoinSound = AudioManager.loadSound("coin.ogg");
@@ -70,8 +77,24 @@ public class ItemManager {
         textRender = new TextRender[2];
         for(int i=0;i<2;i++) textRender[i] = new TextRender();
     }
+    public void loadSave(){
+        pickupSound = AudioManager.loadSound("pickup.ogg");
+        pickupCoinSound = AudioManager.loadSound("coin.ogg");
 
-    public static void clear() {
+        source = AudioManager.createSource(Source.EFFECTS, 0.35f);
+        buysource = AudioManager.createSource(Source.EFFECTS, 0.35f);
+
+        shopHud = new Image("Textures\\shophud.tga", new Vector3f(0, 0, 0), 3.5f);
+        soundShopBuy = AudioManager.loadSound("buy.ogg");
+
+        textRender = new TextRender[2];
+        for(int i=0;i<2;i++) textRender[i] = new TextRender();
+        for(ItemDrop drop:itemDrops){
+            drop.loadSave();
+        }
+    }
+
+    public void clear() {
         for (ItemDrop i : itemDrops) {
             if (i instanceof WeaponDrop) {
                 ((WeaponDrop) i).despawn();
@@ -84,7 +107,7 @@ public class ItemManager {
         itemDrops.clear();
     }
 
-    public static void createShopDrop(float x, float y) {
+    public void createShopDrop(float x, float y) {
         int drops = 6;
         int random = cz.Empatix.Java.Random.nextInt(drops);
 
@@ -112,7 +135,7 @@ public class ItemManager {
             drop.setPosition(x, y);
             itemDrops.add(drop);
         } else {
-            Weapon weapon = GunsManager.randomGun();
+            Weapon weapon = gm.randomGun();
             weapon.drop();
             drop = new WeaponDrop(tm, weapon);
             drop.setPosition(x, y);
@@ -120,13 +143,13 @@ public class ItemManager {
         }
         if(drop instanceof WeaponDrop){
             drop.setShop(Random.nextInt(5+tm.getFloor()*2)
-                    +5+tm.getFloor());
+                    +5+tm.getFloor()*2);
         } else {
-            drop.setShop(Random.nextInt(3+tm.getFloor()) + 2+tm.getFloor());
+            drop.setShop(Random.nextInt(3+tm.getFloor()) + 2+tm.getFloor()*2);
         }
     }
 
-    public static void createDrop(float x, float y) {
+    public void createDrop(float x, float y) {
         int drops = 3;
         if (player.getHealth() == player.getMaxHealth()) {
             drops--;
@@ -290,32 +313,32 @@ public class ItemManager {
         }
     }
 
-    public static void dropWeapon(int x, int y, Vector2f speed) {
-        Weapon weapon = GunsManager.randomGun();
+    public void dropWeapon(int x, int y, Vector2f speed) {
+        Weapon weapon = gm.randomGun();
         weapon.drop();
         WeaponDrop drop = new WeaponDrop(tm, weapon);
         drop.setSpeed(speed.x, speed.y);
         drop.setPosition(x, y);
         itemDrops.add(drop);
     }
-    public static void dropWeapon(Weapon weapon, int x, int y, Vector2f speed) {
+    public void dropWeapon(Weapon weapon, int x, int y, Vector2f speed) {
         weapon.drop();
         WeaponDrop drop = new WeaponDrop(tm, weapon);
         drop.setSpeed(speed.x, speed.y);
         drop.setPosition(x, y);
         itemDrops.add(drop);
     }
-    public static void dropArtefact(int x, int y) {
-        ArtefactDrop drop = new ArtefactDrop(tm, ArtefactManager.randomArtefact());
+    public void dropArtefact(int x, int y) {
+        ArtefactDrop drop = new ArtefactDrop(tm, am.randomArtefact());
         drop.setPosition(x, y);
         itemDrops.add(drop);
     }
-    public static void dropArtefact(Artefact artefact, int x, int y) {
+    public void dropArtefact(Artefact artefact, int x, int y) {
         ArtefactDrop drop = new ArtefactDrop(tm, artefact);
         drop.setPosition(x, y);
         itemDrops.add(drop);
     }
-    public static void createDrop(float x, float y, Vector2f speed) {
+    public void createDrop(float x, float y, Vector2f speed) {
         int random = cz.Empatix.Java.Random.nextInt(5);
         if (random == 0) {
             ItemDrop drop = new PistolAmmo(tm);
@@ -346,7 +369,7 @@ public class ItemManager {
         }
     }
 
-    public static void dropPlayerWeapon(Weapon weapon, int x, int y) {
+    public void dropPlayerWeapon(Weapon weapon, int x, int y) {
         WeaponDrop drop = new WeaponDrop(tm, weapon, x, y);
         drop.setPosition((int) player.getX(), (int) player.getY());
         itemDrops.add(drop);
@@ -387,8 +410,7 @@ public class ItemManager {
                 if(selectedDrop instanceof WeaponDrop){
                     gm.changeGun(x, y, ((WeaponDrop) selectedDrop).getWeapon());
                     selectedDrop.pickedUp = true;
-                } else if (selectedDrop instanceof ArtefactDrop){
-                    // TODO: sebrani artefaktu itemu
+                } else {
                     am.setCurrentArtefact(((ArtefactDrop) selectedDrop).getArtefact());
                     selectedDrop.pickedUp = true;
                 }

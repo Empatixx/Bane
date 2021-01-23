@@ -115,6 +115,66 @@ public class Flamethrower extends RoomObject {
         ready = true;
     }
 
+    @Override
+    public void loadSave() {
+        width = 16;
+        height = 32;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\flamethrower.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\flamethrower.tga");
+            Sprite[] sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (float) i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (1.0f+i)/spriteSheetCols,0,
+
+                                (float) i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,1
+
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+        }
+
+        animation = new Animation();
+        animation.setDelay(150);
+        setType(type);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+    }
+
     public void update(){
         setMapPosition();
         int currentFrame = animation.getIndexOfFrame();
@@ -144,11 +204,13 @@ public class Flamethrower extends RoomObject {
             damageAnimation = true;
             ready = false;
         }
+        if(damageAnimation && this.intersects(player)){
+            player.hit(1);
+        }
     }
 
     @Override
     public void touchEvent() {
-        if(damageAnimation)player.hit(1);
     }
 
     @Override

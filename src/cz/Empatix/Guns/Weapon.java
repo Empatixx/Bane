@@ -8,9 +8,10 @@ import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class Weapon {
+public abstract class Weapon implements Serializable {
     private boolean shooting;
     //ammo vars
     protected final TileMap tm;
@@ -33,13 +34,13 @@ public abstract class Weapon {
 
     boolean alreadyDropped;
 
-    protected Source source;
-    protected Source reloadsource;
+    transient protected Source source;
+    transient protected Source reloadsource;
 
-    Image weaponHud;
-    Image weaponAmmo;
-    
-    TextRender textRender;
+    transient Image weaponHud;
+    transient Image weaponAmmo;
+
+    transient TextRender textRender;
 
 
     /*
@@ -121,5 +122,11 @@ public abstract class Weapon {
 
     public boolean canSwap(){
         return !reloading && System.currentTimeMillis() - InGame.deltaPauseTime() - delay > delayTime/2;
+    }
+    public void loadSave(){
+        source = AudioManager.createSource(Source.EFFECTS,0.35f);
+        reloadsource = AudioManager.createSource(Source.EFFECTS,0.35f);
+
+        textRender = new TextRender();
     }
 }

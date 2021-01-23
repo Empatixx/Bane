@@ -6,7 +6,7 @@ import cz.Empatix.Render.Graphics.ByteBufferImage;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
 
 public class SpritesheetManager {
     private final static HashMap<String,Spritesheet> spritesheets = new HashMap<>();
@@ -26,10 +26,12 @@ public class SpritesheetManager {
 
             glBindTexture(GL_TEXTURE_2D, idTexture);
 
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
+            glGenerateMipmap(GL_TEXTURE_2D);
 
             Spritesheet spritesheet = new Spritesheet(idTexture);
             spritesheets.put(filepath,spritesheet);
@@ -42,10 +44,12 @@ public class SpritesheetManager {
 
             glBindTexture(GL_TEXTURE_2D, idTexture);
 
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, spritesheetImage);
+            glGenerateMipmap(GL_TEXTURE_2D);
 
             Spritesheet spritesheet = new Spritesheet(idTexture);
             spritesheets.put(filepath,spritesheet);

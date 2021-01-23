@@ -26,9 +26,9 @@ public class Shotgun extends Weapon {
     private double pushX;
     private double pushY;
     // audio
-    private final int soundShoot;
-    private final int soundEmptyShoot;
-    private final int soundReload;
+    private int soundShoot;
+    private int soundEmptyShoot;
+    private int soundReload;
 
     private int dots;
 
@@ -219,4 +219,20 @@ public class Shotgun extends Weapon {
         }
     }
 
+    @Override
+    public void loadSave() {
+        super.loadSave();
+
+        // shooting
+        soundShoot = AudioManager.loadSound("guns\\shootshotgun.ogg");
+        // shooting without ammo
+        soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
+        soundReload = AudioManager.loadSound("guns\\reloadshotgun.ogg");
+
+        weaponHud = new Image("Textures\\shotgun.tga",new Vector3f(1600,975,0),2f);
+        weaponAmmo = new Image("Textures\\shotgun_bullet.tga",new Vector3f(1810,975,0),1f);
+        for(Bullet bullet : bullets){
+            bullet.loadSave();
+        }
+    }
 }

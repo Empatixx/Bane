@@ -178,12 +178,61 @@ public class Ghost extends Enemy {
 
     @Override
     public void draw() {
-        drawShadow(3.5f);
         super.draw();
     }
 
     @Override
     public void drawShadow() {
         drawShadow(3.5f);
+    }
+
+    @Override
+    public void loadSave() {
+        super.loadSave();
+
+        width = 22;
+        height = 28;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\ghost.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\ghost.tga");
+            Sprite[] sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                //Sprite sprite = new Sprite(texCoords);
+                Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[5];
+            for(int i = 0; i < sprites.length; i++) {
+                Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(100);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image
+        width *= scale;
+        height *= scale;
+
+        createShadow();
     }
 }

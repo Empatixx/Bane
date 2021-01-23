@@ -15,20 +15,13 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
-public abstract class  Enemy extends MapObject {
-    private static final int IDLE = 0;
-    private static final int DEAD = 1;
-
+public abstract class  Enemy extends MapObject implements Serializable {
     protected int health;
     protected int maxHealth;
     protected boolean dead;
@@ -40,7 +33,7 @@ public abstract class  Enemy extends MapObject {
     protected static final  int shooter = 1;
     protected static final  int hybrid = 2;
 
-    private Path path;
+    transient private Path path;
 
     protected final Player player;
     public int px;
@@ -54,16 +47,12 @@ public abstract class  Enemy extends MapObject {
     //protected boolean flinching;
     //protected long flinchTimer;
 
-    private Shader outlineShader;
-    private Shader spawnShader;
+    transient private Shader outlineShader;
+    transient private Shader spawnShader;
 
     protected long lastTimeDamaged;
 
     protected long spawnTime;
-
-    private boolean lock;
-    private Thread thread;
-
 
     public Enemy(TileMap tm, Player player) {
         super(tm);
@@ -659,5 +648,17 @@ public abstract class  Enemy extends MapObject {
 
     public void setItemDropped() {
         this.itemDropped = true;
+    }
+
+    public void loadSave(){
+        outlineShader = ShaderManager.getShader("shaders\\outline");
+        if (outlineShader == null){
+            outlineShader = ShaderManager.createShader("shaders\\outline");
+        }
+
+        spawnShader = ShaderManager.getShader("shaders\\spawn");
+        if (spawnShader == null){
+            spawnShader = ShaderManager.createShader("shaders\\spawn");
+        }
     }
 }

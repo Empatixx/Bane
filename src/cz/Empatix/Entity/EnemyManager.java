@@ -6,18 +6,25 @@ import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class EnemyManager {
+public class EnemyManager implements Serializable {
+    private static EnemyManager enemyManager;
+    public static void init(EnemyManager enemyManager
+    ){
+        EnemyManager.enemyManager = enemyManager;
+    }
+    public static EnemyManager getInstance(){return enemyManager;}
     public static int enemiesKilled;
     private int chanceDrop;
 
-    private static ArrayList<Enemy> enemies;
+    private ArrayList<Enemy> enemies;
 
-    private static ArrayList<String> enemiesList;
+    private ArrayList<String> enemiesList;
 
-    private static Player player;
-    private static TileMap tileMap;
+    private Player player;
+    private TileMap tileMap;
 
     public EnemyManager(Player p, TileMap tm){
         player = p;
@@ -35,14 +42,21 @@ public class EnemyManager {
 
         enemiesKilled = 0;
     }
-
-    public static boolean areEnemiesDead(){
+    public void loadSave(){
+        for(Enemy e:enemies){
+            e.loadSave();
+        }
+    }
+    public boolean areEnemiesDead(){
         for(Enemy e:enemies){
             if(!e.isDead()){
                 return false;
             }
         }
         return true;
+    }
+    public void clear(){
+        enemies.clear();
     }
 
 
@@ -58,7 +72,8 @@ public class EnemyManager {
                 enemy.setItemDropped();
                 int chance = Random.nextInt(5);
                 if(chanceDrop+chance > 3){
-                    ItemManager.createDrop(enemy.getX(),enemy.getY());
+                    ItemManager itemManager = ItemManager.getInstance();
+                    itemManager.createDrop(enemy.getX(),enemy.getY());
                     chanceDrop=0;
                 }
             }
@@ -77,7 +92,7 @@ public class EnemyManager {
         }
     }
 
-    public static ArrayList<Enemy> getEnemies() {
+    public ArrayList<Enemy> getEnemies() {
         return enemies;
     }
 
@@ -101,6 +116,7 @@ public class EnemyManager {
                 if(drawnEnemy == null) drawnEnemy = enemy;
                 else if(drawnEnemy.getY() > enemy.getY()) drawnEnemy = enemy;
             }
+            drawnEnemy.drawShadow();
             enemiesleft.remove(drawnEnemy);
         }
     }
@@ -111,29 +127,31 @@ public class EnemyManager {
                 ((KingSlime)e).drawHud();
             } else if(e instanceof ArcaneMage) {
                 ((ArcaneMage) e).drawHud();
+            } else if(e instanceof Golem) {
+                ((Golem) e).drawHud();
             }
         }
     }
     private static int getRandom(int lower, int upper) {
         return cz.Empatix.Java.Random.nextInt((upper - lower) + 1) + lower;
     }
-    public static void spawnBoss(int x,int y){
+    public void spawnBoss(int x,int y){
         int randombosses = 1;
-        if(tileMap.getFloor() >= 1){
-            //randombosses++;
-        }
-        int typeboss = Random.nextInt(randombosses);
+        //if(tileMap.getFloor() >= 1){
+        //    randombosses++;
+        //}
+        int typeboss = Random.nextInt(randombosses)+0;
         if(typeboss == 0){
             KingSlime slime = new KingSlime(tileMap,player);
             slime.setPosition(x,y);
             enemies.add(slime);
         } else {
-            ArcaneMage arcaneMage= new ArcaneMage(tileMap,player);
-            arcaneMage.setPosition(x,y);
-            enemies.add(arcaneMage);
+            Golem golem = new Golem(tileMap,player);
+            golem.setPosition(x,y);
+            enemies.add(golem);
         }
     }
-    public static void addEnemy(int xMin,int xMax, int yMin,int yMax){
+    public void addEnemy(int xMin,int xMax, int yMin,int yMax){
         int defaultsize = 3;
         if(tileMap.getFloor() >= 1){
             defaultsize+=2;
@@ -210,5 +228,39 @@ public class EnemyManager {
         instance.setPosition(x,y);
         enemies.add(instance);
     }
-
+    public void addEnemy(String enemy){
+        Enemy instance = null;
+        switch (enemy){
+            case "slime":{
+                instance = new Slime(tileMap,player);
+                break;
+            }
+            case "rat":{
+                instance = new Rat(tileMap,player);
+                break;
+            }
+            case "bat":{
+                instance = new Bat(tileMap,player);
+                break;
+            }
+            case "demoneye":{
+                instance = new Demoneye(tileMap,player);
+                break;
+            }
+            case "ghost":{
+                instance = new Ghost(tileMap,player);
+                break;
+            }
+            case "golem":{
+                instance = new Golem(tileMap,player);
+                break;
+            }
+            case "kingslime":{
+                instance = new KingSlime(tileMap,player);
+                break;
+            }
+        }
+        instance.setPosition(player.getX(),player.getY());
+        enemies.add(instance);
+    }
 }

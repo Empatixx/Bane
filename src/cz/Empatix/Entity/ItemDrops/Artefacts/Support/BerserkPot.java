@@ -16,6 +16,7 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -27,12 +28,13 @@ public class BerserkPot extends Artefact {
     public static void load(){
         Loader.loadImage("Textures\\artefacts\\berserkpot.tga");
         Loader.loadImage("Textures\\artefacts\\artifactcharge.tga");
+        Loader.loadImage("Textures\\artefacts\\berserkpot-particle.tga");
     }
     private long time;
     private float bonusSpeed;
     private boolean removedSpeed;
 
-    private ArrayList<SprintParticle> sprintParticles;
+    transient private ArrayList<SprintParticle> sprintParticles;
     private long lastTimeSprintParticle;
 
     public BerserkPot(TileMap tm, Player p){
@@ -49,7 +51,7 @@ public class BerserkPot extends Artefact {
         rarity = 1;
 
         removedSpeed = true;
-        sprintParticles = new ArrayList<>();
+        sprintParticles = new ArrayList<>(5);
 
     }
     @Override
@@ -160,7 +162,16 @@ public class BerserkPot extends Artefact {
         if(charge > maxCharge) charge = maxCharge;
     }
 
-    private static class SprintParticle extends MapObject {
+    @Override
+    public void loadSave() {
+        imageArtefact = new Image("Textures\\artefacts\\berserkpot.tga",new Vector3f(1401,975,0),
+                scale);
+        chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
+                2.6f);
+        sprintParticles = new ArrayList<>(5);
+    }
+
+    private static class SprintParticle extends MapObject implements Serializable {
         // sprint particles
         SprintParticle(TileMap tm){
             super(tm);

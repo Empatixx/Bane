@@ -22,9 +22,9 @@ public class Luger extends Weapon {
         Loader.loadImage("Textures\\pistol_bullet.tga");
     }
     // audio
-    private final int[] soundShoot;
-    private final int soundEmptyShoot;
-    private final int soundReload;
+    private int[] soundShoot;
+    private int soundEmptyShoot;
+    private int soundReload;
 
     private int dots;
 
@@ -93,9 +93,9 @@ public class Luger extends Weapon {
     @Override
     public void shot(float x,float y,float px,float py) {
         long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-        if(bonusShots > 0 && delta > delayTime-bonusShots*16.6 && delta < delayTime){
+        if(bonusShots > 0 && delta > delayTime-bonusShots*16.6){
             double inaccuracy = 0;
-            inaccuracy = 0.055 * delta / (delayTime-bonusShots*16.6) * (Random.nextInt(2) * 2 - 1);
+            inaccuracy = 0.055 * delta / (delay-bonusShots*16.6) * (Random.nextInt(2) * 2 - 1);
             Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
             bullet.setPosition(px, py);
             bullet.setDamage(lastDamage);
@@ -238,10 +238,26 @@ public class Luger extends Weapon {
 
     @Override
     public boolean canSwap() {
-        System.out.println("RELOAD "+!reloading);
-        System.out.println("CAS "+(System.currentTimeMillis() - InGame.deltaPauseTime() - delay > delayTime/2));
-        System.out.println("BSHOTS "+(bonusShots == 0));
-
         return !reloading && System.currentTimeMillis() - InGame.deltaPauseTime() - delay > delayTime/2 && bonusShots <= 0;
+    }
+
+    @Override
+    public void loadSave() {
+        super.loadSave();
+
+        // shooting
+        soundShoot = new int[2];
+        soundShoot[0] = AudioManager.loadSound("guns\\shootpistol_1.ogg");
+        soundShoot[1] = AudioManager.loadSound("guns\\shootpistol_2.ogg");
+        // shooting without ammo
+        soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
+        soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
+        reloadsource.setPitch(1.3f);
+
+        weaponHud = new Image("Textures\\lahti.tga",new Vector3f(1600,975,0),2f);
+        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
+        for(Bullet bullet : bullets){
+            bullet.loadSave();
+        }
     }
 }

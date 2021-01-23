@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 import static org.lwjgl.opengl.GL40.*;
 
-public class Shader {
+public class Shader{
     private final int program;
 
     private final HashMap<String,Integer> locations;

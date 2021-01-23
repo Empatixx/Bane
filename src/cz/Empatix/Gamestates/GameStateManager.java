@@ -2,6 +2,7 @@ package cz.Empatix.Gamestates;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Database.Database;
+import cz.Empatix.Main.DataManager;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Screanshot;
@@ -55,7 +56,12 @@ public class GameStateManager {
         currentState = state;
         gameStates.get(currentState).init();
     }
+    public void LoadGame() {
+        gameStates.set(1, DataManager.load());
+        ((InGame) gameStates.get(1)).loadGame(this);
+        currentState = INGAME;
 
+    }
     public void update() {
         gameStates.get(currentState).update();
     }

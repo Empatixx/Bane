@@ -21,9 +21,9 @@ public class Grenadelauncher extends Weapon {
     }
     // map push when player shoot
     // audio
-    private final int soundShoot;
-    private final int soundEmptyShoot;
-    private final int soundReload;
+    private int soundShoot;
+    private int soundEmptyShoot;
+    private int soundReload;
 
     private int dots;
 
@@ -186,6 +186,24 @@ public class Grenadelauncher extends Weapon {
                     }
                 }
             }
+        }
+    }
+
+    @Override
+    public void loadSave() {
+        super.loadSave();
+
+        soundShoot = AudioManager.loadSound("guns\\grenadelaunchershoot.ogg");
+        // shooting without ammo
+        soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
+        soundReload = AudioManager.loadSound("guns\\grenadelauncherreload.ogg");
+
+        source.setPitch(0.75f);
+
+        weaponHud = new Image("Textures\\grenadelauncher.tga",new Vector3f(1600,975,0),2f);
+        weaponAmmo = new Image("Textures\\rocket-ammo.tga",new Vector3f(1830,975,0),2f);
+        for(Grenadebullet grenadebullet : bullets){
+            grenadebullet.loadSave();
         }
     }
 }

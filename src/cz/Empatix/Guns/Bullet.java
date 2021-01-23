@@ -14,8 +14,10 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.io.Serializable;
 
-public class Bullet extends MapObject {
+
+public class Bullet extends MapObject implements Serializable {
     public static void load(){
         Loader.loadImage("Textures\\Sprites\\Player\\bullet64.tga");
     }
@@ -29,8 +31,8 @@ public class Bullet extends MapObject {
     private boolean remove;
 
     // audio
-    private final int soundWallhit;
-    private final int soundEnemyhit;
+    private int soundWallhit;
+    private int soundEnemyhit;
 
     private int damage;
     private boolean crit;
@@ -131,6 +133,82 @@ public class Bullet extends MapObject {
         source = AudioManager.createSource(Source.EFFECTS,0.35f);
 
         light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f((float)x+xmap,(float)y+ymap), 1.75f,this);
+    }
+    public void loadSave(){
+        width = 16;
+        height = 16;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
+
+            Sprite[] images = new Sprite[4];
+
+            for(int i = 0; i < images.length; i++) {
+                float[] texCoords =
+                        {
+                                (float)i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                (i+1.0f)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+
+                images[i] = sprite;
+
+            }
+            spritesheet.addSprites(images);
+
+            images = new Sprite[3];
+            for(int i = 0; i < images.length; i++) {
+                float[] texCoords =
+                        {
+                                (float)i/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                (float) i/spriteSheetCols,1,
+
+                                (i+1.0f)/spriteSheetCols,1,
+
+                                (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows
+                        };
+                Sprite sprite = new Sprite(texCoords);
+
+                images[i] = sprite;
+
+            }
+            spritesheet.addSprites(images);
+        }
+
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(sprites));
+        animation.setDelay(70);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+
+        // because of scaling image by 2x
+        width *= 2;
+        height *= 2;
+
+        // audio
+        soundWallhit = AudioManager.loadSound("guns\\wallhit.ogg");
+        soundEnemyhit = AudioManager.loadSound("guns\\enemyhit.ogg");
+        source = AudioManager.createSource(Source.EFFECTS,0.35f);
+
+        light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f(position.x+xmap,position.y+ymap), 1.75f,this);
     }
 
     public void setDamage(int damage) {

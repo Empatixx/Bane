@@ -1,6 +1,7 @@
 package cz.Empatix.Render;
 
 
+import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
@@ -20,6 +21,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
@@ -27,7 +29,8 @@ import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL43.*;
 
-public class TileMap {
+public class TileMap implements Serializable {
+
 	public static void load(){
 		Loader.loadImage("Textures\\tileset64.tga");
 	}
@@ -41,8 +44,8 @@ public class TileMap {
 
 	// position
 	private final Vector3f position;
-	private final Camera camera;
-	private Shader shader;
+	transient private Camera camera;
+	transient private Shader shader;
 
 
 	// bounds
@@ -67,16 +70,16 @@ public class TileMap {
 	private int rowOffset;
 	private int colOffset;
 
-	private int previousrowOffset;
-	private int previouscolOffset;
+	transient private int previousrowOffset;
+	transient private int previouscolOffset;
 
 	private final int numRowsToDraw;
 	private final int numColsToDraw;
 
 	// opengl id of texture (tileset)
-	private int tilesetId;
-	private int vboVertices[];
-	private int vboTexCoords[];
+	transient private int tilesetId;
+	transient private int vboVertices[];
+	transient private int vboTexCoords[];
 	//matrix4f opengl
 	private Matrix4f target;
 
@@ -97,7 +100,7 @@ public class TileMap {
 	private float playerStartY;
 
 	private long nextFloorEnterTime;
-	private TextRender[] title;
+	transient private TextRender[] title;
 
 
 	public TileMap(int tileSize, MiniMap miniMap) {
@@ -136,6 +139,47 @@ public class TileMap {
 		floor = 0;
 
 	}
+	public void loadSave(){
+		tileSize /=2;
+		vboTexCoords = new int[]{glGenBuffers(),glGenBuffers()};
+		vboVertices = new int[]{glGenBuffers(),glGenBuffers()};
+
+		ByteBufferImage decoder = Loader.getImage("Textures\\tileset64.tga");
+		ByteBuffer tileset = decoder.getBuffer();
+
+		tilesetId = glGenTextures();
+
+		glBindTexture(GL_TEXTURE_2D, tilesetId);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, tileset);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+
+		shader = ShaderManager.getShader("shaders\\shader");
+		if (shader == null){
+			shader = ShaderManager.createShader("shaders\\shader");
+		}
+		shader.setUniformi("sampler",0);
+
+		camera = Camera.getInstance();
+
+		title = new TextRender[2];
+		for(int i = 0;i<2;i++){
+			title[i] = new TextRender();
+		}
+		// because we are scaling image by 2x we must increase size of tileSize
+		tileSize *=2;
+		for(Room room :roomArrayList) {
+			for (RoomObject obj : room.getMapObjects()) {
+				obj.loadSave();
+			}
+		}
+		// starter's room loading text renders
+		roomArrayList[0].loadSave();
+	}
+
 	public void setPlayer(Player p){
 		this.player = p;
 	}
@@ -151,7 +195,7 @@ public class TileMap {
 		vboTexCoords = new int[]{glGenBuffers(),glGenBuffers()};
 		vboVertices = new int[]{glGenBuffers(),glGenBuffers()};
 
-		ByteBufferImage decoder = Loader.getImage("Textures\\tileset64.tga");
+		ByteBufferImage decoder = Loader.getImage(s);
 		ByteBuffer tileset = decoder.getBuffer();
 
 		tilesetId = glGenTextures();
@@ -1266,7 +1310,11 @@ public class TileMap {
 	}
 	public void newMap(){
 		tween = 1;
-		ItemManager.clear();
+		ItemManager itemManager = ItemManager.getInstance();
+		EnemyManager enemyManager = EnemyManager.getInstance();
+
+		itemManager.clear();
+		enemyManager.clear();
 		// deleting old room objects from previous floor
 		for(Room r: roomArrayList) {
 			for(RoomObject obj : r.getMapObjects()){

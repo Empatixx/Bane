@@ -4,7 +4,7 @@ package cz.Empatix.Gamestates;
 
 abstract class GameState {
 
-	GameStateManager gsm;
+	transient GameStateManager gsm;
 
 	abstract void init();
 	abstract void update();

@@ -25,10 +25,10 @@ public class Ladder extends RoomObject {
         Loader.loadImage("Textures\\ladder.tga");
         Loader.loadImage("Textures\\arrowpointer.tga");
     }
-    private Spritesheet spritesheetArrowPointer;
-    private Animation animationPointer;
+    transient private Spritesheet spritesheetArrowPointer;
+    transient private Animation animationPointer;
 
-    private TextRender textRender;
+    transient private TextRender textRender;
 
     public Ladder(TileMap tm){
         super(tm);
@@ -122,6 +122,87 @@ public class Ladder extends RoomObject {
         height *= scale;
         cwidth *= scale;
         cheight *= scale;
+
+        textRender = new TextRender();
+    }
+
+    @Override
+    public void loadSave() {
+        width = 32;
+        height = 32;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\ladder.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\ladder.tga");
+            Sprite[] sprites = new Sprite[1];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (float) i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+        }
+
+        // try to find spritesheet if it was created once
+        spritesheetArrowPointer = SpritesheetManager.getSpritesheet("Textures\\arrowpointer.tga");
+
+        // creating a new spritesheet
+        if (spritesheetArrowPointer == null){
+            spritesheetArrowPointer = SpritesheetManager.createSpritesheet("Textures\\arrowpointer.tga");
+            Sprite[] sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (float) i/4,0,
+
+                                (float)i/4,1,
+
+                                (1.0f+i)/4,1,
+
+                                (1.0f+i)/4,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheetArrowPointer.addSprites(sprites);
+
+        }
+
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(0));
+        animation.setDelay(-1);
+
+        animationPointer = new Animation();
+        animationPointer.setFrames(spritesheetArrowPointer.getSprites(0));
+        animationPointer.setDelay(100);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 8x
+        width *= scale;
+        height *= scale;
 
         textRender = new TextRender();
     }

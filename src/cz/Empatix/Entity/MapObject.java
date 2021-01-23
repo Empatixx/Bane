@@ -19,11 +19,12 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL20.*;
 
-public abstract class MapObject {
+public abstract class MapObject implements Serializable {
 	public static void load(){
 		Loader.loadImage("Textures\\shadow.tga");
 	}
@@ -61,7 +62,7 @@ public abstract class MapObject {
 	private boolean bottomRight;
 	
 	// animation
-	protected Animation animation;
+	transient protected Animation animation;
 	protected int currentAction;
 
 
@@ -81,19 +82,19 @@ public abstract class MapObject {
 	protected boolean flinching;
 	protected long flinchingTimer;
 	// 3.0 modern opengl
-	protected int vboVertices;
-	protected Shader shader;
-	protected Spritesheet spritesheet;
+	transient protected int vboVertices;
+	transient protected Shader shader;
+	transient protected Spritesheet spritesheet;
 	public float scale;
 
 	// audio
-	protected Source source;
+	transient protected Source source;
 
 	// lightning
-	public LightPoint light;
+	transient public LightPoint light;
 	// shadow
-	public Spritesheet shadowSprite;
-    public int shadowVboVertices;
+	transient public Spritesheet shadowSprite;
+	transient public int shadowVboVertices;
     public boolean shadow;
 
 
@@ -486,8 +487,8 @@ public abstract class MapObject {
                     .scale(scale);
         } else {
             target = new Matrix4f().translate(position)
-                    .scale(scale)
-                    .rotateY(3.14f);
+					.rotateY((float) Math.PI)
+                    .scale(scale);
 
         }
         Camera.getInstance().projection().mul(target,target);
@@ -580,7 +581,43 @@ public abstract class MapObject {
 		glActiveTexture(GL_TEXTURE0);
 
 	}
+	public void drawShadow(float scale, int height){
+		if (isNotOnScrean()){
+			return;
+		}
+		Vector3f shadowPos = new Vector3f(position.x,position.y+this.scale*height/2,0);
 
+		Matrix4f shadowMatrixTarget = new Matrix4f().translate(shadowPos).scale(scale);
+		Camera.getInstance().projection().mul(shadowMatrixTarget,shadowMatrixTarget);
+		shader.bind();
+		shader.setUniformi("sampler",0);
+		shader.setUniformm4f("projection",shadowMatrixTarget);
+		glActiveTexture(GL_TEXTURE0);
+
+		shadowSprite.bindTexture();
+
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glBindBuffer(GL_ARRAY_BUFFER, shadowVboVertices);
+		glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+
+		glBindBuffer(GL_ARRAY_BUFFER,shadowSprite.getSprites(0)[0].getVbo());
+		glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
+
+		glDrawArrays(GL_QUADS, 0, 4);
+
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+
+		shader.unbind();
+		glBindTexture(GL_TEXTURE_2D,0);
+		glActiveTexture(GL_TEXTURE0);
+
+	}
 	public void updateLight(){
 		light.setPos(position.x+xmap,position.y+ymap);
 	}
@@ -650,6 +687,10 @@ public abstract class MapObject {
 
 	public int getHeight() {
 		return height;
+	}
+
+	public float getScale() {
+		return scale;
 	}
 }
 

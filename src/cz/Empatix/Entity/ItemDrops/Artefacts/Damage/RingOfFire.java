@@ -47,6 +47,18 @@ public class RingOfFire extends Artefact {
         bullets = new ArrayList<>(50);
 
     }
+
+    @Override
+    public void loadSave() {
+        imageArtefact = new Image("Textures\\artefacts\\rof.tga",new Vector3f(1403,975,0),
+                scale);
+        chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
+                2.6f);
+        for(Bullet bullet : bullets){
+            bullet.loadSave();
+        }
+    }
+
     @Override
     protected void update() {
         for(int i = 0;i<bullets.size();i++){
@@ -59,7 +71,8 @@ public class RingOfFire extends Artefact {
         }
         ArrayList<RoomObject> objects = tm.getRoomMapObjects();
         A: for(Bullet bullet:bullets){
-            for(Enemy enemy: EnemyManager.getEnemies()){
+            EnemyManager enemyManager = EnemyManager.getInstance();
+            for(Enemy enemy: enemyManager.getEnemies()){
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     if(enemy instanceof KingSlime) bullet.setDamage(1);
                     enemy.hit(bullet.getDamage());

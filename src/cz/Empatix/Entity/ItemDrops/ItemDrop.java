@@ -3,7 +3,9 @@ package cz.Empatix.Entity.ItemDrops;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Render.TileMap;
 
-public abstract class ItemDrop extends MapObject {
+import java.io.Serializable;
+
+public abstract class ItemDrop extends MapObject implements Serializable {
     int amount;
 
     static final int PISTOLAMMO = 1;
@@ -83,4 +85,6 @@ public abstract class ItemDrop extends MapObject {
     public boolean isShop() {
         return shop;
     }
+
+    public abstract void loadSave();
 }

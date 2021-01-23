@@ -80,8 +80,57 @@ public class ShopTable extends RoomObject{
         cheight *= scale;
 
     }
+
+    @Override
+    public void loadSave() {
+        width = 96;
+        height = 64;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\table.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\table.tga");
+            Sprite[] sprites = new Sprite[1];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (float) i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(0));
+        animation.setDelay(-1);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 8x
+        width *= scale;
+        height *= scale;    
+    }
+
     public void createItem(){
-        ItemManager.createShopDrop(position.x,position.y-20);
+        ItemManager itemManager = ItemManager.getInstance();
+        itemManager.createShopDrop(position.x,position.y-20);
     }
 
     public void update(){

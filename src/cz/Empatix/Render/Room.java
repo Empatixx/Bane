@@ -17,10 +17,11 @@ import org.lwjgl.glfw.GLFW;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Room {
+public class Room implements Serializable {
     // if player has entered room yet
     private boolean entered;
     private boolean closed;
@@ -63,7 +64,7 @@ public class Room {
 
     private final ArrayList<RoomObject> mapObjects;
 
-    private TextRender[] texts;
+    transient private TextRender[] texts;
 
 
     Room(int type, int id, int x, int y){
@@ -86,6 +87,12 @@ public class Room {
             for(int i = 0;i<5;i++){
                 texts[i] = new TextRender();
             }
+        }
+    }
+    public void loadSave(){
+        texts = new TextRender[5];
+        for(int i = 0;i<5;i++){
+            texts[i] = new TextRender();
         }
     }
 
@@ -278,8 +285,9 @@ public class Room {
 
 
             for (int i = 0; i < maxMobs;i++){
+                EnemyManager enemyManager = EnemyManager.getInstance();
 
-                EnemyManager.addEnemy(xMin,xMax,yMin,yMax);
+                enemyManager.addEnemy(xMin,xMax,yMin,yMax);
             }
 
             lockRoom(true);
@@ -287,7 +295,9 @@ public class Room {
 
             int y=yMin + (yMax - yMin) / 2;
             int x=xMin + (xMax - xMin) / 2;
-            EnemyManager.spawnBoss(x,y);
+
+            EnemyManager enemyManager = EnemyManager.getInstance();
+            enemyManager.spawnBoss(x,y);
 
             AudioManager.playSoundtrack(Soundtrack.BOSS);
 
@@ -376,7 +386,8 @@ public class Room {
                 if(((DestroyableObject) object).canDrop()){
                     ((DestroyableObject)object).itemDropped();
                     if(Math.random() > 0.6){
-                        ItemManager.createDrop(object.getX(),object.getY());
+                        ItemManager itemManager = ItemManager.getInstance();
+                        itemManager.createDrop(object.getX(),object.getY());
                     }
                 }
             }
@@ -388,7 +399,8 @@ public class Room {
             object.update();
         }
         if(type == Boss || type == Classic) {
-            if (EnemyManager.areEnemiesDead() && closed) {
+            EnemyManager enemyManager = EnemyManager.getInstance();
+            if (enemyManager.areEnemiesDead() && closed) {
                 lockRoom(false);
                 // adds 1 point to artifact for cleared room
                 ArtefactManager.charge();
@@ -669,6 +681,24 @@ public class Room {
             flag.setPosition(16*tileSize+tileSize/2,3*tileSize-tileSize/2);
             mapObjects.add(flag);
 
+            // torches
+            Torch torch = new Torch(tm);
+            torch.setType(Torch.TOP);
+            torch.setPosition(11*tileSize+tileSize/2,3*tileSize-tileSize/2);
+            mapObjects.add(torch);
+            torch = new Torch(tm);
+            torch.setType(Torch.TOP);
+            torch.setPosition(17*tileSize+tileSize/2,3*tileSize-tileSize/2);
+            mapObjects.add(torch);
+            torch = new Torch(tm);
+            torch.setType(Torch.SIDELEFT);
+            torch.setPosition(27*tileSize+tileSize/2,3*tileSize-tileSize/2);
+            mapObjects.add(torch);
+            torch = new Torch(tm);
+            torch.setType(Torch.SIDERIGHT);
+            torch.setPosition(tileSize+tileSize/2,3*tileSize-tileSize/2);
+            mapObjects.add(torch);
+            // bookshelfs
             // barrels
             for(int i = 13;i<16;i++){
                 Barrel barrel = new Barrel(tm);

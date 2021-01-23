@@ -21,8 +21,10 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.io.Serializable;
 
-public class Grenadebullet extends MapObject {
+
+public class Grenadebullet extends MapObject implements Serializable {
     public static void load(){
         Loader.loadImage("Textures\\Sprites\\Player\\explosion.tga");
     }
@@ -35,7 +37,7 @@ public class Grenadebullet extends MapObject {
     private boolean remove;
 
     // audio
-    private final int soundhit;
+    private int soundhit;
 
     private long shotTime;
     private Vector2f originalspeed;
@@ -144,6 +146,83 @@ public class Grenadebullet extends MapObject {
         originalspeed = new Vector2f(this.speed.x,this.speed.y);
 
     }
+    public void loadSave(){
+        width = 64;
+        height = 64;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\explosion.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\explosion.tga");
+
+            Sprite[] images = new Sprite[4];
+
+            for(int i = 0; i < images.length; i++) {
+                float[] texCoords =
+                        {
+                                (float)i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                (i+1.0f)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+
+                images[i] = sprite;
+
+            }
+            spritesheet.addSprites(images);
+
+            images = new Sprite[12];
+
+            for(int i = 0; i < images.length; i++) {
+                float[] texCoords =
+                        {
+                                (float)i/spriteSheetCols,0.5f,
+
+                                (float)i/spriteSheetCols,1.0f,
+
+                                (i+1.0f)/spriteSheetCols,1.0f,
+
+                                (i+1.0f)/spriteSheetCols,0.5f
+                        };
+                Sprite sprite = new Sprite(texCoords);
+
+                images[i] = sprite;
+
+            }
+            spritesheet.addSprites(images);
+        }
+
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(sprites));
+        animation.setDelay(70);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+
+        // because of scaling image by 2x
+        width *= 2;
+        height *= 2;
+
+        // audio
+        soundhit = AudioManager.loadSound("guns\\explosion.ogg");
+        source = AudioManager.createSource(Source.EFFECTS,0.35f);
+
+        light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f((float)position.x+xmap,(float)position.y+ymap), 1.25f,this);
+
+    }
 
     public void setDamage(int damage) {
         this.damage = damage;
@@ -152,7 +231,8 @@ public class Grenadebullet extends MapObject {
     public void setHit() {
         if(hit) return;
         hit = true;
-        for(Enemy e : EnemyManager.getEnemies()){
+        EnemyManager enemyManager = EnemyManager.getInstance();
+        for(Enemy e : enemyManager.getEnemies()){
             if(Math.abs(position.x-e.getX()) < 250 && Math.abs(position.y-e.getY()) < 250
             && !e.isDead() && !e.isSpawning()){
                 e.hit(getDamage());

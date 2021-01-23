@@ -27,10 +27,10 @@ public class ArtefactDrop extends ItemDrop {
 
     private final Artefact artefact;
 
-    private Shader outlineShader;
+    transient private Shader outlineShader;
 
-    private final int textureWidth;
-    private final int textureHeight;
+    private int textureWidth;
+    private int textureHeight;
 
 
     public ArtefactDrop(TileMap tm, Artefact artefact){
@@ -62,7 +62,38 @@ public class ArtefactDrop extends ItemDrop {
 
         light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
 
+        cwidth*=scale;
+        cheight*=scale;
+
+        outlineShader = ShaderManager.getShader("shaders\\outline");
+        if (outlineShader == null){
+            outlineShader = ShaderManager.createShader("shaders\\outline");
+        }
+
         stopSpeed = 0.35f;
+    }
+    @Override
+    public void loadSave(){
+        Image imageOfWeapon = artefact.getImageArtefact();
+
+        width=cwidth=imageOfWeapon.getWidth();
+        height=cheight=imageOfWeapon.getHeight();
+        scale = artefact.getScale();
+        facingRight = true;
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        vboTexturesWeapon = imageOfWeapon.getVboTextures();
+        vboVerticesWeapon = imageOfWeapon.getVboVertices();
+
+
+        textureId = imageOfWeapon.getIdTexture();
+        textureWidth = width;
+        textureHeight = height;
+
+        light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
 
         cwidth*=scale;
         cheight*=scale;

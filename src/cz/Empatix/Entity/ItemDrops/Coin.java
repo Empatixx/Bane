@@ -87,6 +87,55 @@ public class Coin extends ItemDrop{
 
     }
 
+    @Override
+    public void loadSave() {
+        width = 33;
+        height = 33;
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\bane_coin.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\bane_coin.tga");
+            Sprite[] sprites = new Sprite[10];
+            for(int i = 0; i < sprites.length; i++) {
+                float[] texCoords =
+                        {
+                                (float) i/spriteSheetCols,0,
+
+                                (float)i/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,1,
+
+                                (1.0f+i)/spriteSheetCols,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(0));
+        animation.setDelay(100);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+
+        // because of scaling image by 3x
+        width *= scale;
+        height *= scale;
+
+        light = LightManager.createLight(new Vector3f(1.0f,0.8274f,.0f),new Vector2f(position.x,position.y),1.25f,this);
+    }
+
     public void update(){
         super.update();
         checkTileMapCollision();

@@ -1,7 +1,5 @@
-package cz.Empatix.Guns;
+package cz.Empatix.Entity.Enemies.Projectiles;
 
-import cz.Empatix.AudioManager.AudioManager;
-import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Java.Loader;
@@ -14,36 +12,24 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.io.Serializable;
-
-
-public class Bullet extends MapObject implements Serializable {
+public class RedSlimebullet extends MapObject {
     public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Player\\bullet64.tga");
+        Loader.loadImage("Textures\\Sprites\\Enemies\\redslimebullet.tga");
     }
-
     // SPRITE VARS
     private final static int sprites = 0;
     private final static int hitSprites = 1;
+
 
     // BASIC VARS
     private boolean hit;
     private boolean remove;
 
-    // audio
-    private int soundWallhit;
-    private int soundEnemyhit;
-
-    private int damage;
-    private boolean crit;
-
-    private boolean friendlyFire;
-
-    public Bullet(TileMap tm, double x, double y,double inaccuracy, int speed) {
+    public RedSlimebullet(TileMap tm, double x, double y, double inaccuracy) {
 
         super(tm);
         facingRight = true;
-        crit=false;
+
 
         width = 16;
         height = 16;
@@ -59,15 +45,15 @@ public class Bullet extends MapObject implements Serializable {
 
         double atan = Math.atan2(y,x) + inaccuracy;
         // 30 - speed of bullet
-        this.speed.x = (float)(Math.cos(atan) * speed);
-        this.speed.y = (float)(Math.sin(atan) * speed);
+        speed.x = (float)(Math.cos(atan) * 17.5);
+        speed.y = (float)(Math.sin(atan) * 17.5);
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\redslimebullet.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\redslimebullet.tga");
 
             Sprite[] images = new Sprite[4];
 
@@ -129,23 +115,59 @@ public class Bullet extends MapObject implements Serializable {
         cwidth *= 2;
         cheight *= 2;
 
-        // audio
-        soundWallhit = AudioManager.loadSound("guns\\wallhit.ogg");
-        soundEnemyhit = AudioManager.loadSound("guns\\enemyhit.ogg");
-        source = AudioManager.createSource(Source.EFFECTS,0.35f);
+        light = LightManager.createLight(new Vector3f(0.980f, 0.839f, 0.078f), new Vector2f((float)x+xmap,(float)y+ymap), 1.25f,this);
 
-        light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f((float)x+xmap,(float)y+ymap), 1.75f,this);
     }
+
+    public void setHit() {
+        if(hit) return;
+        hit = true;
+        animation.setFrames(spritesheet.getSprites(hitSprites));
+        animation.setDelay(70);
+        speed.x = 0;
+        speed.y = 0;
+    }
+
+    public boolean shouldRemove() { return remove; }
+
+    public void update() {
+        setMapPosition();
+        checkTileMapCollision();
+        setPosition(temp.x, temp.y);
+
+        if((speed.x == 0 || speed.y == 0) && !hit) {
+            setHit();
+        }
+
+        animation.update();
+        if(hit) {
+            if (animation.hasPlayedOnce()){
+                remove = true;
+                light.remove();
+            } else {
+                // decrease intensity every time we use next sprite of hitBullet
+                light.setIntensity(1-0.5f*animation.getIndexOfFrame());
+            }
+        }
+
+    }
+
+    public void draw() {
+        super.draw();
+
+    }
+    public boolean isHit() {return hit;}
+
     public void loadSave(){
         width = 16;
         height = 16;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slimebullet.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slimebullet.tga");
 
             Sprite[] images = new Sprite[4];
 
@@ -205,88 +227,7 @@ public class Bullet extends MapObject implements Serializable {
         width *= 2;
         height *= 2;
 
-        // audio
-        soundWallhit = AudioManager.loadSound("guns\\wallhit.ogg");
-        soundEnemyhit = AudioManager.loadSound("guns\\enemyhit.ogg");
-        source = AudioManager.createSource(Source.EFFECTS,0.35f);
+        light = LightManager.createLight(new Vector3f(0.980f, 0.839f, 0.078f), new Vector2f(position.x+xmap,position.y+ymap), 1.25f,this);
 
-        light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f(position.x+xmap,position.y+ymap), 1.75f,this);
-    }
-
-    public void setDamage(int damage) {
-        this.damage = damage;
-    }
-
-    public void setHit() {
-        if(hit) return;
-        hit = true;
-        animation.setFrames(spritesheet.getSprites(hitSprites));
-        animation.setDelay(70);
-        speed.x = 0;
-        speed.y = 0;
-    }
-
-    public int getDamage() {
-        return damage;
-    }
-
-    public boolean shouldRemove() { return remove && !source.isPlaying(); }
-
-    public void update() {
-        setMapPosition();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
-
-        if((speed.x == 0 || speed.y == 0) && !hit) {
-            source.play(soundWallhit);
-            setHit();
-        }
-        if(remove && !source.isPlaying()){
-            source.delete();
-        }
-
-        animation.update();
-        if(hit) {
-            if (animation.hasPlayedOnce()){
-                remove = true;
-                light.remove();
-            } else {
-                // decrease intensity every time we use next sprite of hitBullet
-                light.setIntensity(1.5f-0.5f*animation.getIndexOfFrame());
-            }
-        }
-
-    }
-
-    public void draw() {
-        if(source.isPlaying() && remove) return;
-        super.draw();
-
-    }
-    public boolean isHit() {return hit;}
-
-    public void playEnemyHit(){
-        source.play(soundEnemyhit);
-    }
-
-    public boolean isCritical() {
-        return crit;
-    }
-
-    public void setCritical(boolean crit) {
-        this.crit = crit;
-    }
-
-    public boolean isFriendlyFire() {
-        return friendlyFire;
-    }
-
-    public void setFriendlyFire(boolean friendlyFire) {
-        this.friendlyFire = friendlyFire;
-        if(crit){
-            damage/=2;
-        }
-        damage /= 2;
-        if(damage < 1) damage = 1;
     }
 }

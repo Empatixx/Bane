@@ -89,6 +89,7 @@ public class InGame extends GameState implements Serializable {
     private transient Framebuffer pauseBlurFramebuffer;
     private transient Framebuffer fadeFramebuffer;
     private transient Fade fade;
+    private transient boolean transitionContinue;
     private transient GaussianBlur gaussianBlur;
     private transient LightManager lightManager;
 
@@ -114,7 +115,6 @@ public class InGame extends GameState implements Serializable {
     private transient static long pauseTimeStarted;
 
     private transient TextRender[] textRender;
-
 
     InGame(GameStateManager gsm){
         this.gsm = gsm;
@@ -147,6 +147,7 @@ public class InGame extends GameState implements Serializable {
 
     @Override
     void mousePressed(int button) {
+        System.out.println("X "+mouseX+"|| Y "+mouseY);
         if(button == GLFW_MOUSE_BUTTON_LEFT){
             gunsManager.startShooting();
         }
@@ -160,8 +161,7 @@ public class InGame extends GameState implements Serializable {
         if(player.isDead()){
             float time = (System.currentTimeMillis()-player.getDeathTime());
             if(time > 5500){
-                gsm.setState(GameStateManager.PROGRESSROOM);
-                glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
+                transitionContinue = true;
 
             }
             return;
@@ -207,9 +207,13 @@ public class InGame extends GameState implements Serializable {
         gunsManager.keyPressed(k,(int)(mouseX-mx-px),(int)(mouseY-my-py));
 
         player.keyPressed(k);
-        itemManager.keyPressed(k,(int)(mouseX-mx-px),(int)(mouseY-my-py));
-        tileMap.keyPressed(k,player);
         miniMap.keyPressed(k);
+
+        // if player interracts with something like artefact/gun
+        boolean interract = itemManager.keyPressed(k,(int)(mouseX-mx-px),(int)(mouseY-my-py));
+        if(!interract){
+            tileMap.keyPressed(k,player);
+        }
 
         if(k == GLFW.GLFW_KEY_F){
             artefactManager.activate();
@@ -322,11 +326,13 @@ public class InGame extends GameState implements Serializable {
         pauseTimeStarted=0;
         pause = false;
 
+
         endRewardEarned = false;
 
         objectsFramebuffer = new Framebuffer();
         pauseBlurFramebuffer = new Framebuffer();
         fadeFramebuffer = new Framebuffer();
+        transitionContinue = false;
         lightManager = new LightManager();
         fade = new Fade("shaders\\fade");
         gaussianBlur = new GaussianBlur("shaders\\blur");
@@ -347,7 +353,7 @@ public class InGame extends GameState implements Serializable {
 
         // weapons
         // load gun manager with tilemap object
-        gunsManager = new GunsManager(tileMap);
+        gunsManager = new GunsManager(tileMap,player);
 
         artefactManager = new ArtefactManager(tileMap,player);
         // items drops
@@ -479,11 +485,10 @@ public class InGame extends GameState implements Serializable {
         armorBar.draw();
         miniMap.draw();
         damageIndicator.draw();
-
         console.draw();
 
         coin.draw();
-        textRender[2].draw(""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
+        textRender[2].draw(""+player.getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
 
 
         if(player.isDead()){
@@ -510,6 +515,7 @@ public class InGame extends GameState implements Serializable {
             }
             fadeFramebuffer.unbindFBO();
             fade.draw(fadeFramebuffer);
+            if(transitionContinue) return;
             if(player.isDead()){
                 skullPlayerdead.draw();
             }
@@ -517,10 +523,10 @@ public class InGame extends GameState implements Serializable {
             if(time > 3500){
                 char[] gameOverTitle = "GAME OVER".toCharArray();
                 StringBuilder stringBuilder = new StringBuilder();
-                for(int i = 0;time > 3500+i*65 && i < gameOverTitle.length;i++){
+                for(int i = 0;time > 3500+i*95 && i < gameOverTitle.length;i++){
                     stringBuilder.append(gameOverTitle[i]);
                 }
-                textRender[3].draw(stringBuilder.toString(),new Vector3f( 800,340,0),5,new Vector3f(1f,0.25f,0f));
+                textRender[3].draw(stringBuilder.toString(),new Vector3f( TextRender.getHorizontalCenter(0,1920,stringBuilder.toString(),5),340,0),5,new Vector3f(1f,0.25f,0f));
                 glColor4f(1f,1f,1f,1f);
                 glLineWidth(3f);
                 glBegin(GL_LINES);
@@ -581,10 +587,10 @@ public class InGame extends GameState implements Serializable {
                 bar.draw();
             }
 
-            textRender[13].draw("Pause",new Vector3f(925,300,0),7,new Vector3f(0.874f,0.443f,0.149f));
-            textRender[14].draw("Resume",new Vector3f(905,465,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            textRender[15].draw("Save",new Vector3f(955,655,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            textRender[16].draw("Exit",new Vector3f(975,845,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[13].draw("Pause",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Pause",7),300,0),7,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[14].draw("Resume",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Resume",4),465,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[15].draw("Save",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Save",4),655,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[16].draw("Exit",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Exit",4),845,0),4,new Vector3f(0.874f,0.443f,0.149f));
 
 
         }
@@ -598,7 +604,12 @@ public class InGame extends GameState implements Serializable {
         AudioManager.update();
         if(player.isDead()){
             enemyManager.updateOnlyAnimations();
-            fade.update();
+            fade.update(transitionContinue);
+            if(fade.isTransitionDone()){
+                gsm.setState(GameStateManager.PROGRESSROOM);
+                glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
+                return;
+            }
             player.update();
             healthBar.update(player.getHealth(), player.getMaxHealth());
             float time = (System.currentTimeMillis()-player.getDeathTime());

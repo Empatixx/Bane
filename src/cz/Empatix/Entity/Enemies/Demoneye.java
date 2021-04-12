@@ -32,7 +32,7 @@ public class Demoneye extends Enemy {
         scale = 2;
 
 
-        health = maxHealth = (int)(12*(1+(tm.getFloor()-1)*0.12));
+        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
         damage = 3;
 
         type = melee;

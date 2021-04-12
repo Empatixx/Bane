@@ -23,9 +23,6 @@ public class ModelManager {
                         -width/2,height/2, // BOTTOM TOP
                         width/2,height/2, // RIGHT TOP
                         width/2,-height/2 // BOTTOM RIGHT
-
-
-
                 };
 
         String buildInt = width+":"+height;

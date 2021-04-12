@@ -36,7 +36,7 @@ public class Rat extends Enemy {
         cheight=37;
         scale = 2;
 
-        health = maxHealth = (int)(14*(1+(tm.getFloor()-1)*0.12));
+        health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
         damage = 1;
 
         type = melee;

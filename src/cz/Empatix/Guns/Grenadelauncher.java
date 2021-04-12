@@ -2,6 +2,7 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Loader;
@@ -29,8 +30,9 @@ public class Grenadelauncher extends Weapon {
 
     private ArrayList<Grenadebullet> bullets;
 
-    Grenadelauncher(TileMap tm){
-        super(tm);
+    Grenadelauncher(TileMap tm, Player player){
+        super(tm,player);
+        name = "Grenade Launcher";
         mindamage = 4;
         maxdamage = 7;
         inaccuracy = 0.7f;
@@ -121,10 +123,10 @@ public class Grenadelauncher extends Weapon {
         if(reloading){
             StringBuilder builder = new StringBuilder();
             for(int i = 0;i<=dots;i++) builder.append(".");
-            textRender.draw(builder.toString(),new Vector3f(1825,985,0),6,new Vector3f(0.886f,0.6f,0.458f));;
+            textRender.draw(builder.toString(),new Vector3f(1730,985,0),6,new Vector3f(0.886f,0.6f,0.458f));
 
         } else {
-            textRender.draw(currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1760,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
+            textRender.draw(currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1730,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
         }
         weaponHud.draw();
         weaponAmmo.draw();

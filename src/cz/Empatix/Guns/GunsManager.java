@@ -4,6 +4,7 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
+import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
@@ -50,17 +51,16 @@ public class GunsManager implements Serializable {
     transient private Image weaponBorder_hud;
 
 
-    public GunsManager(TileMap tileMap){
+    public GunsManager(TileMap tileMap, Player p){
         weapons = new ArrayList<>();
-        weapons.add(new Pistol(tileMap));
-        weapons.add(new Shotgun(tileMap));
-        weapons.add(new Submachine(tileMap));
-        weapons.add(new Revolver(tileMap));
-        weapons.add(new Grenadelauncher(tileMap));
-        weapons.add(new Luger(tileMap));
-        weapons.add(new M4(tileMap));
-        weapons.add(new Thompson(tileMap));
-        //weapons.add(new Sniperrifle(tileMap));
+        weapons.add(new Pistol(tileMap,p));
+        weapons.add(new Shotgun(tileMap,p));
+        weapons.add(new Submachine(tileMap,p));
+        weapons.add(new Revolver(tileMap,p));
+        weapons.add(new Grenadelauncher(tileMap,p));
+        weapons.add(new Luger(tileMap,p));
+        weapons.add(new M4(tileMap,p));
+        weapons.add(new Thompson(tileMap,p));
 
 
         weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);

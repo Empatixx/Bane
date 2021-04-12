@@ -53,8 +53,12 @@ public class GameStateManager {
     }
 
     public void setState(int state) {
+        int previousState = currentState;
         currentState = state;
         gameStates.get(currentState).init();
+        if(previousState == INGAME && currentState == PROGRESSROOM){
+            ((ProgressRoom)gameStates.get(currentState)).transition();
+        }
     }
     public void LoadGame() {
         gameStates.set(1, DataManager.load());

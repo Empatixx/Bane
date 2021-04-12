@@ -40,6 +40,9 @@ public class KingSlime extends Enemy {
     private final ArrayList<KingSlimebullet> bullets;
     private transient HealthBar healthBar;
 
+    private long directionChangeCooldown;
+    private boolean invertDirection;
+
     public static void load(){
         Loader.loadImage("Textures\\Sprites\\Enemies\\slimeking.tga");
     }
@@ -56,7 +59,7 @@ public class KingSlime extends Enemy {
         cheight = 48;
         scale = 5;
 
-        health = maxHealth = (int)(110*(1+(tm.getFloor()-1)*0.12));
+        health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
         damage = 1;
 
         type = melee;
@@ -116,6 +119,9 @@ public class KingSlime extends Enemy {
         healthBar.initHealth(health,maxHealth);
 
         createShadow();
+
+        directionChangeCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
+        invertDirection = false;
 
     }
 
@@ -234,33 +240,43 @@ public class KingSlime extends Enemy {
             shootready = false;
 
 
-            for (int i = 0; i < 1; i++) {
-                float offset = Random.nextInt(3) * 0.1f;
+            float offset = Random.nextInt(3) * 0.1f;
 
-                angle+=7;
-                if(angle >= 360){
-                    angle-=360;
-                }
 
-                KingSlimebullet slimebullet = new KingSlimebullet(
-                        tileMap,
-                        Math.sin(Math.toRadians(angle)),
-                        Math.sin(Math.toRadians(angle-90)),
-                        offset+0.05* i *(1-Random.nextInt(2)*2)
-                );
-                slimebullet.setPosition(position.x, position.y);
-                bullets.add(slimebullet);
-
-                slimebullet = new KingSlimebullet(
-                        tileMap,
-                        Math.sin(Math.toRadians(angle-180)),
-                        Math.sin(Math.toRadians(angle-270)),
-                        offset+0.05* i *(1-Random.nextInt(2)*2)
-                );
-                slimebullet.setPosition(position.x, position.y);
-                bullets.add(slimebullet);
-
+            // FLOOR 3 change between time change direction
+            if(tileMap.getFloor() >= 2 && System.currentTimeMillis() - directionChangeCooldown - InGame.deltaPauseTime() > 7500){
+                directionChangeCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
+                invertDirection = !invertDirection;
             }
+            if(invertDirection){
+                angle -= 7;
+            } else {
+                angle += 7;
+            }
+            if(angle >= 360){
+                angle-=360;
+            }
+            if(angle < 0){
+                angle+=360;
+            }
+            KingSlimebullet slimebullet = new KingSlimebullet(
+                    tileMap,
+                    Math.sin(Math.toRadians(angle)),
+                    Math.sin(Math.toRadians(angle-90)),
+                    offset+0.05 *(1-Random.nextInt(2)*2)
+            );
+            slimebullet.setPosition(position.x, position.y);
+            bullets.add(slimebullet);
+
+            slimebullet = new KingSlimebullet(
+                    tileMap,
+                    Math.sin(Math.toRadians(angle-180)),
+                    Math.sin(Math.toRadians(angle-270)),
+                    offset+0.05 *(1-Random.nextInt(2)*2)
+            );
+            slimebullet.setPosition(position.x, position.y);
+            bullets.add(slimebullet);
+
 
         }
         // ENEMY AI

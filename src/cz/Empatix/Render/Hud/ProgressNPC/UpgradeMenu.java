@@ -20,6 +20,9 @@ public class UpgradeMenu {
 
     private SliderBar weaponSlider;
 
+    private float lastMouseY;
+    private float lastMouseX;
+
     public UpgradeMenu(){
         background = new Background("Textures\\ProgressRoom\\upgrademenu-guns.tga");
         background.setFadeEffect(false);
@@ -41,6 +44,9 @@ public class UpgradeMenu {
         weaponSlider.setLength(730);
         weaponSlider.setVertical();
         weaponSlider.setValue(0f);
+
+        lastMouseX = 0;
+        lastMouseY = 0;
     }
     public void draw(){
         background.draw();
@@ -58,6 +64,12 @@ public class UpgradeMenu {
                 bar.drawUpgrades();
             }
         }
+        for (UpgradeBar bar:bars
+        ) {
+            if(bar.isClicked()){
+                bar.drawStats();
+            }
+        }
         weaponSlider.draw();
     }
     public void update(float x, float y){
@@ -68,8 +80,11 @@ public class UpgradeMenu {
             bar.update((int)sliderY);
         }
         if(weaponSlider.isLocked()){
-            weaponSlider.update(x,y);
+            lastMouseX = x;
+            lastMouseY = y;
         }
+        weaponSlider.update(lastMouseX,lastMouseY);
+
     }
 
     public void mousePressed(float x, float y, Player p){
@@ -86,10 +101,13 @@ public class UpgradeMenu {
                         ) {
                             if (bar != anotherbar) anotherbar.setClicked(false);
                         }
+                        break;
                     }
                 }
             }
         if(weaponSlider.intersects(x,y)){
+            lastMouseX = x;
+            lastMouseY = y;
             weaponSlider.setLocked(true);
         }
     }
@@ -98,5 +116,9 @@ public class UpgradeMenu {
     }
     public void unlockSlider(){
         weaponSlider.setLocked(false);
+    }
+
+    public void mouseScroll(double x, double y) {
+        lastMouseY-=y*60;
     }
 }

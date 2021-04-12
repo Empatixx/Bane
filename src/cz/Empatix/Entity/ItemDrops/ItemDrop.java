@@ -87,4 +87,8 @@ public abstract class ItemDrop extends MapObject implements Serializable {
     }
 
     public abstract void loadSave();
+
+    public void preventDespawn(){
+        canDespawn = false;
+    }
 }

@@ -2,6 +2,7 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Loader;
@@ -34,13 +35,13 @@ public class Revolver extends Weapon {
     private boolean nextCritChanceEnabled;
     private float nextCritChance;
 
-    Revolver(TileMap tm){
-        super(tm);
+    Revolver(TileMap tm, Player player){
+        super(tm,player);
         mindamage = 4;
         maxdamage = 6;
         inaccuracy = 0.8f;
         maxAmmo = 60;
-        maxMagazineAmmo = 5;
+        maxMagazineAmmo = 6;
         delayTime = 450;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
@@ -140,10 +141,10 @@ public class Revolver extends Weapon {
         if(reloading){
             StringBuilder builder = new StringBuilder();
             for(int i = 0;i<=dots;i++) builder.append(".");
-            textRender.draw(builder.toString(),new Vector3f(1820,985,0),6,new Vector3f(0.886f,0.6f,0.458f));
+            textRender.draw(builder.toString(),new Vector3f(1700,985,0),6,new Vector3f(0.886f,0.6f,0.458f));
 
         } else {
-            textRender.draw(currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1750,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
+            textRender.draw(currentMagazineAmmo+"/"+currentAmmo,new Vector3f(1700,985,0),2,new Vector3f(0.886f,0.6f,0.458f));
         }
         weaponHud.draw();
         weaponAmmo.draw();
@@ -182,7 +183,21 @@ public class Revolver extends Weapon {
         ArrayList<RoomObject> objects = tm.getRoomMapObjects();
         A: for(Bullet bullet:bullets){
             for(Enemy enemy:enemies){
-                if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
+                if(bullet.intersects(enemy) && enemy.canReflect()){
+                    Vector3f speed = bullet.getSpeed();
+                    speed.x = -speed.x;
+                    speed.y = -speed.y;
+                    bullet.setFriendlyFire(true);
+                    return;
+                }
+                if(bullet.isFriendlyFire()){
+                    if(bullet.intersects(player) && !bullet.isHit() && !player.isDead() && !player.isFlinching()){
+                        player.hit(bullet.getDamage());
+                        bullet.setHit();
+                        GunsManager.hitBullets++;
+                    }
+                }
+                else if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     enemy.hit(bullet.getDamage());
                     int cwidth = enemy.getCwidth();
                     int cheight = enemy.getCheight();

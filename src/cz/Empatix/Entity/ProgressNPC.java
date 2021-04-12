@@ -14,8 +14,6 @@ import org.lwjgl.glfw.GLFW;
 public class ProgressNPC extends MapObject {
     private static final int IDLE = 0;
 
-    private boolean reverse;
-
     private boolean touching;
     private boolean interract;
 
@@ -24,7 +22,7 @@ public class ProgressNPC extends MapObject {
     private TextRender textRender;
 
     public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\shopkeeper.tga");
+        Loader.loadImage("Textures\\ProgressRoom\\upgradenpc.tga");
     }
 
     public ProgressNPC(TileMap tm) {
@@ -34,27 +32,37 @@ public class ProgressNPC extends MapObject {
         maxSpeed = 1.5f;
         stopSpeed = 1.5f;
 
-        width = 80;
-        height = 80;
-        cwidth = 80;
-        cheight = 80;
-        scale = 4;
+        width = 64;
+        height = 64;
+        cwidth = 64;
+        cheight = 64;
+        scale = 6;
 
         facingRight = true;
 
-        spriteSheetCols = 10;
+        spriteSheetCols = 5;
         spriteSheetRows = 1;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\shopkeeper.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\ProgressRoom\\upgradenpc.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\shopkeeper.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\ProgressRoom\\upgradenpc.tga");
             Sprite[] sprites = new Sprite[10];
             for(int i = 0; i < sprites.length; i++) {
                 //Sprite sprite = new Sprite(texCoords);
-                Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
+                float[] texCoords =
+                        {
+                                (float)i/spriteSheetCols,0.f,
+
+                                (float)i/spriteSheetCols,1.f,
+
+                                (i+1f)/spriteSheetCols,1.f,
+
+                                (i+1f)/spriteSheetCols,0.f
+                        };
+                Sprite sprite = new Sprite(texCoords);
                 sprites[i] = sprite;
 
             }
@@ -68,7 +76,7 @@ public class ProgressNPC extends MapObject {
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(170);
+        animation.setDelay(130);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
@@ -80,7 +88,6 @@ public class ProgressNPC extends MapObject {
         cwidth *= scale;
         cheight *= scale;
 
-        reverse = false;
         upgradeMenu = new UpgradeMenu();
 
         textRender = new TextRender();
@@ -90,14 +97,6 @@ public class ProgressNPC extends MapObject {
         if(!touching) interract = false;
         touching = false;
         setMapPosition();
-        // update animation
-        if(animation.getIndexOfFrame() == 9 && !reverse){
-            animation.reverse();
-            reverse = true;
-        } else if(animation.getIndexOfFrame() == 0 && reverse){
-            animation.unreverse();
-            reverse = false;
-        }
         animation.update();
         upgradeMenu.update(x,y);
         // update position
@@ -110,7 +109,7 @@ public class ProgressNPC extends MapObject {
         if(touching && !interract) {
             float time = (float) Math.sin(System.currentTimeMillis() % 2000 / 600f) + (1 - (float) Math.cos((System.currentTimeMillis() % 2000 / 600f) + 0.5f));
 
-            textRender.drawMap("Press E to talk",new Vector3f(position.x-80,position.y+cheight/2,0),2,
+            textRender.drawMap("Press E to talk",new Vector3f(position.x-110,position.y+cheight/2,0),2,
                     new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
         }
     }
@@ -146,6 +145,10 @@ public class ProgressNPC extends MapObject {
 
     public boolean isInteracting(){
         return interract;
+    }
+
+    public void mouseScroll(double x, double y) {
+        upgradeMenu.mouseScroll(x,y);
     }
 }
 

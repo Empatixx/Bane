@@ -3,6 +3,7 @@ package cz.Empatix.Guns;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
@@ -12,9 +13,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public abstract class Weapon implements Serializable {
+    protected String name;
     private boolean shooting;
     //ammo vars
     protected final TileMap tm;
+    protected final Player player;
     // dmg
     protected int mindamage;
     protected int maxdamage;
@@ -52,8 +55,9 @@ public abstract class Weapon implements Serializable {
      */
     protected int type;
 
-    Weapon(TileMap tm){
+    Weapon(TileMap tm, Player player){
         this.tm = tm;
+        this.player = player;
         source = AudioManager.createSource(Source.EFFECTS,0.35f);
         reloadsource = AudioManager.createSource(Source.EFFECTS,0.35f);
 

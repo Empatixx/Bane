@@ -39,6 +39,9 @@ public class EnemyManager implements Serializable {
         enemiesList.add("Bat");
         enemiesList.add("Demoneye");
         enemiesList.add("Ghost");
+        enemiesList.add("Snake");
+        enemiesList.add("RedSlime");
+        enemiesList.add("EyeBat");
 
         enemiesKilled = 0;
     }
@@ -137,10 +140,10 @@ public class EnemyManager implements Serializable {
     }
     public void spawnBoss(int x,int y){
         int randombosses = 1;
-        //if(tileMap.getFloor() >= 1){
-        //    randombosses++;
-        //}
-        int typeboss = Random.nextInt(randombosses)+0;
+        if(tileMap.getFloor() >= 1){
+            randombosses++;
+        }
+        int typeboss = Random.nextInt(randombosses);
         if(typeboss == 0){
             KingSlime slime = new KingSlime(tileMap,player);
             slime.setPosition(x,y);
@@ -154,6 +157,9 @@ public class EnemyManager implements Serializable {
     public void addEnemy(int xMin,int xMax, int yMin,int yMax){
         int defaultsize = 3;
         if(tileMap.getFloor() >= 1){
+            defaultsize+=3;
+        }
+        if(tileMap.getFloor() >= 2){
             defaultsize+=2;
         }
         int enemyType = cz.Empatix.Java.Random.nextInt(defaultsize);
@@ -178,6 +184,18 @@ public class EnemyManager implements Serializable {
             }
             case "Ghost":{
                 instance = new Ghost(tileMap,player);
+                break;
+            }
+            case "Snake":{
+                instance = new Snake(tileMap,player);
+                break;
+            }
+            case "RedSlime":{
+                instance = new RedSlime(tileMap,player);
+                break;
+            }
+            case "EyeBat":{
+                instance = new EyeBat(tileMap,player);
                 break;
             }
         }
@@ -258,6 +276,21 @@ public class EnemyManager implements Serializable {
             case "kingslime":{
                 instance = new KingSlime(tileMap,player);
                 break;
+            }
+            case "snake":{
+                instance = new Snake(tileMap,player);
+                break;
+            }
+            case "redslime":{
+                instance = new RedSlime(tileMap,player);
+                break;
+            }
+            case "eyebat":{
+                instance = new EyeBat(tileMap,player);
+                break;
+            }
+            default:{
+                return;
             }
         }
         instance.setPosition(player.getX(),player.getY());

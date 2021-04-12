@@ -66,7 +66,7 @@ public abstract class Artefact implements Serializable {
     }
     public void despawn(){
         dropped=false;
-        charge = 0;
+        charge = maxCharge;
     }
     public abstract void loadSave();
 }

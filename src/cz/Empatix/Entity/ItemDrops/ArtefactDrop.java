@@ -72,6 +72,48 @@ public class ArtefactDrop extends ItemDrop {
 
         stopSpeed = 0.35f;
     }
+    public ArtefactDrop(TileMap tm, Artefact artefact, float x, float y){
+        super(tm);
+        this.artefact = artefact;
+        type = ARTEFACT;
+        canDespawn = false;
+        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+        pickedUp = false;
+
+        Image imageOfWeapon = artefact.getImageArtefact();
+
+        width=cwidth=imageOfWeapon.getWidth();
+        height=cheight=imageOfWeapon.getHeight();
+        scale = artefact.getScale();
+        facingRight = true;
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        vboTexturesWeapon = imageOfWeapon.getVboTextures();
+        vboVerticesWeapon = imageOfWeapon.getVboVertices();
+
+
+        textureId = imageOfWeapon.getIdTexture();
+        textureWidth = width;
+        textureHeight = height;
+
+        light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
+
+        double atan = Math.atan2(y,x);
+        speed.x = (float)(Math.cos(atan) * 10);
+        speed.y = (float)(Math.sin(atan) * 10);
+        stopSpeed = 0.35f;
+
+        cwidth*=scale;
+        cheight*=scale;
+
+        outlineShader = ShaderManager.getShader("shaders\\outline");
+        if (outlineShader == null){
+            outlineShader = ShaderManager.createShader("shaders\\outline");
+        }
+    }
     @Override
     public void loadSave(){
         Image imageOfWeapon = artefact.getImageArtefact();

@@ -68,7 +68,7 @@ public class ItemManager implements Serializable {
         source = AudioManager.createSource(Source.EFFECTS, 0.35f);
         buysource = AudioManager.createSource(Source.EFFECTS, 0.35f);
 
-        shopHud = new Image("Textures\\shophud.tga", new Vector3f(0, 0, 0), 3.5f);
+        shopHud = new Image("Textures\\shophud.tga", new Vector3f(0, 0, 0), 3f);
         showShopHud = false;
         soundShopBuy = AudioManager.loadSound("buy.ogg");
 
@@ -149,7 +149,7 @@ public class ItemManager implements Serializable {
         }
     }
 
-    public void createDrop(float x, float y) {
+    public ItemDrop createDrop(float x, float y) {
         int drops = 3;
         if (player.getHealth() == player.getMaxHealth()) {
             drops--;
@@ -157,7 +157,7 @@ public class ItemManager implements Serializable {
         int random = cz.Empatix.Java.Random.nextInt(drops);
 
         int[] weaponTypes = gm.getWeaponTypes();
-        ItemDrop drop;
+        ItemDrop drop = null;
         if (random == 0) {
             int numWeapons = 0;
             for(int type : weaponTypes) {
@@ -211,6 +211,7 @@ public class ItemManager implements Serializable {
             drop.setPosition(x, y);
             itemDrops.add(drop);
         }
+        return drop;
     }
 
     public void update() {
@@ -296,8 +297,10 @@ public class ItemManager implements Serializable {
         if (showShopHud){
             shopHud.draw();
 
+            // 240 - WIDTH OF TABLE SHOP - object
+
             textRender[0].drawMap("" + shopItem.getPrice(), new Vector3f(
-                            shopItem.getX() + shopHud.getWidth() + 3,
+                            TextRender.getHorizontalCenter((int) (shopItem.getX()-shopHud.getWidth()/2),(int) (shopItem.getX()+shopHud.getWidth()/2),""+shopItem.getPrice(),2),
                             shopItem.getY() - 110,
                             0),
                     3,
@@ -305,7 +308,7 @@ public class ItemManager implements Serializable {
 
             float time = (float) Math.sin(System.currentTimeMillis() % 2000 / 600f) + (1 - (float) Math.cos((System.currentTimeMillis() % 2000 / 600f) + 0.5f));
             textRender[1].drawMap("Press E to buy", new Vector3f(
-                            shopItem.getX() - 65,
+                            TextRender.getHorizontalCenter((int) (shopItem.getX()-120),(int) (shopItem.getX()+120),"Press E to buy",2),
                             shopItem.getY() + 140,
                             0),
                     2,
@@ -333,36 +336,82 @@ public class ItemManager implements Serializable {
         drop.setPosition(x, y);
         itemDrops.add(drop);
     }
-    public void dropArtefact(Artefact artefact, int x, int y) {
-        ArtefactDrop drop = new ArtefactDrop(tm, artefact);
-        drop.setPosition(x, y);
+    public void dropPlayerArtefact(Artefact artefact, int x, int y) {
+        ArtefactDrop drop = new ArtefactDrop(tm, artefact,x,y);
+        drop.setPosition((int)player.getX(), (int)player.getY());
         itemDrops.add(drop);
     }
     public void createDrop(float x, float y, Vector2f speed) {
         int random = cz.Empatix.Java.Random.nextInt(5);
+        ItemDrop drop;
+        int[] weaponTypes = gm.getWeaponTypes();
         if (random == 0) {
-            ItemDrop drop = new PistolAmmo(tm);
-            drop.setPosition(x, y);
-            drop.setSpeed(speed.x, speed.y);
-            itemDrops.add(drop);
-
+            int numWeapons = 0;
+            for(int type : weaponTypes) {
+                if(type != -1){
+                    numWeapons++;
+                }
+            }
+            if(numWeapons == 1){
+                for(int type : weaponTypes) {
+                    if(type != -1){
+                        if (type == ItemDrop.PISTOLAMMO) {
+                            drop = new PistolAmmo(tm);
+                            drop.setPosition(x, y);
+                            drop.setSpeed(speed.x, speed.y);
+                            itemDrops.add(drop);
+                        } else if (type == ItemDrop.EXPLOSIVEAMMO){
+                            drop = new ExplosiveAmmo(tm);
+                            drop.setPosition(x, y);
+                            drop.setSpeed(speed.x, speed.y);
+                            itemDrops.add(drop);
+                        } else{
+                            drop = new ShotgunAmmo(tm);
+                            drop.setPosition(x, y);
+                            drop.setSpeed(speed.x, speed.y);
+                            itemDrops.add(drop);
+                        }
+                    }
+                }
+            } else {
+                int type = weaponTypes[Random.nextInt(numWeapons)];
+                while(type == -1) {
+                    type = weaponTypes[Random.nextInt(numWeapons)];
+                }
+                if (type == ItemDrop.PISTOLAMMO) {
+                    drop = new PistolAmmo(tm);
+                    drop.setPosition(x, y);
+                    drop.setSpeed(speed.x, speed.y);
+                    itemDrops.add(drop);
+                } else if (type == ItemDrop.EXPLOSIVEAMMO){
+                    drop = new ExplosiveAmmo(tm);
+                    drop.setPosition(x, y);
+                    drop.setSpeed(speed.x, speed.y);
+                    itemDrops.add(drop);
+                } else {
+                    drop = new ShotgunAmmo(tm);
+                    drop.setPosition(x, y);
+                    drop.setSpeed(speed.x, speed.y);
+                    itemDrops.add(drop);
+                }
+            }
         } else if (random == 1) {
-            ItemDrop drop = new ShotgunAmmo(tm);
+            drop = new ShotgunAmmo(tm);
             drop.setPosition(x, y);
             drop.setSpeed(speed.x, speed.y);
             itemDrops.add(drop);
         } else if (random == 3) {
-            ItemDrop drop = new HealingPot(tm);
+            drop = new HealingPot(tm);
             drop.setPosition(x, y);
             drop.setSpeed(speed.x, speed.y);
             itemDrops.add(drop);
         } else if (random == 4) {
-            ItemDrop drop = new ExplosiveAmmo(tm);
+            drop = new ExplosiveAmmo(tm);
             drop.setPosition(x, y);
             drop.setSpeed(speed.x, speed.y);
             itemDrops.add(drop);
         } else {
-            ItemDrop drop = new Coin(tm);
+            drop = new Coin(tm);
             drop.setPosition(x, y);
             drop.setSpeed(speed.x, speed.y);
             itemDrops.add(drop);
@@ -381,7 +430,7 @@ public class ItemManager implements Serializable {
      * @param y - location of player Y + Y of mouse + tilemap Y
      */
 
-    public void keyPressed(int k, int x, int y) {
+    public boolean keyPressed(int k, int x, int y) {
         if(k == GLFW.GLFW_KEY_E){
             // picking gun from ground
             float distance = -1;
@@ -411,9 +460,10 @@ public class ItemManager implements Serializable {
                     gm.changeGun(x, y, ((WeaponDrop) selectedDrop).getWeapon());
                     selectedDrop.pickedUp = true;
                 } else {
-                    am.setCurrentArtefact(((ArtefactDrop) selectedDrop).getArtefact());
+                    am.setCurrentArtefact(((ArtefactDrop) selectedDrop).getArtefact(),x,y);
                     selectedDrop.pickedUp = true;
                 }
+                return true;
             }
             if(showShopHud){
                 // buying item from shop
@@ -432,8 +482,8 @@ public class ItemManager implements Serializable {
                     }
                 }
             }
-
         }
+        return false;
     }
     public int getTotalCoins(){
         return totalCoins;

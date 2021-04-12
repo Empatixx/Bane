@@ -1,7 +1,7 @@
 package cz.Empatix.Entity.Enemies;
 
 import cz.Empatix.Entity.Animation;
-import cz.Empatix.Entity.Enemies.Projectiles.Slimebullet;
+import cz.Empatix.Entity.Enemies.Projectiles.RedSlimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
@@ -17,7 +17,7 @@ import cz.Empatix.Render.TileMap;
 import java.util.ArrayList;
 
 
-public class Slime extends Enemy {
+public class RedSlime extends Enemy {
 
     private static final int IDLE = 0;
     private static final int DEAD = 1;
@@ -26,18 +26,20 @@ public class Slime extends Enemy {
     private boolean disableDraw;
     private long shootCooldown;
 
+    private int projectiles;
+    private boolean projectilesShooted;
 
-    private ArrayList<Slimebullet> bullets;
+    private ArrayList<RedSlimebullet> bullets;
 
     public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\slime.tga");
+        Loader.loadImage("Textures\\Sprites\\Enemies\\redslime.tga");
     }
-    public Slime(TileMap tm, Player player) {
+    public RedSlime(TileMap tm, Player player) {
 
         super(tm,player);
 
         moveSpeed = 0.6f;
-        maxSpeed = 1.6f;
+        maxSpeed = 3.6f;
         stopSpeed = 0.5f;
 
         width = 64;
@@ -56,11 +58,11 @@ public class Slime extends Enemy {
         spriteSheetRows = 2;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\redslime.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\redslime.tga");
             Sprite[] sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
                 Sprite sprite = new Sprite(5,i,0,32,24,spriteSheetRows,spriteSheetCols);
@@ -85,7 +87,7 @@ public class Slime extends Enemy {
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(175);
+        animation.setDelay(145);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
@@ -100,6 +102,9 @@ public class Slime extends Enemy {
         bullets = new ArrayList<>(20);
 
         createShadow();
+
+        projectiles = 0;
+        projectilesShooted = false;
 
     }
 
@@ -157,49 +162,36 @@ public class Slime extends Enemy {
             disableDraw = true;
         }
         for(int i = 0;i<bullets.size();i++){
-            Slimebullet slimebullet = bullets.get(i);
-            slimebullet.update();
-            if(slimebullet.intersects(player) && !player.isFlinching() && !player.isDead()){
-                slimebullet.setHit();
+            RedSlimebullet redslimebullet = bullets.get(i);
+            redslimebullet.update();
+            if(redslimebullet.intersects(player) && !player.isFlinching() && !player.isDead()){
+                redslimebullet.setHit();
                 player.hit(1);
             }
             for(RoomObject object: tileMap.getRoomMapObjects()){
                 if(object instanceof DestroyableObject) {
-                    if (slimebullet.intersects(object) && !slimebullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        slimebullet.setHit();
+                    if (redslimebullet.intersects(object) && !redslimebullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
+                        redslimebullet.setHit();
                         ((DestroyableObject) object).setHit(1);
                     }
                 }
             }
-            if(slimebullet.shouldRemove()) {
+            if(redslimebullet.shouldRemove()) {
                 bullets.remove(i);
                 i--;
             }
         }
+        if (!projectilesShooted && dead) {
+            projectilesShooted = true;
 
-        if(dead) return;
-
-        if(!shootready && animation.getIndexOfFrame() == 0 && System.currentTimeMillis()-shootCooldown- InGame.deltaPauseTime() > 2000){
-            shootready = true;
-            shootCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
-        }
-        else if(shootready && animation.getIndexOfFrame() == 2){
-            shootready=false;
-            final int tileTargetX = px/tileSize;
-            final int tileTargetY = py/tileSize;
-
-            final int tileEnemyX = (int)position.x/tileSize;
-            final int tileEnemyY = (int)position.y/tileSize;
-
-            if (Math.abs(tileEnemyX - tileTargetX) <= 12 && Math.abs(tileEnemyY - tileTargetY) <= 12) {
-
-                for (int i = 0; i < 5; i++) {
-                    Slimebullet slimebullet = new Slimebullet(tileMap, px - position.x, py - position.y, 1.3 * i);
-                    slimebullet.setPosition(position.x, position.y);
-                    bullets.add(slimebullet);
-                }
+            for (int i = 0; i < projectiles; i++) {
+                RedSlimebullet redSlimebullet = new RedSlimebullet(tileMap, px - position.x, py - position.y, 1.3 * i);
+                redSlimebullet.setPosition(position.x, position.y);
+                bullets.add(redSlimebullet);
             }
         }
+        if(dead) return;
+
         // ENEMY AI
         EnemyAI();
 
@@ -211,7 +203,7 @@ public class Slime extends Enemy {
     }
 
     public void draw() {
-        for(Slimebullet bullet : bullets){
+        for(RedSlimebullet bullet : bullets){
             bullet.draw();
         }
         if(!disableDraw){
@@ -224,6 +216,7 @@ public class Slime extends Enemy {
         lastTimeDamaged=System.currentTimeMillis()-InGame.deltaPauseTime();
         health -= damage;
         if(health < 0) health = 0;
+        projectiles++;
         if(health == 0){
             animation.setDelay(65);
             animation.setFrames(spritesheet.getSprites(DEAD));
@@ -277,7 +270,7 @@ public class Slime extends Enemy {
 
         animation = new Animation();
         animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(175);
+        animation.setDelay(145);
 
         shader = ShaderManager.getShader("shaders\\shader");
         if (shader == null){
@@ -287,7 +280,7 @@ public class Slime extends Enemy {
         width *= 2;
         height *= 2;
 
-        for(Slimebullet slimebullet: bullets){
+        for(RedSlimebullet slimebullet: bullets){
             slimebullet.loadSave();
         }
 

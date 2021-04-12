@@ -4,9 +4,11 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.ProgressNPC;
+import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Framebuffer;
 import cz.Empatix.Render.Hud.Image;
+import cz.Empatix.Render.Postprocessing.Fade;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.Tile;
@@ -14,6 +16,7 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+import static cz.Empatix.Main.Game.ARROW;
 import static org.lwjgl.opengl.GL11.*;
 
 public class ProgressRoom extends GameState {
@@ -27,6 +30,9 @@ public class ProgressRoom extends GameState {
     private Framebuffer objectsFramebuffer;
 
     private LightManager lightManager;
+    private Fade fade;
+    private Framebuffer transitionFBO;
+    private boolean transition;
 
     private cz.Empatix.Render.Hud.Image coin;
 
@@ -42,12 +48,19 @@ public class ProgressRoom extends GameState {
         textRender = new TextRender();
 
     }
-
+    public void transition(){
+        fade.setReverse();
+        transition = true;
+    }
     @Override
     void init() {
+        Game.setCursor(ARROW);
 
         objectsFramebuffer = new Framebuffer();
         lightManager = new LightManager();
+
+        fade = new Fade("shaders\\fade");
+        transitionFBO = new Framebuffer();
 
         // Tile map
         tileMap = new TileMap(64);
@@ -92,24 +105,36 @@ public class ProgressRoom extends GameState {
         tileMap.draw(Tile.BLOCKED);
 
         tileMap.preDrawObjects(false);
-
-        player.draw();
-
-        progressNPC.draw();
+        if(player.getY() > progressNPC.getY()+40){
+            progressNPC.draw();
+            player.draw();
+        } else {
+            player.draw();
+            progressNPC.draw();
+        }
 
         // draw objects
         tileMap.drawObjects();
 
         objectsFramebuffer.unbindFBO();
 
+        if(transition){
+            transitionFBO.bindFBO();
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+
         lightManager.draw(objectsFramebuffer);
+
 
         progressNPC.drawHud();
 
         coin.draw();
-        textRender.draw(""+player.getCoins(),new Vector3f(170,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
+        textRender.draw(""+player.getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
 
-
+        if(transition){
+            transitionFBO.unbindFBO();
+            fade.draw(transitionFBO);
+        }
     }
     @Override
     void update() {
@@ -139,6 +164,10 @@ public class ProgressRoom extends GameState {
         progressNPC.touching(player);
         lightManager.update();
         AudioManager.update();
+        if(transition){
+            fade.update(transition);
+            if(fade.isTransitionDone()) transition = false;
+        }
     }
     @Override
     void keyPressed(int k) {
@@ -158,6 +187,7 @@ public class ProgressRoom extends GameState {
     @Override
     void mousePressed(int button) {
         progressNPC.mousePressed(mouseX,mouseY,player);
+        System.out.println("X "+mouseX+"|| Y "+mouseY);
     }
 
     @Override
@@ -167,7 +197,7 @@ public class ProgressRoom extends GameState {
 
     @Override
     void mouseScroll(double x, double y) {
-
+        progressNPC.mouseScroll(x,y);
     }
 
     public static void EnterGame() {

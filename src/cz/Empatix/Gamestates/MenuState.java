@@ -97,9 +97,9 @@ public class MenuState extends GameState{
             for (int i = 0; i < settingsHuds.length;i++){
                 settingsHuds[i].draw();
             }
-            textRender[0].draw("Graphics",new Vector3f(550,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            textRender[1].draw("Audio",new Vector3f(940,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            textRender[2].draw("Controls",new Vector3f(1260,300,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[0].draw("Graphics",new Vector3f(TextRender.getHorizontalCenter(465,755,"Graphics",4),300,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[1].draw("Audio",new Vector3f(TextRender.getHorizontalCenter(815,1105,"Audio",4),300,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[2].draw("Controls",new Vector3f(TextRender.getHorizontalCenter(1165,1455,"Controls",4),300,0),4,new Vector3f(0.874f,0.443f,0.149f));
 
             if(selectedSettings == GRAPHICS){
                 for(int j = 0;j < graphicsHuds.length;j++){
@@ -107,15 +107,15 @@ public class MenuState extends GameState{
                 }
 
                 textRender[3].draw("Resolution:",new Vector3f(460,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[4].draw(Settings.preWIDTH+"x"+Settings.preHEIGHT,new Vector3f(1160,450,0),3,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[4].draw(Settings.preWIDTH+"x"+Settings.preHEIGHT,new Vector3f(TextRender.getHorizontalCenter(1045,1395,Settings.preWIDTH+"x"+Settings.preHEIGHT,3),450,0),3,new Vector3f(0.874f,0.443f,0.149f));
 
                 textRender[5].draw("Lightning:",new Vector3f(460,525,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 textRender[6].draw("V-Sync:",new Vector3f(460,600,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 textRender[7].draw("Brightness:",new Vector3f(460,675,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 //textRender[26].draw("Contrast:",new Vector3f(460,750,0),3,new Vector3f(0.874f,0.443f,0.149f));
 
-                textRender[8].draw("Reset",new Vector3f(1495,855,0),2,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[9].draw("Confirm",new Vector3f(1320,855,0),2,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[8].draw("Reset",new Vector3f(TextRender.getHorizontalCenter(1275,1415,"Reset",2),855,0),2,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[9].draw("Confirm",new Vector3f(TextRender.getHorizontalCenter(1435,1575,"Confirm",2),855,0),2,new Vector3f(0.874f,0.443f,0.149f));
 
                 for(CheckBox box : checkBoxes){
                     box.draw();
@@ -329,6 +329,7 @@ public class MenuState extends GameState{
 
     @Override
     public void mousePressed(int button) {
+        System.out.println("X "+mouseX+"|| Y "+mouseY);
         if(settings){
             if(selectedSettings == AUDIO){
                 for(SliderBar sliderBar: audioSliders) {

@@ -2,6 +2,7 @@ package cz.Empatix.Java;
 
 import cz.Empatix.Entity.Enemies.*;
 import cz.Empatix.Entity.Enemies.Projectiles.KingSlimebullet;
+import cz.Empatix.Entity.Enemies.Projectiles.RedSlimebullet;
 import cz.Empatix.Entity.Enemies.Projectiles.Slimebullet;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
@@ -103,8 +104,12 @@ public class Loader {
         Slime.load();
         Slimebullet.load();
         KingSlimebullet.load();
+        RedSlimebullet.load();
         MapObject.load();
         Golem.load();
+        Snake.load();
+        RedSlime.load();
+        EyeBat.load();
         // ENTITIES
         Shopkeeper.load();
         ProgressNPC.load();
@@ -127,6 +132,7 @@ public class Loader {
         Portal.load();
         ArrowTrap.load();
         Barrel.load();
+        Pot.load();
         Bones.load();
         Chest.load();
         Flag.load();

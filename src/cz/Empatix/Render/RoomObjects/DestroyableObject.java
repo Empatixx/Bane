@@ -22,6 +22,7 @@ public abstract class DestroyableObject extends RoomObject {
     boolean destroyed;
     boolean itemDrop;
     boolean itemAlreadyDropped;
+    boolean preventItemDespawn;
 
     protected long lastTimeDamaged;
     transient private Shader outlineShader;
@@ -131,5 +132,11 @@ public abstract class DestroyableObject extends RoomObject {
     }
     public boolean canDrop(){return destroyed && itemDrop && !itemAlreadyDropped; }
     public void itemDropped(){itemAlreadyDropped = true;}
+    public void setPreventItemDespawn(boolean preventItemDespawn) {
+        this.preventItemDespawn = preventItemDespawn;
+    }
+    public boolean isPreventItemDespawn(){
+        return preventItemDespawn;
+    }
 
 }

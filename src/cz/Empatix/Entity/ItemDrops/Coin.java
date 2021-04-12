@@ -31,7 +31,11 @@ public class Coin extends ItemDrop{
         cheight = 30;
         scale = 1.5f;
 
-        amount = 1 + Random.nextInt(tm.getFloor()+1);
+        int minIncrease = tm.getFloor() - 1;
+        if(minIncrease < 0){
+            minIncrease = 0;
+        }
+        amount = 1 + minIncrease + Random.nextInt(tm.getFloor()+1);
 
         spriteSheetCols = 10;
 

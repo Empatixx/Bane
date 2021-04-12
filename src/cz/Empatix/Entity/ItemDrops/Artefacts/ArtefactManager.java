@@ -68,8 +68,6 @@ public class ArtefactManager implements Serializable {
         if(currentArtefact != null){
             if(currentArtefact.canBeActivated()){
                 currentArtefact.activate();
-                currentArtefact.dropped = false;
-                currentArtefact = null;
             }
         }
     }
@@ -90,10 +88,10 @@ public class ArtefactManager implements Serializable {
         return artefact;
     }
 
-    public void setCurrentArtefact(Artefact currentArtefact) {
+    public void setCurrentArtefact(Artefact currentArtefact, int x, int y) {
         if(ArtefactManager.currentArtefact != null){
             ItemManager itemManager = ItemManager.getInstance();
-            itemManager.dropArtefact(ArtefactManager.currentArtefact,(int)p.getX(),(int)p.getY());
+            itemManager.dropPlayerArtefact(ArtefactManager.currentArtefact,x,y);
         }
         ArtefactManager.currentArtefact = currentArtefact;
 

@@ -10,6 +10,7 @@ import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Hud.Image;
+import cz.Empatix.Render.Text.TextRender;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -24,10 +25,13 @@ import static org.lwjgl.opengl.GL20.*;
 
 
 public abstract class UpgradeBar {
+
     public static void load(){
         Loader.loadImage("Textures\\ProgressRoom\\upgradetab-guns.tga");
         Loader.loadImage("Textures\\ProgressRoom\\upgradetab-guns-clicked.tga");
         Loader.loadImage("Textures\\ProgressRoom\\upgradeicons.tga");
+        Loader.loadImage("Textures\\ProgressRoom\\statsshow.tga");
+
     }
     private Spritesheet iconset;
     private Shader shader;
@@ -49,6 +53,9 @@ public abstract class UpgradeBar {
 
     ArrayList<UpgradeSideBar> sideBars;
 
+    private Image statsHud;
+    TextRender[] textRender;
+
     public UpgradeBar(String filepath, float weaponscale, int row){
         Vector3f pos = new Vector3f(680,240+row*120,0);
         position = pos;
@@ -56,6 +63,12 @@ public abstract class UpgradeBar {
         weapon = new Image(filepath,pos,weaponscale);
         bar = new Image("Textures\\ProgressRoom\\upgradetab-guns.tga", pos,1.5f);
         clickedBar = new Image("Textures\\ProgressRoom\\upgradetab-guns-clicked.tga", pos,1.5f);
+        statsHud = new Image("Textures\\ProgressRoom\\statsshow.tga", pos,3f);
+        statsHud.setPosition(new Vector3f(350,550,0));
+        textRender = new TextRender[6];
+        for(int i = 0;i<6;i++){
+            textRender[i] = new TextRender();
+        }
 
         int width = bar.getWidth();
         int height = bar.getHeight();
@@ -112,6 +125,9 @@ public abstract class UpgradeBar {
         }
         weapon.draw();
     }
+    public void drawStats(){
+        statsHud.draw();
+    }
     public void drawUpgrades(){
         boolean locked = false;
         for (UpgradeSideBar sideBar:sideBars
@@ -163,7 +179,10 @@ public abstract class UpgradeBar {
     }
     public void mouseClick(float x,float y, Player p){
         for(UpgradeSideBar sideBar:sideBars){
-            sideBar.mouseClick(x,y, p);
+
+            boolean bought = sideBar.mouseClick(x,y, p);
+            if(bought) updateStats();
+
             if(!sideBar.isBought()) break;
         }
     }
@@ -172,6 +191,7 @@ public abstract class UpgradeBar {
             sideBar.mouseHover(x,y);
         }
     }
+    public abstract void updateStats();
 
     public boolean isClicked() {
         return clicked;
@@ -182,5 +202,21 @@ public abstract class UpgradeBar {
         weapon.setPosition(pos);
         bar.setPosition(pos);
         clickedBar.setPosition(pos);
+    }
+    static class WeaponInfo{
+        int maxDamage,minDamage,maxAmmo,maxMagazineAmmo;
+        float firerate;
+        boolean crit_hits;
+        String name;
+        public WeaponInfo(){
+            crit_hits=false;
+        }
+        public String areCritical_hits_enabled(){
+            if(crit_hits){
+                return "Enabled";
+            } else {
+                return "Disabled";
+            }
+        }
     }
 }

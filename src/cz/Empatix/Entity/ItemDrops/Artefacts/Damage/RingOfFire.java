@@ -6,6 +6,7 @@ import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.Bullet;
+import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Camera;
@@ -34,7 +35,7 @@ public class RingOfFire extends Artefact {
     public RingOfFire(TileMap tm, Player p){
         super(tm,p);
         maxCharge = 4;
-        charge = 0;
+        charge = maxCharge;
 
         scale = 4;
 
@@ -73,7 +74,20 @@ public class RingOfFire extends Artefact {
         A: for(Bullet bullet:bullets){
             EnemyManager enemyManager = EnemyManager.getInstance();
             for(Enemy enemy: enemyManager.getEnemies()){
-                if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
+                if(bullet.intersects(enemy) && enemy.canReflect()){
+                    Vector3f speed = bullet.getSpeed();
+                    speed.x = -speed.x;
+                    speed.y = -speed.y;
+                    return;
+                }
+                if(bullet.isFriendlyFire()){
+                    if(bullet.intersects(p) && !bullet.isHit() && !p.isDead() && !p.isFlinching()){
+                        p.hit(bullet.getDamage());
+                        bullet.setHit();
+                        GunsManager.hitBullets++;
+                    }
+                }
+                else if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     if(enemy instanceof KingSlime) bullet.setDamage(1);
                     enemy.hit(bullet.getDamage());
                     int cwidth = enemy.getCwidth();

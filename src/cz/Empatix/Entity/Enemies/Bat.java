@@ -32,7 +32,7 @@ public class Bat extends Enemy {
         scale = 2;
 
 
-        health = maxHealth = (int)(10*(1+(tm.getFloor()-1)*0.12));
+        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
         damage = 2;
 
         type = melee;

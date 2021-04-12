@@ -56,7 +56,7 @@ public class UpgradeSideBar {
         sideBar.draw();
         if(text != null){
             for(int i = 0; i< text.length; i++){
-                renderText.draw(text[i],new Vector3f(pos.x-115,pos.y-40+i*20,0),1,new Vector3f(0.686f,0.4f,0.258f));
+                renderText.draw(text[i],new Vector3f(pos.x-135,pos.y-40+i*20,0),1,new Vector3f(0.686f,0.4f,0.258f));
             }
         }
         if(bought){
@@ -66,8 +66,8 @@ public class UpgradeSideBar {
         }
         else {
             buyButton.draw();
-            renderText.draw("Buy",new Vector3f(pos.x+220,pos.y+40,pos.z),2,new Vector3f(0.686f,0.4f,0.258f));
-            renderText.draw(""+price,new Vector3f(pos.x+75,pos.y+40,pos.z),2,new Vector3f(1.0f,0.947f,0.2f));
+            renderText.draw("Buy",new Vector3f(TextRender.getHorizontalCenter(1290,1385,"Buy",2),pos.y+40,pos.z),2,new Vector3f(0.686f,0.4f,0.258f));
+            renderText.draw(""+price,new Vector3f(pos.x+50,pos.y+42.5f,pos.z),2,new Vector3f(1.0f,0.947f,0.2f));
             coinImage.draw();
 
         }
@@ -90,7 +90,7 @@ public class UpgradeSideBar {
         return type;
     }
 
-    public void mouseClick(float x, float y, Player p){
+    public boolean mouseClick(float x, float y, Player p){
         if(buyButton.intersects(x,y)){
             if(p.getCoins() >= price && !isBought()){
                 p.removeCoins(price);
@@ -99,8 +99,10 @@ public class UpgradeSideBar {
                 database.setValueUpgrade(nameWeapon,numUpgrades+1);
                 database.setValue("money",database.getValue("money","general")-price);
                 bought = true;
+                return true;
             }
         }
+        return false;
     }
     public void mouseHover(float x, float y){
         buyButton.setClick(false);

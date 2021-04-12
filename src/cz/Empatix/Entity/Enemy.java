@@ -54,10 +54,13 @@ public abstract class  Enemy extends MapObject implements Serializable {
 
     protected long spawnTime;
 
+    protected boolean reflectBullets;
+
     public Enemy(TileMap tm, Player player) {
         super(tm);
         this.player = player;
         itemDropped=false;
+        reflectBullets = false;
 
         outlineShader = ShaderManager.getShader("shaders\\outline");
         if (outlineShader == null){
@@ -661,4 +664,6 @@ public abstract class  Enemy extends MapObject implements Serializable {
             spawnShader = ShaderManager.createShader("shaders\\spawn");
         }
     }
+
+    public boolean canReflect(){return reflectBullets;}
 }

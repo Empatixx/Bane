@@ -40,7 +40,7 @@ public class BerserkPot extends Artefact {
     public BerserkPot(TileMap tm, Player p){
         super(tm,p);
         maxCharge = 4;
-        charge = 0;
+        charge = maxCharge;
 
         scale = 3f;
 

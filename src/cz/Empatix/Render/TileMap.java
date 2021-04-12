@@ -406,7 +406,7 @@ public class TileMap implements Serializable {
 					yMin += tileSize*2;
 					if (!room.hasEntered() && y > yMin && y < yMax && x > xMin && x < xMax) {
 						// event trigger on entering a new room
-						room.entered();
+						room.entered(this);
 						room.showRoomOnMinimap();
 					}
 					if(currentRoom != room){
@@ -444,9 +444,28 @@ public class TileMap implements Serializable {
 	}
 	public void updateObjects(){
 		currentRoom.updateObjects();
+		ArrayList<RoomObject> objects = currentRoom.getMapObjects();
 		for(Room r : sideRooms){
 			if(r != null){
 				r.updateObjects();
+				for(int i = 0;i<objects.size();i++){
+					RoomObject object = objects.get(i);
+
+					int x = (int)object.getX();
+					int y = (int)object.getY();
+
+					int cwidth = object.getCwidth()/2;
+					int cheight = object.getCheight()/2;
+
+					int pcheight = player.getCheight()/2;
+					int pcwidth = player.getCwidth()/2;
+
+					if(x-cwidth-pcwidth >= r.getxMin() && x+cwidth+pcwidth<= r.getxMax() && y-cheight-pcheight >= r.getyMin() && y+cheight+pcheight <= r.getyMax()){
+						currentRoom.removeObject(object);
+						r.addObject(object);
+						i--;
+					}
+				}
 			}
 		}
 
@@ -662,7 +681,7 @@ public class TileMap implements Serializable {
 		// paths informations
 		int[] shiftsCols = new int[roomX*roomY];
 
-		for(int loop = 0;loop < 6;loop++) {
+		for(int loop = 0;loop < 5;loop++) {
 			// load every room maps
 			if (loop == 0){
 				for(Room room : roomArrayList){
@@ -827,7 +846,7 @@ public class TileMap implements Serializable {
 					shiftRows += nextShiftRows;
 					if (bottom) shiftRows += 2;
 				}
-			} else if (loop == 4) {
+			} else {
 				// posuny behem loopu
 				int nextShiftRows;
 				int shiftRows = 0;
@@ -951,10 +970,6 @@ public class TileMap implements Serializable {
 					shiftRows += nextShiftRows;
 					shiftRows += 2;
 				}
-			} else {
-				for (Room room : roomArrayList) {
-					room.unload();
-				}
 			}
 		}
 
@@ -1043,7 +1058,22 @@ public class TileMap implements Serializable {
 		if (map[row][col] == -1) return Tile.NORMAL;
 		return tiles[r][c].getType();
 	}
-	
+	/**
+	 * rc = number of tile in tileset
+	 * r (row in tileset); first row is normal : second row is blocked (collision)
+	 * c (collumns in tileset)
+	 */
+	public int getType(int row, int col,byte[][] map) {
+		int rc = map[row][col];
+
+		int r = rc / numTilesAcross;
+		int c = rc % numTilesAcross;
+
+		// If tile doesn't exist - return that there is not any collision
+		if (map[row][col] == -1) return Tile.NORMAL;
+		return tiles[r][c].getType();
+	}
+
 	public void setTween(double d) { tween = d; }
 	
 	public void setPosition(double x, double y) {
@@ -1231,7 +1261,7 @@ public class TileMap implements Serializable {
 					if(random == 1)newMap[i][j] = 28;
 					else newMap[i][j] = 40;
 				} else if (tile == 1 && topTile == 1 && bottomTile == 0 && leftTile == 1 && rightTile == 1){
-					newMap[i][j] = 22;
+					newMap[i][j] = (byte)(22+Random.nextInt(4));
 				} else if (tile == 1 && topTile == 0 && bottomTile == 1 && leftTile == 1 && rightTile == 1) {
 					int random = Random.nextInt(3);
 					if(random == 1)newMap[i][j] = 31;
@@ -1331,13 +1361,13 @@ public class TileMap implements Serializable {
 		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();
 	}
 	public void drawTitle(){
-		if(System.currentTimeMillis() - InGame.deltaPauseTime() - nextFloorEnterTime < 1250){
+		if(System.currentTimeMillis() - InGame.deltaPauseTime() - nextFloorEnterTime < 1750){
 			float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
 
-			 title[0].draw("Floor "+RomanNumber.toRoman(floor+1),new Vector3f(950,540,0),5,
+			 title[0].draw("Floor "+RomanNumber.toRoman(floor+1),new Vector3f(TextRender.getHorizontalCenter(0,1920,"Floor "+RomanNumber.toRoman(floor+1),5),540,0),5,
 					 new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
 
-			 title[1].draw("Enemies health is increased by "+12*floor+"%",new Vector3f(775,650,0),2,
+			 title[1].draw("Enemies health is increased by "+12*floor*floor+"%",new Vector3f(TextRender.getHorizontalCenter(0,1920,"Enemies health is increased by "+12*floor*floor+"%",2),650,0),2,
 					 new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
 
 		}

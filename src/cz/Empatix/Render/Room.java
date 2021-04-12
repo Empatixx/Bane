@@ -4,6 +4,7 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
+import cz.Empatix.Entity.ItemDrops.ItemDrop;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.Shopkeeper;
@@ -65,6 +66,7 @@ public class Room implements Serializable {
     private final ArrayList<RoomObject> mapObjects;
 
     transient private TextRender[] texts;
+
 
 
     Room(int type, int id, int x, int y){
@@ -215,18 +217,19 @@ public class Room implements Serializable {
         }
     }
 
+    byte[][] getRoomMap() {
+        return roomMap;
+    }
+
     public int getType() {
         return type;
     }
 
-    byte[][] getRoomMap() {
-        return roomMap;
-    }
-    int getNumCols() {
+    public int getNumCols() {
         return numCols;
     }
 
-    int getNumRows() {
+    public int getNumRows() {
         return numRows;
     }
 
@@ -267,21 +270,21 @@ public class Room implements Serializable {
         this.yMin = yMin;
     }
 
-    int getyMin() { return yMin; }
+    public int getyMin() { return yMin; }
 
-    int getxMax() { return xMax; }
+    public int getxMax() { return xMax; }
 
-    int getxMin() { return xMin; }
+    public int getxMin() { return xMin; }
 
-    int getyMax() { return yMax; }
+    public int getyMax() { return yMax; }
 
     boolean hasEntered(){ return entered; }
 
-    void entered(){
+    void entered(TileMap tileMap){
         entered = true;
         if (type == Room.Classic){
 
-            int maxMobs = cz.Empatix.Java.Random.nextInt(4) + 2;
+            int maxMobs = cz.Empatix.Java.Random.nextInt(4) + 2+tileMap.getFloor();
 
 
             for (int i = 0; i < maxMobs;i++){
@@ -328,9 +331,6 @@ public class Room implements Serializable {
         return top;
     }
 
-    void unload(){
-        roomMap = null;
-    }
 
     RoomPath[] getRoomPaths() {
         return roomPaths;
@@ -387,7 +387,10 @@ public class Room implements Serializable {
                     ((DestroyableObject)object).itemDropped();
                     if(Math.random() > 0.6){
                         ItemManager itemManager = ItemManager.getInstance();
-                        itemManager.createDrop(object.getX(),object.getY());
+                        ItemDrop drop = itemManager.createDrop(object.getX(),object.getY());
+                        if(((DestroyableObject)object).isPreventItemDespawn()){
+                            drop.preventDespawn();
+                        }
                     }
                 }
             }
@@ -644,6 +647,14 @@ public class Room implements Serializable {
                     this.addObject(shopkeeper);
                 }
             }
+            int tileSize = tm.getTileSize();
+            Pot pot = new Pot(tm);
+            pot.setPosition(xMin+2*tileSize+tileSize/2,yMax-2*tileSize-tileSize/2);
+            addObject(pot);
+
+            pot = new Pot(tm);
+            pot.setPosition(xMax-2*tileSize-tileSize/2,yMax-2*tileSize-tileSize/2);
+            addObject(pot);
         }
         if(type == Boss){
             int tileSize = tm.getTileSize();
@@ -652,18 +663,22 @@ public class Room implements Serializable {
                     if(i == 4 && j == 4) continue;
                     Barrel barrel = new Barrel(tm);
                     barrel.setPosition(xMin + i*tileSize, yMin + j*tileSize);
+                    barrel.setPreventItemDespawn(true);
                     mapObjects.add(barrel);
 
                     barrel = new Barrel(tm);
                     barrel.setPosition(xMax - i*tileSize, yMin + j*tileSize);
+                    barrel.setPreventItemDespawn(true);
                     mapObjects.add(barrel);
 
                     barrel = new Barrel(tm);
                     barrel.setPosition(xMax - i*tileSize, yMax - j*tileSize);
+                    barrel.setPreventItemDespawn(true);
                     mapObjects.add(barrel);
 
                     barrel = new Barrel(tm);
                     barrel.setPosition(xMin + i*tileSize, yMax - j*tileSize);
+                    barrel.setPreventItemDespawn(true);
                     mapObjects.add(barrel);
                 }
             }
@@ -722,6 +737,9 @@ public class Room implements Serializable {
     }
     public void addObject(RoomObject obj){
         mapObjects.add(obj);
+    }
+    public void removeObject(RoomObject obj){
+        mapObjects.remove(obj);
     }
 
     public void setMinimapRoom(MMRoom minimapRoom) {

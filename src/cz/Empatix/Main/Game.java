@@ -255,7 +255,7 @@ public class Game{
             frames++;
             glClear(GL_COLOR_BUFFER_BIT); // clear the framebuffer
             loadingScreen.draw();
-            textRender.draw(Loader.rendering(),new Vector3f(860,950,0),3,new Vector3f(0.874f,0.443f,0.149f));
+            textRender.draw(Loader.rendering(),new Vector3f(TextRender.getHorizontalCenter(0,1920,Loader.rendering(),3),950,0),3,new Vector3f(0.874f,0.443f,0.149f));
             glfwSwapBuffers(window);
 
             if (System.currentTimeMillis() - timer > 1000){

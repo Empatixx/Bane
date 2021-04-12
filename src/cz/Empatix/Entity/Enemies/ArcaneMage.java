@@ -52,7 +52,7 @@ public class ArcaneMage extends Enemy {
         cheight = 92;
         scale = 3;
 
-        health = maxHealth = 135+(int)Math.pow(tm.getFloor(),2)*20;
+        health = maxHealth = (int)(110*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
         damage = 1;
 
         type = melee;

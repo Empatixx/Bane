@@ -71,10 +71,10 @@ public class TextRender {
 
                 int[] vertices =
                         {
-                                -data[2]/2,-data[3]/2, // BOTTOM LEFT
-                                -data[2]/2,data[3]/2, // BOTTOM TOP
-                                data[2]/2,data[3]/2, // RIGHT TOP
-                                data[2]/2,-data[3]/2 // BOTTOM RIGHT
+                                0,-data[3]/2, // BOTTOM LEFT
+                                0,data[3]/2, // BOTTOM TOP
+                                data[2],data[3]/2, // RIGHT TOP
+                                data[2],-data[3]/2 // BOTTOM RIGHT
 
 
 
@@ -121,6 +121,24 @@ public class TextRender {
         shader.bind();
         shader.setUniformi("sampler",0);
         shader.unbind();
+    }
+    public static float getHorizontalCenter(int min, int max,String text,int scale){
+        int totalWidth = 0;
+
+        Font font = fonts.get(0);
+
+        for(char c : text.toCharArray()){
+            for(FontChar fontChar : font.getChars()){
+                if(fontChar.getChar() == c){
+                    totalWidth+=fontChar.getWidth();
+                }
+            }
+        }
+
+
+        int center = min+(max-min)/2;
+        totalWidth*=scale;
+        return center-totalWidth/2;
     }
 
     public void draw(String text, Vector3f pos, int scale, Vector3f color){
@@ -202,13 +220,13 @@ public class TextRender {
             this.text = text;
         }
 
-        matrixPos = new Matrix4f().translate(pos).scale(scale);
+        matrixPos = new Matrix4f().translate(pos);
 
         shader.bind();
         glActiveTexture(GL_TEXTURE0);
         font.bindTexture();
 
-        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos).scale(scale);
         shader.setUniform3f("color",color);
         shader.setUniformm4f("projection",matrixPos);
 

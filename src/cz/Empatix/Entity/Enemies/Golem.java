@@ -3,7 +3,6 @@ package cz.Empatix.Entity.Enemies;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.Animation;
-import cz.Empatix.Entity.Enemies.Projectiles.KingSlimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
@@ -24,13 +23,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Golem extends Enemy {
@@ -48,7 +40,6 @@ public class Golem extends Enemy {
 
     private boolean chestCreated;
 
-    private final ArrayList<KingSlimebullet> bullets;
     private final LaserBeam laserBeam;
 
 
@@ -57,9 +48,11 @@ public class Golem extends Enemy {
     private long shieldCooldown;
     private boolean speedBuff;
     private long speedCooldown;
+    private long beamCooldown;
+    private long armoringTime;
+    private long lastRegen;
 
-    private int armor;
-    private int maxArmor;
+    private int shieldStacks;
 
     public static void load(){
         Loader.loadImage("Textures\\Sprites\\Enemies\\golem.png");
@@ -69,7 +62,7 @@ public class Golem extends Enemy {
         super(tm,player);
 
         moveSpeed = 0.7f;
-        maxSpeed = 2.6f;
+        maxSpeed = 5.2f;
         stopSpeed = 0.75f;
 
         width = 100;
@@ -78,13 +71,11 @@ public class Golem extends Enemy {
         cheight = 40;
         scale = 6;
 
-        armor = maxArmor = (int)(10*(1+(tm.getFloor()-1)*0.12));
-        health = maxHealth = (int)(90*(1+(tm.getFloor()-1)*0.12));
+        health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
         damage = 2;
 
         type = melee;
         facingRight = true;
-        bullets=new ArrayList<>(100);
 
         spriteSheetCols = 14;
         spriteSheetRows = 8;
@@ -145,7 +136,11 @@ public class Golem extends Enemy {
         speedBuff = false;
         speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
         shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+        beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+        lastRegen = System.currentTimeMillis() - InGame.deltaPauseTime();
         laserBeam = new LaserBeam(tm,player);
+
+        shieldStacks = 0;
 
     }
 
@@ -199,9 +194,7 @@ public class Golem extends Enemy {
         healthBar.update(health,maxHealth);
         if(isSpawning()) return;
         // update animation
-        if(!isDead() || (isDead() && !animation.isPlayingLastFrame())){
-            animation.update();
-        }
+        animation.update();
         if(isDead() && animation.isPlayingLastFrame()){
             if(!chestCreated){
                 chestCreated=true;
@@ -212,26 +205,6 @@ public class Golem extends Enemy {
                 tileMap.addObject(chest);
 
                 tileMap.addLadder();
-            }
-        }
-        for(int i = 0;i<bullets.size();i++){
-            KingSlimebullet slimebullet = bullets.get(i);
-            slimebullet.update();
-            if(slimebullet.intersects(player) && !player.isFlinching() && !player.isDead()){
-                slimebullet.setHit();
-                player.hit(1);
-            }
-            if(slimebullet.shouldRemove()) {
-                bullets.remove(i);
-                i--;
-            }
-            for(RoomObject object: tileMap.getRoomMapObjects()){
-                if(object instanceof DestroyableObject) {
-                    if (slimebullet.intersects(object) && !slimebullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        slimebullet.setHit();
-                        ((DestroyableObject) object).setHit(1);
-                    }
-                }
             }
         }
         if(dead) return;
@@ -245,29 +218,42 @@ public class Golem extends Enemy {
             currentAction = ATTACK;
             animation.setFrames(spritesheet.getSprites(ATTACK));
             animation.setDelay(130);
-        } else if(     /*Math.abs(position.x - player.getX()) > 50
-                && position.y - player.getY() < 150 && position.y - player.getY() > 0*/
-                 currentAction == IDLE){
+        } else if(System.currentTimeMillis() - beamCooldown - InGame.deltaPauseTime() > 6500 && position.distance(player.getPosition()) > 550 && currentAction == IDLE){
             currentAction = EYE_BEAM;
+            beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
             animation.setFrames(spritesheet.getSprites(EYE_BEAM));
-            animation.setDelay(-1);
+            animation.setDelay(185);
             laserBeam.setPosition(position.x,position.y-height/scale-5);
-        } else if (System.currentTimeMillis() - speedCooldown - InGame.deltaPauseTime() > 10000 && currentAction == IDLE){
+        } else if (System.currentTimeMillis() - speedCooldown - InGame.deltaPauseTime() > 8000 && currentAction == IDLE){
             speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
             speedBuff = true;
-            maxSpeed = 12f;
+            maxSpeed = 15f;
             currentAction = ENERGY;
             animation.setFrames(spritesheet.getSprites(ENERGY));
             animation.setDelay(85);
-        } else if (System.currentTimeMillis() - shieldCooldown - InGame.deltaPauseTime() > 15000 && currentAction == IDLE){
+        } else if (System.currentTimeMillis() - shieldCooldown - InGame.deltaPauseTime() > 7000 && currentAction == IDLE){
             shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
             currentAction = BARRIER;
             animation.setFrames(spritesheet.getSprites(BARRIER));
             animation.setDelay(125);
+            shieldStacks++;
+        } else if (shieldStacks >= 3 && currentAction == IDLE){
+            shieldStacks = 0;
+            armoringTime = System.currentTimeMillis() - InGame.deltaPauseTime();
+            currentAction = ARMORING;
+            reflectBullets = true;
+            animation.setFrames(spritesheet.getSprites(ARMORING));
+            animation.setDelay(125);
         } else if(currentAction != IDLE && animation.hasPlayedOnce()){
-            currentAction = IDLE;
-            animation.setFrames(spritesheet.getSprites(IDLE));
-            animation.setDelay(145);
+            if(currentAction == ENERGY){
+                currentAction = ATTACK;
+                animation.setFrames(spritesheet.getSprites(ATTACK));
+                animation.setDelay(90);
+            } else {
+                currentAction = IDLE;
+                animation.setFrames(spritesheet.getSprites(IDLE));
+                animation.setDelay(225);
+            }
         }
         if(facingRight != laserBeam.isFacingRight()){
             laserBeam.setPosition(position.x,position.y-height/scale-5);
@@ -290,9 +276,27 @@ public class Golem extends Enemy {
             up = false;
             down = false;
             laserBeam.update();
+        } else if(currentAction == ARMORING){
+            if(System.currentTimeMillis() - lastRegen - InGame.deltaPauseTime() > 600){
+                lastRegen = System.currentTimeMillis()- InGame.deltaPauseTime();
+                int regen = (int)Math.ceil(maxHealth * 0.01 *(1-(float)health/maxHealth));
+                health+=regen;
+                if(health > maxHealth) health = maxHealth;
+            }
+            right = false;
+            left = false;
+            up = false;
+            down = false;
+            if(animation.isPlayingLastFrame()){
+                animation.setDelay(-1);
+                if(System.currentTimeMillis() - armoringTime - InGame.deltaPauseTime() > 8000){
+                    animation.setDelay(225);
+                    reflectBullets = false;
+                }
+            }
         } else if(speedBuff && System.currentTimeMillis() - speedCooldown - InGame.deltaPauseTime() > 1000){
             speedBuff = false;
-            maxSpeed = 2.6f;
+            maxSpeed = 5.2f;
         }
         // update position
         getNextPosition();
@@ -302,9 +306,6 @@ public class Golem extends Enemy {
 
     public void draw() {
 
-        for(KingSlimebullet bullet : bullets){
-            bullet.draw();
-        }
         if(!disableDraw){
             super.draw();
             if(currentAction == EYE_BEAM){
@@ -323,10 +324,6 @@ public class Golem extends Enemy {
         if(dead || isSpawning()) return;
         lastTimeDamaged=System.currentTimeMillis()- InGame.deltaPauseTime();
 
-        armor-=damage;
-        if(armor < 0){
-            armor = 0;
-        }
         if (damage < 0) damage = 0;
         health -= damage;
         if (health < 0) health = 0;
@@ -340,16 +337,11 @@ public class Golem extends Enemy {
             dead = true;
 
             AudioManager.playSoundtrack(Soundtrack.IDLE);
-
-            // deleting all projectiles after death
-            for(KingSlimebullet slimebullet : bullets){
-                slimebullet.setHit();
-            }
         }
     }
     @Override
     public boolean shouldRemove(){
-        return false;
+        return animation.hasPlayedOnce() && isDead();
     }
 
     @Override
@@ -362,15 +354,14 @@ public class Golem extends Enemy {
         double angle;
         private Player p;
 
-        private static Vector2f[] vector2fs = new Vector2f[4];
         LaserBeam(TileMap tm, Player p){
             super(tm);
             this.p = p;
             width = 810;
             height = 45;
             cwidth = 810;
-            cheight = 45;
-            scale = 3;
+            cheight = 20;
+            scale = 4;
             facingRight = true;
 
             spriteSheetCols = 1;
@@ -399,25 +390,6 @@ public class Golem extends Enemy {
 
                 }
                 spritesheet.addSprites(sprites);
-
-                sprites = new Sprite[spriteSheetRows];
-                for (int j = 0; j < spriteSheetRows; j++) {
-                    Sprite sprite = new Sprite(new float[]
-                            {
-                                    1f, (1.0f+j) / spriteSheetRows,
-
-                                    1f, (float)j/spriteSheetRows,
-
-                                    0f, (float)j/spriteSheetRows,
-
-                                    0f, (1.0f+j) / spriteSheetRows
-
-                            }
-                    );
-                    sprites[j] = sprite;
-
-                }
-                spritesheet.addSprites(sprites);
             }
             vboVertices = ModelManager.getModel(width,height);
             if (vboVertices == -1){
@@ -426,8 +398,7 @@ public class Golem extends Enemy {
 
             animation = new Animation();
             animation.setFrames(spritesheet.getSprites(0));
-            animation.setFrame(8);
-            animation.setDelay(-1);
+            animation.setDelay(95);
 
             shader = ShaderManager.getShader("shaders\\rotation");
             if (shader == null){
@@ -460,13 +431,13 @@ public class Golem extends Enemy {
                 this.angle += (angle - this.angle) * .07;
             } else {
                 if(this.angle >= 0){
-                    this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * .07;
+                    this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * .035;
                     if(this.angle >= Math.PI*3/2.){
                         this.angle-=Math.PI*3/2.;
                         this.angle=-Math.PI/2. - this.angle;
                     }
                 } else {
-                    this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * .07;
+                    this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * .035;
                     if(this.angle <= -Math.PI/2.){
                         this.angle+=Math.PI/2;
                         this.angle=Math.PI*3/2.-this.angle;
@@ -478,9 +449,15 @@ public class Golem extends Enemy {
             position.x = originalPos.x + (width/2-65) * (float)Math.cos(this.angle);
             position.y = originalPos.y + (width/2-65) * (float)Math.sin(this.angle);
 
-            if(intersects(p)){
-                p.hit(0);
-                System.out.println("PICOOO");
+            if(intersects(p) && canHit()){
+                p.hit(1);
+            }
+            for(RoomObject object: tileMap.getRoomMapObjects()){
+                if(object instanceof DestroyableObject) {
+                    if (intersects(object) && !((DestroyableObject) object).isDestroyed()) {
+                        ((DestroyableObject) object).setHit(1);
+                    }
+                }
             }
 
         }
@@ -590,6 +567,9 @@ public class Golem extends Enemy {
             super.setPosition(x, y);
             originalPos = new Vector3f(x,y,0);
         }
+        public boolean canHit(){
+            return animation.getIndexOfFrame() >= 8;
+        }
         @Override
         public boolean intersects(MapObject o) {
             Vector2f[] pointsBox1 = new Vector2f[4];
@@ -607,10 +587,10 @@ public class Golem extends Enemy {
                 pointsBox2[i] = new Vector2f();
             }
 
-            pointsBox1[0].set(position.x - cwidth / 2,position.y + cheight / 2);
-            pointsBox1[1].set(position.x - cwidth / 2,position.y - cheight / 2);
-            pointsBox1[2].set(position.x + cwidth / 2,position.y - cheight / 2);
-            pointsBox1[3].set(position.x + cwidth / 2,position.y + cheight / 2);
+            pointsBox1[0].set(position.x+xmap - cwidth / 2,position.y+ymap + cheight / 2);
+            pointsBox1[1].set(position.x+xmap - cwidth / 2,position.y+ymap - cheight / 2);
+            pointsBox1[2].set(position.x+xmap + cwidth / 2,position.y+ymap - cheight / 2);
+            pointsBox1[3].set(position.x+xmap + cwidth / 2,position.y+ymap + cheight / 2);
 
             for (int i = 0; i < 4; i++) {
                 rotatePoint(pointsBox1[i], angle);
@@ -619,10 +599,86 @@ public class Golem extends Enemy {
             int cwidth = o.getCwidth();
             int cheight = o.getCheight();
             Vector3f position = o.getPosition();
-            pointsBox2[0].set(position.x - cwidth / 2,position.y + cheight / 2);
-            pointsBox2[1].set(position.x - cwidth / 2,position.y - cheight / 2);
-            pointsBox2[2].set(position.x + cwidth / 2,position.y - cheight / 2);
-            pointsBox2[3].set(position.x + cwidth / 2,position.y + cheight / 2);
+            pointsBox2[0].set(position.x+xmap - cwidth / 2,position.y+ymap + cheight / 2);
+            pointsBox2[1].set(position.x+xmap- cwidth / 2,position.y+ymap - cheight / 2);
+            pointsBox2[2].set(position.x+xmap + cwidth / 2,position.y+ymap - cheight / 2);
+            pointsBox2[3].set(position.x+xmap + cwidth / 2,position.y+ymap + cheight / 2);
+
+            axis1[0] = pointsBox1[2].sub(pointsBox1[3],axis1[0]);
+            axis1[0].perpendicular();
+            axis1[1] = pointsBox1[3].sub(pointsBox1[0],axis1[1]);
+            axis1[1].perpendicular();
+
+            axis2[0] = pointsBox2[2].sub(pointsBox2[3],axis2[0]);
+            axis2[0].perpendicular();
+            axis2[1] = pointsBox2[3].sub(pointsBox2[0],axis2[1]);
+            axis2[1].perpendicular();
+
+            float[] min1 = new float[2], min2 = new float[2];
+            float[] max1 = new float[2], max2 = new float[2];
+            for(int i = 0;i<2;i++){
+                min1[i] = axis2[i].dot(pointsBox1[0]);
+                max1[i] = axis2[i].dot(pointsBox1[1]);
+                for(int j = 0;j<4;j++){
+                    float dot = axis2[i].dot(pointsBox1[j]);
+                    if(dot < min1[i]){
+                        min1[i] = dot;
+                    }
+                    if(dot > max1[i]){
+                        max1[i] = dot;
+                    }
+                }
+            }
+            for(int i = 0;i<2;i++){
+                min2[i] = axis2[i].dot(pointsBox2[0]);
+                max2[i] = axis2[i].dot(pointsBox2[1]);
+                for(int j = 0;j<4;j++){
+                    float dot = axis2[i].dot(pointsBox2[j]);
+                    if(dot < min2[i]){
+                        min2[i] = dot;
+                    }
+                    if(dot > max2[i]){
+                        max2[i] = dot;
+                    }
+                }
+            }
+            for(int i = 0;i<2;i++){
+                if (!((min1[i] < max2[i] && min1[i] > min2[i]) || (min2[i] < max1[i] && min2[i] > min1[i]))){
+                    return false;
+                }
+            }
+
+            for(int i = 0;i<2;i++){
+                min1[i] = axis1[i].dot(pointsBox1[0]);
+                max1[i] = axis1[i].dot(pointsBox1[1]);
+                for(int j = 0;j<4;j++){
+                    float dot = axis1[i].dot(pointsBox1[j]);
+                    if(dot < min1[i]){
+                        min1[i] = dot;
+                    }
+                    if(dot > max1[i]){
+                        max1[i] = dot;
+                    }
+                }
+            }
+            for(int i = 0;i<2;i++){
+                min2[i] = axis1[i].dot(pointsBox2[0]);
+                max2[i] = axis1[i].dot(pointsBox2[1]);
+                for(int j = 0;j<4;j++){
+                    float dot = axis1[i].dot(pointsBox2[j]);
+                    if(dot < min2[i]){
+                        min2[i] = dot;
+                    }
+                    if(dot > max2[i]){
+                        max2[i] = dot;
+                    }
+                }
+            }
+            for(int i = 0;i<2;i++){
+                if (!((min1[i] < max2[i] && min1[i] > min2[i]) || (min2[i] < max1[i] && min2[i] > min1[i]))){
+                    return false;
+                }
+            }
 
             return true;
         }

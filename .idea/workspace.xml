@@ -5,6 +5,9 @@
       <artifact name="Windows" />
     </artifacts-to-build>
   </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -24,88 +27,36 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="0.8 golem">
-      <change afterPath="$PROJECT_DIR$/.idea/discord.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Textures/Sprites/Enemies/eyebat.tga" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/EyeBat.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Projectiles/RedSlimebullet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/RedSlime.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Snake.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/RoomObjects/Pot.java" afterDir="false" />
+    <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="0.8.1">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Textures/minimap-icons.tga" beforeDir="false" afterPath="$PROJECT_DIR$/Textures/minimap-icons.tga" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Textures/Menu/pausemenu.tga" beforeDir="false" afterPath="$PROJECT_DIR$/Textures/Menu/pausemenu.tga" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crashlog.log" beforeDir="false" afterPath="$PROJECT_DIR$/crashlog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemies/Slime.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemies/Slime.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/EnemyManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/EnemyManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/MapObject.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/MapObject.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Player.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/GameStateManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/GameStateManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/InGame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/InGame.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/MenuState.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/MenuState.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Bullet.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Bullet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/GunsManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/GunsManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Weapon.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Weapon.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Camera.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Camera.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/TextRender.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/TextRender.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/TileMap.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/TileMap.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/ArcaneMage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/ArcaneMage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Demoneye.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Demoneye.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Ghost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Ghost.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Golem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Golem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/KingSlime.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/KingSlime.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ArtefactDrop.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ArtefactDrop.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Artefact.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Artefact.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/ArtefactManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/ArtefactManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Damage/RingOfFire.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Damage/RingOfFire.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/BerserkPot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/BerserkPot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/TransportableArmorPot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/TransportableArmorPot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Coin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Coin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemDrop.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemDrop.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ProgressNPC.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ProgressNPC.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameStateManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/GameStateManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/MenuState.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/ProgressRoom.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/ProgressRoom.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Grenadelauncher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Grenadelauncher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Luger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Luger.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/M4.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/M4.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Revolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Revolver.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Sniperrifle.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Thompson.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Thompson.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Java/Loader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Java/Loader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Model/ModelManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Graphics/Model/ModelManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/GrenadelauncherUpgrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/GrenadelauncherUpgrade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/LugerUpgrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/LugerUpgrade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/M4Upgrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/M4Upgrade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/PistolUpgrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/PistolUpgrade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/RevolverUpgrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/RevolverUpgrade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/ShotgunUpgrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/ShotgunUpgrade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/SubmachineUpgrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/SubmachineUpgrade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/ThompsonUpgrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/ThompsonUpgrade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/UpgradeBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/UpgradeBar.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/UpgradeSideBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/UpgradeSideBar.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/UpgradeMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/UpgradeMenu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Fade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Fade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/RoomObjects/DestroyableObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/RoomObjects/DestroyableObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/RoomObjects/Ladder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/RoomObjects/Ladder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/RoomObjects/ProgressRoom/Portal.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/RoomObjects/ProgressRoom/Portal.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Text/TextRender.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Text/TextRender.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/LoadingScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/LoadingScreen.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -176,7 +127,7 @@
     <property name="GenerateAntBuildDialog.outputFileNameProperty" value="game" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1590745721401" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/cz/Empatix/Temp/META-INF" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/cz/Empatix/Temp" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.16894531" />
     <property name="project.structure.side.proportion" value="0.43713278" />
@@ -185,6 +136,13 @@
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\jirka\Game\src\cz\Empatix\Temp" />
+      <recent name="D:\jirka\Game\Textures\Menu" />
+      <recent name="D:\jirka\Game\src\cz\Empatix\Temp\META-INF" />
+      <recent name="D:\jirka\Game\Textures\Sprites\Enemies" />
+      <recent name="D:\jirka\Game\shaders" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\jirka\Game\Textures\Sprites\Enemies" />
       <recent name="D:\jirka\Game\Textures\Sprites\Player" />
@@ -198,13 +156,6 @@
       <recent name="cz.Empatix.Render.RoomObjects" />
       <recent name="cz.Empatix.Render.RoomObjects.ProgressRoom" />
       <recent name="cz.Empatix.Entity.ItemDrops" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\jirka\Game\src\cz\Empatix\Temp\META-INF" />
-      <recent name="D:\jirka\Game\Textures\Sprites\Enemies" />
-      <recent name="D:\jirka\Game\src\cz\Empatix\Temp" />
-      <recent name="D:\jirka\Game\shaders" />
-      <recent name="D:\jirka\Game" />
     </key>
   </component>
   <component name="RunManager">
@@ -226,6 +177,7 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="StructureViewFactory">
     <option name="ACTIVE_ACTIONS" value=",ALPHA_COMPARATOR" />
   </component>
@@ -471,7 +423,14 @@
       <option name="project" value="LOCAL" />
       <updated>1611420872227</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="0.8.1">
+      <created>1618241057214</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1618241057214</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="UpdateCopyrightCheckinHandler">
@@ -506,7 +465,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="a lot of bugfixes" />
     <MESSAGE value="pause menu time bugfix,settings bugfix,pause menu sounds" />
     <MESSAGE value="lights bugfix,shotgun rework,color banding fix,new prototype of generation map" />
     <MESSAGE value="new generation of map- paths,enemy spawning collision fix,optimalizations" />
@@ -531,140 +489,14 @@
     <MESSAGE value="0.7 patch" />
     <MESSAGE value="0.8 loading" />
     <MESSAGE value="0.8 golem" />
-    <option name="LAST_COMMIT_MESSAGE" value="0.8 golem" />
+    <MESSAGE value="0.8.1" />
+    <option name="LAST_COMMIT_MESSAGE" value="0.8.1" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
-  <component name="WindowStateProjectService">
-    <state x="0" y="0" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1608143960843">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="0" y="0" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1608143960843" />
-    <state x="765" y="226" key="#com.intellij.ide.util.MemberChooser" timestamp="1608229734571">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="765" y="226" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1608229734571" />
-    <state x="690" y="310" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1608415661061">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="690" y="310" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1608415661061" />
-    <state x="743" y="414" width="521" height="217" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1610044103833">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="743" y="414" width="521" height="217" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1608388253539" />
-    <state x="743" y="414" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1610044103833" />
-    <state x="493" y="259" key="FileChooserDialogImpl" timestamp="1608415723265">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="493" y="259" key="FileChooserDialogImpl/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1608415723265" />
-    <state width="1877" height="169" key="GridCell.Tab.0.bottom" timestamp="1615142854301">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1877" height="157" key="GridCell.Tab.0.bottom/0.0.1280.984/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1612011929802" />
-    <state width="1237" height="109" key="GridCell.Tab.0.bottom/0.0.1280.984/-1920.0.1920.1040@0.0.1280.984" timestamp="1613683031316" />
-    <state width="1860" height="51" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.-50.1920.1040@-1920.-50.1920.1040" timestamp="1607378528148" />
-    <state width="1835" height="44" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1609239696454" />
-    <state width="1877" height="109" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1613059739975" />
-    <state width="1877" height="169" key="GridCell.Tab.0.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1615142854301" />
-    <state width="1877" height="169" key="GridCell.Tab.0.center" timestamp="1615142854301">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1877" height="157" key="GridCell.Tab.0.center/0.0.1280.984/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1612011929801" />
-    <state width="1237" height="109" key="GridCell.Tab.0.center/0.0.1280.984/-1920.0.1920.1040@0.0.1280.984" timestamp="1613683031316" />
-    <state width="1860" height="51" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.-50.1920.1040@-1920.-50.1920.1040" timestamp="1607378528148" />
-    <state width="1835" height="44" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1609239696453" />
-    <state width="1877" height="109" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1613059739975" />
-    <state width="1877" height="169" key="GridCell.Tab.0.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1615142854301" />
-    <state width="1877" height="169" key="GridCell.Tab.0.left" timestamp="1615142854301">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1877" height="157" key="GridCell.Tab.0.left/0.0.1280.984/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1612011929801" />
-    <state width="1237" height="109" key="GridCell.Tab.0.left/0.0.1280.984/-1920.0.1920.1040@0.0.1280.984" timestamp="1613683031316" />
-    <state width="1860" height="51" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.-50.1920.1040@-1920.-50.1920.1040" timestamp="1607378528148" />
-    <state width="1835" height="44" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1609239696453" />
-    <state width="1877" height="109" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1613059739975" />
-    <state width="1877" height="169" key="GridCell.Tab.0.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1615142854301" />
-    <state width="1877" height="169" key="GridCell.Tab.0.right" timestamp="1615142854301">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1877" height="157" key="GridCell.Tab.0.right/0.0.1280.984/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1612011929802" />
-    <state width="1237" height="109" key="GridCell.Tab.0.right/0.0.1280.984/-1920.0.1920.1040@0.0.1280.984" timestamp="1613683031316" />
-    <state width="1860" height="51" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.-50.1920.1040@-1920.-50.1920.1040" timestamp="1607378528148" />
-    <state width="1835" height="44" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1609239696453" />
-    <state width="1877" height="109" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1613059739975" />
-    <state width="1877" height="169" key="GridCell.Tab.0.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1615142854301" />
-    <state width="1877" height="158" key="GridCell.Tab.1.bottom" timestamp="1613765059807">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1877" height="157" key="GridCell.Tab.1.bottom/0.0.1280.984/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1612011929802" />
-    <state width="1877" height="76" key="GridCell.Tab.1.bottom/0.0.1920.1040/-1920.-50.1920.1040@-1920.-50.1920.1040" timestamp="1607295447251" />
-    <state width="1835" height="156" key="GridCell.Tab.1.bottom/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1608309945526" />
-    <state width="1877" height="157" key="GridCell.Tab.1.bottom/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1612000724351" />
-    <state width="1877" height="158" key="GridCell.Tab.1.bottom/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1613765059807" />
-    <state width="1877" height="158" key="GridCell.Tab.1.center" timestamp="1613765059807">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1877" height="157" key="GridCell.Tab.1.center/0.0.1280.984/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1612011929802" />
-    <state width="1877" height="76" key="GridCell.Tab.1.center/0.0.1920.1040/-1920.-50.1920.1040@-1920.-50.1920.1040" timestamp="1607295447251" />
-    <state width="1835" height="156" key="GridCell.Tab.1.center/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1608309945526" />
-    <state width="1877" height="157" key="GridCell.Tab.1.center/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1612000724351" />
-    <state width="1877" height="158" key="GridCell.Tab.1.center/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1613765059807" />
-    <state width="1877" height="158" key="GridCell.Tab.1.left" timestamp="1613765059807">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1877" height="157" key="GridCell.Tab.1.left/0.0.1280.984/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1612011929802" />
-    <state width="1877" height="76" key="GridCell.Tab.1.left/0.0.1920.1040/-1920.-50.1920.1040@-1920.-50.1920.1040" timestamp="1607295447251" />
-    <state width="1835" height="156" key="GridCell.Tab.1.left/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1608309945526" />
-    <state width="1877" height="157" key="GridCell.Tab.1.left/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1612000724351" />
-    <state width="1877" height="158" key="GridCell.Tab.1.left/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1613765059807" />
-    <state width="1877" height="158" key="GridCell.Tab.1.right" timestamp="1613765059807">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1877" height="157" key="GridCell.Tab.1.right/0.0.1280.984/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1612011929802" />
-    <state width="1877" height="76" key="GridCell.Tab.1.right/0.0.1920.1040/-1920.-50.1920.1040@-1920.-50.1920.1040" timestamp="1607295447251" />
-    <state width="1835" height="156" key="GridCell.Tab.1.right/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1608309945526" />
-    <state width="1877" height="157" key="GridCell.Tab.1.right/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1612000724351" />
-    <state width="1877" height="158" key="GridCell.Tab.1.right/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1613765059807" />
-    <state x="440" y="130" width="1306" height="708" key="SettingsEditor" timestamp="1615135940814">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="440" y="94" key="SettingsEditor/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1608415756348" />
-    <state x="440" y="130" width="1306" height="708" key="SettingsEditor/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1615135940814" />
-    <state x="-1368" y="253" key="Vcs.Push.Dialog.v2" timestamp="1611424676435">
-      <screen x="-1920" y="0" width="1920" height="1040" />
-    </state>
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1607684219092" />
-    <state x="-1368" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1611424676435" />
-    <state x="769" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1612770940427">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="769" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040/-1920.-50.1920.1040@0.0.1920.1040" timestamp="1608311088445" />
-    <state x="-1151" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1611420889245" />
-    <state x="769" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1612770940427" />
-    <state x="616" y="240" key="run.anything.popup" timestamp="1613757462123">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1613757462123" />
-    <state x="-1297" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1611433561462">
-      <screen x="-1920" y="0" width="1920" height="1040" />
-    </state>
-    <state x="-1297" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040/-1920.0.1920.1040@-1920.0.1920.1040" timestamp="1611433561462" />
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040/-1920.0.1920.1040@0.0.1920.1040" timestamp="1611221451092" />
-  </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/cz/Empatix/Temp/Enemy.java</url>
-          <line>291</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
-        <PinnedItemInfo typeName="cz.Empatix.Render.Text.TextRender" fieldName="matrixPos" />
-        <PinnedItemInfo typeName="cz.Empatix.Render.Text.TextRender" fieldName="shader" />
-        <PinnedItemInfo typeName="cz.Empatix.Render.LoadingScreen" fieldName="vboTextures" />
+        <PinnedItemInfo />
       </pinned-members>
     </pin-to-top-manager>
   </component>

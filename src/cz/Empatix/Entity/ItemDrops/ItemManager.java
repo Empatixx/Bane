@@ -338,7 +338,7 @@ public class ItemManager implements Serializable {
     }
     public void dropPlayerArtefact(Artefact artefact, int x, int y) {
         ArtefactDrop drop = new ArtefactDrop(tm, artefact,x,y);
-        drop.setPosition((int)player.getX(), (int)player.getY());
+        drop.setPosition((int)player.getX(), (int)player.getY()+30);
         itemDrops.add(drop);
     }
     public void createDrop(float x, float y, Vector2f speed) {
@@ -420,7 +420,7 @@ public class ItemManager implements Serializable {
 
     public void dropPlayerWeapon(Weapon weapon, int x, int y) {
         WeaponDrop drop = new WeaponDrop(tm, weapon, x, y);
-        drop.setPosition((int) player.getX(), (int) player.getY());
+        drop.setPosition((int) player.getX(), (int) player.getY()+30);
         itemDrops.add(drop);
     }
 

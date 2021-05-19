@@ -78,8 +78,8 @@ public class TileMap implements Serializable {
 
 	// opengl id of texture (tileset)
 	transient private int tilesetId;
-	transient private int vboVertices[];
-	transient private int vboTexCoords[];
+	transient private int[] vboVertices;
+	transient private int[] vboTexCoords;
 	//matrix4f opengl
 	private Matrix4f target;
 
@@ -1364,10 +1364,10 @@ public class TileMap implements Serializable {
 		if(System.currentTimeMillis() - InGame.deltaPauseTime() - nextFloorEnterTime < 1750){
 			float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
 
-			 title[0].draw("Floor "+RomanNumber.toRoman(floor+1),new Vector3f(TextRender.getHorizontalCenter(0,1920,"Floor "+RomanNumber.toRoman(floor+1),5),540,0),5,
+			 title[0].draw("Floor "+RomanNumber.toRoman(floor+1),new Vector3f(TextRender.getHorizontalCenter(0,1920,"Floor "+RomanNumber.toRoman(floor+1),5),240,0),5,
 					 new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
 
-			 title[1].draw("Enemies health is increased by "+12*floor*floor+"%",new Vector3f(TextRender.getHorizontalCenter(0,1920,"Enemies health is increased by "+12*floor*floor+"%",2),650,0),2,
+			 title[1].draw("Enemies health is increased by "+12*floor*floor+"%",new Vector3f(TextRender.getHorizontalCenter(0,1920,"Enemies health is increased by "+12*floor*floor+"%",2),350,0),2,
 					 new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
 
 		}

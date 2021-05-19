@@ -190,7 +190,7 @@ public class M4 extends Weapon {
                     speed.x = -speed.x;
                     speed.y = -speed.y;
                     bullet.setFriendlyFire(true);
-                    return;
+                    continue;
                 }
                 if(bullet.isFriendlyFire()){
                     if(bullet.intersects(player) && !bullet.isHit() && !player.isDead() && !player.isFlinching()){

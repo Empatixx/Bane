@@ -187,7 +187,6 @@ public class ProgressRoom extends GameState {
     @Override
     void mousePressed(int button) {
         progressNPC.mousePressed(mouseX,mouseY,player);
-        System.out.println("X "+mouseX+"|| Y "+mouseY);
     }
 
     @Override

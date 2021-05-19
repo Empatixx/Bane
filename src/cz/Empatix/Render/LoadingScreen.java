@@ -21,10 +21,8 @@ public class    LoadingScreen {
     private Shader shader;
     private final int idTexture;
     private int vboVertices;
-    private int vboTextures;
 
     private Animation animation;
-    private Sprite[] sprites;
 
     public LoadingScreen() {
         shader = ShaderManager.getShader("shaders\\loading");
@@ -53,7 +51,7 @@ public class    LoadingScreen {
         glBindBuffer(GL_ARRAY_BUFFER,0);
 
 
-        sprites = new Sprite[8];
+        Sprite[] sprites = new Sprite[8];
         for(int i = 0; i < sprites.length; i++) {
             float[] texCoords =
                     {

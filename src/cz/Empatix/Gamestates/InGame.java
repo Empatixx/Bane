@@ -147,7 +147,6 @@ public class InGame extends GameState implements Serializable {
 
     @Override
     void mousePressed(int button) {
-        System.out.println("X "+mouseX+"|| Y "+mouseY);
         if(button == GLFW_MOUSE_BUTTON_LEFT){
             gunsManager.startShooting();
         }

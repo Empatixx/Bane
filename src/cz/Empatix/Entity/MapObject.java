@@ -52,14 +52,14 @@ public abstract class MapObject implements Serializable {
 	protected int cheight;
 
 	// collision
-	private int currRow;
-	private int currCol;
-	private final Vector2f dest;
+	protected int currRow;
+	protected int currCol;
+	protected final Vector2f dest;
 	protected final Vector2f temp;
-	private boolean topLeft;
-	private boolean topRight;
-	private boolean bottomLeft;
-	private boolean bottomRight;
+	protected boolean topLeft;
+	protected boolean topRight;
+	protected boolean bottomLeft;
+	protected boolean bottomRight;
 	
 	// animation
 	transient protected Animation animation;
@@ -130,7 +130,7 @@ public abstract class MapObject implements Serializable {
 	 * @param x new player X position
 	 * @param y new player Y position
 	 */
-	private void calculateCorners(double x, double y) {
+	protected void calculateCorners(double x, double y) {
 		// getting number of tile (row,collumn)
 
 		int leftTile = (int) ((x - cwidth / 2) / tileSize);
@@ -168,7 +168,7 @@ public abstract class MapObject implements Serializable {
 	 * Calculating destinations and checking if there is any collision
 	 */
 	protected void checkTileMapCollision() {
-		
+
 		dest.x = position.x + speed.x;
 		dest.y = position.y + speed.y;
 
@@ -198,7 +198,7 @@ public abstract class MapObject implements Serializable {
 				temp.y += speed.y;
 			}
 		}
-		
+
 		calculateCorners(dest.x, position.y);
 		if(speed.x < 0) {
 			if(topLeft || bottomLeft) {
@@ -269,6 +269,7 @@ public abstract class MapObject implements Serializable {
 					} else {
 						speed.y=0;
 						temp.y = obj.getY() + obj.cheight / 2 + cheight / 2 - 1;
+
 					}
 				}
 			}
@@ -693,11 +694,3 @@ public abstract class MapObject implements Serializable {
 		return scale;
 	}
 }
-
-
-
-
-
-
-
-

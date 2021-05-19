@@ -11,6 +11,7 @@ import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
+import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -690,4 +691,91 @@ public class Player extends MapObject implements Serializable {
     public void setMaxSpeed(float maxSpeed){ this.maxSpeed = maxSpeed;}
 
     public float getMaxSpeed(){return maxSpeed;}
+
+    // collision rework
+    @Override
+    public void calculateCorners(double x, double y) {
+        // getting number of tile (row,collumn)
+
+        int leftTile = (int) ((x - cwidth / 2) / tileSize);
+        int rightTile = (int) ((x + cwidth / 2 - 1) / tileSize);
+        int topTile = (int) ((y + tileSize/2 - cheight / 2) / tileSize);
+        int bottomTile = (int) ((y + tileSize/4 + cheight / 2 - 1) / tileSize);
+
+
+        // getting type of tile
+        int tl = tileMap.getType(topTile, leftTile);
+        int tr = tileMap.getType(topTile, rightTile);
+        int bl = tileMap.getType(bottomTile, leftTile);
+        int br = tileMap.getType(bottomTile, rightTile);
+
+        // pokud tile má hodnotu 1 = collision
+        topLeft = tl == Tile.BLOCKED;
+        topRight = tr == Tile.BLOCKED;
+        bottomLeft = bl == Tile.BLOCKED;
+        bottomRight = br == Tile.BLOCKED;
+
+    }
+    /**
+     * Calculating destinations and checking if there is any collision
+     */
+    @Override
+    protected void checkTileMapCollision() {
+
+        dest.x = position.x + speed.x;
+        dest.y = position.y + speed.y;
+
+        temp.x = position.x;
+        temp.y = position.y;
+
+        calculateCorners(position.x, dest.y);
+        if(speed.y < 0) {
+            if(topLeft || topRight) {
+                speed.y = 0;
+                if(tileSize < cheight/2) currRow = ((int)position.y - cheight / 2) / tileSize;
+                else currRow = (int)position.y / tileSize;
+                temp.y = currRow * tileSize - tileSize/2 + cheight / 2;
+            }
+            else {
+                temp.y += speed.y;
+            }
+        }
+        if(speed.y > 0) {
+            if(bottomLeft || bottomRight) {
+                speed.y = 0;
+                if(tileSize < cheight/2) currRow = ((int)position.y + cheight / 2 - 1) / tileSize;
+                else currRow = (int)position.y / tileSize;
+                temp.y = (currRow + 1) * tileSize - tileSize/4 - cheight / 2;
+            }
+            else {
+                temp.y += speed.y;
+            }
+        }
+
+        calculateCorners(dest.x, position.y);
+        if(speed.x < 0) {
+            if(topLeft || bottomLeft) {
+                speed.x = 0;
+                if(tileSize < cwidth/2) currCol = ((int)position.x - cwidth / 2) / tileSize;
+                else currCol = (int)position.x / tileSize;
+
+                temp.x = currCol * tileSize + cwidth / 2;
+            }
+            else {
+                temp.x += speed.x;
+            }
+        }
+        if(speed.x > 0) {
+            if(topRight || bottomRight) {
+                speed.x = 0;
+                if(tileSize < cwidth/2) currCol = ((int)position.x + cwidth / 2 - 1) / tileSize;
+                else currCol = (int)position.x / tileSize;
+
+                temp.x = (currCol + 1) * tileSize - cwidth / 2;
+            }
+            else {
+                temp.x += speed.x;
+            }
+        }
+    }
 }

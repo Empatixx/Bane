@@ -32,7 +32,7 @@ public class Rat extends Enemy {
         */
         width=85;
         height=37;
-        cwidth=64;
+        cwidth=80;
         cheight=37;
         scale = 2;
 

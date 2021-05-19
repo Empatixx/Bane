@@ -114,8 +114,8 @@ public class MenuState extends GameState{
                 textRender[7].draw("Brightness:",new Vector3f(460,675,0),3,new Vector3f(0.874f,0.443f,0.149f));
                 //textRender[26].draw("Contrast:",new Vector3f(460,750,0),3,new Vector3f(0.874f,0.443f,0.149f));
 
-                textRender[8].draw("Reset",new Vector3f(TextRender.getHorizontalCenter(1275,1415,"Reset",2),855,0),2,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[9].draw("Confirm",new Vector3f(TextRender.getHorizontalCenter(1435,1575,"Confirm",2),855,0),2,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[8].draw("Confirm",new Vector3f(TextRender.getHorizontalCenter(1275,1415,"Confirm",2),855,0),2,new Vector3f(0.874f,0.443f,0.149f));
+                textRender[9].draw("Reset",new Vector3f(TextRender.getHorizontalCenter(1435,1575,"Reset",2),855,0),2,new Vector3f(0.874f,0.443f,0.149f));
 
                 for(CheckBox box : checkBoxes){
                     box.draw();
@@ -197,7 +197,7 @@ public class MenuState extends GameState{
 
         audioSliders = new SliderBar[3];
         title = new Image("Textures\\Menu\\logo.tga",new Vector3f(960,150,0),7);
-        // the main menu
+        // main menu
         MenuBar bar = new MenuBar("Textures\\Menu\\menu_bar_start.tga",new Vector3f(960,400,0),1.8f,200,100,true);
         bar.setType(BEGIN);
         huds[0] = bar;

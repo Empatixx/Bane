@@ -136,13 +136,12 @@ public class MenuBar {
                 .translate(pos)
                 .scale(scale);
         Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
-
     }
 
     public void draw(){
         shader.bind();
-        shader.setUniformi("sampler",0);
         shader.setUniformm4f("projection",matrixPos);
+        shader.setUniformi("sampler",0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,idTexture);
 

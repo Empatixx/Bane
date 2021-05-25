@@ -16,6 +16,11 @@ public class Console {
     private boolean dot;
     private long time;
 
+    private int[] keys;
+    private boolean[] used;
+    private long writeDelay;
+    private long globalDelay;
+
     private GunsManager gunsManager;
     private Player p;
     private ItemManager itemManager;
@@ -31,6 +36,9 @@ public class Console {
         this.em = em;
         this.p = p;
         this.itemManager = itemManager;
+
+        keys = new int[10];
+        used = new boolean[10];
 
         textRender = new TextRender();
     }
@@ -48,83 +56,82 @@ public class Console {
     public void addChar(char c){
         stringbuilder.append(c);
     }
+    public void keyReleased(int k){
+        for(int i = 0; i< keys.length; i++){
+            if(k == keys[i]) used[i] = false;
+        }
+    }
     public void keyPressed(int k){
         if(enabled) {
-            if ((k >= '0' && k <= '9') || (k >= 'a' && k <= 'z') || (k >= 'A' && k <= 'Z') || k == ' ') {
-                if (stringbuilder.length() <= 50) addChar(Character.toLowerCase((char) k));
-            }
-            if (k == GLFW.GLFW_KEY_BACKSPACE) {
-                if (stringbuilder.length() >= 1) stringbuilder.setLength(stringbuilder.length() - 1);
-            }
             if (k == GLFW.GLFW_KEY_ENTER) {
                 String cmd = stringbuilder.toString();
                 String[] args = cmd.split(" ");
-                switch (args[0]){
-                    case "sethealth":{
-                        if(args.length < 2){
+                switch (args[0]) {
+                    case "sethealth": {
+                        if (args.length < 2) {
                             break;
                         }
                         p.setHealth(Integer.parseInt(args[1]));
                         break;
                     }
-                    case "setcoins":{
-                        if(args.length < 2){
+                    case "setcoins": {
+                        if (args.length < 2) {
                             break;
                         }
                         p.setCoins(Integer.parseInt(args[1]));
                         break;
                     }
-                    case "fillammo":{
-                        for(int i = 0;i<5;i++){
-                            gunsManager.addAmmo(100,i);
+                    case "fillammo": {
+                        for (int i = 0; i < 5; i++) {
+                            gunsManager.addAmmo(100, i);
                         }
                         break;
                     }
-                    case "spawnenemy":{
-                        if(args.length < 2){
+                    case "spawnenemy": {
+                        if (args.length < 2) {
                             break;
                         }
                         em.addEnemy(args[1]);
                         break;
                     }
-                    case "dropgun":{
-                        if(args.length < 2){
+                    case "dropgun": {
+                        if (args.length < 2) {
                             break;
                         }
-                        switch (args[1]){
-                            case "pistol":{
+                        switch (args[1]) {
+                            case "pistol": {
                                 ItemManager itemManager = ItemManager.getInstance();
-                                itemManager.dropWeapon(gunsManager.getWeapon(0),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                itemManager.dropWeapon(gunsManager.getWeapon(0), (int) p.getX(), (int) p.getY(), new Vector2f(0, 0));
                                 break;
                             }
-                            case "shotgun":{
+                            case "shotgun": {
                                 ItemManager itemManager = ItemManager.getInstance();
-                                itemManager.dropWeapon(gunsManager.getWeapon(1),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                itemManager.dropWeapon(gunsManager.getWeapon(1), (int) p.getX(), (int) p.getY(), new Vector2f(0, 0));
                                 break;
                             }
-                            case "uzi":{
+                            case "uzi": {
                                 ItemManager itemManager = ItemManager.getInstance();
-                                itemManager.dropWeapon(gunsManager.getWeapon(2),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                itemManager.dropWeapon(gunsManager.getWeapon(2), (int) p.getX(), (int) p.getY(), new Vector2f(0, 0));
                                 break;
                             }
-                            case "revolver":{
+                            case "revolver": {
                                 ItemManager itemManager = ItemManager.getInstance();
-                                itemManager.dropWeapon(gunsManager.getWeapon(3),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                itemManager.dropWeapon(gunsManager.getWeapon(3), (int) p.getX(), (int) p.getY(), new Vector2f(0, 0));
                                 break;
                             }
-                            case "grenadelauncher":{
+                            case "grenadelauncher": {
                                 ItemManager itemManager = ItemManager.getInstance();
-                                itemManager.dropWeapon(gunsManager.getWeapon(4),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                itemManager.dropWeapon(gunsManager.getWeapon(4), (int) p.getX(), (int) p.getY(), new Vector2f(0, 0));
                                 break;
                             }
-                            case "luger":{
+                            case "luger": {
                                 ItemManager itemManager = ItemManager.getInstance();
-                                itemManager.dropWeapon(gunsManager.getWeapon(5),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                itemManager.dropWeapon(gunsManager.getWeapon(5), (int) p.getX(), (int) p.getY(), new Vector2f(0, 0));
                                 break;
                             }
-                            case "m4":{
+                            case "m4": {
                                 ItemManager itemManager = ItemManager.getInstance();
-                                itemManager.dropWeapon(gunsManager.getWeapon(6),(int)p.getX(),(int)p.getY(), new Vector2f(0,0));
+                                itemManager.dropWeapon(gunsManager.getWeapon(6), (int) p.getX(), (int) p.getY(), new Vector2f(0, 0));
                                 break;
                             }
                         }
@@ -132,6 +139,20 @@ public class Console {
                     }
                 }
                 stringbuilder.setLength(0);
+            }
+            for(int i = 0; i< keys.length; i++){
+                if(!used[i]){
+                    keys[i] = k;
+                    used[i] = true;
+                    if ((k >= '0' && k <= '9') || (k >= 'a' && k <= 'z') || (k >= 'A' && k <= 'Z') || k == ' ') {
+                        if (stringbuilder.length() <= 50) addChar(Character.toLowerCase((char) k));
+                    }
+                    if(k == GLFW.GLFW_KEY_BACKSPACE){
+                        if (stringbuilder.length() >= 1) stringbuilder.setLength(stringbuilder.length() - 1);
+                    }
+                    globalDelay = System.currentTimeMillis();
+                    return;
+                }
             }
         }
     }
@@ -149,6 +170,23 @@ public class Console {
             if (System.currentTimeMillis() - time - InGame.deltaPauseTime() > 250) {
                 time = System.currentTimeMillis() - InGame.deltaPauseTime();
                 dot = !dot;
+            }
+            if(System.currentTimeMillis() - writeDelay > 70 && System.currentTimeMillis() - globalDelay > 400){
+                writeDelay = System.currentTimeMillis();
+                for(int i = 0; i< keys.length; i++){
+                    if(keys[i] == GLFW.GLFW_KEY_BACKSPACE && used[i]){
+                        if (stringbuilder.length() >= 1) stringbuilder.setLength(stringbuilder.length() - 1);
+                        return;
+                    }
+                }
+                for(int i = 0;i<keys.length;i++){
+                    if(used[i]){
+                        int k = keys[i];
+                        if ((k >= '0' && k <= '9') || (k >= 'a' && k <= 'z') || (k >= 'A' && k <= 'Z') || k == ' ') {
+                            if (stringbuilder.length() <= 50) addChar(Character.toLowerCase((char) k));
+                        }
+                    }
+                }
             }
         }
     }

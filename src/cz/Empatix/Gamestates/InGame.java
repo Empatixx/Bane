@@ -165,6 +165,9 @@ public class InGame extends GameState implements Serializable {
             }
             return;
         }
+        if(console.isEnabled()){
+            console.keyReleased(k);
+        }
         if (k == GLFW_KEY_ESCAPE){
             pause = !pause;
             if(pause){

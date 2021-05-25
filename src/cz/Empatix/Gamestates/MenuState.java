@@ -329,7 +329,6 @@ public class MenuState extends GameState{
 
     @Override
     public void mousePressed(int button) {
-        System.out.println("X "+mouseX+"|| Y "+mouseY);
         if(settings){
             if(selectedSettings == AUDIO){
                 for(SliderBar sliderBar: audioSliders) {

@@ -113,6 +113,7 @@ public class Grenadelauncher extends Weapon {
                 reload();
             } else {
                 source.play(soundEmptyShoot);
+                outOfAmmo();
             }
             setShooting(false);
         }

@@ -120,6 +120,7 @@ public class Submachine extends Weapon{
                 reload();
             } else {
                 source.play(soundEmptyShoot);
+                outOfAmmo();
             }
 
         }

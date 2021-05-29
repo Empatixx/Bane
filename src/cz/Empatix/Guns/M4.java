@@ -126,6 +126,7 @@ public class M4 extends Weapon {
                 reload();
             } else {
                 source.play(soundEmptyShoot);
+                outOfAmmo();
             }
 
         }

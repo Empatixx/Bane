@@ -6,24 +6,21 @@ import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Graphics.Sprites.Sprite;
+import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
+import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
-
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Image {
     private Shader shader;
-    private int idTexture;
-
-    private int vboTextures;
     private int vboVertices;
 
     private int width;
@@ -33,6 +30,7 @@ public class Image {
     private float scale;
     private Vector3f pos;
 
+    private Spritesheet spritesheet;
 
     /**
      *
@@ -42,47 +40,47 @@ public class Image {
      */
     public Image(String file, Vector3f pos, float scale){
         ByteBufferImage decoder = Loader.getImage(file);
-        ByteBuffer spritesheetImage = decoder.getBuffer();
 
         shader = ShaderManager.getShader("shaders\\image");
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\image");
         }
 
-        idTexture = glGenTextures();
-
-        glBindTexture(GL_TEXTURE_2D, idTexture);
-
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
         width = decoder.getWidth();
         height = decoder.getHeight();
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
 
         vboVertices = ModelManager.getModel(width,height);
         if (vboVertices == -1) {
             vboVertices = ModelManager.createModel(width, height);
         }
-        // clicking icon
-        float[] texCoords =
-                {
-                        0,0,
-                        0,1,
-                        1,1,
-                        1,0
-                };
 
-        FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords.length);
-        buffer.put(texCoords);
-        buffer.flip();
-        vboTextures = glGenBuffers();
+        spritesheet = SpritesheetManager.getSpritesheet(file);
 
-        glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
-        glBufferData(GL_ARRAY_BUFFER,buffer,GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER,0);
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet(file);
+            for(int j = 0;j<2;j++) {
 
+                Sprite[] images = new Sprite[1];
+                float[] texCoords =
+                        {
+                                0, 0,
+
+                                0, 1,
+
+                                1, 1,
+
+
+                                1, 0
+                        };
+
+                Sprite sprite = new Sprite(texCoords);
+
+                images[0] = sprite;
+
+                spritesheet.addSprites(images);
+            }
+        }
         alpha = 1f;
         this.scale = scale;
         this.pos = pos;
@@ -100,7 +98,7 @@ public class Image {
         shader.setUniformf("alpha",alpha);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,idTexture);
+        spritesheet.bindTexture();
 
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
@@ -109,7 +107,7 @@ public class Image {
         glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
         glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
-        glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
+        glBindBuffer(GL_ARRAY_BUFFER,spritesheet.getSprites(0)[0].getVbo());
         glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
@@ -125,7 +123,7 @@ public class Image {
     }
 
     public int getIdTexture() {
-        return idTexture;
+        return spritesheet.getIdTexture();
     }
 
     public int getHeight() {
@@ -151,10 +149,11 @@ public class Image {
     }
 
     public int getVboTextures() {
-        return vboTextures;
+        return spritesheet.getSprites(0)[0].getVbo();
     }
 
     public int getVboVertices() {
         return vboVertices;
     }
+    
 }

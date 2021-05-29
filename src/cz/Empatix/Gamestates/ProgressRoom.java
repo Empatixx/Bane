@@ -5,6 +5,7 @@ import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.ProgressNPC;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Framebuffer;
 import cz.Empatix.Render.Hud.Image;
@@ -41,6 +42,8 @@ public class ProgressRoom extends GameState {
     private ProgressNPC progressNPC;
 
     private TextRender textRender;
+
+    private AlertManager alertManager;
 
     ProgressRoom(GameStateManager gsm){
         this.gsm = gsm;
@@ -87,8 +90,10 @@ public class ProgressRoom extends GameState {
         progressNPC = new ProgressNPC(tileMap);
         progressNPC.setPosition(23*tileMap.getTileSize(),9*tileMap.getTileSize()/2);
 
-        AudioManager.playSoundtrack(Soundtrack.PROGRESSROOM);
+        alertManager = new AlertManager();
 
+        AudioManager.playSoundtrack(Soundtrack.PROGRESSROOM);
+        AlertManager.add(AlertManager.INFORMATION,"Go to the portal");
     }
 
     @Override
@@ -131,6 +136,8 @@ public class ProgressRoom extends GameState {
         coin.draw();
         textRender.draw(""+player.getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
 
+        alertManager.draw();
+
         if(transition){
             transitionFBO.unbindFBO();
             fade.draw(transitionFBO);
@@ -162,6 +169,9 @@ public class ProgressRoom extends GameState {
         player.update();
         progressNPC.update(mouseX,mouseY);
         progressNPC.touching(player);
+
+        alertManager.update();
+
         lightManager.update();
         AudioManager.update();
         if(transition){

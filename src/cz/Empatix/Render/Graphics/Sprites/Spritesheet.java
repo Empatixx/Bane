@@ -23,4 +23,7 @@ public class Spritesheet {
         glBindTexture(GL_TEXTURE_2D, idTexture);
     }
 
+    public int getIdTexture() {
+        return idTexture;
+    }
 }

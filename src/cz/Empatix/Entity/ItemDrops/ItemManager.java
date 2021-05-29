@@ -9,6 +9,7 @@ import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Guns.Weapon;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
@@ -56,6 +57,8 @@ public class ItemManager implements Serializable {
 
     transient private TextRender[] textRender;
 
+    private long alertCooldown;
+
     public ItemManager(TileMap tm, GunsManager gm,ArtefactManager am, Player player) {
         this.tm = tm;
         this.gm = gm;
@@ -76,6 +79,8 @@ public class ItemManager implements Serializable {
 
         textRender = new TextRender[2];
         for(int i=0;i<2;i++) textRender[i] = new TextRender();
+
+
     }
     public void loadSave(){
         pickupSound = AudioManager.loadSound("pickup.ogg");
@@ -473,12 +478,22 @@ public class ItemManager implements Serializable {
                         player.removeCoins(shopItem.getPrice());
                         gm.changeGun(x, y, ((WeaponDrop) shopItem).getWeapon());
                         shopItem.pickedUp = true;
+                    } else {
+                        if(System.currentTimeMillis() - alertCooldown > 2000){
+                            alertCooldown = System.currentTimeMillis();
+                            AlertManager.add(AlertManager.WARNING,"You don't have enough coins");
+                        }
                     }
                 } else {
                     if(player.getCoins() >= shopItem.getPrice()) {
                         buysource.play(soundShopBuy);
                         player.removeCoins(shopItem.getPrice());
                         shopItem.shopBuy();
+                    } else {
+                        if(System.currentTimeMillis() - alertCooldown > 2000){
+                            alertCooldown = System.currentTimeMillis();
+                            AlertManager.add(AlertManager.WARNING,"You don't have enough coins");
+                        }
                     }
                 }
             }

@@ -5,6 +5,7 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
@@ -44,6 +45,8 @@ public abstract class Weapon implements Serializable {
     transient Image weaponAmmo;
 
     transient TextRender textRender;
+
+    private long alertCooldown;
 
 
     /*
@@ -132,5 +135,11 @@ public abstract class Weapon implements Serializable {
         reloadsource = AudioManager.createSource(Source.EFFECTS,0.35f);
 
         textRender = new TextRender();
+    }
+    public void outOfAmmo(){
+        if(System.currentTimeMillis()  - alertCooldown  > 2000){
+            AlertManager.add(AlertManager.WARNING,"You're out of ammo!");
+            alertCooldown = System.currentTimeMillis();
+        }
     }
 }

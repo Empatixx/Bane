@@ -14,6 +14,7 @@ import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Gamestates.MenuState;
 import cz.Empatix.Guns.GunsManager;
+import cz.Empatix.Render.Alerts.Alert;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Hud.*;
 import cz.Empatix.Render.Hud.Minimap.MiniMap;
@@ -128,6 +129,7 @@ public class Loader {
         MenuBar.load();
         SliderBar.load();
         UpgradeMenu.load();
+        Alert.load();
         // others
         Portal.load();
         ArrowTrap.load();

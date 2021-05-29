@@ -490,7 +490,7 @@ public abstract class  Enemy extends MapObject implements Serializable {
                         }
                         int leftTile = (int) ((position.x - cwidth / 2) / tileSize);
                         int rightTile = (int) ((position.x + cwidth / 2 - 1) / tileSize);
-                        int bottomTile = (int) ((position.y+1 + tileSize/4 + cheight / 2 - 1) / tileSize);
+                        int bottomTile = (int) ((position.y+1 +  cheight / 2 - 1) / tileSize);
                         // getting type of tile
                         int bl = tileMap.getType(bottomTile, leftTile);
                         int br = tileMap.getType(bottomTile, rightTile);
@@ -517,7 +517,7 @@ public abstract class  Enemy extends MapObject implements Serializable {
                         }
                         int leftTile = (int) ((position.x - cwidth / 2) / tileSize);
                         int rightTile = (int) ((position.x + cwidth / 2 - 1) / tileSize);
-                        int topTile = (int) ((position.y + tileSize/2 - 1 - cheight / 2) / tileSize);
+                        int topTile = (int) ((position.y - 1 - cheight / 2) / tileSize);
 
                         // getting type of tile
                         int tl = tileMap.getType(topTile, leftTile);
@@ -544,8 +544,8 @@ public abstract class  Enemy extends MapObject implements Serializable {
                             preX = true;
                         }
                         int rightTile = (int) ((position.x+1 + cwidth / 2 - 1) / tileSize);
-                        int topTile = (int) ((position.y + tileSize/2  - cheight / 2) / tileSize);
-                        int bottomTile = (int) ((position.y + tileSize/4  + cheight / 2 - 1) / tileSize);
+                        int topTile = (int) ((position.y - cheight / 2) / tileSize);
+                        int bottomTile = (int) ((position.y + cheight / 2 - 1) / tileSize);
 
                         // getting type of tile
                         int tr = tileMap.getType(topTile, rightTile);
@@ -572,8 +572,8 @@ public abstract class  Enemy extends MapObject implements Serializable {
                             preX = true;
                         }
                         int leftTile = (int) ((position.x - 1 - cwidth / 2) / tileSize);
-                        int topTile = (int) ((position.y + tileSize/2  - cheight / 2) / tileSize);
-                        int bottomTile = (int) ((position.y + tileSize/4  + cheight / 2 - 1) / tileSize);
+                        int topTile = (int) ((position.y - cheight / 2) / tileSize);
+                        int bottomTile = (int) ((position.y + cheight / 2 - 1) / tileSize);
 
 
                         // getting type of tile
@@ -667,90 +667,16 @@ public abstract class  Enemy extends MapObject implements Serializable {
 
     public boolean canReflect(){return reflectBullets;}
 
-    @Override
-    public void calculateCorners(double x, double y) {
-        // getting number of tile (row,collumn)
-
-        int leftTile = (int) ((x - cwidth / 2) / tileSize);
-        int rightTile = (int) ((x + cwidth / 2 - 1) / tileSize);
-        int topTile = (int) ((y + tileSize/2 - cheight / 2) / tileSize);
-        int bottomTile = (int) ((y + tileSize/4 + cheight / 2 - 1) / tileSize);
-
-
-        // getting type of tile
-        int tl = tileMap.getType(topTile, leftTile);
-        int tr = tileMap.getType(topTile, rightTile);
-        int bl = tileMap.getType(bottomTile, leftTile);
-        int br = tileMap.getType(bottomTile, rightTile);
-
-        // pokud tile má hodnotu 1 = collision
-        topLeft = tl == Tile.BLOCKED;
-        topRight = tr == Tile.BLOCKED;
-        bottomLeft = bl == Tile.BLOCKED;
-        bottomRight = br == Tile.BLOCKED;
-
-    }
-
     /**
-     * Calculating destinations and checking if there is any collision
+     *
+     * @return if MapObject can be shown on screan of monitor
      */
-    @Override
-    protected void checkTileMapCollision() {
-
-        dest.x = position.x + speed.x;
-        dest.y = position.y + speed.y;
-
-        temp.x = position.x;
-        temp.y = position.y;
-
-        calculateCorners(position.x, dest.y);
-        if(speed.y < 0) {
-            if(topLeft || topRight) {
-                speed.y = 0;
-                if(tileSize < cheight/2) currRow = ((int)position.y - cheight / 2) / tileSize;
-                else currRow = (int)(position.y+tileSize/2) / tileSize;
-                temp.y = currRow * tileSize - tileSize/2 + cheight / 2;
-            }
-            else {
-                temp.y += speed.y;
-            }
-        }
-        if(speed.y > 0) {
-            if(bottomLeft || bottomRight) {
-                speed.y = 0;
-                if(tileSize < cheight/2) currRow = ((int)position.y + cheight / 2 - 1) / tileSize;
-                else currRow = (int)(position.y+tileSize/4) / tileSize;
-                temp.y = (currRow + 1) * tileSize - tileSize/4 - cheight / 2;
-            }
-            else {
-                temp.y += speed.y;
-            }
-        }
-
-        calculateCorners(dest.x, position.y);
-        if(speed.x < 0) {
-            if(topLeft || bottomLeft) {
-                speed.x = 0;
-                if(tileSize < cwidth/2) currCol = ((int)position.x - cwidth / 2) / tileSize;
-                else currCol = (int)position.x / tileSize;
-
-                temp.x = currCol * tileSize + cwidth / 2;
-            }
-            else {
-                temp.x += speed.x;
-            }
-        }
-        if(speed.x > 0) {
-            if(topRight || bottomRight) {
-                speed.x = 0;
-                if(tileSize < cwidth/2) currCol = ((int)position.x + cwidth / 2 - 1) / tileSize;
-                else currCol = (int)position.x / tileSize;
-
-                temp.x = (currCol + 1) * tileSize - cwidth / 2;
-            }
-            else {
-                temp.x += speed.x;
-            }
-        }
+    public boolean isNotOnScrean(){
+        return (
+                position.x - width/2 > Camera.getWIDTH()-xmap || position.x+width/2 < -xmap
+                        ||
+                position.y - height/2 > Camera.getHEIGHT()-ymap || position.y+height/2 < -ymap
+        );
     }
+
 }

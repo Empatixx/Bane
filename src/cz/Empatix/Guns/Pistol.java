@@ -142,6 +142,7 @@ public class Pistol extends Weapon {
                 reload();
             } else {
                 source.play(soundEmptyShoot);
+                outOfAmmo();
             }
             setShooting(false);
 

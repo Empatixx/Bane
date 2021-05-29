@@ -14,6 +14,7 @@ import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.DataManager;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
@@ -81,6 +82,7 @@ public class InGame extends GameState implements Serializable {
     private transient DamageIndicator damageIndicator;
     private transient cz.Empatix.Render.Hud.Image coin;
     private transient Console console;
+    private transient AlertManager alertManager;
 
     private EnemyManager enemyManager;
 
@@ -115,6 +117,7 @@ public class InGame extends GameState implements Serializable {
     private transient static long pauseTimeStarted;
 
     private transient TextRender[] textRender;
+
 
     InGame(GameStateManager gsm){
         this.gsm = gsm;
@@ -275,6 +278,8 @@ public class InGame extends GameState implements Serializable {
         // coin
         coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
 
+        alertManager = new AlertManager();
+
         //audio
         AudioManager.playSoundtrack(Soundtrack.IDLE);
 
@@ -383,6 +388,7 @@ public class InGame extends GameState implements Serializable {
         // coin
         coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
 
+        alertManager = new AlertManager();
         //audio
         AudioManager.playSoundtrack(Soundtrack.IDLE);
 
@@ -490,6 +496,7 @@ public class InGame extends GameState implements Serializable {
         console.draw();
 
         coin.draw();
+        alertManager.draw();
         textRender[2].draw(""+player.getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
 
 
@@ -613,6 +620,7 @@ public class InGame extends GameState implements Serializable {
                 return;
             }
             player.update();
+            alertManager.update();
             healthBar.update(player.getHealth(), player.getMaxHealth());
             float time = (System.currentTimeMillis()-player.getDeathTime());
             if(time > 2000){
@@ -642,6 +650,8 @@ public class InGame extends GameState implements Serializable {
 
         artefactManager.update();
 
+        itemManager.update();
+
         if(pause){
             for(MenuBar hud:pauseBars){
                 hud.setClick(false);
@@ -650,8 +660,6 @@ public class InGame extends GameState implements Serializable {
                 }
             }
         } else {
-            itemManager.update();
-
             ArrayList<Enemy> enemies = EnemyManager.getInstance().getEnemies();
 
             player.update();
@@ -689,6 +697,8 @@ public class InGame extends GameState implements Serializable {
 
             healthBar.update(player.getHealth(), player.getMaxHealth());
             armorBar.update(player.getArmor(),player.getMaxArmor());
+
+            alertManager.update();
         }
 
         gaussianBlur.update(pause);

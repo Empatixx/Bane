@@ -126,6 +126,7 @@ public class Shotgun extends Weapon {
                 reload();
             } else {
                 source.play(soundEmptyShoot);
+                outOfAmmo();
             }
             setShooting(false);
         }

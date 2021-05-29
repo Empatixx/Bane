@@ -121,6 +121,7 @@ public class Thompson extends Weapon{
                 reload();
             } else {
                 source.play(soundEmptyShoot);
+                outOfAmmo();
             }
 
         } else {

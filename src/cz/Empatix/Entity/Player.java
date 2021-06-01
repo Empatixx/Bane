@@ -354,10 +354,10 @@ public class Player extends MapObject implements Serializable {
                 i--;
             }
         }
-
         getMovementSpeed();
         checkTileMapCollision();
         checkRoomObjectsCollision();
+
         setPosition(temp.x, temp.y);
 
         if (right || left) {
@@ -404,7 +404,6 @@ public class Player extends MapObject implements Serializable {
         } else {
             hitVignette[0].update();
         }
-
     }
     public void checkCollision(ArrayList<Enemy> enemies){
         for (Enemy currentEnemy:enemies){

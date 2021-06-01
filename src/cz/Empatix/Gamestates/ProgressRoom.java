@@ -165,8 +165,10 @@ public class ProgressRoom extends GameState {
                 Camera.getWIDTH() / 2f - player.getX(),
                 Camera.getHEIGHT() / 2f - player.getY()
         );
-        tileMap.updateObjects();
         player.update();
+
+        tileMap.updateObjects();
+
         progressNPC.update(mouseX,mouseY);
         progressNPC.touching(player);
 
@@ -184,6 +186,7 @@ public class ProgressRoom extends GameState {
         if(k == GLFW.GLFW_KEY_ESCAPE && !progressNPC.isInteracting()){
             gsm.setState(GameStateManager.MENU);
         }
+        if(transition) return;
         player.keyPressed(k);
         tileMap.keyPressed(k,player);
         progressNPC.keyPress(k);

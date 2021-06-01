@@ -9,13 +9,17 @@ public abstract class RoomObject extends MapObject implements Serializable {
     public boolean moveable;
     public boolean collision;
     public boolean preDraw;
-    public float speedMoveBoost;
+
     public boolean remove;
     public boolean behindCollision;
+
+    public float maxMovement;
     public RoomObject(TileMap tm){
         super(tm);
         remove = false;
         behindCollision=false;
+
+        maxMovement = 1f;
     }
     public abstract void touchEvent();
     public abstract void update();
@@ -26,9 +30,6 @@ public abstract class RoomObject extends MapObject implements Serializable {
         return preDraw;
     }
 
-    public float getSpeedMoveBoost() {
-        return speedMoveBoost;
-    }
     public boolean shouldRemove(){return remove;}
 
     public void setMoveable(boolean moveable) {
@@ -40,4 +41,8 @@ public abstract class RoomObject extends MapObject implements Serializable {
     public boolean isBehindCollision(){return behindCollision;}
 
     public abstract void loadSave();
+
+    public float getMaxMovement() {
+        return maxMovement;
+    }
 }

@@ -20,11 +20,11 @@ import org.joml.Vector3f;
 
 import java.awt.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL20.*;
 
 public abstract class MapObject implements Serializable {
+
 	public static void load(){
 		Loader.loadImage("Textures\\shadow.tga");
 	}
@@ -134,9 +134,9 @@ public abstract class MapObject implements Serializable {
 		// getting number of tile (row,collumn)
 
 		int leftTile = (int) ((x - cwidth / 2) / tileSize);
-		int rightTile = (int) ((x + cwidth / 2 - 1) / tileSize);
+		int rightTile = (int) ((Math.round(x) + cwidth / 2 - 1) / tileSize);
 		int topTile = (int) ((y - cheight / 2) / tileSize);
-		int bottomTile = (int) ((y + cheight / 2 - 1) / tileSize);
+		int bottomTile = (int) ((Math.round(y) + cheight / 2 - 1) / tileSize);
 
 
 		// getting type of tile
@@ -179,7 +179,7 @@ public abstract class MapObject implements Serializable {
 		if(speed.y < 0) {
 			if(topLeft || topRight) {
 				speed.y = 0;
-				if(tileSize < cheight/2) currRow = ((int)position.y - cheight / 2) / tileSize;
+				if(tileSize < cheight/2) currRow = (int)(position.y - cheight / 2) / tileSize;
 				else currRow = (int)position.y / tileSize;
 				temp.y = currRow * tileSize + cheight / 2;
 			}
@@ -227,192 +227,119 @@ public abstract class MapObject implements Serializable {
 	}
 
 	public void checkRoomObjectsCollision(){
-		ArrayList<RoomObject> mapObjects = tileMap.getRoomMapObjects();
-		boolean[] collisionCheck = new boolean[mapObjects.size()];
-		for(int i = 0;i<mapObjects.size();i++){
-			RoomObject obj = mapObjects.get(i);
-			boolean touchEvent = false;
-
-			boolean y = (int)dest.y()+cheight/2- 1 > (int)obj.getY()-obj.cheight/2 && (int)dest.y()-cheight/2 < (int)obj.getY()+obj.cheight/2- 1;
-			boolean x = (int)position.x()-cwidth/2 < (int)obj.getX()+obj.cwidth/2- 1 && (int)position.x()+cwidth/2- 1 > (int)obj.getX()-obj.cwidth/2;
-
-			if(x && y){
-				touchEvent = true;
-				if (speed.y > 0 && obj.collision) {
-					if(obj.moveable){
-						obj.setSpeedY(speed.y*obj.getSpeedMoveBoost());
-						speed.y -= stopSpeed*2*obj.getSpeedMoveBoost();
-						if(speed.y < 0) speed.y = 0;
-						temp.y = position.y+speed.y;
-						obj.checkTileMapCollision();
-						obj.checkRoomObjectsCollision(obj,collisionCheck);
-						// if map object is blocked by tile collision - block player by map object collision
-						if(obj.speed.y <= speed.y){
-							temp.y = obj.getY() - obj.cheight / 2 - cheight / 2+ 1;
-						}
-					} else {
-						speed.y=0;
-						temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
-					}
-				} else if (speed.y < 0 && obj.collision) {
-					if(obj.moveable){
-						obj.setSpeedY(speed.y*obj.getSpeedMoveBoost());
-						speed.y += stopSpeed*2*obj.getSpeedMoveBoost();
-						if(speed.y > 0) speed.y = 0;
-						temp.y = position.y+speed.y;
-						obj.checkTileMapCollision();
-						obj.checkRoomObjectsCollision(obj,collisionCheck);
-						// if map object is blocked by tile collision - block player by map object collision
-						if(obj.speed.y >= speed.y){
-							temp.y = obj.getY() + obj.cheight / 2 + cheight / 2 - 1;
-						}
-					} else {
-						speed.y=0;
-						temp.y = obj.getY() + obj.cheight / 2 + cheight / 2 - 1;
-
-					}
-				}
+		for(RoomObject obj : tileMap.getRoomMapObjects()){
+			if(this instanceof RoomObject){
+				if(this == obj) continue;
 			}
-
-			y = (int)position.y()+cheight/2- 1 > (int)obj.getY()-obj.cheight/2 && (int)position.y()-cheight/2 < (int)obj.getY()+obj.cheight/2- 1;
-			x = (int)dest.x()-cwidth/2 < (int)obj.getX()+obj.cwidth/2 - 1 && (int)dest.x()+cwidth/2 - 1 > (int)obj.getX()-obj.cwidth/2;
-
-			if (y && x) {
-
-				touchEvent = true;
-
-				if (speed.x > 0 && obj.collision) {
-					if(obj.moveable){
-						obj.setSpeedX(speed.x*obj.getSpeedMoveBoost());
-						speed.x -= stopSpeed*2*obj.getSpeedMoveBoost();
-						if(speed.x < 0) speed.x = 0;
-						temp.x = position.x+speed.x;
-						obj.checkTileMapCollision();
-						obj.checkRoomObjectsCollision(obj,collisionCheck);
-						// if map object is blocked by tile collision - block player by map object collision
-
-						if(obj.speed.x <= speed.x){
-							temp.x=obj.getX()-obj.cwidth/2-cwidth/2+ 1;
-						}
-					} else {
-						speed.x=0;
-						temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
-					}
-				} else if (speed.x < 0 && obj.collision) {
-					if(obj.moveable){
-						obj.setSpeedX(speed.x*obj.getSpeedMoveBoost());
-						speed.x += stopSpeed*2*obj.getSpeedMoveBoost();
-						if(speed.x > 0) speed.x = 0;
-						temp.x = position.x+speed.x;
-						obj.checkTileMapCollision();
-						obj.checkRoomObjectsCollision(obj,collisionCheck);
-						// if map object is blocked by tile collision - block player by map object collision
-						if(obj.speed.x >= speed.x){
-							temp.x=obj.getX()+obj.cwidth/2+cwidth/2- 1;
-						}
-					} else {
-						speed.x=0;
-						temp.x=obj.getX()+obj.cwidth/2+cwidth/2- 1;
-					}
-				}
-			}
-
-			if(touchEvent){
-
+			if(this instanceof Player && intersects(obj)) {
 				obj.touchEvent();
 			}
-		}
-	}
-	public void checkRoomObjectsCollision(MapObject previousObject, boolean[] collisionCheck){
-		ArrayList<RoomObject> mapObjects = tileMap.getRoomMapObjects();
-		for(int i = 0;i<mapObjects.size();i++){
-			RoomObject obj = mapObjects.get(i);
-			if(previousObject == obj) collisionCheck[i] = true;
-			if(collisionCheck[i]) continue;
 
-			boolean y = (int)dest.y()+cheight/2-1 > (int)obj.getY()-obj.cheight/2 && (int)dest.y()-cheight/2 < (int)obj.getY()+obj.cheight/2-1;
-			boolean x = (int)position.x()-cwidth/2 < (int)obj.getX()+obj.cwidth/2-1 && (int)position.x()+cwidth/2-1 > (int)obj.getX()-obj.cwidth/2;
+			dest.x = position.x + speed.x;
+			dest.y = position.y + speed.y;
+
+			boolean x = obj.getX()-obj.getCwidth()/2  < dest.x + cwidth/2
+					&&
+					obj.getX()+obj.getCwidth()/2 > dest.x - cwidth/2 ;
+
+			boolean y = obj.getY()-obj.getCheight()/2 < position.y + cheight/2 - 1
+					&&
+					obj.getY()+obj.getCheight()/2 > position.y - cheight/2;
 
 			if(x && y){
-				if (speed.y > 0 && obj.collision) {
-					if(obj.moveable){
-						obj.setSpeedY(speed.y);
-						if(speed.y < 0) speed.y = 0;
-						temp.y = position.y+speed.y;
-						obj.checkTileMapCollision();
-						obj.checkRoomObjectsCollision(this,collisionCheck);
-						// if map object is blocked by tile collision - block player by map object collision
-						if(obj.speed.y <= speed.y) {
-							temp.y = obj.getY() - obj.cheight / 2 - cheight / 2+ 1;
-						}
-						if(obj.speed.y == 0){
-							speed.y = 0;
-						}
-					} else {
-						speed.y=0;
-						temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
-					}
-				} else if (speed.y < 0 && obj.collision) {
-					if(obj.moveable){
-						obj.setSpeedY(speed.y);
-						if(speed.y > 0) speed.y = 0;
-						temp.y = position.y+speed.y;
-						obj.checkTileMapCollision();
-						obj.checkRoomObjectsCollision(this,collisionCheck);
-						// if map object is blocked by tile collision - block player by map object collision
-						if(obj.speed.y >= speed.y) {
-							temp.y = obj.getY() + obj.cheight / 2 + cheight / 2- 1;
-						}
-						if(obj.speed.y == 0){
-							speed.y = 0;
-						}
-					} else {
-						speed.y=0;
-						temp.y = obj.getY() + obj.cheight / 2 + cheight / 2- 1;
-					}
-				}
-			}
-
-			y = (int)position.y()+cheight/2-1 > (int)obj.getY()-obj.cheight/2 && (int)position.y()-cheight/2 < (int)obj.getY()+obj.cheight/2-1;
-			x = (int)dest.x()-cwidth/2 < (int)obj.getX()+obj.cwidth/2-1 && (int)dest.x()+cwidth/2-1 > (int)obj.getX()-obj.cwidth/2;
-
-			if (y && x) {
 				if (speed.x > 0 && obj.collision) {
 					if(obj.moveable){
-						obj.setSpeedX(speed.x);
-						if(speed.x < 0) speed.x = 0;
-						temp.x = position.x+speed.x;
-						obj.checkTileMapCollision();
-						obj.checkRoomObjectsCollision(this,collisionCheck);
-						// if map object is blocked by tile collision - block player by map object collision
+						if(this instanceof Player){
+							float maxObjSpeed = obj.getMaxMovement()*maxSpeed;
+							if(speed.x > maxObjSpeed){
+								setSpeedX(maxObjSpeed);
+							}
+							temp.x = position.x + speed.x;
 
-						if(obj.speed.x <= speed.x){
-							temp.x=obj.getX()-obj.cwidth/2-cwidth/2+ 1;
 						}
+						obj.setSpeedX(speed.x);
+						obj.checkTileMapCollision();
+						obj.checkRoomObjectsCollision();
 						if(obj.speed.x == 0){
 							speed.x = 0;
+							temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
 						}
 					} else {
 						speed.x=0;
 						temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
 					}
 				} else if (speed.x < 0 && obj.collision) {
-					if(obj.moveable){
-						obj.setSpeedX(speed.x);
-						if(speed.x > 0) speed.x = 0;
-						temp.x = position.x+speed.x;
-						obj.checkTileMapCollision();
-						obj.checkRoomObjectsCollision(this,collisionCheck);
-						// if map object is blocked by tile collision - block player by map object collision
-						if(obj.speed.x >= speed.x){
-							temp.x=obj.getX()+obj.cwidth/2+cwidth/2-1;
+					if (obj.moveable) {
+						if(this instanceof Player){
+							float maxObjSpeed = obj.getMaxMovement()*maxSpeed;
+							if(speed.x < -maxObjSpeed){
+								setSpeedX(-maxObjSpeed);
+							}
+							temp.x = position.x + speed.x;
 						}
+						obj.setSpeedX(speed.x);
+						obj.checkTileMapCollision();
+						obj.checkRoomObjectsCollision();
 						if(obj.speed.x == 0){
 							speed.x = 0;
+							temp.x = obj.getX() + obj.cwidth / 2 + cwidth / 2;
 						}
 					} else {
-						speed.x=0;
-						temp.x=obj.getX()+obj.cwidth/2+cwidth/2-1;
+						speed.x = 0;
+						temp.x = obj.getX() + obj.cwidth / 2 + cwidth / 2;
+					}
+				}
+			}
+
+			x = obj.getX()-obj.getCwidth()/2 < position.x + cwidth/2 - 1
+					&&
+					obj.getX()+obj.getCwidth()/2 > position.x - cwidth/2;
+
+			y = obj.getY()-obj.getCheight()/2  < dest.y + cheight/2
+					&&
+					obj.getY()+obj.getCheight()/2  > dest.y - cheight/2 ;
+
+			if(x && y){
+				if (speed.y > 0 && obj.collision) {
+					if(obj.moveable){
+						if(this instanceof Player){
+							float maxObjSpeed = obj.getMaxMovement()*maxSpeed;
+							if(speed.y > maxObjSpeed){
+								setSpeedY(maxObjSpeed);
+							}
+							temp.y = position.y + speed.y;
+						}
+						obj.setSpeedY(speed.y);
+						obj.checkTileMapCollision();
+						obj.checkRoomObjectsCollision();
+						if(obj.speed.y == 0){
+							speed.y=0;
+							temp.y=obj.getY()-obj.cheight/2-cheight/2;
+						}
+					} else {
+						speed.y=0;
+						temp.y=obj.getY()-obj.cheight/2-cheight/2;
+					}
+				} else if (speed.y < 0 && obj.collision) {
+					if (obj.moveable) {
+						if(this instanceof Player){
+							float maxObjSpeed = obj.getMaxMovement()*maxSpeed;
+							if(speed.y < -maxObjSpeed){
+								setSpeedY(-maxObjSpeed);
+							}
+							temp.y = position.y + speed.y;
+
+						}
+						obj.setSpeedY(speed.y);
+						obj.checkTileMapCollision();
+						obj.checkRoomObjectsCollision();
+						if(obj.speed.y == 0){
+							speed.y=0;
+							temp.y = obj.getY() + obj.cheight / 2 + cheight / 2;
+						}
+					} else {
+						speed.y = 0;
+						temp.y = obj.getY() + obj.cheight / 2 + cheight / 2;
 					}
 				}
 			}

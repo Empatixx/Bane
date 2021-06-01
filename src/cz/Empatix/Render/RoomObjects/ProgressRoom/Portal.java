@@ -40,7 +40,6 @@ public class Portal extends RoomObject {
         collision = false;
         moveable=false;
         preDraw = true;
-        speedMoveBoost = 0f;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\portal.tga");

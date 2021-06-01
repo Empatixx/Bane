@@ -33,7 +33,6 @@ public class Bookshelf extends RoomObject {
         collision = true;
         moveable=false;
         preDraw = true;
-        speedMoveBoost = 0f;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\bookshelf.tga");

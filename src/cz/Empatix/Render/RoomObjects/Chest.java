@@ -41,7 +41,6 @@ public class Chest extends RoomObject {
         collision = true;
         moveable=true;
         preDraw = false;
-        speedMoveBoost = 1.75f;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\chest.tga");

@@ -36,7 +36,6 @@ public class Barrel extends DestroyableObject {
         collision = true;
         moveable=true;
         preDraw = false;
-        speedMoveBoost = 0.9f;
 
         itemDrop = true;
 
@@ -123,6 +122,7 @@ public class Barrel extends DestroyableObject {
         cheight *= scale;
 
         stopSpeed = 0.55f;
+        maxMovement = 0.5f;
     }
     @Override
     public void loadSave() {
@@ -214,8 +214,8 @@ public class Barrel extends DestroyableObject {
         setMapPosition();
         checkTileMapCollision();
 
-        boolean[] collisionCheck = new boolean[tileMap.getRoomMapObjects().size()];
-        checkRoomObjectsCollision(this,collisionCheck);
+        //boolean[] collisionCheck = new boolean[tileMap.getRoomMapObjects().size()];
+        checkRoomObjectsCollision();
 
         setPosition(temp.x, temp.y);
 

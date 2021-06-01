@@ -37,7 +37,6 @@ public class Pot extends DestroyableObject {
         moveable=true;
         preDraw=true;
         behindCollision=true;
-        speedMoveBoost = 0.9f;
 
         itemDrop = true;
 
@@ -124,6 +123,8 @@ public class Pot extends DestroyableObject {
         cheight *= scale;
 
         stopSpeed = 0.55f;
+
+        maxMovement = 0.7f;
     }
     @Override
     public void loadSave() {
@@ -215,8 +216,8 @@ public class Pot extends DestroyableObject {
         setMapPosition();
         checkTileMapCollision();
 
-        boolean[] collisionCheck = new boolean[tileMap.getRoomMapObjects().size()];
-        checkRoomObjectsCollision(this,collisionCheck);
+        //boolean[] collisionCheck = new boolean[tileMap.getRoomMapObjects().size()];
+        //checkRoomObjectsCollision(this,collisionCheck);
 
         setPosition(temp.x, temp.y);
 

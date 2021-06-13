@@ -21,7 +21,7 @@ public abstract class RoomObject extends MapObject implements Serializable {
 
         maxMovement = 1f;
     }
-    public abstract void touchEvent();
+    public abstract void touchEvent(MapObject o);
     public abstract void update();
 
     public abstract void keyPress();

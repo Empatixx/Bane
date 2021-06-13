@@ -2,6 +2,7 @@ package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
+import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
@@ -157,7 +158,7 @@ public class ShopTable extends RoomObject{
     }
 
     @Override
-    public void touchEvent() {
+    public void touchEvent(MapObject o) {
     }
 
     @Override

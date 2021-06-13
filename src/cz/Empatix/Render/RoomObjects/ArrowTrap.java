@@ -234,8 +234,7 @@ public class ArrowTrap extends RoomObject {
     }
 
     @Override
-    public void touchEvent() {
-        //if(damageAnimation)player.hit(1);
+    public void touchEvent(MapObject o) {
     }
 
     @Override

@@ -2,6 +2,7 @@ package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
+import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -104,6 +105,7 @@ public class Chest extends RoomObject {
         cheight *= scale;
 
         stopSpeed = 0.55f;
+        maxMovement=1.5f;
         dropGun= false;
         dropArtefact = false;
     }
@@ -225,8 +227,9 @@ public class Chest extends RoomObject {
     }
 
     @Override
-    public void touchEvent() {
+    public void touchEvent(MapObject o) {
         open();
+        speed.mul(1.7f);
     }
 
     public void open(){

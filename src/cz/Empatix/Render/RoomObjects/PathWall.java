@@ -2,7 +2,9 @@ package cz.Empatix.Render.RoomObjects;
 
 
 import cz.Empatix.Entity.Animation;
+import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -273,6 +275,27 @@ public class PathWall extends RoomObject {
     }
     @Override
     public void draw() {
+        if (Game.displayCollisions){
+            glColor3i(255,255,255);
+            glBegin(GL_LINE_LOOP);
+            // BOTTOM LEFT
+            glVertex2f(position.x+xmap-cwidth/2,position.y+ymap-cheight/2);
+            // TOP LEFT
+            glVertex2f(position.x+xmap-cwidth/2, position.y+ymap+cheight/2);
+            // TOP RIGHT
+            glVertex2f(position.x+xmap+cwidth/2, position.y+ymap+cheight/2);
+            // BOTTOM RIGHT
+            glVertex2f(position.x+xmap+cwidth/2, position.y+ymap-cheight/2);
+            glEnd();
+
+            glPointSize(10);
+            glColor3i(255,0,0);
+            glBegin(GL_POINTS);
+            glVertex2f(position.x+xmap,position.y+ymap);
+            glEnd();
+
+
+        }
         if(collision || (animation.getIndexOfFrame() != 0 && reverse)){
             // pokud neni object na obrazovce - zrusit
             if (isNotOnScrean()){
@@ -313,7 +336,7 @@ public class PathWall extends RoomObject {
     }
 
     @Override
-    public void touchEvent() {
+    public void touchEvent(MapObject o) {
 
     }
     @Override

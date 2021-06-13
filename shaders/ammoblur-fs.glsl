@@ -2,25 +2,34 @@
 
 uniform sampler2D sampler;
 uniform vec2 resolution;
-uniform float value;
-uniform vec2 ratio;
-
+uniform vec2 location;
 out vec4 gl_FragColor;
 
-vec4 blur(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
-    vec4 color = vec4(0.0);
-    vec2 off1 = vec2(1.411764705882353) * direction;
-    vec2 off2 = vec2(3.2941176470588234) * direction;
-    vec2 off3 = vec2(5.176470588235294) * direction;
-    color += texture2D(image, uv) * 0.1964825501511404;
-    color += texture2D(image, uv + (off1 / resolution)) * 0.2969069646728344;
-    color += texture2D(image, uv - (off1 / resolution)) * 0.2969069646728344;
-    color += texture2D(image, uv + (off2 / resolution)) * 0.09447039785044732;
-    color += texture2D(image, uv - (off2 / resolution)) * 0.09447039785044732;
-    color += texture2D(image, uv + (off3 / resolution)) * 0.010381362401148057;
-    color += texture2D(image, uv - (off3 / resolution)) * 0.010381362401148057;
-    return color;
-}
+#define RADIUS  0.01
+#define SAMPLES 3
+
 void main(){
-    gl_FragColor = blur(sampler, gl_FragCoord.xy/resolution, resolution, vec2(value*ratio.x,value*ratio.y));
+    vec2 uv = (gl_FragCoord.xy-iMouse.xy)/iResolution.xy;
+    uv.x *= resolution.x/resolution.y;
+
+    float d = length(uv);
+
+    float c = 0.0;
+
+    if (d < 0.1) {
+        c = 1.0;
+    }else{
+        c = 0.0;
+    }
+
+    vec3 pfragColor = vec3(0);
+
+	for (int i = -SAMPLES; i < SAMPLES; i++) {
+		for (int j = -SAMPLES; j < SAMPLES; j++) {
+			pfragColor += texture(sampler, gl_FragCoord.xy / resolution.xy + vec2(i, j) * (RADIUS/float(SAMPLES))).xyz
+				 / pow(float(SAMPLES) * 2., 2.);
+		}
+    }
+
+    gl_FragColor = vec4(pfragColor * vec3(0.8), 1.0) + vec4(vec3(c), 1.0);
 }

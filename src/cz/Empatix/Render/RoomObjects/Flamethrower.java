@@ -1,6 +1,7 @@
 package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
+import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Loader;
@@ -210,7 +211,7 @@ public class Flamethrower extends RoomObject {
     }
 
     @Override
-    public void touchEvent() {
+    public void touchEvent(MapObject o) {
     }
 
     @Override

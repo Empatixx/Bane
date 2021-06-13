@@ -107,6 +107,7 @@ public class ProgressRoom extends GameState {
 
         player.drawShadow();
 
+        tileMap.preDrawObjects(true);
         tileMap.draw(Tile.BLOCKED);
 
         tileMap.preDrawObjects(false);
@@ -186,7 +187,6 @@ public class ProgressRoom extends GameState {
         if(k == GLFW.GLFW_KEY_ESCAPE && !progressNPC.isInteracting()){
             gsm.setState(GameStateManager.MENU);
         }
-        if(transition) return;
         player.keyPressed(k);
         tileMap.keyPressed(k,player);
         progressNPC.keyPress(k);

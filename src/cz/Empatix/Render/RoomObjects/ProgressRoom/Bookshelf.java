@@ -1,6 +1,7 @@
 package cz.Empatix.Render.RoomObjects.ProgressRoom;
 
 import cz.Empatix.Entity.Animation;
+import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.ProgressRoom;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -135,7 +136,7 @@ public class Bookshelf extends RoomObject {
     }
 
     @Override
-    public void touchEvent() {
+    public void touchEvent(MapObject o) {
     }
 
 

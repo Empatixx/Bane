@@ -1,7 +1,7 @@
 package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -35,7 +35,9 @@ public class Barrel extends DestroyableObject {
 
         collision = true;
         moveable=true;
-        preDraw = false;
+        preDraw = true;
+        behindCollision = true;
+
 
         itemDrop = true;
 
@@ -247,7 +249,7 @@ public class Barrel extends DestroyableObject {
     }
 
     @Override
-    public void touchEvent() {
+    public void touchEvent(MapObject o) {
 
     }
 
@@ -263,9 +265,11 @@ public class Barrel extends DestroyableObject {
 
     @Override
     public void setHit(int damage) {
+        boolean preDestroyed = isDestroyed();
         super.setHit(damage);
-        if(destroyed){
+        if(destroyed && !preDestroyed){
             animation.setFrames(spritesheet.getSprites(DESTROY));
+            animation.setDelay(100);
             collision = false;
             moveable = false;
             preDraw=true;
@@ -273,11 +277,9 @@ public class Barrel extends DestroyableObject {
             currentAnimation = DESTROY;
         } else if(currentAnimation == NORMAL) {
             animation.setFrames(spritesheet.getSprites(HIT));
+            animation.setDelay(100);
             currentAnimation = HIT;
         }
-        animation.setDelay(100);
-
-        lastTimeDamaged = System.currentTimeMillis()- InGame.deltaPauseTime();
 
     }
 

@@ -38,7 +38,6 @@ void main()
 
         // darkness
         vec3 outc = vec3(0.5);
-        float radius = 200;
 
         for (int i = 0; i < lightCount; i++)
         {

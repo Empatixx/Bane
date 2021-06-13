@@ -146,6 +146,7 @@ public class Snake extends Enemy {
         // update position
         getNextPosition();
         checkTileMapCollision();
+
         setPosition(temp.x, temp.y);
 
         float dist = position.distance(player.getPosition());

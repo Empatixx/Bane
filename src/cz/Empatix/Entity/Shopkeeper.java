@@ -135,7 +135,7 @@ public class Shopkeeper extends RoomObject {
     public void keyPress() {
     }
     @Override
-    public void touchEvent() {
+    public void touchEvent(MapObject o) {
     }
 }
 

@@ -1,6 +1,7 @@
 package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
+import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
@@ -24,11 +25,11 @@ public class Spike extends RoomObject {
         Loader.loadImage("Textures\\Sprites\\spike.tga");
     }
     public boolean remove;
-    private Player player;
     private boolean damageAnimation;
-    public Spike(TileMap tm, Player player){
+
+    private boolean damageDone;
+    public Spike(TileMap tm){
         super(tm);
-        this.player = player;
         width = 16;
         height = 16;
         cwidth = 8;
@@ -44,6 +45,7 @@ public class Spike extends RoomObject {
         collision = false;
         moveable=false;
         preDraw = true;
+        behindCollision = true;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\spike.tga");
@@ -153,8 +155,16 @@ public class Spike extends RoomObject {
     }
 
     @Override
-    public void touchEvent() {
-        if(damageAnimation)player.hit(1);
+    public void touchEvent(MapObject o) {
+        if(damageAnimation){
+            if(o instanceof Player) ((Player) o).hit(1);
+            if(o instanceof DestroyableObject && !damageDone){
+                damageDone = true;
+                ((DestroyableObject) o).setHit(1);
+            }
+        } else {
+            damageDone = false;
+        }
     }
 
     @Override

@@ -195,7 +195,6 @@ public class EyeBat extends Enemy {
         // update position
         getNextPosition();
         checkTileMapCollision();
-
         setPosition(temp.x, temp.y);
     }
 

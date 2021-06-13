@@ -443,7 +443,7 @@ public class Room implements Serializable {
                     }
                     if(!collision) done = true;
                 }
-                Spike spike = new Spike(tm,player);
+                Spike spike = new Spike(tm);
                 spike.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
                 addObject(spike);
             }

@@ -23,6 +23,8 @@ public class Fade extends Postprocess  {
         increment = 0.09f;
     }
     public void setReverse(){
+        firstTime = 0;
+        increment = 0.09f;
         value = 50f;
         time = 15;
         stop = false;
@@ -32,11 +34,11 @@ public class Fade extends Postprocess  {
         if(reverse){
             if(firstTime == 0){
                 firstTime = System.currentTimeMillis();
-            } else if(System.currentTimeMillis() - firstTime > 3500){
+            } else if(System.currentTimeMillis() - firstTime > 2500){
                 stop = true;
             }
             if(System.currentTimeMillis() - timer > time && !stop || transition){
-                value-=4.69f * value/50;
+                value-=6.69f * value/50;
                 if (value < 0.001f){
                     value = 0;
                 }
@@ -46,7 +48,7 @@ public class Fade extends Postprocess  {
         } else {
             if(firstTime == 0){
                 firstTime = System.currentTimeMillis();
-            } else if(System.currentTimeMillis() - firstTime > 3500){
+            } else if(System.currentTimeMillis() - firstTime > 2500){
                 stop = true;
             }
             if(System.currentTimeMillis() - timer > time && !stop || transition){

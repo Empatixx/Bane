@@ -1,6 +1,7 @@
 package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
+import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -136,7 +137,7 @@ public class Bones extends RoomObject {
     }
 
     @Override
-    public void touchEvent() {
+    public void touchEvent(MapObject o) {
     }
 
     @Override

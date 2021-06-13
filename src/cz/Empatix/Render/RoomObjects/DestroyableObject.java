@@ -1,5 +1,6 @@
 package cz.Empatix.Render.RoomObjects;
 
+import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -49,7 +50,7 @@ public abstract class DestroyableObject extends RoomObject {
     }
 
     @Override
-    public void touchEvent() {
+    public void touchEvent(MapObject o) {
 
     }
 
@@ -124,6 +125,8 @@ public abstract class DestroyableObject extends RoomObject {
         return destroyed;
     }
     public void setHit(int damage){
+        if(isDestroyed()) return;
+        lastTimeDamaged = System.currentTimeMillis()- InGame.deltaPauseTime();
         health-=damage;
         if(health < 0) {
             health = 0;

@@ -46,7 +46,7 @@ public abstract class Artefact implements Serializable {
     protected abstract void draw();
     protected abstract void charge();
     protected abstract void activate();
-    protected abstract void update();
+    protected abstract void update(boolean pause);
     protected abstract void drawHud();
     protected boolean canBeActivated(){return maxCharge == charge;}
 

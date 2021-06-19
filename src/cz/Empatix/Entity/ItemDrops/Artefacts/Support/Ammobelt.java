@@ -2,6 +2,7 @@ package cz.Empatix.Entity.ItemDrops.Artefacts.Support;
 
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
@@ -14,29 +15,27 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
-public class TransportableArmorPot extends Artefact {
+public class Ammobelt extends Artefact {
     public static void load(){
-        Loader.loadImage("Textures\\artefacts\\tap.tga");
-        Loader.loadImage("Textures\\artefacts\\artifactcharge.tga");
+        Loader.loadImage("Textures\\artefacts\\ammobelt.tga");
     }
-    public TransportableArmorPot(TileMap tm, Player p){
+    public Ammobelt(TileMap tm, Player p){
         super(tm,p);
         maxCharge = 4;
         charge = maxCharge;
 
-        scale = 3f;
+        scale = 4f;
 
-        imageArtefact = new Image("Textures\\artefacts\\tap.tga",new Vector3f(1403,975,0),
+        imageArtefact = new Image("Textures\\artefacts\\ammobelt.tga",new Vector3f(1403,975,0),
                 scale  );
         chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
                 2.6f);
         rarity = 1;
-
     }
 
     @Override
     public void loadSave() {
-        imageArtefact = new Image("Textures\\artefacts\\tap.tga",new Vector3f(1403,975,0),
+        imageArtefact = new Image("Textures\\artefacts\\ammobelt.tga",new Vector3f(1403,975,0),
                 scale  );
         chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
                 2.6f);
@@ -81,21 +80,28 @@ public class TransportableArmorPot extends Artefact {
         }
         geometryShader.unbind();
 
-
         chargeBar.draw();
     }
 
     @Override
     protected void activate() {
+
         charge = 0;
-        // refills player armor to full
-        p.addArmor(100);
+        // refills  players ammo by 20%
+        GunsManager gunsManager = GunsManager.getInstance();
+        int type = gunsManager.getWeaponTypes()[gunsManager.getCurrentslot()];
+        gunsManager.addAmmo(20,type);
     }
 
     @Override
     protected void charge() {
         charge++;
         if(charge > maxCharge) charge = maxCharge;
+    }
+
+    @Override
+    public void despawn() {
+        super.despawn();
     }
 }
 

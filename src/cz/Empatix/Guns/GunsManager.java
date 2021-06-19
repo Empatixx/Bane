@@ -31,6 +31,13 @@ public class GunsManager implements Serializable {
         Submachine.load();
         Thompson.load();
     }
+    private static GunsManager gunsManager;
+    public static void init(GunsManager gunsManager
+    ){
+        GunsManager.gunsManager = gunsManager;
+    }
+    public static GunsManager getInstance(){ return gunsManager;}
+
     public static int bulletShooted;
     public static int hitBullets;
 
@@ -241,5 +248,9 @@ public class GunsManager implements Serializable {
         if(equipedweapons[1] != null) types[1] = equipedweapons[1].getType();
         else types[1] = -1;
         return types;
+    }
+
+    public int getCurrentslot() {
+        return currentslot;
     }
 }

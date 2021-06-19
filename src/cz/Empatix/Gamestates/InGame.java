@@ -86,7 +86,7 @@ public class InGame extends GameState implements Serializable {
 
     private EnemyManager enemyManager;
 
-    // post processing
+    // postprocessing
     private transient Framebuffer objectsFramebuffer;
     private transient Framebuffer pauseBlurFramebuffer;
     private transient Framebuffer fadeFramebuffer;
@@ -94,7 +94,6 @@ public class InGame extends GameState implements Serializable {
     private transient boolean transitionContinue;
     private transient GaussianBlur gaussianBlur;
     private transient LightManager lightManager;
-
 
 
     private ItemManager itemManager;
@@ -193,6 +192,7 @@ public class InGame extends GameState implements Serializable {
 
     @Override
     void keyPressed(int k) {
+        System.out.println(mouseX+" || "+mouseY);
         if(player.isDead()) return;
         if(pause) return;
 
@@ -245,7 +245,6 @@ public class InGame extends GameState implements Serializable {
         lightManager = new LightManager();
         fade = new Fade("shaders\\fade");
         gaussianBlur = new GaussianBlur("shaders\\blur");
-
 
         setCursor(Game.CROSSHAIR);
 
@@ -361,8 +360,11 @@ public class InGame extends GameState implements Serializable {
         // weapons
         // load gun manager with tilemap object
         gunsManager = new GunsManager(tileMap,player);
+        GunsManager.init(gunsManager);
 
         artefactManager = new ArtefactManager(tileMap,player);
+        ArtefactManager.init(artefactManager);
+
         // items drops
         // load item manager with instances of objects
         itemManager = new ItemManager(tileMap,gunsManager,artefactManager,player);
@@ -430,6 +432,7 @@ public class InGame extends GameState implements Serializable {
 
         console = new Console(gunsManager,player,itemManager,enemyManager);
 
+        itemManager.dropPlayerArtefact(artefactManager.randomArtefact(),(int)player.getX(),(int)player.getY());
     }
 
     @Override
@@ -460,7 +463,6 @@ public class InGame extends GameState implements Serializable {
         enemyManager.draw();
         
         gunsManager.draw();
-
 
         objectsFramebuffer.unbindFBO();
 
@@ -610,6 +612,7 @@ public class InGame extends GameState implements Serializable {
 
     @Override
     void update() {
+
         AudioManager.update();
         if(player.isDead()){
             enemyManager.updateOnlyAnimations();
@@ -648,7 +651,7 @@ public class InGame extends GameState implements Serializable {
                 Camera.getHEIGHT() / 2f - player.getY()
         );
 
-        artefactManager.update();
+        artefactManager.update(pause);
 
         itemManager.update();
 

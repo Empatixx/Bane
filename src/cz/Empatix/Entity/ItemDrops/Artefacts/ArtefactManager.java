@@ -1,6 +1,8 @@
 package cz.Empatix.Entity.ItemDrops.Artefacts;
 
 import cz.Empatix.Entity.ItemDrops.Artefacts.Damage.RingOfFire;
+import cz.Empatix.Entity.ItemDrops.Artefacts.Special.LuckyCoin;
+import cz.Empatix.Entity.ItemDrops.Artefacts.Support.Ammobelt;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.BerserkPot;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
@@ -20,16 +22,22 @@ public class ArtefactManager implements Serializable {
         RingOfFire.load();
         BerserkPot.load();
         TransportableArmorPot.load();
+        LuckyCoin.load();
+        Ammobelt.load();
     }
     private ArrayList<Artefact> artefacts;
 
     transient private Image artefactHud;
 
-    private static Artefact currentArtefact;
+    private Artefact currentArtefact;
 
-    private static Player p;
+    private static ArtefactManager artefactManager;
+    public static void init(ArtefactManager artefactManager
+    ){
+        ArtefactManager.artefactManager = artefactManager;
+    }
+    public static ArtefactManager getInstance(){ return artefactManager;}
     public ArtefactManager(TileMap tm, Player player){
-        p = player;
         artefacts = new ArrayList<>();
         // preventing to keeping artefact from previous game
         currentArtefact = null;
@@ -37,6 +45,8 @@ public class ArtefactManager implements Serializable {
         artefacts.add(new RingOfFire(tm,player));
         artefacts.add(new TransportableArmorPot(tm,player));
         artefacts.add(new BerserkPot(tm,player));
+        artefacts.add(new LuckyCoin(tm,player));
+        artefacts.add(new Ammobelt(tm,player));
 
         artefactHud = new Image("Textures\\Artefacts\\artefacthud.tga",new Vector3f(1400,975,0),2.6f);
     }
@@ -59,7 +69,7 @@ public class ArtefactManager implements Serializable {
             currentArtefact.drawHud();
         }
     }
-    public static void charge(){
+    public void charge(){
         if(currentArtefact != null){
             currentArtefact.charge();
         }
@@ -71,9 +81,9 @@ public class ArtefactManager implements Serializable {
             }
         }
     }
-    public void update(){
+    public void update(boolean pause){
         for(Artefact artefact:artefacts){
-            artefact.update();
+            artefact.update(pause);
         }
         if(currentArtefact != null){
             currentArtefact.updateChargeAnimation();
@@ -89,11 +99,11 @@ public class ArtefactManager implements Serializable {
     }
 
     public void setCurrentArtefact(Artefact currentArtefact, int x, int y) {
-        if(ArtefactManager.currentArtefact != null){
+        if(this.currentArtefact != null){
             ItemManager itemManager = ItemManager.getInstance();
-            itemManager.dropPlayerArtefact(ArtefactManager.currentArtefact,x,y);
+            itemManager.dropPlayerArtefact(this.currentArtefact,x,y);
         }
-        ArtefactManager.currentArtefact = currentArtefact;
+        this.currentArtefact = currentArtefact;
 
     }
 }

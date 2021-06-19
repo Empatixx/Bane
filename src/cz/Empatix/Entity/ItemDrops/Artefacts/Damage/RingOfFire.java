@@ -61,7 +61,7 @@ public class RingOfFire extends Artefact {
     }
 
     @Override
-    protected void update() {
+    protected void update(boolean pause) {
         for(int i = 0;i<bullets.size();i++){
             Bullet bullet = bullets.get(i);
             bullet.update();

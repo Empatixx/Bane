@@ -32,6 +32,7 @@ public class SpritesheetManager {
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
             glGenerateMipmap(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D,0);
 
             Spritesheet spritesheet = new Spritesheet(idTexture);
             spritesheets.put(filepath,spritesheet);
@@ -50,6 +51,7 @@ public class SpritesheetManager {
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, spritesheetImage);
             glGenerateMipmap(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D,0);
 
             Spritesheet spritesheet = new Spritesheet(idTexture);
             spritesheets.put(filepath,spritesheet);

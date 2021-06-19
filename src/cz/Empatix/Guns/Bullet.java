@@ -126,10 +126,10 @@ public class Bullet extends MapObject implements Serializable {
         }
 
         // because of scaling image by 2x
-        width *= 2;
-        height *= 2;
-        cwidth *= 2;
-        cheight *= 2;
+        width *= scale;
+        height *= scale;
+        cwidth *= scale;
+        cheight *= scale;
 
         // audio
         soundWallhit = AudioManager.loadSound("guns\\wallhit.ogg");
@@ -202,7 +202,6 @@ public class Bullet extends MapObject implements Serializable {
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\shader");
         }
-
         // because of scaling image by 2x
         width *= 2;
         height *= 2;
@@ -298,4 +297,5 @@ public class Bullet extends MapObject implements Serializable {
         damage /= 2;
         if(damage < 1) damage = 1;
     }
+
 }

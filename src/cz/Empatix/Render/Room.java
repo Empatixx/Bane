@@ -406,7 +406,8 @@ public class Room implements Serializable {
             if (enemyManager.areEnemiesDead() && closed) {
                 lockRoom(false);
                 // adds 1 point to artifact for cleared room
-                ArtefactManager.charge();
+                ArtefactManager am = ArtefactManager.getInstance();
+                am.charge();
             }
         }
     }
@@ -721,17 +722,6 @@ public class Room implements Serializable {
                 barrel.setMoveable(false);
                 this.addObject(barrel);
             }
-        } else {
-            int tileSize = tm.getTileSize();
-
-            Barrel barrel = new Barrel(tm);
-            barrel.setPosition(xMin + 5*tileSize, yMin + 5*tileSize);
-            barrel.setPreventItemDespawn(true);
-            mapObjects.add(barrel);
-            barrel = new Barrel(tm);
-            barrel.setPosition(xMin + 7*tileSize, yMin + 5*tileSize);
-            barrel.setPreventItemDespawn(true);
-            mapObjects.add(barrel);
         }
 
     }

@@ -12,6 +12,7 @@ import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Hud.Image;
+import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -37,12 +38,17 @@ public class BerserkPot extends Artefact {
     transient private ArrayList<SprintParticle> sprintParticles;
     private long lastTimeSprintParticle;
 
+    private float timeLeft;
+
+    private TextRender textRender;
+    private long flichingDelay;
+
     public BerserkPot(TileMap tm, Player p){
         super(tm,p);
         maxCharge = 4;
         charge = maxCharge;
 
-        scale = 3f;
+        scale = 2f;
 
         imageArtefact = new Image("Textures\\artefacts\\berserkpot.tga",new Vector3f(1401,975,0),
                 scale);
@@ -53,11 +59,19 @@ public class BerserkPot extends Artefact {
         removedSpeed = true;
         sprintParticles = new ArrayList<>(5);
 
+        textRender = new TextRender();
+
     }
     @Override
-    protected void update() {
+    protected void update(boolean pause) {
 
         if(!removedSpeed){
+
+            if(!pause){
+                timeLeft = (System.currentTimeMillis() - this.time - InGame.deltaPauseTime() )/ 1000f;
+                timeLeft = 20 - timeLeft;
+            }
+
             if(System.currentTimeMillis() - time - InGame.deltaPauseTime() > 20000){
                 removedSpeed = true;
                 p.setMaxSpeed(p.getMaxSpeed()-bonusSpeed);
@@ -144,6 +158,24 @@ public class BerserkPot extends Artefact {
 
 
         chargeBar.draw();
+        if(!removedSpeed){
+            if(System.currentTimeMillis() - flichingDelay < 150 && time < 3){
+                return;
+            }
+            flichingDelay = System.currentTimeMillis();
+            float value = timeLeft/20;
+            float b = 0f,r,g;
+            if (value <= 0.5f){
+                r = 1.f;
+                g = 0.f + 2 * value;
+            } else{
+                r = 2 * (1-value);
+                g = 1f;
+            }
+
+            float center = TextRender.getHorizontalCenter(1340,1465,String.format("%.1f",timeLeft) + "s",2);
+            textRender.draw(String.format("%.1f",timeLeft) + "s",new Vector3f(center,900,0),2,new Vector3f(r,g,b));
+        }
     }
 
     @Override

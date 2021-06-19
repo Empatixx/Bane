@@ -503,4 +503,8 @@ public class ItemManager implements Serializable {
     public int getTotalCoins(){
         return totalCoins;
     }
+
+    public void addItemDrop(ItemDrop itemdrop){
+        itemDrops.add(itemdrop);
+    }
 }

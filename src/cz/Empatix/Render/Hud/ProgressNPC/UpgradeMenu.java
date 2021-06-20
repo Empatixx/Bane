@@ -121,4 +121,12 @@ public class UpgradeMenu {
     public void mouseScroll(double x, double y) {
         lastMouseY-=y*60;
     }
+
+    public int getCountAvailableUpgrades(Player p){
+        int c = 0;
+        for(int i = 0;i<bars.size();i++){
+            c+=bars.get(i).getAvailableUpgrades(p);
+        }
+        return c;
+    }
 }

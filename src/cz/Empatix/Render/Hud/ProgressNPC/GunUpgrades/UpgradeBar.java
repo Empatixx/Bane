@@ -1,6 +1,7 @@
 package cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades;
 
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -55,6 +56,8 @@ public abstract class UpgradeBar {
 
     private Image statsHud;
     TextRender[] textRender;
+
+    WeaponInfo info;
 
     public UpgradeBar(String filepath, float weaponscale, int row){
         Vector3f pos = new Vector3f(680,240+row*120,0);
@@ -218,5 +221,19 @@ public abstract class UpgradeBar {
                 return "Disabled";
             }
         }
+    }
+    public int getAvailableUpgrades(Player p){
+        int c = 0;
+        int numUpgrades = GameStateManager.getDb().getValueUpgrade(info.name,"upgrades");
+
+        for(int i = 0;i<sideBars.size();i++){
+            if(numUpgrades > 0){
+                numUpgrades--;
+            } else if(sideBars.get(i).getPrice() <= p.getCoins() && !sideBars.get(i).isBought()) {
+                c++;
+            }
+        }
+
+        return c;
     }
 }

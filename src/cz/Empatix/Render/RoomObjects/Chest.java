@@ -229,15 +229,15 @@ public class Chest extends RoomObject {
     @Override
     public void touchEvent(MapObject o) {
         open();
-        speed.mul(1.7f);
     }
 
     public void open(){
         if(opened) return;
         opened = true;
         collision = false;
+        moveable = false;
         animation.setFrames(spritesheet.getSprites(OPEN));
-
+        speed.mul(1.7f);
     }
 
     @Override

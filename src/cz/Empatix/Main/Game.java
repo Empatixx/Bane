@@ -16,8 +16,14 @@ import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+import java.io.File;
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -235,6 +241,31 @@ public class Game{
 
         // Make the window visible
         glfwShowWindow(window);
+
+        // log errors into file in /logs/...
+        try{
+            File file = new File("logs");
+            if(!file.exists()){
+                //Creating the directory
+                boolean b = file.mkdir();
+                if(b){
+                    System.out.println("Directory logs created successfully");
+                }else{
+                    System.out.println("Sorry couldn’t create logs directory");
+                }
+            }
+            long c = 0;
+            try (Stream<Path> files = Files.list(Paths.get("logs/"))) {
+                c = files.count();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            PrintStream pst = new PrintStream("logs/"+c+".txt");
+            System.setOut(pst);
+            System.setErr(pst);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
         // LOADING GAME LOOP
         TextRender textRender = new TextRender();

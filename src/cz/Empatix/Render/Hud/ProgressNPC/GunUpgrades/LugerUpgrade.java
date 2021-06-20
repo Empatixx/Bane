@@ -6,11 +6,9 @@ import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
 public class LugerUpgrade extends UpgradeBar {
-
-    WeaponInfo info;
-
     public LugerUpgrade(int row){
         super("Textures\\lahti.tga",2,row);
+
         info = new WeaponInfo();
         info.maxAmmo = 120;
         info.maxMagazineAmmo = 9;
@@ -56,7 +54,7 @@ public class LugerUpgrade extends UpgradeBar {
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"luger");
-        text = new String[]{"All bullets can be affected by critical hits"};
+        text = new String[]{"Your all bullets can cause critical hits"};
         bar.setText(text);
         bar.setPrice(160);
         bar.setType(UpgradeSideBar.DAMAGEUPGRADE);

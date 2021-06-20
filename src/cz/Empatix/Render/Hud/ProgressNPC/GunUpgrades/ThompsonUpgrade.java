@@ -6,7 +6,6 @@ import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
 public class ThompsonUpgrade extends UpgradeBar {
-    WeaponInfo info;
     public ThompsonUpgrade(int row){
         super("Textures\\thompson.tga",2,row);
         info = new WeaponInfo();

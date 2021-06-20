@@ -5,7 +5,6 @@ import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
 public class RevolverUpgrade extends UpgradeBar {
-    WeaponInfo info;
     public RevolverUpgrade(int row){
         super("Textures\\revolver.tga",2,row);
 
@@ -22,7 +21,7 @@ public class RevolverUpgrade extends UpgradeBar {
 
 
         UpgradeSideBar bar = new UpgradeSideBar(sideBars.size(),"revolver");
-        String[] text = new String[]{"Your bullets can be affected by critical hits"};
+        String[] text = new String[]{"Your bullets can cause critical hits"};
         bar.setText(text);
         bar.setType(UpgradeSideBar.DAMAGEUPGRADE);
         bar.setPrice(20);

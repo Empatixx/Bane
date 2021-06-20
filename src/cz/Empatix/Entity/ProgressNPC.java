@@ -150,5 +150,8 @@ public class ProgressNPC extends MapObject {
     public void mouseScroll(double x, double y) {
         upgradeMenu.mouseScroll(x,y);
     }
+    public int getCountAvailableUpgrades(Player p){
+        return upgradeMenu.getCountAvailableUpgrades(p);
+    }
 }
 

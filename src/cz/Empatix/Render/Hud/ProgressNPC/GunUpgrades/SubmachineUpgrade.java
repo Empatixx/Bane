@@ -6,7 +6,6 @@ import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
 public class SubmachineUpgrade extends UpgradeBar {
-    WeaponInfo info;
     public SubmachineUpgrade(int row){
         super("Textures\\submachine.tga",2,row);
         info = new WeaponInfo();
@@ -53,7 +52,7 @@ public class SubmachineUpgrade extends UpgradeBar {
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"uzi");
-        text = new String[]{"Your bullets can be affected by critical hits"};
+        text = new String[]{"Your bullets can cause critical hits"};
         bar.setText(text);
         bar.setType(UpgradeSideBar.DAMAGEUPGRADE);
         bar.setPrice(160);

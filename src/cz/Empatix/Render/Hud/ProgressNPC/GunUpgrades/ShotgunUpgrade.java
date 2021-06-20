@@ -6,7 +6,6 @@ import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
 public class ShotgunUpgrade extends UpgradeBar {
-    WeaponInfo info;
     public ShotgunUpgrade(int row){
         super("Textures\\shotgun.tga",2,row);
 

@@ -93,6 +93,8 @@ public class ProgressRoom extends GameState {
         alertManager = new AlertManager();
 
         AudioManager.playSoundtrack(Soundtrack.PROGRESSROOM);
+        int upgradesCount = progressNPC.getCountAvailableUpgrades(player);
+        if(upgradesCount > 0) AlertManager.add(AlertManager.INFORMATION,"You can buy "+upgradesCount+" upgrades");
         AlertManager.add(AlertManager.INFORMATION,"Go to the portal");
     }
 

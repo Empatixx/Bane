@@ -6,7 +6,6 @@ import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
 public class GrenadelauncherUpgrade extends UpgradeBar {
-    WeaponInfo info;
     public GrenadelauncherUpgrade(int row){
         super("Textures\\grenadelauncher.tga",2,row);
         info = new WeaponInfo();
@@ -54,7 +53,7 @@ public class GrenadelauncherUpgrade extends UpgradeBar {
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"grenadelauncher");
-        text = new String[]{"Your explosions can be affected by critical hits"};
+        text = new String[]{"Your explosions can cause critical hits"};
         bar.setText(text);
         bar.setType(UpgradeSideBar.DAMAGEUPGRADE);
         bar.setPrice(140);

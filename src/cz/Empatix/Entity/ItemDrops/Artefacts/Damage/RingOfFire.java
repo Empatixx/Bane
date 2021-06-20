@@ -136,7 +136,7 @@ public class RingOfFire extends Artefact {
             if(chargeAnimation == i && charge == maxCharge){
                 geometryShader.setUniform3f("color", new Vector3f(0.141f, 0.980f, 0));
             } else {
-                geometryShader.setUniform3f("color", new Vector3f(0.035f, 0.784f, 0.117f));
+                geometryShader.setUniform3f("color", new Vector3f(0.109f, 0.552f, 0.203f));
             }
 
             matrixPos = new Matrix4f()

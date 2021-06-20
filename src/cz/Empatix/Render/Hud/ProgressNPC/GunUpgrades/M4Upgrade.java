@@ -5,7 +5,6 @@ import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
 public class M4Upgrade extends UpgradeBar {
-    WeaponInfo info;
     public M4Upgrade(int row){
         super("Textures\\M4.tga",2,row);
 

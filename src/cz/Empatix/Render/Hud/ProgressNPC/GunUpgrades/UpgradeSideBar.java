@@ -122,4 +122,9 @@ public class UpgradeSideBar {
     public void setBought(boolean bought) {
         this.bought = bought;
     }
+
+    public int getPrice() {
+        return price;
+    }
+
 }

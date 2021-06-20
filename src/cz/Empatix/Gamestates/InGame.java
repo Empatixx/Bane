@@ -192,7 +192,6 @@ public class InGame extends GameState implements Serializable {
 
     @Override
     void keyPressed(int k) {
-        System.out.println(mouseX+" || "+mouseY);
         if(player.isDead()) return;
         if(pause) return;
 

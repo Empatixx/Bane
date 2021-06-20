@@ -432,7 +432,6 @@ public class InGame extends GameState implements Serializable {
 
         console = new Console(gunsManager,player,itemManager,enemyManager);
 
-        itemManager.dropPlayerArtefact(artefactManager.randomArtefact(),(int)player.getX(),(int)player.getY());
     }
 
     @Override

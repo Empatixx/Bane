@@ -4,17 +4,22 @@
 [LWJGL] 	JVM: OpenJDK 64-Bit Server VM v25.282-b08 by Amazon.com Inc.
 [LWJGL] Loading JNI library: lwjgl
 [LWJGL] 	Module: org.lwjgl
+[LWJGL]     Extracting: file:/D:/lwjgl-3.2.3/lwjgl/lwjgl-natives-windows.jar!/windows/x64/org/lwjgl/lwjgl.dll
+[LWJGL]             to: C:\Users\Jirka\AppData\Local\Temp\lwjglJirka\3.2.3-build-13\lwjgl.dll
 [LWJGL] 	Loaded from org.lwjgl.librarypath: C:\Users\Jirka\AppData\Local\Temp\lwjglJirka\3.2.3-build-13\lwjgl.dll
 [LWJGL] Warning: Failed to instantiate memory allocator: org.lwjgl.system.jemalloc.JEmallocAllocator. Using the system default.
 [LWJGL] MemoryUtil allocator: DebugAllocator
 [LWJGL] Loading library: glfw
 [LWJGL] 	Module: org.lwjgl.glfw
+[LWJGL]     Extracting: file:/D:/lwjgl-3.2.3/lwjgl-glfw/lwjgl-glfw-natives-windows.jar!/windows/x64/org/lwjgl/glfw/glfw.dll
 [LWJGL] 	Loaded from org.lwjgl.librarypath: C:\Users\Jirka\AppData\Local\Temp\lwjglJirka\3.2.3-build-13\glfw.dll
 [LWJGL] Loading JNI library: lwjgl_stb
 [LWJGL] 	Module: org.lwjgl.stb
+[LWJGL]     Extracting: file:/D:/lwjgl-3.2.3/lwjgl-stb/lwjgl-stb-natives-windows.jar!/windows/x64/org/lwjgl/stb/lwjgl_stb.dll
 [LWJGL] 	Loaded from org.lwjgl.librarypath: C:\Users\Jirka\AppData\Local\Temp\lwjglJirka\3.2.3-build-13\lwjgl_stb.dll
 [LWJGL] Loading JNI library: lwjgl_opengl
 [LWJGL] 	Module: org.lwjgl.opengl
+[LWJGL]     Extracting: file:/D:/lwjgl-3.2.3/lwjgl-opengl/lwjgl-opengl-natives-windows.jar!/windows/x64/org/lwjgl/opengl/lwjgl_opengl.dll
 [LWJGL] 	Loaded from org.lwjgl.librarypath: C:\Users\Jirka\AppData\Local\Temp\lwjglJirka\3.2.3-build-13\lwjgl_opengl.dll
 [LWJGL] Loading library: opengl32
 [LWJGL] 	Module: org.lwjgl.opengl
@@ -22,71 +27,11 @@
 [LWJGL] 	Loaded from system paths: C:\Windows\SYSTEM32\opengl32.dll
 [LWJGL] Loading library: OpenAL
 [LWJGL] 	Module: org.lwjgl.openal
+[LWJGL]     Extracting: file:/D:/lwjgl-3.2.3/lwjgl-openal/lwjgl-openal-natives-windows.jar!/windows/x64/org/lwjgl/openal/OpenAL.dll
 [LWJGL] 	Loaded from org.lwjgl.librarypath: C:\Users\Jirka\AppData\Local\Temp\lwjglJirka\3.2.3-build-13\OpenAL.dll
-UPS: 59   FPS: 5
-UPS: 60   FPS: 60
-UPS: 60   FPS: 56
-UPS: 60   FPS: 60
-UPS: 60   FPS: 59
-UPS: 60   FPS: 60
-UPS: 60   FPS: 58
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 55
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 54
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-UPS: 60   FPS: 60
-[LWJGL] 16 bytes leaked, thread 1 (main), address: 0x26837620000
+UPS: 60   FPS: 1
+UPS: 59   FPS: 52
+[LWJGL] 16 bytes leaked, thread 1 (main), address: 0x1FC9DBD0000
 	at org.lwjgl.system.Callback.create(Callback.java:136)
 	at org.lwjgl.system.Callback.<init>(Callback.java:86)
 	at org.lwjgl.glfw.GLFWErrorCallback.<init>(GLFWErrorCallback.java:60)
@@ -95,7 +40,7 @@ UPS: 60   FPS: 60
 	at cz.Empatix.Main.Game.initWindow(Game.java:61)
 	at cz.Empatix.Main.Game.run(Game.java:227)
 	at cz.Empatix.Main.Game.main(Game.java:404)
-[LWJGL] 16 bytes leaked, thread 1 (main), address: 0x2683DEF0000
+[LWJGL] 16 bytes leaked, thread 1 (main), address: 0x1FCA4490000
 	at org.lwjgl.system.Callback.create(Callback.java:136)
 	at org.lwjgl.system.Callback.<init>(Callback.java:86)
 	at org.lwjgl.glfw.GLFWWindowIconifyCallback.<init>(GLFWWindowIconifyCallback.java:57)
@@ -103,7 +48,7 @@ UPS: 60   FPS: 60
 	at cz.Empatix.Main.Game.initWindow(Game.java:97)
 	at cz.Empatix.Main.Game.run(Game.java:227)
 	at cz.Empatix.Main.Game.main(Game.java:404)
-[LWJGL] 16 bytes leaked, thread 1 (main), address: 0x2683DF00000
+[LWJGL] 16 bytes leaked, thread 1 (main), address: 0x1FCA44A0000
 	at org.lwjgl.system.Callback.create(Callback.java:136)
 	at org.lwjgl.system.Callback.<init>(Callback.java:86)
 	at org.lwjgl.glfw.GLFWScrollCallback.<init>(GLFWScrollCallback.java:58)

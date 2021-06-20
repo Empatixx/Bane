@@ -5,6 +5,7 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -14,7 +15,6 @@ import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class Player extends MapObject implements Serializable {
     private long lastTimeSprintParticle;
 
     // audio
-    private  int[] soundPlayerhurt;
+    private int[] soundPlayerhurt;
     private int soundPlayerdeath;
 
     transient private Source sourcehealth;
@@ -482,31 +482,31 @@ public class Player extends MapObject implements Serializable {
             }
         }
         if(rolling) return;
-        if (key == GLFW.GLFW_KEY_W){
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_UP)){
             setUp(true);
         }
-        if (key == GLFW.GLFW_KEY_D){
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_RIGHT)){
             setRight(true);
         }
-        if (key == GLFW.GLFW_KEY_A){
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_LEFT)){
             setLeft(true);
         }
-        if (key == GLFW.GLFW_KEY_S){
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_DOWN)){
             setDown(true);
         }
     }
     public void keyReleased(int key) {
         if(rolling) return;
-        if (key == GLFW.GLFW_KEY_W){
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_UP)){
             setUp(false);
         }
-        if (key == GLFW.GLFW_KEY_D){
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_RIGHT)){
             setRight(false);
         }
-        if (key == GLFW.GLFW_KEY_A){
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_LEFT)){
             setLeft(false);
         }
-        if (key == GLFW.GLFW_KEY_S){
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_DOWN)){
             setDown(false);
         }
     }

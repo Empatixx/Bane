@@ -8,10 +8,10 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -152,25 +152,18 @@ public class GunsManager implements Serializable {
     }
 
     public void keyPressed(int k, int x,int y) {
-        switch (k) {
-            case GLFW.GLFW_KEY_Q: {
-                if(current != null){
-                    stopShooting();
-                    ItemManager itemManager = ItemManager.getInstance();
-                    itemManager.dropPlayerWeapon(current, x,y);
-                }
-                current = null;
-                equipedweapons[currentslot] = null;
-                break;
+        if(k == ControlSettings.getValue(ControlSettings.WEAPON_DROP)){
+            if(current != null){
+                stopShooting();
+                ItemManager itemManager = ItemManager.getInstance();
+                itemManager.dropPlayerWeapon(current, x,y);
             }
-            case GLFW.GLFW_KEY_1: {
-                setCurrentWeapon(equipedweapons[FIRSTSLOT],FIRSTSLOT);
-                break;
-            }
-            case GLFW.GLFW_KEY_2: {
-                setCurrentWeapon(equipedweapons[SECONDARYSLOT],SECONDARYSLOT);
-                break;
-            }
+            current = null;
+            equipedweapons[currentslot] = null;
+        } else if (k == ControlSettings.getValue(ControlSettings.WEAPON_SLOT1)){
+            setCurrentWeapon(equipedweapons[FIRSTSLOT],FIRSTSLOT);
+        } else if (k == ControlSettings.getValue(ControlSettings.WEAPON_SLOT2)){
+            setCurrentWeapon(equipedweapons[SECONDARYSLOT],SECONDARYSLOT);
         }
     }
     public void stopShooting(){

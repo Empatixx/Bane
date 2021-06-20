@@ -4,6 +4,7 @@ import cz.Empatix.Database.Database;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Hud.MenuBar;
 import cz.Empatix.Render.Text.TextRender;
@@ -39,6 +40,7 @@ public class UpgradeSideBar {
     private boolean bought;
 
     private TextRender renderText;
+    private long alertCooldown;
 
     UpgradeSideBar(int row, String nameWeapon){
         this.nameWeapon = nameWeapon;
@@ -100,6 +102,11 @@ public class UpgradeSideBar {
                 database.setValue("money",database.getValue("money","general")-price);
                 bought = true;
                 return true;
+            } else if (!isBought()){
+                if(System.currentTimeMillis() - alertCooldown > 2000){
+                    alertCooldown = System.currentTimeMillis();
+                    AlertManager.add(AlertManager.WARNING,"You don't have enough coins");
+                }
             }
         }
         return false;

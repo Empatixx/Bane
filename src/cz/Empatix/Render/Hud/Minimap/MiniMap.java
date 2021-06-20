@@ -1,6 +1,7 @@
 package cz.Empatix.Render.Hud.Minimap;
 
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -12,7 +13,6 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -429,7 +429,7 @@ public class MiniMap implements Serializable {
     }
 
     public void keyPressed(int k){
-        if(k == GLFW.GLFW_KEY_TAB){
+        if(k == ControlSettings.getValue(ControlSettings.MAP)){
             displayBigMap = true;
             minimapBorders.setScale(7f);
             minimapBorders.setPosition(new Vector3f(1000,500,0));
@@ -439,7 +439,7 @@ public class MiniMap implements Serializable {
         }
     }
     public void keyReleased(int k){
-        if(k == GLFW.GLFW_KEY_TAB){
+        if(k == ControlSettings.getValue(ControlSettings.MAP)){
             displayBigMap = false;
             minimapBorders.setScale(2);
             minimapBorders.setPosition(new Vector3f(1770,150,0));

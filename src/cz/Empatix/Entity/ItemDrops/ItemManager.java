@@ -9,13 +9,13 @@ import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Guns.Weapon;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -436,7 +436,7 @@ public class ItemManager implements Serializable {
      */
 
     public boolean keyPressed(int k, int x, int y) {
-        if(k == GLFW.GLFW_KEY_E){
+        if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT)){
             // picking gun from ground
             float distance = -1;
             ItemDrop selectedDrop = null;

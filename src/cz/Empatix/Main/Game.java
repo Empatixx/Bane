@@ -261,7 +261,7 @@ public class Game{
                 e.printStackTrace();
             }
             PrintStream pst = new PrintStream("logs/"+c+".txt");
-            System.setOut(pst);
+            //System.setOut(pst);
             System.setErr(pst);
         } catch (Exception e){
             e.printStackTrace();

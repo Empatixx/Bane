@@ -1,6 +1,7 @@
 package cz.Empatix.Entity;
 
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -120,7 +121,7 @@ public class ProgressNPC extends MapObject {
     }
 
     public void keyPress(int k) {
-        if(k == GLFW.GLFW_KEY_E){
+        if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT)){
             interract = !interract;
             upgradeMenu.unlockSlider();
         }

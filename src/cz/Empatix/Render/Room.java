@@ -8,12 +8,12 @@ import cz.Empatix.Entity.ItemDrops.ItemDrop;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.Shopkeeper;
+import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.RoomObjects.*;
 import cz.Empatix.Render.RoomObjects.ProgressRoom.Portal;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -754,7 +754,7 @@ public class Room implements Serializable {
         return minimapRoom;
     }
     public void keyPressed(int k, Player p){
-        if(k == GLFW.GLFW_KEY_E){
+        if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT)){
             for(RoomObject object : mapObjects){
                 if(object.intersects(p)){
                     object.keyPress();

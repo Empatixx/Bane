@@ -12,6 +12,7 @@ import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Main.DataManager;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Alerts.AlertManager;
@@ -149,7 +150,7 @@ public class InGame extends GameState implements Serializable {
 
     @Override
     void mousePressed(int button) {
-        if(button == GLFW_MOUSE_BUTTON_LEFT){
+        if(button == ControlSettings.getValue(ControlSettings.SHOOT)){
             gunsManager.startShooting();
         }
     }
@@ -185,7 +186,7 @@ public class InGame extends GameState implements Serializable {
 
         if(pause) return;
 
-        if (k == 'R'){
+        if (k == ControlSettings.getValue(ControlSettings.RELOAD)){
             gunsManager.reload();
         }
     }
@@ -219,7 +220,7 @@ public class InGame extends GameState implements Serializable {
             tileMap.keyPressed(k,player);
         }
 
-        if(k == GLFW.GLFW_KEY_F){
+        if(k == ControlSettings.getValue(ControlSettings.ARTEFACT_USE)){
             artefactManager.activate();
         }
 

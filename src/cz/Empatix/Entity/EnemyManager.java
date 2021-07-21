@@ -6,10 +6,9 @@ import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class EnemyManager implements Serializable {
+public class EnemyManager {
     private static EnemyManager enemyManager;
     public static void init(EnemyManager enemyManager
     ){

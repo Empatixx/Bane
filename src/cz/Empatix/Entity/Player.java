@@ -16,12 +16,11 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import static cz.Empatix.Main.Game.window;
 import static org.lwjgl.glfw.GLFW.*;
-public class Player extends MapObject implements Serializable {
+public class Player extends MapObject {
     public static void load(){
         Loader.loadImage("Textures\\Sprites\\Player\\player64.tga");
         Loader.loadImage("Textures\\vignette.tga");
@@ -38,7 +37,7 @@ public class Player extends MapObject implements Serializable {
     private long deathTime;
 
     // vignette ( player hurt - effect )
-    transient private Background[] hitVignette;
+    private Background[] hitVignette;
     private long heartBeat;
     private boolean lowHealth;
     private DamageAbsorbedBy lastDamage;
@@ -67,14 +66,14 @@ public class Player extends MapObject implements Serializable {
     private static final int DOWN = 2;
     private static final int UP = 3;
 
-    transient ArrayList<SprintParticle> sprintParticles;
+    ArrayList<SprintParticle> sprintParticles;
     private long lastTimeSprintParticle;
 
     // audio
     private int[] soundPlayerhurt;
     private int soundPlayerdeath;
 
-    transient private Source sourcehealth;
+    private Source sourcehealth;
     private int soundLowHealth;
 
     // visual
@@ -539,7 +538,7 @@ public class Player extends MapObject implements Serializable {
         }
         source.play(soundPlayerhurt[Random.nextInt(2)]);
 
-        if(health <=0 )setDead();
+        if(health <=0 ) setDead();
 
     }
 

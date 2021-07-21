@@ -28,14 +28,14 @@ public class MiniMap implements Serializable {
         Loader.loadImage("Textures\\player-icon.tga");
         Loader.loadImage("Textures\\minimap-icons.tga");
     }
-    transient private Image minimapBorders;
-    transient private Image playerIcon;
-    transient private int idTexture;
-    transient private int[] vboTextures;
-    transient private int vboVertices;
-    transient private int pathVboVertices;
-    transient private Shader shader;
-    transient private Shader geometryShader;
+    private Image minimapBorders;
+    private Image playerIcon;
+    private int idTexture;
+    private int[] vboTextures;
+    private int vboVertices;
+    private int pathVboVertices;
+    private Shader shader;
+     private Shader geometryShader;
 
     private boolean displayBigMap;
 

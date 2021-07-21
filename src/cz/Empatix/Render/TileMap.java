@@ -21,7 +21,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
@@ -29,7 +28,7 @@ import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL43.*;
 
-public class TileMap implements Serializable {
+public class TileMap {
 
 	public static void load(){
 		Loader.loadImage("Textures\\tileset64.tga");
@@ -44,8 +43,8 @@ public class TileMap implements Serializable {
 
 	// position
 	private final Vector3f position;
-	transient private Camera camera;
-	transient private Shader shader;
+	private Camera camera;
+	private Shader shader;
 
 
 	// bounds
@@ -70,16 +69,16 @@ public class TileMap implements Serializable {
 	private int rowOffset;
 	private int colOffset;
 
-	transient private int previousrowOffset;
-	transient private int previouscolOffset;
+	private int previousrowOffset;
+	private int previouscolOffset;
 
 	private final int numRowsToDraw;
 	private final int numColsToDraw;
 
 	// opengl id of texture (tileset)
-	transient private int tilesetId;
-	transient private int[] vboVertices;
-	transient private int[] vboTexCoords;
+	private int tilesetId;
+	private int[] vboVertices;
+	private int[] vboTexCoords;
 	//matrix4f opengl
 	private Matrix4f target;
 
@@ -100,7 +99,7 @@ public class TileMap implements Serializable {
 	private float playerStartY;
 
 	private long nextFloorEnterTime;
-	transient private TextRender[] title;
+	private TextRender[] title;
 
 
 	public TileMap(int tileSize, MiniMap miniMap) {

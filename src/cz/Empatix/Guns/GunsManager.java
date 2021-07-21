@@ -13,10 +13,9 @@ import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class GunsManager implements Serializable {
+public class GunsManager {
     public static void load(){
         Loader.loadImage("Textures\\weapon_hud.tga");
         Bullet.load();
@@ -52,10 +51,10 @@ public class GunsManager implements Serializable {
 
     private Weapon[] equipedweapons;
     private int soundSwitchingGun;
-    transient private Source source;
+    private Source source;
     private long switchDelay;
 
-    transient private Image weaponBorder_hud;
+    private Image weaponBorder_hud;
 
 
     public GunsManager(TileMap tileMap, Player p){

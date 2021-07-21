@@ -28,15 +28,55 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="0.8.2 update">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crashlog.log" beforeDir="false" afterPath="$PROJECT_DIR$/crashlog.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/AudioManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/AudioManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/Soundtrack.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/Soundtrack.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/Source.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/AudioManager/Source.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/AI/Path.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/AI/Path.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/AI/PathNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/AI/PathNode.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Animation.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Animation.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemies/Slime.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemies/Slime.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/EnemyManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/EnemyManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/MapObject.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/MapObject.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Player.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/GameState.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/GameState.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/GameStateManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/GameStateManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/InGame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/InGame.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/MenuState.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/MenuState.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Bullet.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Bullet.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/GunsManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/GunsManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Weapon.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Weapon.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Java/Random.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Java/Random.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/KeyboardInput.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/KeyboardInput.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/MouseInput.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/MouseInput.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Settings.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Settings.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Background.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Background.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Camera.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Camera.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HUD.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HUD.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HealthBar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HealthBar.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/MenuBar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/MenuBar.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/SliderBar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/SliderBar.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/Font.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/Font.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/FontChar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/FontChar.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/TextRender.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Text/TextRender.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Tile.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Tile.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/TileMap.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/TileMap.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/EnemyManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/ArtefactManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/ArtefactManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/InGame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Main/DataManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Main/DataManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Minimap/MiniMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Minimap/MiniMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,15 +152,17 @@
     <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
     <property name="GenerateAntBuildDialog.outputFileNameProperty" value="game" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1590745721401" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/shaders" />
-    <property name="project.structure.last.edited" value="SDKs" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.16894531" />
     <property name="project.structure.side.proportion" value="0.43713278" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -151,7 +193,7 @@
       <option name="MAIN_CLASS_NAME" value="cz.Empatix.Main.Game" />
       <module name="Game" />
       <option name="PROGRAM_PARAMETERS" value="-Xmx2G " />
-      <option name="VM_PARAMETERS" value="-Dorg.lwjgl.util.Debug=true -Djava.library.path=nativelib/" />
+      <option name="VM_PARAMETERS" value="-Djava.library.path=nativelib/ -Dorg.lwjgl.util.Debug=false" />
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Run" />
       <method v="2">
@@ -459,7 +501,14 @@
       <option name="project" value="LOCAL" />
       <updated>1624214151691</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="0.8.2 update">
+      <created>1624216971377</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1624216971377</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="UpdateCopyrightCheckinHandler">
@@ -528,6 +577,10 @@
         <PinnedItemInfo />
       </pinned-members>
     </pin-to-top-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Game$Main.ic" NAME="Main Coverage Results" MODIFIED="1603805455088" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />

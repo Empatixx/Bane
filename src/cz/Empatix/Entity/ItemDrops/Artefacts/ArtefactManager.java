@@ -14,10 +14,9 @@ import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ArtefactManager implements Serializable {
+public class ArtefactManager {
     public static void load(){
         Loader.loadImage("Textures\\Artefacts\\artefacthud.tga");
         RingOfFire.load();
@@ -28,7 +27,7 @@ public class ArtefactManager implements Serializable {
     }
     private ArrayList<Artefact> artefacts;
 
-    transient private Image artefactHud;
+    private Image artefactHud;
 
     private Artefact currentArtefact;
 

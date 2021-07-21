@@ -17,10 +17,9 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ItemManager implements Serializable {
+public class ItemManager {
     private static ItemManager itemManager;
     public static void init(ItemManager itemManager
     ){
@@ -45,17 +44,17 @@ public class ItemManager implements Serializable {
 
     private  int pickupSound;
     private int pickupCoinSound;
-    transient private Source source;
-    transient private Source buysource;
+    private Source source;
+    private Source buysource;
 
-    transient private Image shopHud;
+    private Image shopHud;
     private boolean showShopHud;
     private ItemDrop shopItem;
     private int soundShopBuy;
 
     private int totalCoins;
 
-    transient private TextRender[] textRender;
+    private TextRender[] textRender;
 
     private long alertCooldown;
 

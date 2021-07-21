@@ -35,7 +35,6 @@ import cz.Empatix.Utility.Console;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import static cz.Empatix.Main.Game.ARROW;
@@ -44,7 +43,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 
-public class InGame extends GameState implements Serializable {
+public class InGame extends GameState {
     public static void load(){
         Loader.loadImage("Textures\\Menu\\pausemenu.tga");
         Loader.loadImage("Textures\\Menu\\bg.png");
@@ -56,16 +55,18 @@ public class InGame extends GameState implements Serializable {
 
     }
 
-    private transient boolean pause;
-    private transient boolean endRewardEarned;
-    private transient long gameStart;
+    private boolean pause;
+    private boolean endRewardEarned;
+    private long gameStart;
+    private long gameTimeSave;
+
     //
     // Main game
     //
 
     // death menu
-    private transient Image skullPlayerdead;
-    private transient Image[] logos;
+    private Image skullPlayerdead;
+    private Image[] logos;
 
     private Player player;
 
@@ -73,28 +74,28 @@ public class InGame extends GameState implements Serializable {
 
     private GunsManager gunsManager;
 
-    private transient float mouseX;
-    private transient float mouseY;
+    private float mouseX;
+    private float mouseY;
 
     // ingame huds
-    private transient HealthBar healthBar;
-    private transient ArmorBar armorBar;
+    private HealthBar healthBar;
+    private ArmorBar armorBar;
     private MiniMap miniMap;
-    private transient DamageIndicator damageIndicator;
-    private transient cz.Empatix.Render.Hud.Image coin;
-    private transient Console console;
-    private transient AlertManager alertManager;
+    private DamageIndicator damageIndicator;
+    private cz.Empatix.Render.Hud.Image coin;
+    private Console console;
+    private AlertManager alertManager;
 
     private EnemyManager enemyManager;
 
     // postprocessing
-    private transient Framebuffer objectsFramebuffer;
-    private transient Framebuffer pauseBlurFramebuffer;
-    private transient Framebuffer fadeFramebuffer;
-    private transient Fade fade;
-    private transient boolean transitionContinue;
-    private transient GaussianBlur gaussianBlur;
-    private transient LightManager lightManager;
+    private Framebuffer objectsFramebuffer;
+    private Framebuffer pauseBlurFramebuffer;
+    private Framebuffer fadeFramebuffer;
+    private Fade fade;
+    private boolean transitionContinue;
+    private GaussianBlur gaussianBlur;
+    private LightManager lightManager;
 
 
     private ItemManager itemManager;
@@ -102,21 +103,21 @@ public class InGame extends GameState implements Serializable {
     //
     // Paused game
     //
-    private transient Background pauseBackground;
-    private transient MenuBar[] pauseBars;
+    private Background pauseBackground;
+    private MenuBar[] pauseBars;
     // bars types
-    private transient final static int PAUSEEXIT = 2;
-    private transient final static int PAUSESETTINGS = 1;
-    private transient final static int PAUSERESUME = 0;
+    private final static int PAUSEEXIT = 2;
+    private final static int PAUSESETTINGS = 1;
+    private final static int PAUSERESUME = 0;
 
-    private transient int soundMenuClick;
-    private transient Source source;
+    private int soundMenuClick;
+    private Source source;
 
     // pause time deltas
-    private transient static long pauseTimeEnded;
-    private transient static long pauseTimeStarted;
+    private static long pauseTimeEnded;
+    private static long pauseTimeStarted;
 
-    private transient TextRender[] textRender;
+    private TextRender[] textRender;
 
 
     InGame(GameStateManager gsm){
@@ -139,7 +140,7 @@ public class InGame extends GameState implements Serializable {
                         setCursor(Game.CROSSHAIR);
                     } else{
                         DataManager.saveGame(this);
-                        // TODO: save menu
+                        gameTimeSave = System.currentTimeMillis();
                     }
                 }
             }
@@ -226,6 +227,8 @@ public class InGame extends GameState implements Serializable {
 
     }
     void loadGame(GameStateManager gsm){
+
+        pauseTimeEnded += System.currentTimeMillis() - gameTimeSave;
         this.gsm = gsm;
         textRender = new TextRender[17];
         for(int i = 0;i<17;i++) textRender[i] = new TextRender();

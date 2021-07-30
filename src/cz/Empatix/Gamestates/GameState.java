@@ -2,7 +2,7 @@ package cz.Empatix.Gamestates;
 
 
 
-abstract class GameState {
+public abstract class GameState {
 
 	transient GameStateManager gsm;
 

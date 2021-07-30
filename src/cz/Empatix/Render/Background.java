@@ -2,25 +2,21 @@ package cz.Empatix.Render;
 
 
 import cz.Empatix.Gamestates.InGame;
-import cz.Empatix.Java.Loader;
-import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Graphics.Sprites.Sprite;
+import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
+import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
-
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
 
 public class Background {
     private Shader shader;
-    private int idTexture;
     private int vboVertices;
-    private int vboTextures;
+    private Spritesheet spritesheet;
     private Matrix4f matrixPos;
 
     private boolean fadeEffect;
@@ -32,82 +28,41 @@ public class Background {
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\background");
         }
-        ByteBufferImage decoder = Loader.getImage(filepath);
-        ByteBuffer spritesheetImage = decoder.getBuffer();
-        int channels = decoder.getChannels();
-        if(channels == 3) {
-            int width = decoder.getWidth();
-            int height = decoder.getHeight();
-
-            idTexture = glGenTextures();
-
-            glBindTexture(GL_TEXTURE_2D, idTexture);
-
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, spritesheetImage);
-
-            int vbo;
-            vbo = ModelManager.getModel(Camera.getWIDTH(), Camera.getHEIGHT());
-            if (vbo == -1) {
-                vbo = ModelManager.createModel(Camera.getWIDTH(), Camera.getHEIGHT());
-            }
-            vboVertices = vbo;
-
-            float[] texCoords =
-                    {
-                            0, 0, 0, 1, 1, 1, 1, 0
-                    };
-
-            FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords.length);
-            buffer.put(texCoords);
-            buffer.flip();
-            vboTextures = glGenBuffers();
-
-            glBindBuffer(GL_ARRAY_BUFFER, vboTextures);
-            glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-            matrixPos = new Matrix4f().translate(new Vector3f((float) Camera.getWIDTH() / 2, (float) Camera.getHEIGHT() / 2, 0));
-            Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
-        } else if(channels == 4){
-            int width = decoder.getWidth();
-            int height = decoder.getHeight();
-
-            idTexture = glGenTextures();
-
-            glBindTexture(GL_TEXTURE_2D, idTexture);
-
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
-
-            int vbo;
-            vbo = ModelManager.getModel(Camera.getWIDTH(), Camera.getHEIGHT());
-            if (vbo == -1) {
-                vbo = ModelManager.createModel(Camera.getWIDTH(), Camera.getHEIGHT());
-            }
-            vboVertices = vbo;
-
-            float[] texCoords =
-                    {
-                            0, 0, 0, 1, 1, 1, 1, 0
-                    };
-
-            FloatBuffer buffer = BufferUtils.createFloatBuffer(texCoords.length);
-            buffer.put(texCoords);
-            buffer.flip();
-            vboTextures = glGenBuffers();
-
-            glBindBuffer(GL_ARRAY_BUFFER, vboTextures);
-            glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-            matrixPos = new Matrix4f().translate(new Vector3f((float) Camera.getWIDTH() / 2, (float) Camera.getHEIGHT() / 2, 0));
-            Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+        int vbo;
+        vbo = ModelManager.getModel(Camera.getWIDTH(), Camera.getHEIGHT());
+        if (vbo == -1) {
+            vbo = ModelManager.createModel(Camera.getWIDTH(), Camera.getHEIGHT());
         }
+        vboVertices = vbo;
+
+        spritesheet = SpritesheetManager.getSpritesheet(filepath);
+
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet(filepath);
+            for(int j = 0;j<2;j++) {
+
+                Sprite[] images = new Sprite[1];
+                float[] texCoords =
+                        {
+                                0, 0,
+
+                                0, 1,
+
+                                1, 1,
+
+
+                                1, 0
+                        };
+
+                Sprite sprite = new Sprite(texCoords);
+
+                images[0] = sprite;
+
+                spritesheet.addSprites(images);
+            }
+        }
+        matrixPos = new Matrix4f().translate(new Vector3f((float) Camera.getWIDTH() / 2, (float) Camera.getHEIGHT() / 2, 0));
+        Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
     }
 
     /**
@@ -133,7 +88,7 @@ public class Background {
         shader.setUniformi("sampler",0);
         shader.setUniformm4f("projection",matrixPos);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,idTexture);
+        spritesheet.bindTexture();
 
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
@@ -142,7 +97,7 @@ public class Background {
         glBindBuffer(GL_ARRAY_BUFFER,vboVertices);
         glVertexAttribPointer(0,2,GL_INT,false,0,0);
 
-        glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
+        glBindBuffer(GL_ARRAY_BUFFER,spritesheet.getSprites(0)[0].getVbo());
         glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);

@@ -22,6 +22,10 @@ public class Submachine extends Weapon{
         Loader.loadImage("Textures\\submachine.tga");
         Loader.loadImage("Textures\\pistol_bullet.tga");
     }
+    // map push when player shoot
+    private int push;
+    private double pushX;
+    private double pushY;
     // audio
     private int soundShoot;
     private int soundEmptyShoot;
@@ -34,6 +38,7 @@ public class Submachine extends Weapon{
 
     Submachine(TileMap tm, Player player){
         super(tm,player);
+        source.setVolume(0.15f);
         mindamage = 1;
         maxdamage = 2;
         inaccuracy = 0.5f;
@@ -115,6 +120,10 @@ public class Submachine extends Weapon{
                     source.play(soundShoot);
                     GunsManager.bulletShooted++;
 
+                    double atan = Math.atan2(y, x);
+                    push = 30;
+                    pushX = Math.cos(atan);
+                    pushY = Math.sin(atan);
                 }
             } else if (currentAmmo != 0) {
                 reload();
@@ -162,6 +171,10 @@ public class Submachine extends Weapon{
             }
             reloading = false;
         }
+        if (push > 0) push-=5;
+        if (push < 0) push+=5;
+        push = -push;
+        tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
     }
 
     @Override

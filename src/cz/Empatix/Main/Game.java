@@ -7,8 +7,6 @@ import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.LoadingScreen;
 import cz.Empatix.Render.Text.TextRender;
-import net.arikia.dev.drpc.DiscordRPC;
-import net.arikia.dev.drpc.DiscordRichPresence;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.*;
@@ -40,7 +38,6 @@ public class Game{
     public static boolean displayCollisions = false;
 
     private static boolean running;
-    private Thread thread;
 
     private static int FPS;
 
@@ -269,7 +266,8 @@ public class Game{
             e.printStackTrace();
         }
 
-        discordRPC();
+        DiscordRP.getInstance().start();
+        DiscordRP.getInstance().update("Loading game...","");
 
         // LOADING GAME LOOP
         TextRender textRender = new TextRender();
@@ -358,6 +356,7 @@ public class Game{
             }
         }
         Settings.save();
+        DiscordRP.getInstance().shutdown();
         Loader.unload();
         keyCallback.free();
         mouseButtonCallback.free();
@@ -366,7 +365,6 @@ public class Game{
         GL.setCapabilities(null);
         AudioManager.cleanUp();
         glfwDestroyWindow(window);
-        DiscordRPC.discordShutdown();
     }
     private void update() {
         // Poll for window events. The key callback above will only be
@@ -414,13 +412,6 @@ public class Game{
 
     public static void setCursor(int type){
         GLFW.glfwSetCursor(window, cursors[type]);
-
-    }
-    public void discordRPC(){
-        DiscordRPC.discordInitialize("805802430553653279", null, true);
-
-        DiscordRichPresence rich = new DiscordRichPresence.Builder("This is the current state.").setDetails("These are some details.").build();
-        DiscordRPC.discordUpdatePresence(rich);
 
     }
 }

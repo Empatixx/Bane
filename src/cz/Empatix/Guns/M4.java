@@ -22,6 +22,10 @@ public class M4 extends Weapon {
         Loader.loadImage("Textures\\M4.tga");
         Loader.loadImage("Textures\\pistol_bullet.tga");
     }
+    // map push when player shoot
+    private int push;
+    private double pushX;
+    private double pushY;
     // audio
     private int soundShoot;
     private int soundEmptyShoot;
@@ -38,6 +42,7 @@ public class M4 extends Weapon {
 
    M4(TileMap tm, Player player){
         super(tm,player);
+        source.setVolume(0.15f);
         mindamage = 2;
         maxdamage = 2;
         inaccuracy = 0.5f;
@@ -99,6 +104,8 @@ public class M4 extends Weapon {
             GunsManager.bulletShooted++;
             bonusShots--;
             currentMagazineAmmo--;
+
+            push += 35;
         }
         if(isShooting()) {
             if (currentMagazineAmmo != 0) {
@@ -121,6 +128,10 @@ public class M4 extends Weapon {
                     for(int i = 0;i<3 && currentMagazineAmmo-i != 0;i++){
                         bonusShots++;
                     }
+                    double atan = Math.atan2(y, x);
+                    push = 30;
+                    pushX = Math.cos(atan);
+                    pushY = Math.sin(atan);
                 }
             } else if (currentAmmo != 0) {
                 reload();
@@ -168,6 +179,10 @@ public class M4 extends Weapon {
             }
             reloading = false;
         }
+        if (push > 0) push-=5;
+        if (push < 0) push+=5;
+        push = -push;
+        tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
     }
 
     @Override

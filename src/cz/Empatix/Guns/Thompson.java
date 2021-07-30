@@ -22,6 +22,10 @@ public class Thompson extends Weapon{
         Loader.loadImage("Textures\\thompson.tga");
         Loader.loadImage("Textures\\pistol_bullet.tga");
     }
+    // map push when player shoot
+    private int push;
+    private double pushX;
+    private double pushY;
     // audio
     private int soundShoot;
     private int soundEmptyShoot;
@@ -34,6 +38,7 @@ public class Thompson extends Weapon{
 
     Thompson(TileMap tm, Player player){
         super(tm,player);
+        source.setVolume(0.20f);
         mindamage = 1;
         maxdamage = 3;
         inaccuracy = 0.5f;
@@ -116,6 +121,10 @@ public class Thompson extends Weapon{
                         delayTime -= 5;
                         if(delayTime < 130) delayTime = 130;
                     }
+                    double atan = Math.atan2(y, x);
+                    push = 30;
+                    pushX = Math.cos(atan);
+                    pushY = Math.sin(atan);
                 }
             } else if (currentAmmo != 0) {
                 reload();
@@ -168,6 +177,10 @@ public class Thompson extends Weapon{
             }
             reloading = false;
         }
+        if (push > 0) push-=5;
+        if (push < 0) push+=5;
+        push = -push;
+        tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
     }
 
     @Override

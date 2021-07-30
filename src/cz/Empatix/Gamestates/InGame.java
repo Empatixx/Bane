@@ -14,6 +14,7 @@ import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Main.DataManager;
+import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Background;
@@ -325,6 +326,8 @@ public class InGame extends GameState {
 
     @Override
     void init() {
+        DiscordRP.getInstance().update("In-Game","Floor I");
+
         textRender = new TextRender[17];
         for(int i = 0;i<17;i++) textRender[i] = new TextRender();
 

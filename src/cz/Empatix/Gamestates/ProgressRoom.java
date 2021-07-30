@@ -4,7 +4,12 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.ProgressNPC;
+import cz.Empatix.Java.Random;
+import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Multiplayer.GameClient;
+import cz.Empatix.Multiplayer.GameServer;
+import cz.Empatix.Multiplayer.Packet00Login;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Framebuffer;
@@ -21,9 +26,11 @@ import static cz.Empatix.Main.Game.ARROW;
 import static org.lwjgl.opengl.GL11.*;
 
 public class ProgressRoom extends GameState {
+    private GameClient socketClient;
+    private GameServer socketServer;
 
-    private Player player;
-    private TileMap tileMap;
+    public Player player[];
+    public TileMap tileMap;
 
     private float mouseX;
     private float mouseY;
@@ -57,7 +64,17 @@ public class ProgressRoom extends GameState {
     }
     @Override
     void init() {
+        // server host
+        if(true) {
+            socketServer = new GameServer(this);
+            socketServer.start();
+        }
+
+        socketClient = new GameClient(this,"localhost");
+        socketClient.start();
+
         Game.setCursor(ARROW);
+        DiscordRP.getInstance().update("In-Game","Rest room");
 
         objectsFramebuffer = new Framebuffer();
         lightManager = new LightManager();
@@ -71,16 +88,21 @@ public class ProgressRoom extends GameState {
 
         // player
         // create player object
-        player = new Player(tileMap);
-        player.setCoins(GameStateManager.getDb().getValue("money","general"));
+        player = new Player[2];
+
+        player[0] = new Player(tileMap);
+        player[0].setCoins(GameStateManager.getDb().getValue("money","general"));
+
+        Packet00Login loginPacket = new Packet00Login("User "+Random.nextInt(200));
+        loginPacket.writeData(socketClient);
 
         // generate map + create objects which needs item manager & gun manager created
         tileMap.loadProgressRoom();
         // move player to starter room
-        player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
+        player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
         tileMap.setPosition(
-                Camera.getWIDTH() / 2f - player.getX(),
-                Camera.getHEIGHT() / 2f - player.getY()
+                Camera.getWIDTH() / 2f - player[0].getX(),
+                Camera.getHEIGHT() / 2f - player[0].getY()
         );
         // make camera move smoothly
         tileMap.setTween(0.1);
@@ -93,7 +115,7 @@ public class ProgressRoom extends GameState {
         alertManager = new AlertManager();
 
         AudioManager.playSoundtrack(Soundtrack.PROGRESSROOM);
-        int upgradesCount = progressNPC.getCountAvailableUpgrades(player);
+        int upgradesCount = progressNPC.getCountAvailableUpgrades(player[0]);
         if(upgradesCount > 0) AlertManager.add(AlertManager.INFORMATION,"You can buy "+upgradesCount+" upgrades");
         AlertManager.add(AlertManager.INFORMATION,"Go to the portal");
     }
@@ -106,19 +128,24 @@ public class ProgressRoom extends GameState {
         glClear(GL_COLOR_BUFFER_BIT);
 
         tileMap.draw(Tile.NORMAL);
-
-        player.drawShadow();
+        for (Player p:player) {
+            if(p != null) p.drawShadow();
+        }
 
         tileMap.preDrawObjects(true);
         tileMap.draw(Tile.BLOCKED);
 
         tileMap.preDrawObjects(false);
-        if(player.getY() > progressNPC.getY()+40){
-            progressNPC.draw();
-            player.draw();
-        } else {
-            player.draw();
-            progressNPC.draw();
+        for (Player p:player) {
+            if(p != null){
+                if(p.getY() > progressNPC.getY()+40){
+                    progressNPC.draw();
+                    p.draw();
+                } else {
+                    p.draw();
+                    progressNPC.draw();
+                }
+            }
         }
 
         // draw objects
@@ -137,7 +164,7 @@ public class ProgressRoom extends GameState {
         progressNPC.drawHud();
 
         coin.draw();
-        textRender.draw(""+player.getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
+        textRender.draw(""+player[0].getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
 
         alertManager.draw();
 
@@ -165,15 +192,15 @@ public class ProgressRoom extends GameState {
         // updating player
         // updating tilemap by player position
         tileMap.setPosition(
-                Camera.getWIDTH() / 2f - player.getX(),
-                Camera.getHEIGHT() / 2f - player.getY()
+                Camera.getWIDTH() / 2f - player[0].getX(),
+                Camera.getHEIGHT() / 2f - player[0].getY()
         );
-        player.update();
+        player[0].update();
 
         tileMap.updateObjects();
 
         progressNPC.update(mouseX,mouseY);
-        progressNPC.touching(player);
+        progressNPC.touching(player[0]);
 
         alertManager.update();
 
@@ -189,19 +216,19 @@ public class ProgressRoom extends GameState {
         if(k == GLFW.GLFW_KEY_ESCAPE && !progressNPC.isInteracting()){
             gsm.setState(GameStateManager.MENU);
         }
-        player.keyPressed(k);
-        tileMap.keyPressed(k,player);
+        player[0].keyPressed(k);
+        tileMap.keyPressed(k,player[0]);
         progressNPC.keyPress(k);
     }
 
     @Override
     void keyReleased(int k) {
-        player.keyReleased(k);
+        player[0].keyReleased(k);
     }
 
     @Override
     void mousePressed(int button) {
-        progressNPC.mousePressed(mouseX,mouseY,player);
+        progressNPC.mousePressed(mouseX,mouseY,player[0]);
     }
 
     @Override

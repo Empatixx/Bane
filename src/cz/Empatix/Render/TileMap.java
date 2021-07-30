@@ -1358,6 +1358,8 @@ public class TileMap {
 
 		floor++;
 		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();
+
+		//DiscordRP.getInstance().update("In-Game","Floor "+RomanNumber.toRoman(floor+1));
 	}
 	public void drawTitle(){
 		if(System.currentTimeMillis() - InGame.deltaPauseTime() - nextFloorEnterTime < 1750){

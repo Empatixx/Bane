@@ -22,6 +22,10 @@ public class Luger extends Weapon {
         Loader.loadImage("Textures\\lahti.tga");
         Loader.loadImage("Textures\\pistol_bullet.tga");
     }
+    // map push when player shoot
+    private int push;
+    private double pushX;
+    private double pushY;
     // audio
     private int[] soundShoot;
     private int soundEmptyShoot;
@@ -141,6 +145,10 @@ public class Luger extends Weapon {
                         bonusShots++;
                         if(!bonusShotsAntiConsume)currentMagazineAmmo--;
                     }
+                    double atan = Math.atan2(y, x);
+                    push = 30;
+                    pushX = Math.cos(atan);
+                    pushY = Math.sin(atan);
                 }
             } else if (currentAmmo != 0) {
                 reload();
@@ -189,6 +197,10 @@ public class Luger extends Weapon {
             }
             reloading = false;
         }
+        if (push > 0) push-=5;
+        if (push < 0) push+=5;
+        push = -push;
+        tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
     }
 
     @Override

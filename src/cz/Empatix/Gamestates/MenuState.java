@@ -6,6 +6,7 @@ import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.ControlSettings;
+import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Background;
@@ -174,6 +175,8 @@ public class MenuState extends GameState{
 
     @Override
     public void init() {
+        DiscordRP.getInstance().update("Idle","Main menu");
+
         bg = new Background("Textures\\Menu\\bg.png");
         settingsHuds = new MenuBar[4];
         huds = new MenuBar[3];

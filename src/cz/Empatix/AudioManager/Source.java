@@ -45,9 +45,14 @@ public class Source {
         return AL10.alGetSourcei(sourceId,AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
     }
     public void setVolume(float volume){
+        this.volume = volume;
         if(!AudioManager.hasAudio()) return;
-        if(type == MUSIC) AL10.alSourcef(sourceId,AL10.AL_GAIN,volume* Settings.OVERALL * Settings.MUSIC);
-        if(type == EFFECTS) AL10.alSourcef(sourceId,AL10.AL_GAIN,volume* Settings.OVERALL * Settings.EFFECTS);
+        if(type == MUSIC){
+            AL10.alSourcef(sourceId,AL10.AL_GAIN,volume* Settings.OVERALL * Settings.MUSIC);
+        }
+        if(type == EFFECTS){
+            AL10.alSourcef(sourceId,AL10.AL_GAIN,volume* Settings.OVERALL * Settings.EFFECTS);
+        }
     }
     public void setPitch(float pitch) { AL10.alSourcef(sourceId,AL10.AL_PITCH,pitch);}
     public void pause(){

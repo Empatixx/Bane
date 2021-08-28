@@ -1,6 +1,6 @@
 package cz.Empatix.Render.Alerts;
 
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;

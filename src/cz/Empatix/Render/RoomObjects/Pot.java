@@ -2,7 +2,7 @@ package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;

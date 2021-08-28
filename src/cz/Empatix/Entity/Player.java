@@ -2,7 +2,7 @@ package cz.Empatix.Entity;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
@@ -32,7 +32,6 @@ public class Player extends MapObject {
     private long rollCooldown;
     private boolean rolling;
 
-
     private boolean dead;
     private long deathTime;
 
@@ -47,18 +46,13 @@ public class Player extends MapObject {
         HEALTH
     }
 
-    // STUFF
-
+    // stuff
     private int health;
     private int maxHealth;
-    private int energy;
-    private int maxEnergy;
-
     private int maxArmor;
     private int armor;
 
     private int coins;
-
 
     // animations
     private static final int IDLE = 0;
@@ -75,9 +69,6 @@ public class Player extends MapObject {
 
     private Source sourcehealth;
     private int soundLowHealth;
-
-    // visual
-
 
     public Player(TileMap tm) {
         super(tm);
@@ -97,8 +88,6 @@ public class Player extends MapObject {
         stopSpeed = 3.25f;
 
         health = maxHealth = 7;
-        energy = maxEnergy = 100;
-
         coins = 0;
 
         armor = maxArmor = 3;
@@ -685,4 +674,27 @@ public class Player extends MapObject {
     public void setMaxSpeed(float maxSpeed){ this.maxSpeed = maxSpeed;}
 
     public float getMaxSpeed(){return maxSpeed;}
+
+    public void setCurrentAction(int state){
+        if (state == SIDE && currentAction != SIDE) {
+                currentAction = SIDE;
+                animation.setFrames(spritesheet.getSprites(SIDE));
+                animation.setDelay(75);
+        }
+        else if (state == UP && currentAction != UP) {
+                currentAction = UP;
+                animation.setFrames(spritesheet.getSprites(UP));
+                animation.setDelay(50);
+        }
+        else if (state == DOWN && currentAction != DOWN) {
+                currentAction = DOWN;
+                animation.setFrames(spritesheet.getSprites(DOWN));
+                animation.setDelay(75);
+        }
+        else if (state == IDLE && currentAction != IDLE) {
+                currentAction = IDLE;
+                animation.setFrames(spritesheet.getSprites(IDLE));
+                animation.setDelay(100);
+        }
+    }
 }

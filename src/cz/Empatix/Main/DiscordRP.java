@@ -1,8 +1,6 @@
 package cz.Empatix.Main;
 
-import net.arikia.dev.drpc.DiscordEventHandlers;
 import net.arikia.dev.drpc.DiscordRPC;
-import net.arikia.dev.drpc.DiscordRichPresence;
 
 public class DiscordRP {
 
@@ -16,7 +14,7 @@ public class DiscordRP {
     }
 
     public void start(){
-        created = System.currentTimeMillis();
+        /*created = System.currentTimeMillis();
 
         DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {
             System.out.println("Discord found: " + user.username + "#" + user.discriminator);
@@ -32,6 +30,8 @@ public class DiscordRP {
                 }
             }
         }.start();
+        */
+
     }
     public void shutdown(){
         running = false;
@@ -39,11 +39,14 @@ public class DiscordRP {
 
     }
     public void update(String firstLine, String secondLine){
+        /*
         DiscordRichPresence.Builder rich = new DiscordRichPresence.Builder(secondLine);
         rich.setDetails(firstLine);
         rich.setBigImage("newi","0.8.2");
         rich.setStartTimestamps(created);
 
         DiscordRPC.discordUpdatePresence(rich.build());
+        */
+
     }
 }

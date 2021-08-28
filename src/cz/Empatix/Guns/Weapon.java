@@ -4,7 +4,7 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;

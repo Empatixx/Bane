@@ -4,7 +4,7 @@ package cz.Empatix.Render;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Java.RomanNumber;
@@ -439,7 +439,6 @@ public class TileMap {
 				}
 			}
 		}
-		// update map objects
 	}
 	public void updateObjects(){
 		currentRoom.updateObjects();
@@ -752,7 +751,7 @@ public class TileMap {
 					}
 				}
 			} else if (loop == 3) {
-				// posuny behem loopu
+				// shifts while loop
 				int nextShiftRows;
 				int shiftRows = 0;
 				int shiftCols;
@@ -781,7 +780,7 @@ public class TileMap {
 					for (int x = 0; x < roomX; x++) {
 
 						Room mistnost = getRoom(roomMap[y][x]);
-						// POKUD ZDE ZADNA MISTNOST NENI
+						// if there is not any room
 						if (mistnost == null) {
 
 							// getting max cols of current collumn (roomX) of rooms
@@ -846,7 +845,7 @@ public class TileMap {
 					if (bottom) shiftRows += 2;
 				}
 			} else {
-				// posuny behem loopu
+				// shifts while loop
 				int nextShiftRows;
 				int shiftRows = 0;
 				int shiftCols;
@@ -859,7 +858,7 @@ public class TileMap {
 					for (int x = 0; x < roomX; x++) {
 
 						Room mistnost = getRoom(roomMap[y][x]);
-						// POKUD ZDE ZADNA MISTNOST NENI
+						// if there is not any room
 						if (mistnost == null) {
 
 							// getting max cols of current collumn (roomX) of rooms
@@ -1048,21 +1047,6 @@ public class TileMap {
 	 * c (collumns in tileset)
 	 */
 	public int getType(int row, int col) {
-		int rc = map[row][col];
-
-		int r = rc / numTilesAcross;
-		int c = rc % numTilesAcross;
-
-		// If tile doesn't exist - return that there is not any collision
-		if (map[row][col] == -1) return Tile.NORMAL;
-		return tiles[r][c].getType();
-	}
-	/**
-	 * rc = number of tile in tileset
-	 * r (row in tileset); first row is normal : second row is blocked (collision)
-	 * c (collumns in tileset)
-	 */
-	public int getType(int row, int col,byte[][] map) {
 		int rc = map[row][col];
 
 		int r = rc / numTilesAcross;
@@ -1352,9 +1336,9 @@ public class TileMap {
 		}
 		loadMap();
 
-		this.fillMiniMap();
-		player.setPosition(this.getPlayerStartX(), this.getPlayerStartY());
-		this.setTween(0.10);
+		fillMiniMap();
+		player.setPosition(playerStartX, playerStartY);
+		setTween(0.10);
 
 		floor++;
 		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();

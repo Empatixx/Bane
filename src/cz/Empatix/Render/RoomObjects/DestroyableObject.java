@@ -1,7 +1,7 @@
 package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;

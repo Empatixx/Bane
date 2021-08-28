@@ -1,5 +1,6 @@
 package cz.Empatix.Java;
 
+import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemies.*;
 import cz.Empatix.Entity.Enemies.Projectiles.KingSlimebullet;
 import cz.Empatix.Entity.Enemies.Projectiles.RedSlimebullet;
@@ -11,8 +12,8 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.ProgressNPC;
 import cz.Empatix.Entity.Shopkeeper;
 import cz.Empatix.Gamestates.GameStateManager;
-import cz.Empatix.Gamestates.InGame;
 import cz.Empatix.Gamestates.MenuState;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Render.Alerts.Alert;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
@@ -69,7 +70,8 @@ public class Loader {
             doneDatabase = true;
         }).start();
         new Thread(() -> {
-            GameStateManager.loadAudio();
+            AudioManager.init();
+            AudioManager.setListenerData(0,0);
             doneAudio = true;
         }).start();
     }

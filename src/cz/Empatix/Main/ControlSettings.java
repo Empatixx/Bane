@@ -12,6 +12,7 @@ public class ControlSettings {
 
     private boolean choosingValue;
     private int choosingValueIndex;
+    private int previousValue;
     private boolean errorTwoKeys;
 
     private final SliderBar sliderBar;
@@ -32,10 +33,10 @@ public class ControlSettings {
     public final static int ARTEFACT_USE = 10;
     public final static int MAP = 11;
 
-    public ControlSettings(){
+    public ControlSettings(SliderBar sliderBar){
+        this.sliderBar = sliderBar;
         controls = new ControlOption[12];
 
-        sliderBar = new SliderBar(new Vector3f(1560f,630,0),3f);
         sliderBar.setLength(500);
         sliderBar.setVertical();
         sliderBar.setValue(0f);
@@ -115,13 +116,13 @@ public class ControlSettings {
                 if(choosingValueIndex == i && choosingValue){
                     if (System.currentTimeMillis() / 100 % 2 == 0){
                         if(errorTwoKeys){
-                            controlOption.textRender[1].draw(String.valueOf((char) controlOption.value), new Vector3f(1060, 430+i*55-shiftY, 0), 3, new Vector3f(1f, 0.111f, 0.149f));
+                            controlOption.textRender[1].draw(keyToChar(controlOption.value), new Vector3f(1060, 430+i*55-shiftY, 0), 3, new Vector3f(1f, 0.111f, 0.149f));
                         } else {
-                            controlOption.textRender[1].draw(String.valueOf((char) controlOption.value), new Vector3f(1060, 430+i*55-shiftY, 0), 3, new Vector3f(0.874f, 0.443f, 0.149f));
+                            controlOption.textRender[1].draw(keyToChar(controlOption.value), new Vector3f(1060, 430+i*55-shiftY, 0), 3, new Vector3f(0.874f, 0.443f, 0.149f));
                         }
                     }
                 } else {
-                    controlOption.textRender[1].draw(String.valueOf((char) controlOption.value), new Vector3f(1060, 430+i*55-shiftY, 0), 3, new Vector3f(0.874f, 0.443f, 0.149f));
+                    controlOption.textRender[1].draw(keyToChar(controlOption.value), new Vector3f(1060, 430+i*55-shiftY, 0), 3, new Vector3f(0.874f, 0.443f, 0.149f));
 
                 }
             }
@@ -158,11 +159,13 @@ public class ControlSettings {
                 if (y > 385 + i * 55 - shiftY && y < 430 + i * 55 - shiftY && x > 1045 && x < 1325 && !choosingValue) {
                     choosingValueIndex = i;
                     choosingValue = true;
+                    previousValue = controls[choosingValueIndex].value;
                     return;
                 }
             } else if(y > 385+i*55-shiftY && y < 430+i*55-shiftY  &&  x > 1045 && x < 1125 && !choosingValue){
                 choosingValueIndex = i;
                 choosingValue = true;
+                previousValue = controls[choosingValueIndex].value;
                 return;
             }
         }
@@ -180,21 +183,56 @@ public class ControlSettings {
         scrollY = value-(float)y/10;
     }
     public void keyReleased(int k){
-        // changing value of control
-        if(choosingValue && !controls[choosingValueIndex].mouseKeys){
-            errorTwoKeys = false;
-            for(int i = 0;i<controls.length;i++){
-                if(k == controls[i].value && i != choosingValueIndex){
-                    errorTwoKeys = true;
+        if(k == GLFW.GLFW_KEY_ESCAPE){
+            cancel();
+        }
+        if(k < 266) {
+            // changing value of control
+            // checkes if player is changing controls && if controls setting doesnt support only mouse keys
+            if (choosingValue && !controls[choosingValueIndex].mouseKeys) {
+                errorTwoKeys = false;
+                // error - one key for two actions
+                for (int i = 0; i < controls.length; i++) {
+                    if (k == controls[i].value && i != choosingValueIndex) {
+                        errorTwoKeys = true;
+                    }
                 }
+                if (!errorTwoKeys) {
+                    choosingValue = false;
+                }
+                controls[choosingValueIndex].value = k;
             }
-            if(!errorTwoKeys){
-                choosingValue = false;
-            }
-            controls[choosingValueIndex].value = k;
         }
     }
     public void cancel(){
+        if(choosingValue) controls[choosingValueIndex].value = previousValue;
         choosingValue = false;
+    }
+    public String keyToChar(int k) {
+        if (k < 256) {
+            return String.valueOf((char) k);
+        } else if (k == GLFW.GLFW_KEY_ESCAPE) {
+            return "ESC";
+        } else if (k == GLFW.GLFW_KEY_ENTER) {
+            return "ENTER";
+        } else if (k == GLFW.GLFW_KEY_TAB) {
+            return "TAB";
+        } else if (k == GLFW.GLFW_KEY_BACKSPACE) {
+            return "BCKSPC";
+        } else if (k == GLFW.GLFW_KEY_INSERT) {
+            return "INS";
+        } else if (k == GLFW.GLFW_KEY_DELETE) {
+            return "DEL";
+        } else if (k == GLFW.GLFW_KEY_RIGHT) {
+            return "RIGHT";
+        } else if (k == GLFW.GLFW_KEY_DOWN) {
+            return "DOWN";
+        } else if (k == GLFW.GLFW_KEY_LEFT) {
+            return "LEFT";
+        } else if (k == GLFW.GLFW_KEY_UP) {
+            return "UP";
+        } else{
+            return String.valueOf(k);
+        }
     }
 }

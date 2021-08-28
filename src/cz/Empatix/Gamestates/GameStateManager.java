@@ -1,7 +1,10 @@
 package cz.Empatix.Gamestates;
 
-import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Database.Database;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
+import cz.Empatix.Gamestates.Singleplayer.ProgressRoom;
 import cz.Empatix.Main.DataManager;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
@@ -13,14 +16,19 @@ import java.util.ArrayList;
 public class GameStateManager {
 
     private final ArrayList<GameState> gameStates;
-    private int currentState;
+    private static int currentState;
 
-    protected static final int MENU = 0;
-    protected static final int INGAME = 1;
-    protected static final int PROGRESSROOM = 2;
+    public static final int MENU = 0;
+    public static final int INGAME = 1;
+    public static final int PROGRESSROOM = 2;
+
+    public static final int PROGRESSROOMMP = 3;
+    public static final int INGAMEMP = 4;
+
 
     private Screanshot screenshot;
     private static Database db;
+    private MultiplayerManager mpManager;
 
     float mouseX,mouseY;
 
@@ -41,23 +49,44 @@ public class GameStateManager {
         gameStates.add(new MenuState(this));
         gameStates.add(new InGame(this));
         gameStates.add(new ProgressRoom(this));
+
+        gameStates.add(new ProgressRoomMP(this));
+
+
         screenshot = new Screanshot();
     }
     public static void loadDatabase(){
         db = new Database();
         db.load();
     }
-    public static void loadAudio(){
-        AudioManager.init();
-        AudioManager.setListenerData(0,0);
-    }
-
     public void setState(int state) {
         int previousState = currentState;
         currentState = state;
         gameStates.get(currentState).init();
         if(previousState == INGAME && currentState == PROGRESSROOM){
             ((ProgressRoom)gameStates.get(currentState)).transition();
+        }
+    }
+
+    /**
+     * functions works same as setState, but it has one more parameter 'host' for multiplayer support
+     * @param state - gamestate
+     * @param host - if user is host or not
+     */
+    public void setStateMP(int state, boolean host, String username) {
+        int previousState = currentState;
+        currentState = state;
+        if (currentState == PROGRESSROOMMP) {
+
+            mpManager = new MultiplayerManager(host,this);
+            mpManager.setUsername(username);
+
+            gameStates.get(currentState).init();
+            if (previousState == INGAME) {
+                ((ProgressRoomMP) gameStates.get(currentState)).transition();
+            }
+        } else {
+            gameStates.get(currentState).init();
         }
     }
     public void LoadGame() {
@@ -110,4 +139,13 @@ public class GameStateManager {
         mouseX = (float)(xpos * Settings.scaleMouseX());
         mouseY = (float)(ypos * Settings.scaleMouseY());
     }
+    public static void EnterGame() {
+        if(currentState == PROGRESSROOM){
+            ProgressRoom.enterGame = true;
+        } else {
+            ProgressRoomMP.ready = true;
+        }
+    }
+
+    public GameState getCurrentGamestate(){return gameStates.get(currentState);}
 }

@@ -2,8 +2,11 @@ package cz.Empatix.Render.RoomObjects.ProgressRoom;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Gamestates.ProgressRoom;
+import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.Packets.Packet03ReadyStart;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -22,7 +25,9 @@ public class Portal extends RoomObject {
     private static final int IDLE = 0;
     private boolean message;
 
-    transient private TextRender textRender;
+    private TextRender textRender;
+
+    private boolean packetChangeSent;
 
     public Portal(TileMap tm){
         super(tm);
@@ -139,18 +144,43 @@ public class Portal extends RoomObject {
         light = LightManager.createLight(new Vector3f(0.466f, 0.043f, 0.596f),new Vector2f(0,0),8f,this);
 
         textRender = new TextRender();
+        packetChangeSent = false;
     }
 
     public void update(){
-        message = false;
         setMapPosition();
         animation.update();
+        if(MultiplayerManager.multiplayer && ProgressRoomMP.ready) {
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+            String username = mpManager.getUsername();
+            // if players leave portal area
+            if (!message) {
+                System.out.println("TEST2");
+                ProgressRoomMP.ready = false;
 
+                Packet03ReadyStart packet = new Packet03ReadyStart(username, 0);
+                packet.writeData(mpManager.socketClient);
+
+
+                packetChangeSent = false;
+            } else {
+                if(!packetChangeSent){
+                    System.out.println("TEST");
+                    Packet03ReadyStart packet = new Packet03ReadyStart(username, 1);
+                    packet.writeData(mpManager.socketClient);
+                    packetChangeSent = true;
+
+                }
+
+            }
+        }
+        message = false;
     }
 
     @Override
     public void touchEvent(MapObject o) {
         message = true;
+
     }
 
 
@@ -160,18 +190,22 @@ public class Portal extends RoomObject {
         if (isNotOnScrean()){
             return;
         }
-        if(message){
-            float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
+        super.draw();
+
+        float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
+        if(MultiplayerManager.multiplayer && ProgressRoomMP.ready && message){
+            int totalPlayers = MultiplayerManager.getInstance().socketClient.getTotalPlayers();
+            textRender.drawMap("Waiting for players "+ProgressRoomMP.readyNumPlayers+"/"+totalPlayers,new Vector3f(position.x-155,position.y+155,0),2,
+                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+        }else if(message){
 
             textRender.drawMap("Press E to enter game",new Vector3f(position.x-155,position.y+155,0),2,
                     new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
         }
-
-        super.draw();
     }
     public boolean shouldRemove(){return remove;}
     @Override
     public void keyPress() {
-        ProgressRoom.EnterGame();
+        GameStateManager.EnterGame();
     }
 }

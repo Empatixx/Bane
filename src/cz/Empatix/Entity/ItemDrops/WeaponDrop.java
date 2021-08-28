@@ -1,7 +1,7 @@
 package cz.Empatix.Entity.ItemDrops;
 
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Guns.Weapon;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;

@@ -37,7 +37,7 @@ public class Game{
 
     public static boolean displayCollisions = false;
 
-    private static boolean running;
+    public static boolean running;
 
     private static int FPS;
 
@@ -70,13 +70,13 @@ public class Game{
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_DECORATED,GLFW_FALSE);
+        glfwWindowHint(GLFW_DECORATED,GLFW_TRUE);
         glfwWindowHint(GLFW_FOCUS_ON_SHOW, GLFW_TRUE); // the window will be focused by windows
         //glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 
 
         // Create the window
-        window = glfwCreateWindow(Settings.WIDTH, Settings.HEIGHT, "Bane", glfwGetPrimaryMonitor(), NULL);
+        window = glfwCreateWindow(Settings.WIDTH, Settings.HEIGHT, "Bane", /*glfwGetPrimaryMonitor()*/NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -84,6 +84,8 @@ public class Game{
         keyCallback = new KeyboardInput(this);
         mouseButtonCallback = new MouseInput(this);
         glfwSetKeyCallback(window, keyCallback); // keyboard input check
+        glfwSetInputMode(window, GLFW_LOCK_KEY_MODS, GLFW_TRUE);
+
         glfwSetMouseButtonCallback(window, mouseButtonCallback);
         cursorPosCallback = new GLFWCursorPosCallback() {
             @Override
@@ -123,6 +125,8 @@ public class Game{
                     (vidmode.width() - pWidth.get(0)) / 2,
                     (vidmode.height() - pHeight.get(0)) / 2
             );
+
+
         } // the stack frame is popped automatically
 
         // window image icon
@@ -137,7 +141,6 @@ public class Game{
             imagebf.put(0, image);
 
             glfwSetWindowIcon(window,imagebf);
-
             // free allocs
             image.free();
             imagebf.free();
@@ -356,7 +359,7 @@ public class Game{
             }
         }
         Settings.save();
-        DiscordRP.getInstance().shutdown();
+        //DiscordRP.getInstance().shutdown();
         Loader.unload();
         keyCallback.free();
         mouseButtonCallback.free();
@@ -365,6 +368,7 @@ public class Game{
         GL.setCapabilities(null);
         AudioManager.cleanUp();
         glfwDestroyWindow(window);
+        System.exit(0);
     }
     private void update() {
         // Poll for window events. The key callback above will only be

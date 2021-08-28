@@ -6,7 +6,7 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemies.Projectiles.KingSlimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;

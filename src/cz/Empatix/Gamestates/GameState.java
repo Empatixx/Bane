@@ -4,14 +4,14 @@ package cz.Empatix.Gamestates;
 
 public abstract class GameState {
 
-	transient GameStateManager gsm;
+	protected GameStateManager gsm;
 
-	abstract void init();
-	abstract void update();
-	abstract void draw();
-	abstract void keyPressed(int k);
-	abstract void keyReleased(int k);
-	abstract void mousePressed(int button);
-	abstract void mouseReleased(int button);
-	abstract void mouseScroll(double x, double y);
+	protected abstract void init();
+	protected abstract void update();
+	protected abstract void draw();
+	protected abstract void keyPressed(int k);
+	protected abstract void keyReleased(int k);
+	protected abstract void mousePressed(int button);
+	protected abstract void mouseReleased(int button);
+	protected abstract void mouseScroll(double x, double y);
 }

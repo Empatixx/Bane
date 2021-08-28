@@ -1,6 +1,6 @@
 package cz.Empatix.Entity;
 
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 
 public class Animation{

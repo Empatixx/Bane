@@ -1,7 +1,7 @@
 package cz.Empatix.Render;
 
 
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;

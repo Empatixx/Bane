@@ -5,7 +5,7 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;

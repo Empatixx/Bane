@@ -1,4 +1,4 @@
-package cz.Empatix.Gamestates;
+package cz.Empatix.Gamestates.Singleplayer;
 
 
 import cz.Empatix.AudioManager.AudioManager;
@@ -10,6 +10,8 @@ import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.GameState;
+import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.ControlSettings;
@@ -121,12 +123,12 @@ public class InGame extends GameState {
     private TextRender[] textRender;
 
 
-    InGame(GameStateManager gsm){
+    public InGame(GameStateManager gsm){
         this.gsm = gsm;
     }
 
     @Override
-    void mouseReleased(int button) {
+    protected void mouseReleased(int button) {
         if(pause){
             for(MenuBar bar : pauseBars){
                 if(bar.intersects(mouseX,mouseY)){
@@ -151,7 +153,7 @@ public class InGame extends GameState {
     }
 
     @Override
-    void mousePressed(int button) {
+    protected void mousePressed(int button) {
         if(button == ControlSettings.getValue(ControlSettings.SHOOT)){
             gunsManager.startShooting();
         }
@@ -161,7 +163,7 @@ public class InGame extends GameState {
         gunsManager.changeGunScroll();
     }
     @Override
-    void keyReleased(int k) {
+    protected void keyReleased(int k) {
         if(player.isDead()){
             float time = (System.currentTimeMillis()-player.getDeathTime());
             if(time > 5500){
@@ -194,7 +196,7 @@ public class InGame extends GameState {
     }
 
     @Override
-    void keyPressed(int k) {
+    protected void keyPressed(int k) {
         if(player.isDead()) return;
         if(pause) return;
 
@@ -227,7 +229,7 @@ public class InGame extends GameState {
         }
 
     }
-    void loadGame(GameStateManager gsm){
+    public void loadGame(GameStateManager gsm){
 
         pauseTimeEnded += System.currentTimeMillis() - gameTimeSave;
         this.gsm = gsm;
@@ -325,7 +327,7 @@ public class InGame extends GameState {
     }
 
     @Override
-    void init() {
+    protected void init() {
         DiscordRP.getInstance().update("In-Game","Floor I");
 
         textRender = new TextRender[17];
@@ -441,7 +443,7 @@ public class InGame extends GameState {
     }
 
     @Override
-    void draw() {
+    protected void draw() {
         objectsFramebuffer.bindFBO();
         // clear framebuffer
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -613,10 +615,8 @@ public class InGame extends GameState {
 
     }
 
-
-
     @Override
-    void update() {
+    protected void update() {
 
         AudioManager.update();
         if(player.isDead()){

@@ -1,6 +1,6 @@
 package cz.Empatix.Render.Hud;
 
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Camera;

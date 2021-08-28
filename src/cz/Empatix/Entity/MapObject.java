@@ -4,6 +4,7 @@ package cz.Empatix.Entity;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -31,7 +32,7 @@ public abstract class MapObject implements Serializable {
 	
 	// tile stuff
 	protected final TileMap tileMap;
-	protected final int tileSize;
+	protected int tileSize;
 	protected float xmap;
 	protected float ymap;
 	
@@ -62,7 +63,7 @@ public abstract class MapObject implements Serializable {
 	protected boolean bottomRight;
 	
 	// animation
-	transient protected Animation animation;
+	protected Animation animation;
 	protected int currentAction;
 
 
@@ -82,26 +83,27 @@ public abstract class MapObject implements Serializable {
 	protected boolean flinching;
 	protected long flinchingTimer;
 	// 3.0 modern opengl
-	transient protected int vboVertices;
-	transient protected Shader shader;
-	transient protected Spritesheet spritesheet;
+	protected int vboVertices;
+	protected Shader shader;
+	protected Spritesheet spritesheet;
 	public float scale;
 
 	// audio
-	transient protected Source source;
+	protected Source source;
 
 	// lightning
-	transient public LightPoint light;
+	public LightPoint light;
 	// shadow
-	transient public Spritesheet shadowSprite;
-	transient public int shadowVboVertices;
+	public Spritesheet shadowSprite;
+	public int shadowVboVertices;
     public boolean shadow;
 
 
 	// constructor
 	public MapObject(TileMap tm) {
 		tileMap = tm;
-		tileSize = tm.getTileSize();
+		// when adding to arraylist to hosting server, tm is null
+		if(tm != null)tileSize = tm.getTileSize();
 
 		temp = new Vector2f(0,0);
 		dest = new Vector2f(0,0);
@@ -232,7 +234,11 @@ public abstract class MapObject implements Serializable {
 				if(this == obj) continue;
 			}
 			if(!obj.collision) {
-				if (intersects(obj)) obj.touchEvent(this);
+				if (intersects(obj)){
+					if(this instanceof PlayerMP) {
+						if(((PlayerMP)(this)).isOrigin())obj.touchEvent(this);
+					}
+				}
 			} else {
 				dest.x = position.x + speed.x;
 				dest.y = position.y + speed.y;
@@ -389,10 +395,10 @@ public abstract class MapObject implements Serializable {
 		ymap = tileMap.getY();
 	}
 	
-	void setLeft(boolean b) { left = b; }
-	void setRight(boolean b) { right = b; }
-	void setUp(boolean b) { up = b; }
-	void setDown(boolean b) { down 	= b; }
+	public void setLeft(boolean b) { left = b; }
+	public void setRight(boolean b) { right = b; }
+	public void setUp(boolean b) { up = b; }
+	public void setDown(boolean b) { down 	= b; }
 	public void drawShadow() {
 	}
 	public void draw() {
@@ -625,4 +631,5 @@ public abstract class MapObject implements Serializable {
 	public float getScale() {
 		return scale;
 	}
+
 }

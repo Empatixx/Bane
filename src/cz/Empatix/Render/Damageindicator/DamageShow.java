@@ -1,6 +1,6 @@
 package cz.Empatix.Render.Damageindicator;
 
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector2f;
 import org.joml.Vector3f;

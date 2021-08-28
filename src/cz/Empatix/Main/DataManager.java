@@ -1,6 +1,6 @@
 package cz.Empatix.Main;
 
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 
 import java.io.*;
 
@@ -11,10 +11,7 @@ public class DataManager {
         try {
             FileInputStream fileIn = new FileInputStream("gamesave.dat");
             ObjectInputStream in = new ObjectInputStream(fileIn);
-            System.out.println("SUCCESS?");
             game = (InGame) in.readObject();
-            System.out.println("SUCCESS2?");
-
             in.close();
             fileIn.close();
         } catch (ClassNotFoundException c) {

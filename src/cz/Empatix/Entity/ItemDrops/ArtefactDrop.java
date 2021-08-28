@@ -2,7 +2,7 @@ package cz.Empatix.Entity.ItemDrops;
 
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Shaders.Shader;

@@ -2,7 +2,7 @@ package cz.Empatix.Entity;
 
 import cz.Empatix.Entity.AI.Path;
 import cz.Empatix.Entity.AI.PathNode;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;

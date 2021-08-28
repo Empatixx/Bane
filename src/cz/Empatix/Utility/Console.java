@@ -3,7 +3,7 @@ package cz.Empatix.Utility;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector2f;

@@ -2,7 +2,6 @@ package cz.Empatix.Render.RoomObjects.ProgressRoom;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Gamestates.ProgressRoom;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -152,6 +151,5 @@ public class Bookshelf extends RoomObject {
     public boolean shouldRemove(){return remove;}
     @Override
     public void keyPress() {
-        ProgressRoom.EnterGame();
     }
 }

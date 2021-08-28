@@ -6,7 +6,7 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemies.Projectiles.KingSlimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.InGame;
+import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.Model.ModelManager;

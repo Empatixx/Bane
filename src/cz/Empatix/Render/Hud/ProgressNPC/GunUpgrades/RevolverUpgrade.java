@@ -29,6 +29,7 @@ public class RevolverUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.crit_hits = true;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"revolver");
@@ -40,6 +41,7 @@ public class RevolverUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.maxDamage+=2;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"revolver");
@@ -79,10 +81,10 @@ public class RevolverUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("revolver","upgrades");
-        if(numUpgrades >= 1){
+        if(numUpgrades == 1){
             info.crit_hits = true;
         }
-        if(numUpgrades >= 2){
+        if(numUpgrades == 2){
             info.maxDamage+=2;
         }
     }

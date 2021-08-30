@@ -3,9 +3,10 @@ package cz.Empatix.Multiplayer;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameState;
 import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
-import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Packets.*;
+import cz.Empatix.Render.Alerts.AlertManager;
 
 import java.io.IOException;
 import java.net.*;
@@ -33,14 +34,14 @@ public class GameClient extends Thread {
 
     @Override
     public void run() {
-        while(Game.running){
+        while(MultiplayerManager.multiplayer){
             byte[] data = new byte[1024];
             DatagramPacket packet = new DatagramPacket(data,data.length);
 
             try {
                 socket.receive(packet);
             } catch (IOException e) {
-                e.printStackTrace();
+                continue;
             }
 
             parseSocket(packet.getData(),packet.getAddress(),packet.getPort());
@@ -48,7 +49,6 @@ public class GameClient extends Thread {
         }
         socket.close();
     }
-
     public int getTotalPlayers(){return numPlayers;}
 
 
@@ -63,11 +63,14 @@ public class GameClient extends Thread {
                 System.out.println("[" + adress.getHostAddress() + ":" + port + "]" + ((Packet01Disconnect) (packet)).getUsername() + " has left..");
 
                 GameState gameState = gsm.getCurrentGamestate();
+                numPlayers--;
                 if(gameState instanceof ProgressRoomMP){
                     ((PlayerMP)((ProgressRoomMP) gameState).player[numPlayers]).remove();
                     ((ProgressRoomMP) gameState).player[numPlayers] = null;
                 }
-                numPlayers--;
+                String packetUsername = ((Packet01Disconnect) (packet)).getUsername();
+                String playerUsername = MultiplayerManager.getInstance().getUsername();
+                if(!packetUsername.equalsIgnoreCase(playerUsername)) AlertManager.add(AlertManager.WARNING,packetUsername+" has left the lobby!");
                 break;
             }
             case LOGIN : {
@@ -75,11 +78,11 @@ public class GameClient extends Thread {
                 System.out.println("[" + adress.getHostAddress() + ":" + port + "]" + ((Packet00Login)(packet)).getUsername()+" has joined the game..");
 
                 GameState gameState = gsm.getCurrentGamestate();
-                String username = ((Packet00Login)(packet)).getUsername();
+                String packetUsername = ((Packet00Login)(packet)).getUsername();
                 if(gameState instanceof ProgressRoomMP) {
-                    PlayerMP playerMP = new PlayerMP(((ProgressRoomMP) gameState).tileMap, adress, port,username);
+                    PlayerMP playerMP = new PlayerMP(((ProgressRoomMP) gameState).tileMap, adress, port,packetUsername);
                     ((ProgressRoomMP) gameState).player[numPlayers] = playerMP;
-                    ((ProgressRoomMP) gameState).playerReadies[numPlayers] = new ProgressRoomMP.PlayerReady(username);
+                    ((ProgressRoomMP) gameState).playerReadies[numPlayers] = new ProgressRoomMP.PlayerReady(packetUsername);
                     numPlayers++;
 
                 }
@@ -90,19 +93,23 @@ public class GameClient extends Thread {
                 handleMove((Packet02Move)packet);
                 break;
             }
-            case READYSTART:{
-                packet = new Packet03ReadyStart(data);
+            case ENTERREADY:{
+                packet = new Packet03EnterReady(data);
 
-                int state = ((Packet03ReadyStart) packet).getState();
+                int state = ((Packet03EnterReady) packet).getState();
 
                 GameState gameState = gsm.getCurrentGamestate();
-                String username = ((Packet03ReadyStart)(packet)).getUsername();
+                String packetUsername = ((Packet03EnterReady)(packet)).getUsername();
                 if(gameState instanceof ProgressRoomMP) {
                     for(ProgressRoomMP.PlayerReady playerReady : ((ProgressRoomMP) gameState).playerReadies){
-                        if(playerReady.getUsername().equalsIgnoreCase(username)){
+                        if(playerReady.getUsername().equalsIgnoreCase(packetUsername)){
                             playerReady.setReady(state == 1);
                         }
                     }
+                }
+                if(state == 1){
+                    String playerUsername = MultiplayerManager.getInstance().getUsername();
+                    if(!packetUsername.equalsIgnoreCase(playerUsername)) AlertManager.add(AlertManager.INFORMATION,packetUsername+" is ready!");
                 }
                 break;
             }

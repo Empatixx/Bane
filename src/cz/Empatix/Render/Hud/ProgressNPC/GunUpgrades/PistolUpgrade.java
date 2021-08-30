@@ -28,6 +28,7 @@ public class PistolUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.maxMagazineAmmo+=2;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"pistol");
@@ -39,6 +40,7 @@ public class PistolUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.crit_hits = true;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"pistol");
@@ -50,6 +52,7 @@ public class PistolUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.minDamage++;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"pistol");
@@ -79,13 +82,13 @@ public class PistolUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("pistol","upgrades");
-        if(numUpgrades >= 1){
+        if(numUpgrades == 1){
             info.maxMagazineAmmo+=2;
         }
-        if(numUpgrades >= 2){
+        if(numUpgrades == 2){
             info.crit_hits = true;
         }
-        if(numUpgrades >= 3){
+        if(numUpgrades == 3){
             info.minDamage++;
         }
     }

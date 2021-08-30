@@ -19,6 +19,7 @@ public class MultiplayerManager {
     public static MultiplayerManager getInstance(){ return multiplayerManager;}
     public MultiplayerManager(boolean host, GameStateManager gsm){
         multiplayerManager = this;
+        multiplayer = true;
         this.host = host;
         if(host) {
             socketServer = new GameServer(gsm);
@@ -28,7 +29,6 @@ public class MultiplayerManager {
         socketClient = new GameClient(gsm,"localhost");
         socketClient.start();
 
-        multiplayer = true;
     }
 
     public String getUsername() {
@@ -45,5 +45,7 @@ public class MultiplayerManager {
 
     public void close(){
         multiplayer = false;
+        if(isHost()) socketServer = null;
+        socketClient = null;
     }
 }

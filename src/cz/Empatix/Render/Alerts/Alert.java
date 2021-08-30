@@ -36,7 +36,7 @@ public class Alert {
     private float alpha;
     private boolean disableText;
 
-    private final TextRender textRender;
+    private TextRender textRender;
     Alert(int type, String mess){
         this.mess = mess;
         this.type = type;
@@ -85,7 +85,6 @@ public class Alert {
                 spritesheet.addSprites(images);
             }
         }
-        textRender = new TextRender();
 
         alpha = 1f;
     }
@@ -104,6 +103,9 @@ public class Alert {
 
     }
     public void draw(){
+        if(textRender == null){
+            textRender = new TextRender();
+        }
         shader.bind();
         shader.setUniformi("sampler",0);
         Matrix4f matrixPos = new Matrix4f()

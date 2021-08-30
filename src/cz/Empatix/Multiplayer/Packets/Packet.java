@@ -6,7 +6,7 @@ import cz.Empatix.Multiplayer.GameServer;
 public abstract class Packet {
     public enum PacketType{
         INVALID(-1), LOGIN(00), DISCONNECT(01), MOVE(02),
-        READYSTART(03);
+        ENTERREADY(03), ENTERGAME(04);
 
         private int packetId;
         PacketType(int packetId){

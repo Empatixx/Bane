@@ -6,7 +6,7 @@ import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
 import cz.Empatix.Java.Loader;
-import cz.Empatix.Multiplayer.Packets.Packet03ReadyStart;
+import cz.Empatix.Multiplayer.Packets.Packet03EnterReady;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -155,18 +155,13 @@ public class Portal extends RoomObject {
             String username = mpManager.getUsername();
             // if players leave portal area
             if (!message) {
-                System.out.println("TEST2");
                 ProgressRoomMP.ready = false;
-
-                Packet03ReadyStart packet = new Packet03ReadyStart(username, 0);
+                Packet03EnterReady packet = new Packet03EnterReady(username, 0);
                 packet.writeData(mpManager.socketClient);
-
-
                 packetChangeSent = false;
             } else {
                 if(!packetChangeSent){
-                    System.out.println("TEST");
-                    Packet03ReadyStart packet = new Packet03ReadyStart(username, 1);
+                    Packet03EnterReady packet = new Packet03EnterReady(username, 1);
                     packet.writeData(mpManager.socketClient);
                     packetChangeSent = true;
 
@@ -198,7 +193,6 @@ public class Portal extends RoomObject {
             textRender.drawMap("Waiting for players "+ProgressRoomMP.readyNumPlayers+"/"+totalPlayers,new Vector3f(position.x-155,position.y+155,0),2,
                     new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
         }else if(message){
-
             textRender.drawMap("Press E to enter game",new Vector3f(position.x-155,position.y+155,0),2,
                     new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
         }

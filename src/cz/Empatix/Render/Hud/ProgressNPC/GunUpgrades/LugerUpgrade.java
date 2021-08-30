@@ -29,6 +29,8 @@ public class LugerUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.maxDamage++;
+            info.minDamage++;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"luger");
@@ -62,6 +64,7 @@ public class LugerUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.crit_hits = true;
         }
     }
 
@@ -81,11 +84,11 @@ public class LugerUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("luger","upgrades");
-        if(numUpgrades >= 1){
+        if(numUpgrades == 1){
             info.maxDamage++;
             info.minDamage++;
         }
-        if(numUpgrades >= 4){
+        if(numUpgrades == 4){
             info.crit_hits = true;
         }
     }

@@ -118,9 +118,6 @@ public class TextRender {
         if (shader == null){
             shader = ShaderManager.createShader("shaders\\text");
         }
-        shader.bind();
-        shader.setUniformi("sampler",0);
-        shader.unbind();
     }
     public static float getHorizontalCenter(int min, int max,String text,int scale){
         int totalWidth = 0;
@@ -361,4 +358,5 @@ public class TextRender {
         glActiveTexture(GL_TEXTURE0);
 
     }
+
 }

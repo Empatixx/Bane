@@ -27,6 +27,7 @@ public class SubmachineUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.firerate = 1f/0.105f;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"uzi");
@@ -38,6 +39,7 @@ public class SubmachineUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.maxDamage++;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"uzi");
@@ -59,6 +61,7 @@ public class SubmachineUpgrade extends UpgradeBar {
         sideBars.add(bar);
         if(numUpgrades > 0){
             bar.setBought(true);
+            info.crit_hits = true;
         }
     }
     @Override
@@ -77,13 +80,13 @@ public class SubmachineUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("uzi","upgrades");
-        if(numUpgrades >= 1){
+        if(numUpgrades == 1){
             info.firerate = 1f/0.105f;
         }
-        if(numUpgrades >= 2){
+        if(numUpgrades == 2){
             info.maxDamage++;
         }
-        if(numUpgrades >= 4){
+        if(numUpgrades == 4){
             info.crit_hits = true;
         }
     }

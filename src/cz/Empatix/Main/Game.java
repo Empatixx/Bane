@@ -2,6 +2,7 @@ package cz.Empatix.Main;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
@@ -358,6 +359,8 @@ public class Game{
                 updates = 0;
             }
         }
+        MultiplayerManager multiplayerManager = MultiplayerManager.getInstance();
+        if(multiplayerManager != null) multiplayerManager.close();
         Settings.save();
         //DiscordRP.getInstance().shutdown();
         Loader.unload();

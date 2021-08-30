@@ -26,6 +26,7 @@ public class ThompsonUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.minDamage+=1;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"thompson");
@@ -37,6 +38,7 @@ public class ThompsonUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.maxMagazineAmmo+=10;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"thompson");
@@ -48,6 +50,7 @@ public class ThompsonUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.maxAmmo+=100;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"thompson");
@@ -76,13 +79,13 @@ public class ThompsonUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("thompson","upgrades");
-        if(numUpgrades >= 1){
+        if(numUpgrades == 1){
             info.minDamage+=1;
         }
-        if(numUpgrades >= 2){
+        if(numUpgrades == 2){
             info.maxMagazineAmmo+=10;
         }
-        if(numUpgrades >= 3){
+        if(numUpgrades == 3){
             info.maxAmmo+=100;
         }
     }

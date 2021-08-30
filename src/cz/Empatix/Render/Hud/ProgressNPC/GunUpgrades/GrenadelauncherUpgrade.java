@@ -28,6 +28,7 @@ public class GrenadelauncherUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.maxAmmo+=4;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"grenadelauncher");
@@ -39,6 +40,7 @@ public class GrenadelauncherUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.maxMagazineAmmo+=3;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"grenadelauncher");
@@ -50,6 +52,8 @@ public class GrenadelauncherUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.maxDamage+=2;
+            info.minDamage+=2;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"grenadelauncher");
@@ -61,6 +65,7 @@ public class GrenadelauncherUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.crit_hits=true;
         }
     }
     @Override
@@ -79,17 +84,17 @@ public class GrenadelauncherUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("grenadelauncher","upgrades");
-        if(numUpgrades >= 1){
+        if(numUpgrades == 1){
             info.maxAmmo+=4;
         }
-        if(numUpgrades >= 2){
+        if(numUpgrades == 2){
             info.maxMagazineAmmo+=3;
         }
-        if(numUpgrades >= 3){
+        if(numUpgrades == 3){
             info.maxDamage+=2;
             info.minDamage+=2;
         }
-        if(numUpgrades >= 4){
+        if(numUpgrades == 4){
             info.crit_hits=true;
         }
     }

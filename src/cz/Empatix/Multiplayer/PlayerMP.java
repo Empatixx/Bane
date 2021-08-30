@@ -48,11 +48,11 @@ public class PlayerMP extends Player {
     @Override
     public void update() {
         super.update();
-    }
-    public void updatePacket(){
-        Packet02Move packet = new Packet02Move(username,(int)position.x,(int)position.y);
-        packet.setMovementDirections(up,down,right,left);
-        packet.writeData(mpManager.socketClient);
+        if(isOrigin()){
+            Packet02Move packet = new Packet02Move(username,(int)position.x,(int)position.y);
+            packet.setMovementDirections(up,down,right,left);
+            packet.writeData(mpManager.socketClient);
+        }
     }
     public InetAddress getIpAdress() {
         return ipAdress;

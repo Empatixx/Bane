@@ -237,6 +237,8 @@ public abstract class MapObject implements Serializable {
 				if (intersects(obj)){
 					if(this instanceof PlayerMP) {
 						if(((PlayerMP)(this)).isOrigin())obj.touchEvent(this);
+					} else if (this instanceof Player) {
+						obj.touchEvent(this);
 					}
 				}
 			} else {

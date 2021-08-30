@@ -77,6 +77,7 @@ public class M4 extends Weapon {
         }
         if(numUpgrades >= 4){
             maxdamage++;
+            mindamage++;
         }
     }
 

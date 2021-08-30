@@ -1,6 +1,7 @@
 package cz.Empatix.Gamestates;
 
 import cz.Empatix.Database.Database;
+import cz.Empatix.Gamestates.Multiplayer.InGameMP;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
@@ -51,6 +52,7 @@ public class GameStateManager {
         gameStates.add(new ProgressRoom(this));
 
         gameStates.add(new ProgressRoomMP(this));
+        gameStates.add(new InGameMP(this));
 
 
         screenshot = new Screanshot();
@@ -70,6 +72,7 @@ public class GameStateManager {
 
     /**
      * functions works same as setState, but it has one more parameter 'host' for multiplayer support
+     * use only once for init multiplayer manager
      * @param state - gamestate
      * @param host - if user is host or not
      */

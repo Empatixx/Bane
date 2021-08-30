@@ -28,6 +28,7 @@ public class ShotgunUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.maxAmmo += 6;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"shotgun");
@@ -39,6 +40,7 @@ public class ShotgunUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.maxMagazineAmmo++;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"shotgun");
@@ -50,6 +52,7 @@ public class ShotgunUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.maxDamage++;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"shotgun");
@@ -61,6 +64,7 @@ public class ShotgunUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
+            info.firerate = 1f/0.425f;
         }
     }
     @Override
@@ -79,16 +83,16 @@ public class ShotgunUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("shotgun","upgrades");
-        if(numUpgrades >= 1){
+        if(numUpgrades == 1){
             info.maxAmmo += 6;
         }
-        if(numUpgrades >= 2){
+        if(numUpgrades == 2){
             info.maxMagazineAmmo++;
         }
-        if(numUpgrades >= 3){
+        if(numUpgrades == 3){
             info.maxDamage++;
         }
-        if(numUpgrades >= 4){
+        if(numUpgrades == 4){
             info.firerate = 1f/0.425f;
         }
     }

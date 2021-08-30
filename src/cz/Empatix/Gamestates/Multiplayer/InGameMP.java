@@ -1,4 +1,4 @@
-package cz.Empatix.Gamestates.Singleplayer;
+package cz.Empatix.Gamestates.Multiplayer;
 
 
 import cz.Empatix.AudioManager.AudioManager;
@@ -15,8 +15,8 @@ import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.ControlSettings;
-import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
@@ -45,7 +45,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 
-public class InGame extends GameState {
+public class InGameMP extends GameState {
     public static void load(){
         Loader.loadImage("Textures\\Menu\\pausemenu.tga");
         Loader.loadImage("Textures\\Menu\\bg.png");
@@ -60,7 +60,6 @@ public class InGame extends GameState {
     private boolean pause;
     private boolean endRewardEarned;
     private long gameStart;
-    private long gameTimeSave;
 
     //
     // Main game
@@ -70,7 +69,7 @@ public class InGame extends GameState {
     private Image skullPlayerdead;
     private Image[] logos;
 
-    private Player player;
+    private Player[] player;
 
     private TileMap tileMap;
 
@@ -84,7 +83,7 @@ public class InGame extends GameState {
     private ArmorBar armorBar;
     private MiniMap miniMap;
     private DamageIndicator damageIndicator;
-    private cz.Empatix.Render.Hud.Image coin;
+    private Image coin;
     private Console console;
     private AlertManager alertManager;
 
@@ -115,14 +114,12 @@ public class InGame extends GameState {
     private int soundMenuClick;
     private Source source;
 
-    // pause time deltas
-    private static long pauseTimeEnded;
-    private static long pauseTimeStarted;
-
     private TextRender[] textRender;
 
+    private MultiplayerManager mpManager;
+    private boolean mapLoaded;
 
-    public InGame(GameStateManager gsm){
+    public InGameMP(GameStateManager gsm){
         this.gsm = gsm;
     }
 
@@ -134,16 +131,12 @@ public class InGame extends GameState {
                     int type = bar.getType();
                     source.play(soundMenuClick);
                     if(type == PAUSEEXIT){
-                        player.cleanUp();
+                        player[0].cleanUp();
                         gsm.setState(GameStateManager.MENU);
                     } else if (type == PAUSERESUME){
                         resume();
                         gunsManager.stopShooting();
                         setCursor(Game.CROSSHAIR);
-                    } else{
-                        // TODO: predelat save game nebo smazat
-                        //DataManager.saveGame(this);
-                        //gameTimeSave = System.currentTimeMillis();
                     }
                 }
             }
@@ -164,8 +157,8 @@ public class InGame extends GameState {
     }
     @Override
     protected void keyReleased(int k) {
-        if(player.isDead()){
-            float time = (System.currentTimeMillis()-player.getDeathTime());
+        if(player[0].isDead()){
+            float time = (System.currentTimeMillis()-player[0].getDeathTime());
             if(time > 5500){
                 transitionContinue = true;
 
@@ -179,13 +172,12 @@ public class InGame extends GameState {
             pause = !pause;
             if(pause){
                 setCursor(ARROW);
-                pauseTimeStarted = System.currentTimeMillis();
             } else {
                 resume();
             }
             gunsManager.stopShooting();
         }
-        player.keyReleased(k);
+        player[0].keyReleased(k);
         miniMap.keyReleased(k);
 
         if(pause) return;
@@ -197,7 +189,7 @@ public class InGame extends GameState {
 
     @Override
     protected void keyPressed(int k) {
-        if(player.isDead()) return;
+        if(player[0].isDead()) return;
         if(pause) return;
 
 
@@ -209,19 +201,19 @@ public class InGame extends GameState {
             console.keyPressed(k);
             return;
         }
-        float px = player.getX();
-        float py = player.getY();
+        float px = player[0].getX();
+        float py = player[0].getY();
         float mx = tileMap.getX();
         float my = tileMap.getY();
         gunsManager.keyPressed(k,(int)(mouseX-mx-px),(int)(mouseY-my-py));
 
-        player.keyPressed(k);
+        player[0].keyPressed(k);
         miniMap.keyPressed(k);
 
         // if player interracts with something like artefact/gun
         boolean interract = itemManager.keyPressed(k,(int)(mouseX-mx-px),(int)(mouseY-my-py));
         if(!interract){
-            tileMap.keyPressed(k,player);
+            tileMap.keyPressed(k,player[0]);
         }
 
         if(k == ControlSettings.getValue(ControlSettings.ARTEFACT_USE)){
@@ -229,115 +221,20 @@ public class InGame extends GameState {
         }
 
     }
-    public void loadGame(GameStateManager gsm){
-
-        pauseTimeEnded += System.currentTimeMillis() - gameTimeSave;
-        this.gsm = gsm;
-        textRender = new TextRender[17];
-        for(int i = 0;i<17;i++) textRender[i] = new TextRender();
-
-        AudioManager.cleanUpAllSources();
-
-        gameStart = System.currentTimeMillis();
-        pauseTimeEnded=0;
-        pauseTimeStarted=0;
-        pause = false;
-
-        endRewardEarned = false;
-
-        objectsFramebuffer = new Framebuffer();
-        pauseBlurFramebuffer = new Framebuffer();
-        fadeFramebuffer = new Framebuffer();
-        lightManager = new LightManager();
-        fade = new Fade("shaders\\fade");
-        gaussianBlur = new GaussianBlur("shaders\\blur");
-
-        setCursor(Game.CROSSHAIR);
-
-        // Tile map
-        tileMap.loadSave();
-
-        // player
-        // create player object
-        player.loadSave();
-
-        // weapons
-        // load gun manager with tilemap object
-        gunsManager.loadSave();
-
-        artefactManager.loadSave();
-        // items drops
-        // load item manager with instances of objects
-        itemManager.loadSave();
-        ItemManager.init(itemManager);
-
-        miniMap.loadSave();
-        //health bar
-        healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,45,3);
-        healthBar.initHealth(player.getHealth(),player.getMaxHealth());
-        //armor bar
-        armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3);
-        armorBar.initArmor(player.getArmor(),player.getMaxArmor());
-        //minimap
-        damageIndicator = new DamageIndicator();
-        // coin
-        coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
-
-        alertManager = new AlertManager();
-
-        //audio
-        AudioManager.playSoundtrack(Soundtrack.IDLE);
-
-        enemyManager.loadSave();
-        EnemyManager.init(enemyManager);
-
-
-        // pause menu
-        pauseBackground = new Background("Textures\\Menu\\pausemenu.tga");
-        pauseBackground.setDimensions(500,800);
-        pauseBars = new MenuBar[3];
-
-        String defaultBar = "Textures\\Menu\\menu_bar.tga";
-        MenuBar bar;
-        bar = new MenuBar(defaultBar,new Vector3f(960,455,0),1.70f,200,100,true);
-        bar.setType(PAUSERESUME);
-        pauseBars[0] = bar;
-
-        bar = new MenuBar(defaultBar,new Vector3f(960,645,0),1.70f,200,100,true);
-        bar.setType(PAUSESETTINGS);
-        pauseBars[1] = bar;
-
-        bar = new MenuBar(defaultBar,new Vector3f(960,835,0),1.70f,200,100,true);
-        bar.setType(PAUSEEXIT);
-        pauseBars[2] = bar;
-
-        source = new Source(Source.EFFECTS,0.35f);
-        soundMenuClick = AudioManager.loadSound("menuclick.ogg");
-
-        skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),15f);
-        logos = new Image[4];
-        logos[0] = new Image("Textures\\killslogo.tga", new Vector3f(500,576,0),1.5f);
-        logos[1] = new Image("Textures\\coinlogo.tga", new Vector3f(500,476,0),1.5f);
-        logos[2] = new Image("Textures\\accuracylogo.tga", new Vector3f(500,676,0),1.5f);
-        logos[3] = new Image("Textures\\timelogo.tga", new Vector3f(500,776,0),1.5f);
-
-        skullPlayerdead.setAlpha(0f);
-
-        console = new Console(gunsManager,player,itemManager,enemyManager);
-    }
 
     @Override
     protected void init() {
-        DiscordRP.getInstance().update("In-Game","Floor I");
+        //DiscordRP.getInstance().update("In-Game","Floor I");
 
         textRender = new TextRender[17];
         for(int i = 0;i<17;i++) textRender[i] = new TextRender();
 
+        mpManager = MultiplayerManager.getInstance();
+        mapLoaded = false;
+
         AudioManager.cleanUpAllSources();
 
         gameStart = System.currentTimeMillis();
-        pauseTimeEnded=0;
-        pauseTimeStarted=0;
         pause = false;
 
 
@@ -362,36 +259,42 @@ public class InGame extends GameState {
 
         // player
         // create player object
-        player = new Player(tileMap);
-        tileMap.setPlayer(player);
+        player = new Player[2];
+
+        String username = mpManager.getUsername();
+        player[0] = new PlayerMP(tileMap,null,-1,username);
+        ((PlayerMP)player[0]).setOrigin(true);
+
+        tileMap.setPlayer(player[0]);
 
         // weapons
         // load gun manager with tilemap object
-        gunsManager = new GunsManager(tileMap,player);
+        gunsManager = new GunsManager(tileMap,player[0]);
         GunsManager.init(gunsManager);
 
-        artefactManager = new ArtefactManager(tileMap,player);
+        artefactManager = new ArtefactManager(tileMap,player[0]);
         ArtefactManager.init(artefactManager);
 
         // items drops
         // load item manager with instances of objects
-        itemManager = new ItemManager(tileMap,gunsManager,artefactManager,player);
+        itemManager = new ItemManager(tileMap,gunsManager,artefactManager,player[0]);
         ItemManager.init(itemManager);
 
         // generate map + create objects which needs item manager & gun manager created
-        tileMap.loadMap();
+        if(mpManager.isHost())tileMap.loadMap();
+
         // move player to starter room
-        player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
+        player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
 
         // make camera move smoothly
         tileMap.setTween(0.10);
 
         //health bar
         healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,45,3);
-        healthBar.initHealth(player.getHealth(),player.getMaxHealth());
+        healthBar.initHealth(player[0].getHealth(),player[0].getMaxHealth());
         //armor bar
         armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3);
-        armorBar.initArmor(player.getArmor(),player.getMaxArmor());
+        armorBar.initArmor(player[0].getArmor(),player[0].getMaxArmor());
         //minimap
         tileMap.fillMiniMap();
         damageIndicator = new DamageIndicator();
@@ -402,7 +305,7 @@ public class InGame extends GameState {
         //audio
         AudioManager.playSoundtrack(Soundtrack.IDLE);
 
-        enemyManager = new EnemyManager(player,tileMap);
+        enemyManager = new EnemyManager(player[0],tileMap);
         EnemyManager.init(enemyManager);
 
 
@@ -438,7 +341,9 @@ public class InGame extends GameState {
 
         skullPlayerdead.setAlpha(0f);
 
-        console = new Console(gunsManager,player,itemManager,enemyManager);
+        console = new Console(gunsManager,player[0],itemManager,enemyManager);
+
+        if(!mpManager.isHost()) while(!mapLoaded);
 
     }
 
@@ -451,7 +356,9 @@ public class InGame extends GameState {
 
         tileMap.draw(Tile.NORMAL);
 
-        player.drawShadow();
+        for(Player player : player){
+            if(player != null)player.drawShadow();
+        }
         enemyManager.drawShadow();
         tileMap.preDrawObjects(true);
 
@@ -463,7 +370,9 @@ public class InGame extends GameState {
 
         artefactManager.draw();
 
-        player.draw();
+        for(Player player : player){
+            if(player != null)player.draw();
+        }
 
         tileMap.drawObjects();
 
@@ -473,7 +382,7 @@ public class InGame extends GameState {
 
         objectsFramebuffer.unbindFBO();
 
-        if(player.isDead()){
+        if(player[0].isDead()){
             fadeFramebuffer.bindFBO();
             glClear(GL_COLOR_BUFFER_BIT);
         }
@@ -486,15 +395,15 @@ public class InGame extends GameState {
         lightManager.draw(objectsFramebuffer);
 
         if (Game.displayCollisions){
-            textRender[0].draw("X: "+(int)player.getX(),new Vector3f(200,550,0),3,new Vector3f(1.0f,1.0f,1.0f));
-            textRender[1].draw("Y: "+(int)player.getY(),new Vector3f(200,600,0),3,new Vector3f(1.0f,1.0f,1.0f));
+            textRender[0].draw("X: "+(int)player[0].getX(),new Vector3f(200,550,0),3,new Vector3f(1.0f,1.0f,1.0f));
+            textRender[1].draw("Y: "+(int)player[0].getY(),new Vector3f(200,600,0),3,new Vector3f(1.0f,1.0f,1.0f));
         }
 
         gunsManager.drawHud();
         artefactManager.drawHud();
         enemyManager.drawHud();
 
-        player.drawVignette();
+        player[0].drawVignette();
 
         tileMap.drawTitle();
 
@@ -506,10 +415,10 @@ public class InGame extends GameState {
 
         coin.draw();
         alertManager.draw();
-        textRender[2].draw(""+player.getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
+        textRender[2].draw(""+player[0].getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
 
 
-        if(player.isDead()){
+        if(player[0].isDead()){
             int totalReward = 0;
             int rewardAccuracy = 0;
             int rewardKilledEnemies = (int)Math.sqrt(EnemyManager.enemiesKilled)*(int)((tileMap.getFloor()+1)/1.25);
@@ -534,10 +443,10 @@ public class InGame extends GameState {
             fadeFramebuffer.unbindFBO();
             fade.draw(fadeFramebuffer);
             if(transitionContinue) return;
-            if(player.isDead()){
+            if(player[0].isDead()){
                 skullPlayerdead.draw();
             }
-            float time = (System.currentTimeMillis()-player.getDeathTime());
+            float time = (System.currentTimeMillis()-player[0].getDeathTime());
             if(time > 3500){
                 char[] gameOverTitle = "GAME OVER".toCharArray();
                 StringBuilder stringBuilder = new StringBuilder();
@@ -568,9 +477,9 @@ public class InGame extends GameState {
                 } else {
                     textRender[7].draw("Accuracy: "+(int)((float)GunsManager.hitBullets/GunsManager.bulletShooted*100)+"%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
                 }
-                long sec = (player.getDeathTime()-gameStart)/1000%60;
-                long min = ((player.getDeathTime()-gameStart)/1000/60)%60;
-                long hours = (player.getDeathTime()-gameStart)/1000/3600;
+                long sec = (player[0].getDeathTime()-gameStart)/1000%60;
+                long min = ((player[0].getDeathTime()-gameStart)/1000/60)%60;
+                long hours = (player[0].getDeathTime()-gameStart)/1000/3600;
 
                 String livetime = "Live time: ";
                 if(hours>=1){
@@ -619,7 +528,7 @@ public class InGame extends GameState {
     protected void update() {
 
         AudioManager.update();
-        if(player.isDead()){
+        if(player[0].isDead()){
             enemyManager.updateOnlyAnimations();
             fade.update(transitionContinue);
             if(fade.isTransitionDone()){
@@ -627,10 +536,12 @@ public class InGame extends GameState {
                 glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
                 return;
             }
-            player.update();
+            for(Player player : player){
+                if(player != null)player.update();
+            }
             alertManager.update();
-            healthBar.update(player.getHealth(), player.getMaxHealth());
-            float time = (System.currentTimeMillis()-player.getDeathTime());
+            healthBar.update(player[0].getHealth(), player[0].getMaxHealth());
+            float time = (System.currentTimeMillis()-player[0].getDeathTime());
             if(time > 2000){
                 Vector3f pos = skullPlayerdead.getPos();
                 float y = pos.y() + (140-pos.y()) * time/40000;
@@ -652,91 +563,82 @@ public class InGame extends GameState {
         // updating player
         // updating tilemap by player position
         tileMap.setPosition(
-                Camera.getWIDTH() / 2f - player.getX(),
-                Camera.getHEIGHT() / 2f - player.getY()
+                Camera.getWIDTH() / 2f - player[0].getX(),
+                Camera.getHEIGHT() / 2f - player[0].getY()
         );
 
         artefactManager.update(pause);
 
         itemManager.update();
 
-        if(pause){
-            for(MenuBar hud:pauseBars){
+        if(pause) {
+            for (MenuBar hud : pauseBars) {
                 hud.setClick(false);
-                if(hud.intersects(mouseX,mouseY)){
+                if (hud.intersects(mouseX, mouseY)) {
                     hud.setClick(true);
                 }
             }
-        } else {
-            ArrayList<Enemy> enemies = EnemyManager.getInstance().getEnemies();
-
-            player.update();
-
-            tileMap.updateObjects();
-
-            // updating if player entered some another room
-            tileMap.updateCurrentRoom(
-                    (int) player.getX(),
-                    (int) player.getY()
-            );
-
-            // update player icon location by new room
-            miniMap.update(tileMap);
-
-
-            // updating bullets(ammo)
-            float px = player.getX();
-            float py = player.getY();
-            float mx = tileMap.getX();
-            float my = tileMap.getY();
-            gunsManager.shot(mouseX-mx-px,
-                    mouseY-my-py,
-                    px,
-                    py);
-            gunsManager.update();
-            // updating if player shoots any enemies
-            enemyManager.update();
-            damageIndicator.update();
-            console.update();
-
-            // check bullet collision with enemies
-            gunsManager.checkCollisions(enemies);
-            player.checkCollision(enemies);
-
-            healthBar.update(player.getHealth(), player.getMaxHealth());
-            armorBar.update(player.getArmor(),player.getMaxArmor());
-
-            alertManager.update();
         }
+        ArrayList<Enemy> enemies = EnemyManager.getInstance().getEnemies();
+
+        for(Player player : player){
+            if(player != null)player.update();
+        }
+
+        tileMap.updateObjects();
+
+        // updating if player entered some another room
+        tileMap.updateCurrentRoom(
+                (int) player[0].getX(),
+                (int) player[0].getY()
+        );
+
+        // update player icon location by new room
+        miniMap.update(tileMap);
+
+
+        // updating bullets(ammo)
+        float px = player[0].getX();
+        float py = player[0].getY();
+        float mx = tileMap.getX();
+        float my = tileMap.getY();
+        if(!pause){
+            gunsManager.shot(mouseX-mx-px, mouseY-my-py,px,py);
+        }
+        gunsManager.update();
+        // updating if player shoots any enemies
+        enemyManager.update();
+        damageIndicator.update();
+        console.update();
+
+        // check bullet collision with enemies
+        gunsManager.checkCollisions(enemies);
+        player[0].checkCollision(enemies);
+
+        healthBar.update(player[0].getHealth(), player[0].getMaxHealth());
+        armorBar.update(player[0].getArmor(),player[0].getMaxArmor());
+
+        alertManager.update();
 
         gaussianBlur.update(pause);
         lightManager.update();
     }
-
-    /**
-     *
-     * @return returns time delta in ms
-     */
-    public static long deltaPauseTime(){
-        return pauseTimeEnded;
-    }
-
     public void pause(){
-        if(!pause && !player.isDead()) {
+        if(!pause && !player[0].isDead()) {
             setCursor(ARROW);
-            pauseTimeStarted = System.currentTimeMillis();
+            player[0].setLeft(false);
+            player[0].setRight(false);
+            player[0].setUp(false);
+            player[0].setDown(false);
             pause = true;
-
         }
     }
     public void resume(){
         setCursor(Game.CROSSHAIR);
-        pauseTimeEnded += System.currentTimeMillis() - pauseTimeStarted;
         pause=false;
-
     }
 
-    public Player getPlayer(){return player;}
+    public Player getPlayer(){return player[0];}
 
 
 }

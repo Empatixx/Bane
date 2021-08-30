@@ -1374,4 +1374,7 @@ public class TileMap {
 		currentRoom.keyPressed(k,p);
 	}
 
+	public void sendLoadedMapPacket(){
+
+	}
 }

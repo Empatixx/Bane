@@ -92,7 +92,7 @@ public class UpgradeSideBar {
         return type;
     }
 
-    public boolean mouseClick(float x, float y, Player p){
+    public void mouseClick(float x, float y, Player p){
         if(buyButton.intersects(x,y)){
             if(p.getCoins() >= price && !isBought()){
                 p.removeCoins(price);
@@ -101,7 +101,6 @@ public class UpgradeSideBar {
                 database.setValueUpgrade(nameWeapon,numUpgrades+1);
                 database.setValue("money",database.getValue("money","general")-price);
                 bought = true;
-                return true;
             } else if (!isBought()){
                 if(System.currentTimeMillis() - alertCooldown > 2000){
                     alertCooldown = System.currentTimeMillis();
@@ -109,7 +108,6 @@ public class UpgradeSideBar {
                 }
             }
         }
-        return false;
     }
     public void mouseHover(float x, float y){
         buyButton.setClick(false);

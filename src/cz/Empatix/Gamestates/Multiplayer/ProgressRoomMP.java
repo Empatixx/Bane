@@ -210,13 +210,21 @@ public class ProgressRoomMP extends GameState {
                 if(playerReady.ready) readyNumPlayers++;
             }
         }
+        // total connected players to the host
+        int totalConPlayers = 0;
+        for(PlayerReady playerReady : playerReadies){
+            if(playerReady != null) totalConPlayers++;
+        }
+        // all players are ready => enter game
+        if(totalConPlayers == readyNumPlayers && mpManager.isHost()){
+            gsm.setState(GameStateManager.INGAMEMP);
+        }
 
         tileMap.updateObjects();
 
         for(Player p : player){
             if(p != null)p.update();
         }
-        ((PlayerMP)player[0]).updatePacket();
 
 
         progressNPC.update(mouseX,mouseY);
@@ -234,13 +242,11 @@ public class ProgressRoomMP extends GameState {
     @Override
     protected void keyPressed(int k) {
         if(k == GLFW.GLFW_KEY_ESCAPE && !progressNPC.isInteracting()){
-            gsm.setState(GameStateManager.MENU);
-
             Packet01Disconnect packet = new Packet01Disconnect(((PlayerMP) player[0]).getUsername());
-
             packet.writeData(mpManager.socketClient);
 
-
+            gsm.setState(GameStateManager.MENU);
+            mpManager.close();
         }
         player[0].keyPressed(k);
         tileMap.keyPressed(k, player[0]);

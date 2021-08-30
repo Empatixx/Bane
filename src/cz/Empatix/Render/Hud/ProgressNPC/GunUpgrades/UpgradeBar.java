@@ -182,11 +182,12 @@ public abstract class UpgradeBar {
     }
     public void mouseClick(float x,float y, Player p){
         for(UpgradeSideBar sideBar:sideBars){
-
-            boolean bought = sideBar.mouseClick(x,y, p);
-            if(bought) updateStats();
-
-            if(!sideBar.isBought()) break;
+            if(!sideBar.isBought()){
+                sideBar.mouseClick(x,y, p);
+                // if player bought upgrade, update stats
+                if(sideBar.isBought()) updateStats();
+                break;
+            }
         }
     }
     public void mouseHover(float x,float y){

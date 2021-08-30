@@ -1,7 +1,7 @@
 package cz.Empatix.Multiplayer;
 
 import cz.Empatix.Gamestates.GameStateManager;
-import cz.Empatix.Main.Game;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Multiplayer.Packets.*;
 
 import java.io.IOException;
@@ -32,23 +32,16 @@ public class GameServer extends Thread {
 
     @Override
     public void run() {
-        while(Game.running){
+        while(MultiplayerManager.multiplayer){
             byte[] data = new byte[1024];
             DatagramPacket packet = new DatagramPacket(data,data.length);
             try {
                 socket.receive(packet);
             } catch (IOException e) {
-                e.printStackTrace();
+                continue;
             }
             parseSocket(packet.getData(),packet.getAddress(),packet.getPort());
 
-            /*
-            String message = new String(packet.getData());
-            System.out.println("Client["+packet.getAddress().getHostAddress()+":"+packet.getPort()+"] > "+message);
-            if(message.trim().equalsIgnoreCase("ping")){
-                sendData("pong".getBytes(),packet.getAddress(),packet.getPort());
-            }
-            */
         }
         socket.close();
     }
@@ -72,6 +65,7 @@ public class GameServer extends Thread {
 
                 PlayerMP playerMP = new PlayerMP(null, adress, port,((Packet00Login)(packet)).getUsername());
                 playerMP.remove();
+                // removing light source
                 addConnection(playerMP, (Packet00Login) packet);
 
                 break;
@@ -83,12 +77,12 @@ public class GameServer extends Thread {
 
                 break;
             }
-            case READYSTART:{
-                packet = new Packet03ReadyStart(data);
+            case ENTERREADY:{
+                packet = new Packet03EnterReady(data);
 
-                System.out.println("[" + adress.getHostAddress() + ":" + port + "]" + "is ready ("+((Packet03ReadyStart) packet).getState()+")");
+                System.out.println("[" + adress.getHostAddress() + ":" + port + "]" + "is ready ("+((Packet03EnterReady) packet).getState()+")");
 
-                PlayerMP player = getPlayerMP(((Packet03ReadyStart)packet).getUsername());
+                PlayerMP player = getPlayerMP(((Packet03EnterReady)packet).getUsername());
                 if(player != null){
                     packet.writeData(this);
                 }
@@ -115,6 +109,7 @@ public class GameServer extends Thread {
     public void addConnection(PlayerMP player, Packet00Login packet) {
         boolean alreadyConnected = false;
         for(PlayerMP p: this.connectedPlayers){
+            // host will be always AlreadyConnected
             if(player.getUsername().equalsIgnoreCase(p.getUsername())){
                 if(p.ipAdress == null){
                     p.ipAdress = player.getIpAdress();
@@ -124,9 +119,11 @@ public class GameServer extends Thread {
                 }
                 alreadyConnected = true;
             } else {
+                // sending packet of new player to other players
                 sendData(packet.getData(),p.ipAdress,p.port);
 
-                packet = new Packet00Login(p.getUsername()); // uprava p << player
+                // sending packet of other players to new player
+                packet = new Packet00Login(p.getUsername());
                 sendData(packet.getData(), player.ipAdress,player.port);
             }
         }

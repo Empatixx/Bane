@@ -1,12 +1,13 @@
 package cz.Empatix.Render.RoomObjects.ProgressRoom;
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
 import cz.Empatix.Java.Loader;
-import cz.Empatix.Multiplayer.Packets.Packet03EnterReady;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -156,13 +157,19 @@ public class Portal extends RoomObject {
             // if players leave portal area
             if (!message) {
                 ProgressRoomMP.ready = false;
-                Packet03EnterReady packet = new Packet03EnterReady(username, 0);
-                packet.writeData(mpManager.socketClient);
+                Network.Ready ready = new Network.Ready();
+                Client client = mpManager.client.getClient();
+                ready.username = username;
+                ready.state = false;
+                client.sendTCP(ready);
                 packetChangeSent = false;
             } else {
                 if(!packetChangeSent){
-                    Packet03EnterReady packet = new Packet03EnterReady(username, 1);
-                    packet.writeData(mpManager.socketClient);
+                    Network.Ready ready = new Network.Ready();
+                    Client client = mpManager.client.getClient();
+                    ready.username = username;
+                    ready.state = true;
+                    client.sendTCP(ready);
                     packetChangeSent = true;
 
                 }
@@ -189,7 +196,7 @@ public class Portal extends RoomObject {
 
         float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
         if(MultiplayerManager.multiplayer && ProgressRoomMP.ready && message){
-            int totalPlayers = MultiplayerManager.getInstance().socketClient.getTotalPlayers();
+            int totalPlayers = MultiplayerManager.getInstance().client.getTotalPlayers();
             textRender.drawMap("Waiting for players "+ProgressRoomMP.readyNumPlayers+"/"+totalPlayers,new Vector3f(position.x-155,position.y+155,0),2,
                     new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
         }else if(message){

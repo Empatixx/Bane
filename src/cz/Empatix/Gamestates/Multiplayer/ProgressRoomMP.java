@@ -1,5 +1,6 @@
 package cz.Empatix.Gamestates.Multiplayer;
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.Player;
@@ -7,8 +8,7 @@ import cz.Empatix.Entity.ProgressNPC;
 import cz.Empatix.Gamestates.GameState;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Main.Game;
-import cz.Empatix.Multiplayer.Packets.Packet00Login;
-import cz.Empatix.Multiplayer.Packets.Packet01Disconnect;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Camera;
@@ -92,15 +92,16 @@ public class ProgressRoomMP extends GameState {
         playerReadies = new PlayerReady[2];
 
         String username = mpManager.getUsername();
-        player[0] = new PlayerMP(tileMap,null,-1,username);
+        player[0] = new PlayerMP(tileMap,username);
         ((PlayerMP)player[0]).setOrigin(true);
         playerReadies[0] = new PlayerReady(username);
 
-        Packet00Login loginPacket = new Packet00Login(username);
-        if(mpManager.socketServer!=null) {
-            mpManager.socketServer.addConnection((PlayerMP) player[0],loginPacket);
-        }
-        loginPacket.writeData(mpManager.socketClient);
+        Client client = mpManager.client.getClient();
+        Network.Join join = new Network.Join();
+        join.username = username;
+        join.host = mpManager.isHost();
+        client.sendTCP(join);
+
 
         player[0].setCoins(GameStateManager.getDb().getValue("money","general"));
 
@@ -242,9 +243,6 @@ public class ProgressRoomMP extends GameState {
     @Override
     protected void keyPressed(int k) {
         if(k == GLFW.GLFW_KEY_ESCAPE && !progressNPC.isInteracting()){
-            Packet01Disconnect packet = new Packet01Disconnect(((PlayerMP) player[0]).getUsername());
-            packet.writeData(mpManager.socketClient);
-
             gsm.setState(GameStateManager.MENU);
             mpManager.close();
         }

@@ -3,13 +3,14 @@ package cz.Empatix.Gamestates.Multiplayer;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Multiplayer.GameClient;
 import cz.Empatix.Multiplayer.GameServer;
+import cz.Empatix.Multiplayer.Network;
 
 public class MultiplayerManager {
 
     private static MultiplayerManager multiplayerManager;
 
-    public GameClient socketClient;
-    public GameServer socketServer;
+    public GameClient client;
+    public GameServer server;
 
     private boolean host;
     private String username;
@@ -17,17 +18,15 @@ public class MultiplayerManager {
     public static boolean multiplayer = false;
 
     public static MultiplayerManager getInstance(){ return multiplayerManager;}
-    public MultiplayerManager(boolean host, GameStateManager gsm){
+    public MultiplayerManager(boolean host, GameStateManager gsm) {
         multiplayerManager = this;
         multiplayer = true;
         this.host = host;
         if(host) {
-            socketServer = new GameServer(gsm);
-            socketServer.start();
+            server = new GameServer(gsm);
         }
 
-        socketClient = new GameClient(gsm,"localhost");
-        socketClient.start();
+        client = new GameClient(gsm,"localhost");
 
     }
 
@@ -44,8 +43,18 @@ public class MultiplayerManager {
     }
 
     public void close(){
+        if(!multiplayer) return;
+        if(client.isLoggedIn()){
+            Network.Disconnect disconnect = new Network.Disconnect();
+            disconnect.username = getUsername();
+            client.getClient().sendTCP(disconnect);
+        }
         multiplayer = false;
-        if(isHost()) socketServer = null;
-        socketClient = null;
+        if(isHost()) {
+            server.close();
+            server = null;
+        }
+        client.close();
+        client = null;
     }
 }

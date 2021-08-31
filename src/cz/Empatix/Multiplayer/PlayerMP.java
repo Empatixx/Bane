@@ -1,17 +1,13 @@
 package cz.Empatix.Multiplayer;
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
-import cz.Empatix.Multiplayer.Packets.Packet02Move;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
-import java.net.InetAddress;
-
 public class PlayerMP extends Player {
-    public InetAddress ipAdress;
-    public int port;
     private String username;
 
     private boolean origin;
@@ -19,10 +15,8 @@ public class PlayerMP extends Player {
 
     private TextRender textRender;
 
-    public PlayerMP(TileMap tm, InetAddress ip, int port, String username){
+    public PlayerMP(TileMap tm, String username){
         super(tm);
-        this.ipAdress = ip;
-        this.port = port;
         this.username = username;
 
         mpManager = MultiplayerManager.getInstance();
@@ -48,18 +42,19 @@ public class PlayerMP extends Player {
     @Override
     public void update() {
         super.update();
-        if(isOrigin()){
-            Packet02Move packet = new Packet02Move(username,(int)position.x,(int)position.y);
-            packet.setMovementDirections(up,down,right,left);
-            packet.writeData(mpManager.socketClient);
-        }
-    }
-    public InetAddress getIpAdress() {
-        return ipAdress;
-    }
 
-    public int getPort() {
-        return port;
+        if(isOrigin()){
+            Client client = mpManager.client.getClient();
+            Network.MovePlayer movePlayer = new Network.MovePlayer();
+            movePlayer.username = username;
+            movePlayer.down = down;
+            movePlayer.up = up;
+            movePlayer.left = left;
+            movePlayer.right = right;
+            movePlayer.x = (int)position.x;
+            movePlayer.y = (int)position.y;
+            client.sendUDP(movePlayer);
+        }
     }
 
     public String getUsername() {

@@ -5,6 +5,7 @@ Class-Path: Libraries\lwjgl-stb-natives-windows.jar Libraries\lwjgl-stb-natives-
  ar Libraries\lwjgl-openal-natives-windows.jar Libraries\lwjgl-openal-natives-windows-x86.ja
  r Libraries\lwjgl-glfw-natives-windows.jar Libraries\lwjgl-glfw-natives-windows-x86.jar Libraries\lwj
  gl.jar Libraries\lwjgl-natives-windows.jar Libraries\lwjgl-natives-windows-x86.jar Libraries\mssql-jd
- bc-8.4.0.jre8.jar Libraries\lwjgl.jar Libraries\lwjgl-stb.jar Libraries\lwjgl-glfw.jar Libraries\joml-1.9.19.ja
- r Libraries\lwjgl-openal.jar Libraries\lwjgl-opengl.jar Libraries\sqlite-jdbc-3.30.1.jar Libraries\discord-rpc.jar
+ bc-8.4.0.jre8.jar Libraries\kryonet-2.21.jar Libraries\lwjgl.jar Libraries\jna-5.8.0.jar Libraries\lwjgl-stb.ja
+ r Libraries\lwjgl-glfw.jar Libraries\discord-rpc.jar Libraries\joml-1.9.19.jar Libraries\kryonet-2.21.jar Libraries\lwjgl
+ -openal.jar Libraries\lwjgl-opengl.jar Libraries\sqlite-jdbc-3.30.1.jar
 

@@ -1,147 +1,135 @@
 package cz.Empatix.Multiplayer;
 
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameState;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
-import cz.Empatix.Multiplayer.Packets.*;
 import cz.Empatix.Render.Alerts.AlertManager;
 
 import java.io.IOException;
-import java.net.*;
 
-public class GameClient extends Thread {
-    private InetAddress ipAdress;
-    private DatagramSocket socket;
-
+public class GameClient{
     private GameStateManager gsm;
+    private Client client;
+
+    private String hostIpAdress;
 
     private int numPlayers;
-
+    private boolean loggedIn;
 
     public GameClient(GameStateManager gsm, String ipAdress){
         this.gsm = gsm;
-        try {
-            this.socket = new DatagramSocket();
-            this.ipAdress = InetAddress.getByName(ipAdress);
-        } catch (SocketException | UnknownHostException e) {
-            e.printStackTrace();
-        }
-
+        loggedIn = false;
         numPlayers = 1;
-    }
 
-    @Override
-    public void run() {
-        while(MultiplayerManager.multiplayer){
-            byte[] data = new byte[1024];
-            DatagramPacket packet = new DatagramPacket(data,data.length);
+        client = new Client();
+        client.start();
 
-            try {
-                socket.receive(packet);
-            } catch (IOException e) {
-                continue;
-            }
+        client.addListener(new Listener() {
+            public void received (Connection connection, Object object) {
+                if (object instanceof Network.AddPlayer) {
+                    System.out.println("ADDING");
 
-            parseSocket(packet.getData(),packet.getAddress(),packet.getPort());
+                    Network.AddPlayer player = (Network.AddPlayer) object;
 
-        }
-        socket.close();
-    }
-    public int getTotalPlayers(){return numPlayers;}
+                    GameState gameState = gsm.getCurrentGamestate();
+                    String packetUsername = player.username;
 
-
-    private void parseSocket(byte[] data, InetAddress adress, int port) {
-        String message = new String(data).trim();
-        Packet.PacketType type = Packet.lookupPacket(message.substring(0,2));
-        Packet packet;
-        switch (type) {
-            case INVALID: { break; }
-            case DISCONNECT: {
-                packet = new Packet01Disconnect(data);
-                System.out.println("[" + adress.getHostAddress() + ":" + port + "]" + ((Packet01Disconnect) (packet)).getUsername() + " has left..");
-
-                GameState gameState = gsm.getCurrentGamestate();
-                numPlayers--;
-                if(gameState instanceof ProgressRoomMP){
-                    ((PlayerMP)((ProgressRoomMP) gameState).player[numPlayers]).remove();
-                    ((ProgressRoomMP) gameState).player[numPlayers] = null;
-                }
-                String packetUsername = ((Packet01Disconnect) (packet)).getUsername();
-                String playerUsername = MultiplayerManager.getInstance().getUsername();
-                if(!packetUsername.equalsIgnoreCase(playerUsername)) AlertManager.add(AlertManager.WARNING,packetUsername+" has left the lobby!");
-                break;
-            }
-            case LOGIN : {
-                packet = new Packet00Login(data);
-                System.out.println("[" + adress.getHostAddress() + ":" + port + "]" + ((Packet00Login)(packet)).getUsername()+" has joined the game..");
-
-                GameState gameState = gsm.getCurrentGamestate();
-                String packetUsername = ((Packet00Login)(packet)).getUsername();
-                if(gameState instanceof ProgressRoomMP) {
-                    PlayerMP playerMP = new PlayerMP(((ProgressRoomMP) gameState).tileMap, adress, port,packetUsername);
-                    ((ProgressRoomMP) gameState).player[numPlayers] = playerMP;
-                    ((ProgressRoomMP) gameState).playerReadies[numPlayers] = new ProgressRoomMP.PlayerReady(packetUsername);
-                    numPlayers++;
-
-                }
-                break;
-            }
-            case MOVE:{
-                packet = new Packet02Move(data);
-                handleMove((Packet02Move)packet);
-                break;
-            }
-            case ENTERREADY:{
-                packet = new Packet03EnterReady(data);
-
-                int state = ((Packet03EnterReady) packet).getState();
-
-                GameState gameState = gsm.getCurrentGamestate();
-                String packetUsername = ((Packet03EnterReady)(packet)).getUsername();
-                if(gameState instanceof ProgressRoomMP) {
-                    for(ProgressRoomMP.PlayerReady playerReady : ((ProgressRoomMP) gameState).playerReadies){
-                        if(playerReady.getUsername().equalsIgnoreCase(packetUsername)){
-                            playerReady.setReady(state == 1);
-                        }
+                    if (gameState instanceof ProgressRoomMP) {
+                        PlayerMP playerMP = new PlayerMP(((ProgressRoomMP) gameState).tileMap, packetUsername);
+                        ((ProgressRoomMP) gameState).player[numPlayers] = playerMP;
+                        ((ProgressRoomMP) gameState).playerReadies[numPlayers] = new ProgressRoomMP.PlayerReady(packetUsername);
+                        numPlayers++;
                     }
                 }
-                if(state == 1){
-                    String playerUsername = MultiplayerManager.getInstance().getUsername();
-                    if(!packetUsername.equalsIgnoreCase(playerUsername)) AlertManager.add(AlertManager.INFORMATION,packetUsername+" is ready!");
-                }
-                break;
-            }
-        }
-    }
+                if (object instanceof Network.Disconnect) {
+                    Network.Disconnect packet = (Network.Disconnect) object;
 
-    public void sendData(byte[] data){
-        DatagramPacket packet = new DatagramPacket(data,data.length,ipAdress,23333);
+                    GameState gameState = gsm.getCurrentGamestate();
+                    numPlayers--;
+                    if(gameState instanceof ProgressRoomMP){
+                        ((PlayerMP)((ProgressRoomMP) gameState).player[numPlayers]).remove();
+                        ((ProgressRoomMP) gameState).player[numPlayers] = null;
+                    }
+                    String packetUsername = packet.username;
+                    String playerUsername = MultiplayerManager.getInstance().getUsername();
+                    if(!packetUsername.equalsIgnoreCase(playerUsername)) AlertManager.add(AlertManager.WARNING,packetUsername+" has left the lobby!");
+                }
+                if (object instanceof Network.MovePlayer){
+                    handleMove((Network.MovePlayer) object);
+                }
+                if (object instanceof Network.SucessfulJoin){
+                    loggedIn = true;
+                }
+                if (object instanceof Network.Ready){
+                    boolean state = ((Network.Ready) object).state;
+
+                    GameState gameState = gsm.getCurrentGamestate();
+                    String packetUsername = ((Network.Ready) object).username;
+                    if(gameState instanceof ProgressRoomMP) {
+                        for(ProgressRoomMP.PlayerReady playerReady : ((ProgressRoomMP) gameState).playerReadies){
+                            if(playerReady.getUsername().equalsIgnoreCase(packetUsername)){
+                                playerReady.setReady(state);
+                            }
+                        }
+                    }
+                    if(state){
+                        String playerUsername = MultiplayerManager.getInstance().getUsername();
+                        if(!packetUsername.equalsIgnoreCase(playerUsername)) AlertManager.add(AlertManager.INFORMATION,packetUsername+" is ready!");
+                    }
+                }
+                if (object instanceof Network.pong){
+                    System.out.println("PONG");
+                }
+            }
+        });
+
+        Network.register(client);
+
         try {
-            socket.send(packet);
+            client.connect(5000, "127.0.0.1", 54555, 54777);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
-    private void handleMove(Packet02Move packet) {
+    public Client getClient() {
+        return client;
+    }
+
+    public int getTotalPlayers() {
+        return numPlayers;
+    }
+    public void handleMove(Network.MovePlayer movePlayerPacket){
+        if(!loggedIn) return;
         GameState gameState = gsm.getCurrentGamestate();
         if(gameState instanceof ProgressRoomMP) {
             Player[] players = ((ProgressRoomMP) gameState).player;
             for (Player p : players) {
                 if (p != null) {
                     if (p instanceof PlayerMP) {
-                        if (((PlayerMP) p).getUsername().equalsIgnoreCase(packet.getUsername())) {
-                            p.setPosition(packet.getX(), packet.getY());
-                            p.setUp(packet.isMovingUp());
-                            p.setDown(packet.isMovingDown());
-                            p.setRight(packet.isMovingRight());
-                            p.setLeft(packet.isMovingLeft());
+                        if (((PlayerMP) p).getUsername().equalsIgnoreCase(movePlayerPacket.username)) {
+                            p.setPosition(movePlayerPacket.x, movePlayerPacket.y);
+                            p.setUp(movePlayerPacket.up);
+                            p.setDown(movePlayerPacket.down);
+                            p.setRight(movePlayerPacket.right);
+                            p.setLeft(movePlayerPacket.left);
                         }
                     }
                 }
             }
         }
+    }
+    public void close(){
+        client.close();
+    }
+
+    public boolean isLoggedIn() {
+        return loggedIn;
     }
 }

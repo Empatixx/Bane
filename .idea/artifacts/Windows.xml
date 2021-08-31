@@ -3,19 +3,16 @@
     <output-path>$PROJECT_DIR$/out/artifacts/Windows</output-path>
     <root id="root">
       <element id="archive" name="Game.jar">
-        <element id="directory" name="META-INF">
-          <element id="file-copy" path="$PROJECT_DIR$/src/idk/META-INF/MANIFEST.MF" />
-        </element>
         <element id="module-output" name="Game" />
       </element>
       <element id="directory" name="Libraries">
         <element id="library" level="project" name="lib" />
       </element>
-      <element id="directory" name="Sounds">
-        <element id="dir-copy" path="$PROJECT_DIR$/Sounds" />
-      </element>
       <element id="directory" name="Textures">
         <element id="dir-copy" path="$PROJECT_DIR$/Textures" />
+      </element>
+      <element id="directory" name="Sounds">
+        <element id="dir-copy" path="$PROJECT_DIR$/Sounds" />
       </element>
       <element id="directory" name="shaders">
         <element id="dir-copy" path="$PROJECT_DIR$/shaders" />

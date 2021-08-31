@@ -1374,7 +1374,11 @@ public class TileMap {
 		currentRoom.keyPressed(k,p);
 	}
 
-	public void sendLoadedMapPacket(){
+	public byte[][] getMap() {
+		return map;
+	}
 
+	public void setMap(byte[][] map) {
+		this.map = map;
 	}
 }

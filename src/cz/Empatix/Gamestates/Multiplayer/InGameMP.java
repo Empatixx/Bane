@@ -71,7 +71,7 @@ public class InGameMP extends GameState {
 
     private Player[] player;
 
-    private TileMap tileMap;
+    public TileMap tileMap;
 
     private GunsManager gunsManager;
 
@@ -262,7 +262,7 @@ public class InGameMP extends GameState {
         player = new Player[2];
 
         String username = mpManager.getUsername();
-        player[0] = new PlayerMP(tileMap,null,-1,username);
+        player[0] = new PlayerMP(tileMap,username);
         ((PlayerMP)player[0]).setOrigin(true);
 
         tileMap.setPlayer(player[0]);
@@ -342,7 +342,9 @@ public class InGameMP extends GameState {
         skullPlayerdead.setAlpha(0f);
 
         console = new Console(gunsManager,player[0],itemManager,enemyManager);
-
+        if(mpManager.isHost()){
+            // todo: send map
+        }
         if(!mpManager.isHost()) while(!mapLoaded);
 
     }

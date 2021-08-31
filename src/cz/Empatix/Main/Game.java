@@ -17,14 +17,8 @@ import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import java.io.File;
-import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -246,6 +240,7 @@ public class Game{
         glfwShowWindow(window);
 
         // log errors into file in /logs/...
+        /*
         try{
             File file = new File("logs");
             if(!file.exists()){
@@ -264,12 +259,12 @@ public class Game{
                 e.printStackTrace();
             }
             PrintStream pst = new PrintStream("logs/"+c+".txt");
-            //System.setOut(pst);
+            System.setOut(pst);
             System.setErr(pst);
         } catch (Exception e){
             e.printStackTrace();
         }
-
+         */
         DiscordRP.getInstance().start();
         DiscordRP.getInstance().update("Loading game...","");
 

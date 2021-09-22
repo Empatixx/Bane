@@ -6,6 +6,7 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
@@ -138,6 +139,94 @@ public class Golem extends Enemy {
         shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
         beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
         lastRegen = System.currentTimeMillis() - InGame.deltaPauseTime();
+        laserBeam = new LaserBeam(tm,this.player);
+
+        shieldStacks = 0;
+
+    }
+
+    // multiplayer
+    public Golem(TileMap tm, Player[] player) {
+        super(tm,player);
+
+        moveSpeed = 0.7f;
+        maxSpeed = 5.2f;
+        stopSpeed = 0.75f;
+
+        width = 100;
+        height = 100;
+        cwidth = 50;
+        cheight = 40;
+        scale = 6;
+
+        health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        damage = 2;
+
+        type = melee;
+        facingRight = true;
+
+        spriteSheetCols = 14;
+        spriteSheetRows = 8;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\golem.png");
+
+        // creating a new spritesheet
+
+        int[] numSprites = new int[]{4,8,9,8,7,7,10,14};
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\golem.png");
+            for(int j = 0;j<numSprites.length;j++) {
+                Sprite[] sprites = new Sprite[numSprites[j]];
+                for (int i = 0; i < numSprites[j]; i++) {
+                    Sprite sprite = new Sprite(new float[]
+                            {(float) i / spriteSheetCols, (float)j/spriteSheetRows,
+
+                                    (float) i / spriteSheetCols, (1.0f+j) / spriteSheetRows,
+
+                                    (1.0f + i) / spriteSheetCols, (1.0f+j) / spriteSheetRows,
+
+                                    (1.0f + i) / spriteSheetCols, (float)j/spriteSheetRows}
+                    );
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
+            }
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(145);
+        currentAction = IDLE;
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 2x
+        width *= scale;
+        height *= scale;
+        cwidth *= scale;
+        cheight *= scale;
+
+        chestCreated=false;
+
+        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,49,3);
+        healthBar.initHealth(health,maxHealth);
+
+        createShadow();
+
+        speedBuff = false;
+        speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+        shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+        beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+        lastRegen = System.currentTimeMillis() - InGame.deltaPauseTime();
+        // MULTIPLAYER SUPPORT
         laserBeam = new LaserBeam(tm,player);
 
         shieldStacks = 0;
@@ -188,7 +277,7 @@ public class Golem extends Enemy {
             }
         }
     }
-
+    @Override
     public void update() {
         setMapPosition();
         healthBar.update(health,maxHealth);
@@ -212,13 +301,16 @@ public class Golem extends Enemy {
         // ENEMY AI
         EnemyAI();
 
-        if(     Math.abs(position.x - player.getX()) < 255
-                && position.y - player.getY() < 10 && position.y - player.getY() > -230
-                && currentAction == IDLE && !speedBuff && !player.isDead()){
+        int indexPlayer = theClosestPlayerIndex();
+
+        // TODO: multiplayer do beams on the furthest player
+        if(     Math.abs(position.x - player[indexPlayer].getX()) < 255
+                && position.y - player[indexPlayer].getY() < 10 && position.y - player[indexPlayer].getY() > -230
+                && currentAction == IDLE && !speedBuff && !player[indexPlayer].isDead()){
             currentAction = ATTACK;
             animation.setFrames(spritesheet.getSprites(ATTACK));
             animation.setDelay(130);
-        } else if(System.currentTimeMillis() - beamCooldown - InGame.deltaPauseTime() > 6500 && position.distance(player.getPosition()) > 550 && currentAction == IDLE){
+        } else if(System.currentTimeMillis() - beamCooldown - InGame.deltaPauseTime() > 6500 && position.distance(player[indexPlayer].getPosition()) > 550 && currentAction == IDLE){
             currentAction = EYE_BEAM;
             beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
             animation.setFrames(spritesheet.getSprites(EYE_BEAM));
@@ -265,10 +357,14 @@ public class Golem extends Enemy {
             left = false;
             up = false;
             down = false;
-            if (Math.abs(position.x - player.getX()) < 275
-                    && position.y - player.getY() < 20 && position.y - player.getY() > -250
-                    && animation.isPlayingLastFrame()){
-                player.hit(4);
+            for(Player p : player){
+                if(p != null){
+                    if (Math.abs(position.x - p.getX()) < 275
+                            && position.y - p.getY() < 20 && position.y - p.getY() > -250
+                            && animation.isPlayingLastFrame()){
+                        p.hit(4);
+                    }
+                }
             }
         } else if(currentAction == EYE_BEAM){
             right = false;
@@ -301,7 +397,8 @@ public class Golem extends Enemy {
         // update position
         getNextPosition();
         checkTileMapCollision();
-        setPosition(temp.x, temp.y);
+        if(MultiplayerManager.getInstance().isHost())setPosition(temp.x, temp.y);
+        super.update();
     }
 
     public void draw() {
@@ -352,11 +449,11 @@ public class Golem extends Enemy {
     private static class LaserBeam extends MapObject {
         private Vector3f originalPos;
         double angle;
-        private Player p;
+        private Player[] player;
 
-        LaserBeam(TileMap tm, Player p){
+        LaserBeam(TileMap tm, Player[] p){
             super(tm);
-            this.p = p;
+            this.player = p;
             width = 810;
             height = 45;
             cwidth = 810;
@@ -417,8 +514,10 @@ public class Golem extends Enemy {
         public void update(){
             animation.update();
             setMapPosition();
-            float y = originalPos.y-p.getY();
-            float x = originalPos.x-p.getX();
+            int playerrIndex = theClosestPlayerIndex();
+
+            float y = originalPos.y- player[playerrIndex].getY();
+            float x = originalPos.x- player[playerrIndex].getX();
             float angle = (float)Math.atan(y/x);
             if(!facingRight){
                 angle+=Math.PI;
@@ -449,8 +548,8 @@ public class Golem extends Enemy {
             position.x = originalPos.x + (width/2-65) * (float)Math.cos(this.angle);
             position.y = originalPos.y + (width/2-65) * (float)Math.sin(this.angle);
 
-            if(intersects(p) && canHit()){
-                p.hit(1);
+            if(intersects(player[playerrIndex]) && canHit()){
+                player[playerrIndex].hit(1);
             }
             for(RoomObject object: tileMap.getRoomMapObjects()){
                 if(object instanceof DestroyableObject) {
@@ -682,6 +781,26 @@ public class Golem extends Enemy {
 
             return true;
         }
+        /**
+         *
+         * @return index of the closest player to enemy
+         */
+        public int theClosestPlayerIndex(){
+            int theClosest = 0;
+            float prevDistance = -1,distance;
+            for(int i = 0;i<player.length-1;i++){
+                Player secPlayer = player[i+1];
+                Player curPlayer = player[i];
+                if(secPlayer == null) break;
+                distance = (float)Math.sqrt(Math.pow(secPlayer.getX()-curPlayer.getX(),2)+Math.pow(secPlayer.getY()-curPlayer.getY(),2));
+                if(prevDistance == -1){
+                    prevDistance = distance;
+                } else if (prevDistance > distance){
+                    prevDistance = distance;
+                    theClosest = i+1;
+                }
+            }
+            return theClosest;
+        }
     }
-
 }

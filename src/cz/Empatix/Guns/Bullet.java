@@ -41,7 +41,7 @@ public class Bullet extends MapObject implements Serializable {
 
     private boolean friendlyFire;
 
-    public Bullet(TileMap tm, double x, double y,double inaccuracy, int speed) {
+    public Bullet(TileMap tm, float x, float y,double inaccuracy, int speed) {
 
         super(tm);
         facingRight = true;

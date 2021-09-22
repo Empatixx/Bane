@@ -8,6 +8,7 @@ import cz.Empatix.Entity.ItemDrops.ItemDrop;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.Shopkeeper;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.RoomObjects.*;
@@ -37,6 +38,7 @@ public class Room implements Serializable {
     private int numCols;
     private int numRows;
     private final int type;
+    private String mapFilepath;
 
     // types of rooms
     public final static int Starter = 0;
@@ -84,12 +86,26 @@ public class Room implements Serializable {
 
         mapObjects = new ArrayList<>();
 
-        if(type == Starter){
-            texts = new TextRender[5];
-            for(int i = 0;i<5;i++){
-                texts[i] = new TextRender();
-            }
-        }
+        chooseMap();
+        loadRoom(mapFilepath);
+    }
+
+    Room(int type, int id, int x, int y, String mapFilepath){
+        entered = false;
+        closed = false;
+
+        this.id = id;
+
+        this.x = x;
+        this.y = y;
+
+        this.type = type;
+
+        roomPaths = new RoomPath[4];
+
+        mapObjects = new ArrayList<>();
+
+        loadRoom(mapFilepath);
     }
     public void loadSave(){
         texts = new TextRender[5];
@@ -98,122 +114,42 @@ public class Room implements Serializable {
         }
     }
 
-    void loadMap(){
+    private void loadRoom(String mapFilepath){
+        try{
+            InputStream in = getClass().getResourceAsStream(mapFilepath);
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(in)
+            );
+
+            numCols = Integer.parseInt(br.readLine());
+            numRows = Integer.parseInt(br.readLine());
+
+            roomMap = new byte[numRows][numCols];
+
+            String delims = "\\s+";
+            for (int row = 0; row < numRows; row++) {
+                String line = br.readLine();
+                String[] tokens = line.split(delims);
+                for (int col = 0; col < numCols; col++) {
+                    roomMap[row][col] = Byte.parseByte(tokens[col]);
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+    void chooseMap(){
         if(type == Classic) {
-            try {
-                InputStream in = getClass().getResourceAsStream("/Map/currentmap" + (new Random().nextInt(4) + 1) + ".map");
-                BufferedReader br = new BufferedReader(
-                        new InputStreamReader(in)
-                );
-
-                numCols = Integer.parseInt(br.readLine());
-                numRows = Integer.parseInt(br.readLine());
-
-                roomMap = new byte[numRows][numCols];
-
-                String delims = "\\s+";
-                for (int row = 0; row < numRows; row++) {
-                    String line = br.readLine();
-                    String[] tokens = line.split(delims);
-                    for (int col = 0; col < numCols; col++) {
-                        roomMap[row][col] = Byte.parseByte(tokens[col]);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            mapFilepath = "/Map/currentmap" + (new Random().nextInt(4) + 1) + ".map";
         } else if (type == Loot){
-            try {
-                InputStream in = getClass().getResourceAsStream("/Map/lootroom.map");
-                BufferedReader br = new BufferedReader(
-                        new InputStreamReader(in)
-                );
-
-                numCols = Integer.parseInt(br.readLine());
-                numRows = Integer.parseInt(br.readLine());
-
-                roomMap = new byte[numRows][numCols];
-
-                String delims = "\\s+";
-                for (int row = 0; row < numRows; row++) {
-                    String line = br.readLine();
-                    String[] tokens = line.split(delims);
-                    for (int col = 0; col < numCols; col++) {
-                        roomMap[row][col] = Byte.parseByte(tokens[col]);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            mapFilepath = "/Map/lootroom.map";
         } else if (type == Shop){
-            try {
-                InputStream in = getClass().getResourceAsStream("/Map/shoproom.map");
-                BufferedReader br = new BufferedReader(
-                        new InputStreamReader(in)
-                );
-
-                numCols = Integer.parseInt(br.readLine());
-                numRows = Integer.parseInt(br.readLine());
-
-                roomMap = new byte[numRows][numCols];
-
-                String delims = "\\s+";
-                for (int row = 0; row < numRows; row++) {
-                    String line = br.readLine();
-                    String[] tokens = line.split(delims);
-                    for (int col = 0; col < numCols; col++) {
-                        roomMap[row][col] = Byte.parseByte(tokens[col]);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            mapFilepath = "/Map/shoproom.map";
         }else if(type == Starter || type == Boss) {
-            try {
-                InputStream in = getClass().getResourceAsStream("/Map/currentmap2.map");
-                BufferedReader br = new BufferedReader(
-                        new InputStreamReader(in)
-                );
-
-                numCols = Integer.parseInt(br.readLine());
-                numRows = Integer.parseInt(br.readLine());
-
-                roomMap = new byte[numRows][numCols];
-
-                String delims = "\\s+";
-                for (int row = 0; row < numRows; row++) {
-                    String line = br.readLine();
-                    String[] tokens = line.split(delims);
-                    for (int col = 0; col < numCols; col++) {
-                        roomMap[row][col] = Byte.parseByte(tokens[col]);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            mapFilepath = "/Map/currentmap2.map";
         } else if(type == Progress){
-            try {
-                InputStream in = getClass().getResourceAsStream("/Map/progressroom.map");
-                BufferedReader br = new BufferedReader(
-                        new InputStreamReader(in)
-                );
-
-                numCols = Integer.parseInt(br.readLine());
-                numRows = Integer.parseInt(br.readLine());
-
-                roomMap = new byte[numRows][numCols];
-
-                String delims = "\\s+";
-                for (int row = 0; row < numRows; row++) {
-                    String line = br.readLine();
-                    String[] tokens = line.split(delims);
-                    for (int col = 0; col < numCols; col++) {
-                        roomMap[row][col] = Byte.parseByte(tokens[col]);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            mapFilepath = "/Map/progressroom.map";
         }
     }
 
@@ -290,7 +226,15 @@ public class Room implements Serializable {
             for (int i = 0; i < maxMobs;i++){
                 EnemyManager enemyManager = EnemyManager.getInstance();
 
-                enemyManager.addEnemy(xMin,xMax,yMin,yMax);
+                // multiplayer
+                if(MultiplayerManager.multiplayer){
+                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
+                    if(mpManager.isHost()) enemyManager.addEnemy(xMin,xMax,yMin,yMax);
+                }
+                // singleplayer
+                else {
+                    enemyManager.addEnemy(xMin,xMax,yMin,yMax);
+                }
             }
 
             lockRoom(true);
@@ -360,6 +304,12 @@ public class Room implements Serializable {
             if(!object.isPreDraw())object.draw();
         }
         if(type == Starter && tm.getFloor() == 0) {
+            if(texts == null){
+                texts = new TextRender[5];
+                for(int i = 0;i<5;i++){
+                    texts[i] = new TextRender();
+                }
+            }
             if(tm.getCurrentRoom() == this){
                 int y = yMin + (yMax - yMin) / 2;
                 int x = xMin + (xMax - xMin) / 2;
@@ -769,5 +719,9 @@ public class Room implements Serializable {
             }
         }
         return false;
+    }
+
+    public String getMapFilepath() {
+        return mapFilepath;
     }
 }

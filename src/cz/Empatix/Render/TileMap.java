@@ -1,13 +1,16 @@
 package cz.Empatix.Render;
 
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Java.RomanNumber;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -268,35 +271,33 @@ public class TileMap {
 		int x = roomX/2;
 		int y = roomY/2;
 
-		Room mistnost = new Room(Room.Progress,id,x,y);
-		currentRoom = mistnost;
-		MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX(),mistnost.getY());
-		mistnost.setMinimapRoom(mmRoom);
+		Room room = new Room(Room.Progress,id,x,y);
+		currentRoom = room;
+		MMRoom mmRoom = new MMRoom(room.getType(),room.getX(),room.getY());
+		room.setMinimapRoom(mmRoom);
 
-		roomArrayList[0] = mistnost;
+		roomArrayList[0] = room;
 		roomMap[y][x] = id;
 
-
-		mistnost.loadMap();
-		map = mistnost.getRoomMap();
-		numCols = mistnost.getNumCols();
-		numRows = mistnost.getNumRows();
+		map = room.getRoomMap();
+		numCols = room.getNumCols();
+		numRows = room.getNumRows();
 
 
 		playerStartX = numCols/2*tileSize;
 		playerStartY = numRows/2*tileSize;
 
 
-		xmin = (Camera.getWIDTH() - mistnost.getNumCols()*tileSize);
+		xmin = (Camera.getWIDTH() - room.getNumCols()*tileSize);
 		xmax = 0;
 
-		ymin = (Camera.getHEIGHT() - mistnost.getNumRows()*tileSize);
+		ymin = (Camera.getHEIGHT() - room.getNumRows()*tileSize);
 		ymax = 0;
 
 		autoTile();
 
 
-		mistnost.createObjects(this,null);
+		room.createObjects(this,null);
 	}
 	public void loadMap() {
 		// room generation
@@ -305,6 +306,54 @@ public class TileMap {
 		// cutting map (removing useless xy where is not anything)
 		decreaseSizeOfMap();
 
+		// converting rooms into 1 big tile map
+		formatMap();
+
+		// converting 1 and 0 into tiles id textures
+		autoTile();
+
+
+		// create map objects into all rooms
+		for(Room room : roomArrayList){
+			room.createObjects(this,player);
+		}
+
+		// getting XY max/min
+		for (Room room : roomArrayList){
+			// getting X max/min of room
+			int xMax = room.getxMax();
+			int xMin = room.getxMin();
+
+			// getting Y max/min of room
+			int yMax = room.getyMax();
+			int yMin = room.getyMin();
+
+			if (playerStartX > xMin && playerStartX < xMax){
+				if (playerStartY > yMin && playerStartY < yMax){
+
+					// CORNERS OF MAP ( ROOM ) + tween to make it more sync (plus max = min; min = max) bcs of x / y of tilemap is negative
+
+					xmin += Camera.getWIDTH() - xMax - xmin;
+					xmax += -xMin - xmax;
+
+					ymin += Camera.getHEIGHT() - yMax - ymin;
+					ymax += -yMin - ymax;
+
+					break;
+				}
+			}
+
+		}
+		setPosition(Camera.getWIDTH() / 2f - playerStartX,Camera.getHEIGHT() / 2f - playerStartY);
+
+		if(MultiplayerManager.multiplayer){
+			Client client = MultiplayerManager.getInstance().client.getClient();
+			Network.MapLoaded mapLoaded = new Network.MapLoaded();
+			client.sendTCP(mapLoaded);
+		}
+	}
+
+	public void loadMapViaPackets() {
 		// converting rooms into 1 big tile map
 		formatMap();
 
@@ -489,6 +538,12 @@ public class TileMap {
 		//arraylist filled with rooms
 		roomArrayList = new Room[maxRooms];
 
+		// multiplayer
+		MultiplayerManager mpManager = null;
+		if(MultiplayerManager.multiplayer){
+			mpManager = MultiplayerManager.getInstance();
+		}
+
 		boolean lootRoomCreated = false;
 		boolean shopRoomCreated = false;
 		while(!mapCompleted){
@@ -499,22 +554,33 @@ public class TileMap {
 				int x = roomX/2;
 				int y = roomY/2;
 
-				Room mistnost = new Room(Room.Starter,id,x,y);
-				currentRoom = mistnost;
-				MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
-				mistnost.setMinimapRoom(mmRoom);
+				Room room = new Room(Room.Starter,id,x,y);
+				currentRoom = room;
+				MMRoom mmRoom = new MMRoom(room.getType(),room.getX()-10,room.getY()-10);
+				room.setMinimapRoom(mmRoom);
 				miniMap.addRoom(mmRoom,currentRooms);
 
-				roomArrayList[currentRooms] = mistnost;
+				roomArrayList[currentRooms] = room;
 				roomMap[y][x] = id;
+				// multiplayer
+				if(mpManager != null){
+					Network.TransferRoom transferRoom = new Network.TransferRoom();
+					transferRoom.type = Room.Starter;
+					transferRoom.mapFilepath = room.getMapFilepath();
+					transferRoom.id = id;
+					transferRoom.x = x;
+					transferRoom.y = y;
+					transferRoom.index = currentRooms;
 
-
-				// counting how many rooms are already created.
+					Client client = MultiplayerManager.getInstance().client.getClient();
+					client.sendTCP(transferRoom);
+				}
+				// counting how many rooms have been created.
 				currentRooms++;
 			} else {
 				int newRooms = 0;
 
-				// looping each rooms
+				// looping each room
 				for(int i = 0;i < currentRooms;i++){
 
 					// type of room
@@ -572,82 +638,93 @@ public class TileMap {
 							rndDirection = Random.nextInt(4);
 						}
 
+						Room room;
+						int id = getIdGen();
+
 
 						// TOP Direction
 						if (rndDirection == 0){
-							int id = getIdGen();
-
-							Room mistnost = new Room(type,id,roomX,roomY-1);
+							room = new Room(type,id,roomX,roomY-1);
 
 							// adding to minimap
-							MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
+							MMRoom mmRoom = new MMRoom(room.getType(),room.getX()-10,room.getY()-10);
 							roomArrayList[i].getMinimapRoom().addSideRoom(mmRoom,0);
-							mistnost.setMinimapRoom(mmRoom);
+							room.setMinimapRoom(mmRoom);
 							miniMap.addRoom(mmRoom,currentRooms+newRooms);
 
 							roomArrayList[i].setTop(true);
-							mistnost.setBottom(true);
+							room.setBottom(true);
 
-							roomArrayList[currentRooms+newRooms] = mistnost;
+							roomArrayList[currentRooms+newRooms] = room;
 							roomMap[roomY-1][roomX] = id;
 						}
 						// BOTTOM Direction
 						else if (rndDirection == 1){
-							int id = getIdGen();
-
-							Room mistnost = new Room(type,id,roomX,roomY+1);
+							room = new Room(type,id,roomX,roomY+1);
 
 							// adding to minimap
-							MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
+							MMRoom mmRoom = new MMRoom(room.getType(),room.getX()-10,room.getY()-10);
 							roomArrayList[i].getMinimapRoom().addSideRoom(mmRoom,1);
-							mistnost.setMinimapRoom(mmRoom);
+							room.setMinimapRoom(mmRoom);
 							miniMap.addRoom(mmRoom,currentRooms+newRooms);
 
 							roomArrayList[i].setBottom(true);
-							mistnost.setTop(true);
+							room.setTop(true);
 
-							roomArrayList[currentRooms+newRooms] = mistnost;
+							roomArrayList[currentRooms+newRooms] = room;
 							roomMap[roomY+1][roomX] = id;
 						}
 						// LEFT Direction
 						else if (rndDirection == 2){
-							int id = getIdGen();
-
-							Room mistnost = new Room(type,id,roomX-1,roomY);
+							room = new Room(type,id,roomX-1,roomY);
 
 							// adding to minimap
-							MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
+							MMRoom mmRoom = new MMRoom(room.getType(),room.getX()-10,room.getY()-10);
 							roomArrayList[i].getMinimapRoom().addSideRoom(mmRoom,2);
-							mistnost.setMinimapRoom(mmRoom);
+							room.setMinimapRoom(mmRoom);
 							miniMap.addRoom(mmRoom,currentRooms+newRooms);
 
-							mistnost.setRight(true);
+							room.setRight(true);
 							roomArrayList[i].setLeft(true);
 
-							roomArrayList[currentRooms+newRooms] = mistnost;
+							roomArrayList[currentRooms+newRooms] = room;
 							roomMap[roomY][roomX-1] = id;
 						}
 						// RIGHT Direction
 						else {
-							int id = getIdGen();
-
-							Room mistnost = new Room(type,id,roomX+1,roomY);
+							room = new Room(type,id,roomX+1,roomY);
 
 							// adding to minimap
-							MMRoom mmRoom = new MMRoom(mistnost.getType(),mistnost.getX()-10,mistnost.getY()-10);
+							MMRoom mmRoom = new MMRoom(room.getType(),room.getX()-10,room.getY()-10);
 							roomArrayList[i].getMinimapRoom().addSideRoom(mmRoom,3);
-							mistnost.setMinimapRoom(mmRoom);
+							room.setMinimapRoom(mmRoom);
 							miniMap.addRoom(mmRoom,currentRooms+newRooms);
 
-							mistnost.setLeft(true);
+							room.setLeft(true);
 							roomArrayList[i].setRight(true);
 
-							roomArrayList[currentRooms+newRooms] = mistnost;
+							roomArrayList[currentRooms+newRooms] = room;
 							roomMap[roomY][roomX+1] = id;
 						}
+						// multiplayer support - sending new rooms
+						if(mpManager != null){
+							Network.TransferRoom transferRoom = new Network.TransferRoom();
+							transferRoom.type = type;
+							transferRoom.mapFilepath = room.getMapFilepath();
+							transferRoom.id = id;
+							transferRoom.x = room.getX();
+							transferRoom.y = room.getY();
+							transferRoom.index = currentRooms+newRooms;
+							transferRoom.previousIndex = i;
+							transferRoom.top = rndDirection == 1;
+							transferRoom.bottom = rndDirection == 0;
+							transferRoom.left = rndDirection == 3;
+							transferRoom.right = rndDirection == 2;
+
+							Client client = MultiplayerManager.getInstance().client.getClient();
+							client.sendTCP(transferRoom);
+						}
 						newRooms++;
-
-
 					}
 					if (currentRooms+newRooms == maxRooms){
 						// random generator of map is done
@@ -679,15 +756,9 @@ public class TileMap {
 		// paths informations
 		int[] shiftsCols = new int[roomX*roomY];
 
-		for(int loop = 0;loop < 5;loop++) {
-			// load every room maps
+		for(int loop = 0;loop < 4;loop++) {
+			// getting max collumns in collumn of room
 			if (loop == 0){
-				for(Room room : roomArrayList){
-					room.loadMap();
-				}
-			}
-				// getting max collumns in collumn of room
-			else if (loop == 1){
 				for (int x = 0; x < roomX; x++) {
 					for (int y = 0; y < roomY; y++) {
 
@@ -708,7 +779,7 @@ public class TileMap {
 				}
 			}
 			// finding maxCols and maxRows of final tile map
-			else if (loop == 2) {
+			else if (loop == 1) {
 
 				for (int y = 0; y < roomY; y++) {
 
@@ -750,7 +821,7 @@ public class TileMap {
 						numCols = previousMaxCols;
 					}
 				}
-			} else if (loop == 3) {
+			} else if (loop == 2) {
 				// shifts while loop
 				int nextShiftRows;
 				int shiftRows = 0;
@@ -1034,7 +1105,19 @@ public class TileMap {
 		}
 
 		roomMap = newRoomMap;
+		// sending packet of room map to other players
+		MultiplayerManager mpManager = null;
+		if(MultiplayerManager.multiplayer){
+			mpManager = MultiplayerManager.getInstance();
+		}
+		if(mpManager != null){
+			Network.TransferRoomMap transferRoomMap = new Network.TransferRoomMap();
+			transferRoomMap.roomMap = roomMap;
+			transferRoomMap.roomX = roomX;
+			transferRoomMap.roomY = roomY;
 
+			mpManager.client.getClient().sendTCP(transferRoomMap);
+		}
 	}
 
 	public int getTileSize() { return tileSize; }
@@ -1373,12 +1456,75 @@ public class TileMap {
 	public void keyPressed(int k, Player p){
 		currentRoom.keyPressed(k,p);
 	}
+	public void handleRoomPacket(Network.TransferRoom room) {
+		int maxRooms = 9;
 
-	public byte[][] getMap() {
-		return map;
+		Room createdRoom = new Room(room.type,room.id,room.x,room.y,room.mapFilepath);
+
+		if(room.type == Room.Starter) currentRoom = createdRoom;
+		if(roomArrayList == null) roomArrayList = new Room[maxRooms];
+
+		MMRoom mmRoom = new MMRoom(room.type,room.x-10,room.y-10);
+		createdRoom.setMinimapRoom(mmRoom);
+
+		createdRoom.setBottom(room.bottom);
+		createdRoom.setTop(room.top);
+		createdRoom.setLeft(room.left);
+		createdRoom.setRight(room.right);
+
+		Room previousRoom = roomArrayList[room.previousIndex];
+
+		if(room.type != Room.Starter) {
+			MMRoom previousMMRoom  = roomArrayList[room.previousIndex].getMinimapRoom();
+			if (room.top) {
+				previousRoom.setBottom(true);
+				previousMMRoom.addSideRoom(mmRoom, 1);
+			} else if (room.bottom) {
+				previousRoom.setTop(true);
+				previousMMRoom.addSideRoom(mmRoom, 0);
+			} else if (room.left) {
+				previousRoom.setRight(true);
+				previousMMRoom.addSideRoom(mmRoom, 3);
+			} else if (room.right) {
+				previousRoom.setLeft(true);
+				previousMMRoom.addSideRoom(mmRoom, 2);
+			}
+		}
+
+		miniMap.addRoom(mmRoom,room.index);
+		roomArrayList[room.index] = createdRoom;
+
 	}
-
-	public void setMap(byte[][] map) {
-		this.map = map;
+	public void handleRoomMapPacket(Network.TransferRoomMap map){
+		roomMap = map.roomMap;
+		roomX = map.roomX;
+		roomY = map.roomY;
+		A: for(int i = 0;i < roomY;i++){
+			for(int j = 0;j < roomX;j++){
+				if(roomMap[i][j] == currentRoom.getId()){
+					if(i+1 < roomY){
+						sideRooms[0] = getRoom(roomMap[i+1][j]);
+					} else {
+						sideRooms[0] = null;
+					}
+					if(i-1 > 0){
+						sideRooms[1] = getRoom(roomMap[i-1][j]);
+					} else {
+						sideRooms[1] = null;
+					}
+					if(j+1 < roomX){
+						sideRooms[2] = getRoom(roomMap[i][j+1]);
+					} else {
+						sideRooms[2] = null;
+					}
+					if(j-1 > 0){
+						sideRooms[3] = getRoom(roomMap[i][j-1]);
+					} else {
+						sideRooms[3] = null;
+					}
+					break A;
+				}
+			}
+		}
 	}
 }

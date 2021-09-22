@@ -1,12 +1,15 @@
 package cz.Empatix.Guns;
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
@@ -35,8 +38,8 @@ public class Shotgun extends Weapon {
 
     private ArrayList<Bullet> bullets;
 
-    Shotgun(TileMap tm, Player player){
-        super(tm, player);
+    Shotgun(TileMap tm, Player player, GunsManager gunsManager){
+        super(tm, player,gunsManager);
         mindamage = 2;
         maxdamage = 3;
         inaccuracy = 0.7f;
@@ -100,18 +103,33 @@ public class Shotgun extends Weapon {
                         Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                         bullet.setPosition(px, py);
                         bullets.add(bullet);
+                        int damage;
                         if(i <= 1){
-                            int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
-                            bullet.setDamage(damage);
+                            damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                         } else {
-                            int damage = Random.nextInt(maxdamage-mindamage) + mindamage-1;
-                            bullet.setDamage(damage);
+                            damage = Random.nextInt(maxdamage-mindamage) + mindamage-1;
                         }
+                        bullet.setDamage(damage);
                         if (i >= 0) i++;
                         else i--;
                         i = -i;
-                        GunsManager.bulletShooted++;
+                        if(MultiplayerManager.multiplayer){
+                            Network.AddBullet addBullet = new Network.AddBullet();
+                            addBullet.x = x;
+                            addBullet.y = y;
+                            addBullet.px = px;
+                            addBullet.py = py;
+                            addBullet.inaccuracy = (float)inaccuracy;
+                            addBullet.speed = 30;
+                            addBullet.damage = damage;
+                            addBullet.critical = bullet.isCritical();
 
+                            addBullet.indexWeapon = gunsManager.getIndexOfCurrentWeapon();
+
+                            Client client = MultiplayerManager.getInstance().client.getClient();
+                            client.sendTCP(addBullet);
+                        }
+                        GunsManager.bulletShooted++;
                     }
                     currentMagazineAmmo--;
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
@@ -250,5 +268,14 @@ public class Shotgun extends Weapon {
         for(Bullet bullet : bullets){
             bullet.loadSave();
         }
+    }
+    @Override
+    public void handleBulletPacket(Network.AddBullet addBullet) {
+        Bullet bullet = new Bullet(tm,addBullet.x,addBullet.y,addBullet.inaccuracy,addBullet.speed);
+        bullet.setCritical(addBullet.critical);
+        bullet.setDamage(addBullet.damage);
+        bullet.setPosition(addBullet.px, addBullet.py);
+
+        bullets.add(bullet);
     }
 }

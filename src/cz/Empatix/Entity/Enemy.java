@@ -1,10 +1,13 @@
 package cz.Empatix.Entity;
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.AI.Path;
 import cz.Empatix.Entity.AI.PathNode;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -15,13 +18,12 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL20.*;
 
-public abstract class  Enemy extends MapObject implements Serializable {
+public abstract class Enemy extends MapObject{
     protected int health;
     protected int maxHealth;
     protected boolean dead;
@@ -33,14 +35,14 @@ public abstract class  Enemy extends MapObject implements Serializable {
     protected static final  int shooter = 1;
     protected static final  int hybrid = 2;
 
-    transient private Path path;
+    private Path[] path;
 
-    protected final Player player;
-    public int px;
-    public int py;
+    protected final Player[] player;
+    public int[] px;
+    public int[] py;
 
-    public int playerTileX;
-    public int playerTileY;
+    public int[] playerTileX;
+    public int[] playerTileY;
 
     protected boolean itemDropped;
 
@@ -56,9 +58,22 @@ public abstract class  Enemy extends MapObject implements Serializable {
 
     protected boolean reflectBullets;
 
+    public int idEnemy;
+    // unique id for every enemy, everytime we create new monster, we set his id to ++idGen;
+    private static int idGen = 0;
+
     public Enemy(TileMap tm, Player player) {
         super(tm);
-        this.player = player;
+        this.player = new Player[1];
+        playerTileX = new int[1];
+        playerTileY = new int[1];
+        px = new int[1];
+        px = new int[1];
+        py = new int[1];
+
+        path = new Path[1];
+
+        this.player[0] = player;
         itemDropped=false;
         reflectBullets = false;
 
@@ -74,6 +89,40 @@ public abstract class  Enemy extends MapObject implements Serializable {
 
         spawnTime=System.currentTimeMillis()-InGame.deltaPauseTime();
 
+        if(MultiplayerManager.multiplayer){
+            idEnemy = idGen;
+            idGen++;
+        }
+    }
+
+    public Enemy(TileMap tm, Player[] player) {
+        super(tm);
+        this.player = player;
+        playerTileX = new int[2];
+        playerTileY = new int[2];
+        px = new int[2];
+        py = new int[2];
+
+        path = new Path[2];
+
+        itemDropped=false;
+        reflectBullets = false;
+
+        outlineShader = ShaderManager.getShader("shaders\\outline");
+        if (outlineShader == null){
+            outlineShader = ShaderManager.createShader("shaders\\outline");
+        }
+
+        spawnShader = ShaderManager.getShader("shaders\\spawn");
+        if (spawnShader == null){
+            spawnShader = ShaderManager.createShader("shaders\\spawn");
+        }
+
+        spawnTime=System.currentTimeMillis()-InGame.deltaPauseTime();
+        if(MultiplayerManager.multiplayer){
+            idEnemy = idGen;
+            idGen++;
+        }
     }
 
     public boolean isSpawning(){
@@ -82,15 +131,19 @@ public abstract class  Enemy extends MapObject implements Serializable {
     @Override
     public void draw() {
         if(Game.displayCollisions) {
-            if (path != null) {
-                glBegin(GL_LINE_STRIP);
-                for (PathNode node : path.getPathNodes()) {
-                    glPointSize(10);
-                    glColor3i(255, 0, 0);
-                    glVertex2f(node.getX() + xmap, node.getY() + ymap);
-                }
-                glEnd();
+            for(int i = 0;i<player.length;i++){
+                if(player[i] != null) {
+                    if (path[i] != null) {
+                        glBegin(GL_LINE_STRIP);
+                        for (PathNode node : path[i].getPathNodes()) {
+                            glPointSize(10);
+                            glColor3i(255, 0, 0);
+                            glVertex2f(node.getX() + xmap, node.getY() + ymap);
+                        }
+                        glEnd();
 
+                    }
+                }
             }
         }
         // pokud neni object na obrazovce - zrusit
@@ -231,189 +284,212 @@ public abstract class  Enemy extends MapObject implements Serializable {
         updatePlayerCords();
 
         if (type == melee) {
-            int enemyTileX = (int)position.x/tileSize;
-            int enemyTileY = (int)position.y/tileSize;
-            int pTileX = px/tileSize;
-            int pTileY = py/tileSize;
+            // if loc of any player was changed
+            boolean locPlayerChange = false;
+            for(int i = 0;i<player.length;i++){
+                if(player[i] != null){
+                    int pTileX = px[i] / tileSize;
+                    int pTileY = py[i] / tileSize;
 
-            if(pTileX == enemyTileX && pTileY == enemyTileY) {
-                if(py > position.y){
-                    setDown(true);
-                    setUp(false);
-                } else if (py < position.y){
-                    setUp(true);
-                    setDown(false);
+                    if(playerTileX[i] != pTileX || playerTileY[i] != pTileY){
+                        locPlayerChange = true;
+                    }
                 }
-                if (px > position.x){
-                    setRight(true);
-                    setLeft(false);
-                } else if (px < position.x){
-                    setRight(false);
-                    setLeft(true);
-                }
-                return;
             }
-            else if((playerTileX != pTileX || playerTileY != pTileY) || path == null){
+            for (int k = 0; k < player.length; k++) {
+                if (player[k] != null) {
 
-                playerTileX = pTileX;
-                playerTileY = pTileY;
+                    int enemyTileX = (int) position.x / tileSize;
+                    int enemyTileY = (int) position.y / tileSize;
+                    int pTileX = px[k] / tileSize;
+                    int pTileY = py[k] / tileSize;
 
-
-                ArrayList<PathNode> closed = new ArrayList<>(50);
-                ArrayList<PathNode> opened = new ArrayList<>(50);
-
-                boolean endFound = false;
-
-                // reducing math operations
-                final int startingPointX = enemyTileX*tileSize+tileSize/2;
-                final int startingPointY = enemyTileY*tileSize+tileSize/2;
-
-                for (int i = -1; i < 2; i++){
-                    for (int j = -1; j < 2; j++) {
-                        if (tileMap.getType(enemyTileY + i, enemyTileX + j) == Tile.NORMAL) {
-                            PathNode node;
-                            if (j == 0 && i == 0) {
-                                closed.add(new PathNode(startingPointX, startingPointY, 0, 0, null));
-                                continue;
-                            }
-                            else if (j == 0 || i == 0) {
-                                node = createNode(startingPointX + j * tileSize, startingPointY + i * tileSize, px, py, null, 10);
-                            } else {
-                                node = createNode(startingPointX + j * tileSize, startingPointY + i * tileSize, px, py, null, 14);
-                            }
-
-                            if(i==-1){
-                                node.setUp(true);
-                            } else if(i == 1){
-                                node.setDown(true);
-                            }
-                            if(j==-1){
-                                node.setLeft(true);
-                            }else if (j == 1){
-                                node.setRight(true);
-                            }
-                            opened.add(node);
+                    if (pTileX == enemyTileX && pTileY == enemyTileY) {
+                        if (py[k] > position.y) {
+                            setDown(true);
+                            setUp(false);
+                        } else if (py[k] < position.y) {
+                            setUp(true);
+                            setDown(false);
                         }
-                    }
-                }
-                PathNode theClosest;
-
-                // setting max X/Y for pathnodes
-                final int maxX = tileMap.getNumCols()*tileSize;
-                final int maxY = tileMap.getNumRows()*tileSize;
-
-                while (!opened.isEmpty() && !endFound) {
-                    theClosest = null;
-                    for (PathNode currentNode : opened) {
-                        final int x = currentNode.getX()/tileSize;
-                        final int y = currentNode.getY()/tileSize;
-                        if (x == playerTileX && y == playerTileY) {
-                            endFound = true;
-                            path = new Path(currentNode);
-                            break;
-                        } else {
-                            if (theClosest != null) {
-                                if (theClosest.getF() > currentNode.getF()) theClosest = currentNode;
-                            } else {
-                                theClosest = currentNode;
-                            }
+                        if (px[k] > position.x) {
+                            setRight(true);
+                            setLeft(false);
+                        } else if (px[k] < position.x) {
+                            setRight(false);
+                            setLeft(true);
                         }
-                    }
-                    if (theClosest != null && !endFound) {
-                        opened.remove(theClosest);
-                        closed.add(theClosest);
-                        final int x = theClosest.getX();
-                        final int y = theClosest.getY();
+                        return;
+                    } else if (locPlayerChange || path[k] == null) {
 
-                        final int xTile = x / tileSize;
-                        final int yTile = y / tileSize;
+                        playerTileX[k] = pTileX;
+                        playerTileY[k] = pTileY;
 
-                        boolean right = false, left = false, up = false, down = false;
 
-                        // collision checks
-                        if (x - tileSize >= 0) left = tileMap.getType(yTile,xTile - 1) == Tile.NORMAL;
-                        if (x + tileSize < maxX) right = tileMap.getType(yTile,xTile + 1) == Tile.NORMAL;
-                        if (y - tileSize >= 0) up = tileMap.getType(yTile - 1,xTile) == Tile.NORMAL;
-                        if (y + tileSize < maxY) down = tileMap.getType(yTile + 1,xTile) == Tile.NORMAL;
+                        ArrayList<PathNode> closed = new ArrayList<>(50);
+                        ArrayList<PathNode> opened = new ArrayList<>(50);
 
-                        PathNode temp;
-                        // LEFT
-                        temp = createNode(x - tileSize, y, px, py, theClosest, 10);
-                        if (left && doesntContain(closed, temp) && doesntContain(opened, temp)) {
-                            temp.setLeft(true);
-                            opened.add(temp);
-                        }
-                        // RIGHT
-                        temp = createNode(x + tileSize, y, px, py, theClosest, 10);
-                        if (right && doesntContain(closed, temp) && doesntContain(opened, temp)) {
-                            opened.add(temp);
-                            temp.setRight(true);
+                        boolean endFound = false;
 
-                        }
+                        // reducing math operations
+                        final int startingPointX = enemyTileX * tileSize + tileSize / 2;
+                        final int startingPointY = enemyTileY * tileSize + tileSize / 2;
 
-                        // DOWN
-                        if (down) {
-                            temp = createNode(x, y + tileSize, px, py, theClosest, 10);
-                            if (doesntContain(closed, temp) && doesntContain(opened, temp)){
-                                temp.setDown(true);
-                                opened.add(temp);
-                            }
-                            // DOWN RIGHT
-                            if (right && tileMap.getType(yTile + 1,xTile + 1) == Tile.NORMAL) {
-                                temp = createNode(x + tileSize, y + tileSize, px, py, theClosest, 14);
-                                if (doesntContain(closed, temp) && doesntContain(opened, temp)){
-                                    temp.setDown(true);
-                                    temp.setRight(true);
-                                    opened.add(temp);
+                        for (int i = -1; i < 2; i++) {
+                            for (int j = -1; j < 2; j++) {
+                                if (tileMap.getType(enemyTileY + i, enemyTileX + j) == Tile.NORMAL) {
+                                    PathNode node;
+                                    if (j == 0 && i == 0) {
+                                        closed.add(new PathNode(startingPointX, startingPointY, 0, 0, null));
+                                        continue;
+                                    } else if (j == 0 || i == 0) {
+                                        node = createNode(startingPointX + j * tileSize, startingPointY + i * tileSize, px[k], py[k], null, 10);
+                                    } else {
+                                        node = createNode(startingPointX + j * tileSize, startingPointY + i * tileSize, px[k], py[k], null, 14);
+                                    }
+
+                                    if (i == -1) {
+                                        node.setUp(true);
+                                    } else if (i == 1) {
+                                        node.setDown(true);
+                                    }
+                                    if (j == -1) {
+                                        node.setLeft(true);
+                                    } else if (j == 1) {
+                                        node.setRight(true);
+                                    }
+                                    opened.add(node);
                                 }
-
                             }
-                            // DOWN LEFT
-                            if (left && tileMap.getType(yTile + 1,xTile - 1) == Tile.NORMAL) {
-                                temp = createNode(x - tileSize, y + tileSize, px, py, theClosest, 14);
-                                if (doesntContain(closed, temp) && doesntContain(opened, temp)){
-                                    temp.setDown(true);
+                        }
+                        PathNode theClosest;
+
+                        // setting max X/Y for pathnodes
+                        final int maxX = tileMap.getNumCols() * tileSize;
+                        final int maxY = tileMap.getNumRows() * tileSize;
+
+                        while (!opened.isEmpty() && !endFound) {
+                            theClosest = null;
+                            for (PathNode currentNode : opened) {
+                                final int x = currentNode.getX() / tileSize;
+                                final int y = currentNode.getY() / tileSize;
+                                if (x == playerTileX[k] && y == playerTileY[k]) {
+                                    endFound = true;
+                                    path[k] = new Path(currentNode);
+                                    break;
+                                } else {
+                                    if (theClosest != null) {
+                                        if (theClosest.getF() > currentNode.getF()) theClosest = currentNode;
+                                    } else {
+                                        theClosest = currentNode;
+                                    }
+                                }
+                            }
+                            if (theClosest != null && !endFound) {
+                                opened.remove(theClosest);
+                                closed.add(theClosest);
+                                final int x = theClosest.getX();
+                                final int y = theClosest.getY();
+
+                                final int xTile = x / tileSize;
+                                final int yTile = y / tileSize;
+
+                                boolean right = false, left = false, up = false, down = false;
+
+                                // collision checks
+                                if (x - tileSize >= 0) left = tileMap.getType(yTile, xTile - 1) == Tile.NORMAL;
+                                if (x + tileSize < maxX) right = tileMap.getType(yTile, xTile + 1) == Tile.NORMAL;
+                                if (y - tileSize >= 0) up = tileMap.getType(yTile - 1, xTile) == Tile.NORMAL;
+                                if (y + tileSize < maxY) down = tileMap.getType(yTile + 1, xTile) == Tile.NORMAL;
+
+                                PathNode temp;
+                                // LEFT
+                                temp = createNode(x - tileSize, y, px[k], py[k], theClosest, 10);
+                                if (left && doesntContain(closed, temp) && doesntContain(opened, temp)) {
                                     temp.setLeft(true);
                                     opened.add(temp);
                                 }
-                            }
-                        }
-                        // UP
-                        if (up) {
-                            temp = createNode(x, y - tileSize, px, py, theClosest, 10);
-                            if (doesntContain(closed, temp) && doesntContain(opened, temp)){
-                                temp.setUp(true);
-                                opened.add(temp);
-                            }
-                            // UP RIGHT
-                            if (right && tileMap.getType(yTile - 1,xTile + 1) == Tile.NORMAL) {
-                                temp = createNode(x + tileSize, y - tileSize, px, py, theClosest, 14);
-                                if (doesntContain(closed, temp) && doesntContain(opened, temp)){
-                                    temp.setUp(true);
+                                // RIGHT
+                                temp = createNode(x + tileSize, y, px[k], py[k], theClosest, 10);
+                                if (right && doesntContain(closed, temp) && doesntContain(opened, temp)) {
+                                    opened.add(temp);
                                     temp.setRight(true);
-                                    opened.add(temp);
-                                }
-                            }
-                            // UP LEFT
-                            if (left && tileMap.getType(yTile - 1,xTile - 1) == Tile.NORMAL) {
-                                temp = createNode(x - tileSize, y - tileSize, px, py, theClosest, 14);
-                                if (doesntContain(closed, temp) && doesntContain(opened, temp)){
-                                    temp.setUp(true);
-                                    temp.setLeft(true);
-                                    opened.add(temp);
-                                }
-                            }
 
+                                }
+
+                                // DOWN
+                                if (down) {
+                                    temp = createNode(x, y + tileSize, px[k], py[k], theClosest, 10);
+                                    if (doesntContain(closed, temp) && doesntContain(opened, temp)) {
+                                        temp.setDown(true);
+                                        opened.add(temp);
+                                    }
+                                    // DOWN RIGHT
+                                    if (right && tileMap.getType(yTile + 1, xTile + 1) == Tile.NORMAL) {
+                                        temp = createNode(x + tileSize, y + tileSize, px[k], py[k], theClosest, 14);
+                                        if (doesntContain(closed, temp) && doesntContain(opened, temp)) {
+                                            temp.setDown(true);
+                                            temp.setRight(true);
+                                            opened.add(temp);
+                                        }
+
+                                    }
+                                    // DOWN LEFT
+                                    if (left && tileMap.getType(yTile + 1, xTile - 1) == Tile.NORMAL) {
+                                        temp = createNode(x - tileSize, y + tileSize, px[k], py[k], theClosest, 14);
+                                        if (doesntContain(closed, temp) && doesntContain(opened, temp)) {
+                                            temp.setDown(true);
+                                            temp.setLeft(true);
+                                            opened.add(temp);
+                                        }
+                                    }
+                                }
+                                // UP
+                                if (up) {
+                                    temp = createNode(x, y - tileSize, px[k], py[k], theClosest, 10);
+                                    if (doesntContain(closed, temp) && doesntContain(opened, temp)) {
+                                        temp.setUp(true);
+                                        opened.add(temp);
+                                    }
+                                    // UP RIGHT
+                                    if (right && tileMap.getType(yTile - 1, xTile + 1) == Tile.NORMAL) {
+                                        temp = createNode(x + tileSize, y - tileSize, px[k], py[k], theClosest, 14);
+                                        if (doesntContain(closed, temp) && doesntContain(opened, temp)) {
+                                            temp.setUp(true);
+                                            temp.setRight(true);
+                                            opened.add(temp);
+                                        }
+                                    }
+                                    // UP LEFT
+                                    if (left && tileMap.getType(yTile - 1, xTile - 1) == Tile.NORMAL) {
+                                        temp = createNode(x - tileSize, y - tileSize, px[k], py[k], theClosest, 14);
+                                        if (doesntContain(closed, temp) && doesntContain(opened, temp)) {
+                                            temp.setUp(true);
+                                            temp.setLeft(true);
+                                            opened.add(temp);
+                                        }
+                                    }
+
+                                }
+
+                            }
                         }
 
                     }
+                } else {
+                    path[k] = null;
                 }
-
             }
-            if (px > position.x) facingRight = true;
-            else if (px < position.x) facingRight = false;
-            if(path != null) {
-                PathNode pathNode = path.getPathNode();
+            int closestPathIndex = -1;
+            for(int i = 0;i<path.length;i++){
+                if(path[i] == null) break;
+                if(closestPathIndex == -1) closestPathIndex = i;
+                else if(path[closestPathIndex].returnSize() > path[i].returnSize()) closestPathIndex = i;
+            }
+            if (px[closestPathIndex] > position.x) facingRight = true;
+            else if (px[closestPathIndex] < position.x) facingRight = false;
+            if (path[closestPathIndex] != null) {
+                PathNode pathNode = path[closestPathIndex].getPathNode();
 
                 setDown(false);
                 setUp(false);
@@ -423,56 +499,53 @@ public abstract class  Enemy extends MapObject implements Serializable {
                 // when entity has next pathnode
                 boolean redo;
                 // booleans if entity passed current x/y coords
-                boolean preX,preY;
+                boolean preX, preY;
 
                 do {
-                    preX=false;
-                    preY=false;
+                    preX = false;
+                    preY = false;
                     int x = pathNode.getX();
                     int y = pathNode.getY();
                     redo = false;
                     // diagonals
-                    if(pathNode.isDown() && pathNode.isRight()){
+                    if (pathNode.isDown() && pathNode.isRight()) {
                         setDown(true);
                         setRight(true);
                         if ((int) position.y >= y) {
-                            preY=true;
+                            preY = true;
                             setDown(false);
                         }
                         if ((int) position.x >= x) {
                             preX = true;
                             setRight(false);
                         }
-                    }
-                    else if(pathNode.isDown() && pathNode.isLeft()){
+                    } else if (pathNode.isDown() && pathNode.isLeft()) {
                         setDown(true);
                         setLeft(true);
                         if ((int) position.y >= y) {
-                            preY=true;
+                            preY = true;
                             setDown(false);
                         }
                         if ((int) position.x <= x) {
                             preX = true;
                             setLeft(false);
                         }
-                    }
-                    else if(pathNode.isUp() && pathNode.isRight()){
+                    } else if (pathNode.isUp() && pathNode.isRight()) {
                         setUp(true);
                         setRight(true);
                         if ((int) position.y <= y) {
-                            preY=true;
+                            preY = true;
                             setUp(false);
                         }
                         if ((int) position.x >= x) {
                             preX = true;
                             setRight(false);
                         }
-                    }
-                    else if(pathNode.isUp() && pathNode.isLeft()){
+                    } else if (pathNode.isUp() && pathNode.isLeft()) {
                         setUp(true);
                         setLeft(true);
                         if ((int) position.y <= y) {
-                            preY=true;
+                            preY = true;
                             setUp(false);
                         }
                         if ((int) position.x <= x) {
@@ -486,11 +559,11 @@ public abstract class  Enemy extends MapObject implements Serializable {
                         setDown(true);
                         setUp(false);
                         if ((int) position.y >= y) {
-                            preY=true;
+                            preY = true;
                         }
                         int leftTile = (int) ((position.x - cwidth / 2) / tileSize);
                         int rightTile = (int) ((position.x + cwidth / 2 - 1) / tileSize);
-                        int bottomTile = (int) ((position.y+1 +  cheight / 2 - 1) / tileSize);
+                        int bottomTile = (int) ((position.y + 1 + cheight / 2 - 1) / tileSize);
                         // getting type of tile
                         int bl = tileMap.getType(bottomTile, leftTile);
                         int br = tileMap.getType(bottomTile, rightTile);
@@ -498,10 +571,10 @@ public abstract class  Enemy extends MapObject implements Serializable {
                         // pokud tile má hodnotu 1 = collision
                         boolean bottomLeft = bl == Tile.BLOCKED;
                         boolean bottomRight = br == Tile.BLOCKED;
-                        if(bottomRight){
+                        if (bottomRight) {
                             setLeft(true);
                             setRight(false);
-                        } else if(bottomLeft){
+                        } else if (bottomLeft) {
                             setLeft(false);
                             setRight(true);
                         } else {
@@ -543,7 +616,7 @@ public abstract class  Enemy extends MapObject implements Serializable {
                         if ((int) position.x >= x) {
                             preX = true;
                         }
-                        int rightTile = (int) ((position.x+1 + cwidth / 2 - 1) / tileSize);
+                        int rightTile = (int) ((position.x + 1 + cwidth / 2 - 1) / tileSize);
                         int topTile = (int) ((position.y - cheight / 2) / tileSize);
                         int bottomTile = (int) ((position.y + cheight / 2 - 1) / tileSize);
 
@@ -554,18 +627,18 @@ public abstract class  Enemy extends MapObject implements Serializable {
                         // pokud tile má hodnotu 1 = collision
                         boolean topRight = tr == Tile.BLOCKED;
                         boolean bottomRight = br == Tile.BLOCKED;
-                        if(topRight){
+                        if (topRight) {
                             setUp(false);
                             setDown(true);
-                        } else if (bottomRight){
+                        } else if (bottomRight) {
                             setDown(false);
                             setUp(true);
-                        } else{
+                        } else {
                             setDown(false);
                             setUp(false);
                         }
                     } else if (pathNode.isLeft()) {
-                        preY=true;
+                        preY = true;
                         setLeft(true);
                         setRight(false);
                         if ((int) position.x <= x) {
@@ -574,7 +647,6 @@ public abstract class  Enemy extends MapObject implements Serializable {
                         int leftTile = (int) ((position.x - 1 - cwidth / 2) / tileSize);
                         int topTile = (int) ((position.y - cheight / 2) / tileSize);
                         int bottomTile = (int) ((position.y + cheight / 2 - 1) / tileSize);
-
 
                         // getting type of tile
                         int tl = tileMap.getType(topTile, leftTile);
@@ -594,12 +666,12 @@ public abstract class  Enemy extends MapObject implements Serializable {
                             setUp(false);
                         }
                     }
-                    if(preX && preY){
-                        path.nextPathNode();
-                        if(!path.hasLastNode()){
-                            pathNode = path.getPathNode();
+                    if (preX && preY) {
+                        path[closestPathIndex].nextPathNode();
+                        if (!path[closestPathIndex].hasLastNode()) {
+                            pathNode = path[closestPathIndex].getPathNode();
                         } else {
-                            path = null;
+                            path[closestPathIndex] = null;
                             setDown(false);
                             setUp(false);
                             setRight(false);
@@ -608,7 +680,7 @@ public abstract class  Enemy extends MapObject implements Serializable {
                         }
                         redo = true;
                     }
-                } while(redo);
+                } while (redo);
             }
         }
     }
@@ -634,12 +706,28 @@ public abstract class  Enemy extends MapObject implements Serializable {
 
     }
 
-    public void update() { }
+    public void update() {
+        if(MultiplayerManager.multiplayer ){
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+            if(mpManager.isHost()){
+                Client client = mpManager.client.getClient();
+                Network.MoveEnemy moveEnemy = new Network.MoveEnemy();
+                moveEnemy.x = position.x;
+                moveEnemy.y = position.y;
+                moveEnemy.id = idEnemy;
+                client.sendUDP(moveEnemy);
+            }
+        }
+    }
     // ENEMY AI
 
     private void updatePlayerCords(){
-        px = (int)player.getX();
-        py = (int)player.getY();
+        for(int i = 0;i<player.length;i++){
+            if(player[i] != null){
+                px[i] = (int)player[i].getX();
+                py[i] = (int)player[i].getY();
+            }
+        }
     }
     public boolean shouldRemove(){
         return animation.hasPlayedOnce() && isDead();
@@ -677,6 +765,27 @@ public abstract class  Enemy extends MapObject implements Serializable {
                         ||
                 position.y - height/2 > Camera.getHEIGHT()-ymap || position.y+height/2 < -ymap
         );
+    }
+
+    /**
+     *
+     * @return index of the closest player to enemy
+     */
+    public int theClosestPlayerIndex(){
+        int theClosest = 0;
+        float prevDistance = -1,distance;
+        for(int i = 0;i<player.length;i++){
+            Player curPlayer = player[i];
+            if(curPlayer == null) break;
+            distance = (float)Math.sqrt(Math.pow(getX()-curPlayer.getX(),2)+Math.pow(getY()-curPlayer.getY(),2));
+            if(prevDistance == -1){
+                prevDistance = distance;
+            } else if (prevDistance > distance){
+                prevDistance = distance;
+                theClosest = i;
+            }
+        }
+        return theClosest;
     }
 
 }

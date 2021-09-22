@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameServer {
-    private GameStateManager gsm;
-    private Server server;
+    private final GameStateManager gsm;
+    private final Server server;
 
-    private List<PlayerMP> connectedPlayers;
+    private final List<PlayerMP> connectedPlayers;
 
     public GameServer(GameStateManager gsm) {
         this.gsm = gsm;
@@ -30,8 +30,6 @@ public class GameServer {
         server.addListener(new Listener() {
             public void received(Connection connection, Object object) {
                 if (object instanceof Network.Join) {
-                    System.out.println("PLAYER connected");
-
                     Network.Join joinPacket = (Network.Join) object;
 
                     String packetUsername = joinPacket.username;
@@ -39,34 +37,49 @@ public class GameServer {
                     // player is already connected
                     for (PlayerMP player : connectedPlayers) {
                         if (player.getUsername().equalsIgnoreCase(packetUsername)) {
-                            //connection.close();
+                            close();
                             return;
                         }
                     }
 
                     handleJoin(joinPacket, connection);
                 }
-                if (object instanceof Network.Disconnect) {
-                    System.out.println("PLAYER disconnected");
-
-
+                else if (object instanceof Network.Disconnect) {
                     Network.Disconnect disconnectPacket = (Network.Disconnect) object;
-
-                    handleDisconnect(disconnectPacket,connection);
-
+                    handleDisconnect(disconnectPacket);
                 }
-                if (object instanceof Network.MovePlayer) {
+                else if (object instanceof Network.RequestForPlayers) {
+                    Network.RequestForPlayers request = (Network.RequestForPlayers) object;
+                    for(PlayerMP player : connectedPlayers){
+                        if(!player.getUsername().equalsIgnoreCase(request.exceptUsername)){
+                            Network.AddPlayer addPlayer = new Network.AddPlayer();
+                            addPlayer.username = player.getUsername();
+                            connection.sendTCP(addPlayer);
+                        }
+                    }
+                }
+                else if (object instanceof Network.MovePlayer) {
                     Network.MovePlayer movePacket = (Network.MovePlayer) object;
-
                     handleMovement(movePacket, connection);
                 }
-                if (object instanceof Network.Ready){
+                else if (object instanceof Network.MoveEnemy) {
+                    Network.MoveEnemy movePacket = (Network.MoveEnemy) object;
+                    handleMovement(movePacket, connection);
+                    System.out.println("CHANGIN3");
+
+                }
+                else if (object instanceof Network.Ready){
                     server.sendToAllTCP(object);
                 }
-                if (object instanceof Network.ping) {
-                    System.out.println("PING");
-                    Network.pong pong = new Network.pong();
-                    connection.sendTCP(pong);
+                else if (    object instanceof Network.AddPlayer ||
+                        object instanceof Network.TransferRoomMap ||
+                        object instanceof Network.TransferRoom ||
+                        object instanceof Network.MapLoaded ||
+                        object instanceof Network.ChangeGamestate ||
+                        object instanceof Network.AddBullet ||
+                        object instanceof Network.AddEnemy
+                ){
+                    server.sendToAllExceptTCP(connection.getID(),object);
                 }
             }
         });
@@ -75,7 +88,7 @@ public class GameServer {
 
     }
 
-    private void handleDisconnect(Network.Disconnect disconnectPacket, Connection connection) {
+    private void handleDisconnect(Network.Disconnect disconnectPacket) {
         String packetUsername = disconnectPacket.username;
 
         // player is already connceted
@@ -94,7 +107,9 @@ public class GameServer {
     private void handleMovement(Network.MovePlayer movePacket, Connection connection) {
         server.sendToAllExceptUDP(connection.getID(),movePacket);
     }
-
+    private void handleMovement(Network.MoveEnemy movePacket, Connection connection) {
+        server.sendToAllExceptUDP(connection.getID(),movePacket);
+    }
     private void handleJoin(Network.Join join, Connection connection) {
         PlayerMP playerMP = new PlayerMP(null, join.username);
         playerMP.remove();
@@ -107,7 +122,6 @@ public class GameServer {
                 addPlayer.username = otherPlayer.getUsername();
                 // send other players to new player
                 connection.sendTCP(addPlayer);
-
             }
 
             connectedPlayers.add(playerMP);
@@ -117,8 +131,6 @@ public class GameServer {
             // send new player to others players
             server.sendToAllExceptTCP(connection.getID(),addPlayer);
         }
-        connection.sendTCP(new Network.SucessfulJoin());
-
     }
     public Server getServer() {
         return server;

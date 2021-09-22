@@ -5,6 +5,7 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
@@ -19,6 +20,7 @@ public abstract class Weapon implements Serializable {
     //ammo vars
     protected final TileMap tm;
     protected final Player player;
+    protected final GunsManager gunsManager;
     // dmg
     protected int mindamage;
     protected int maxdamage;
@@ -58,8 +60,9 @@ public abstract class Weapon implements Serializable {
      */
     protected int type;
 
-    Weapon(TileMap tm, Player player){
+    Weapon(TileMap tm, Player player, GunsManager gunsManager){
         this.tm = tm;
+        this.gunsManager = gunsManager;
         this.player = player;
         source = AudioManager.createSource(Source.EFFECTS,0.35f);
         reloadsource = AudioManager.createSource(Source.EFFECTS,0.35f);
@@ -142,4 +145,6 @@ public abstract class Weapon implements Serializable {
             alertCooldown = System.currentTimeMillis();
         }
     }
+    public abstract void handleBulletPacket(Network.AddBullet addBullet);
+
 }

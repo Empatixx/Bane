@@ -6,6 +6,7 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemies.Projectiles.KingSlimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -104,6 +105,7 @@ public class ArcaneMage extends Enemy {
 
     }
 
+    @Override
     public void update() {
         setMapPosition();
         healthBar.update(health,maxHealth);
@@ -131,9 +133,9 @@ public class ArcaneMage extends Enemy {
         for(int i = 0;i<bullets.size();i++){
             KingSlimebullet slimebullet = bullets.get(i);
             slimebullet.update();
-            if(slimebullet.intersects(player) && !player.isFlinching() && !player.isDead()){
+            if(slimebullet.intersects(player[0]) && !player[0].isFlinching() && !player[0].isDead()){
                 slimebullet.setHit();
-                player.hit(1);
+                player[0].hit(1);
             }
             if(slimebullet.shouldRemove()) {
                 bullets.remove(i);
@@ -162,7 +164,8 @@ public class ArcaneMage extends Enemy {
         EnemyAI();
 
         checkTileMapCollision();
-        setPosition(temp.x, temp.y);
+        if(MultiplayerManager.getInstance().isHost())setPosition(temp.x, temp.y);
+        super.update();
     }
 
     public void draw() {

@@ -107,6 +107,79 @@ public class RedSlime extends Enemy {
         projectilesShooted = false;
 
     }
+    public RedSlime(TileMap tm, Player[] player) {
+
+        super(tm,player);
+
+        moveSpeed = 0.6f;
+        maxSpeed = 3.6f;
+        stopSpeed = 0.5f;
+
+        width = 64;
+        height = 48;
+        cwidth = 64;
+        cheight = 48;
+        scale = 2;
+
+        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        damage = 1;
+
+        type = melee;
+        facingRight = true;
+
+        spriteSheetCols = 6;
+        spriteSheetRows = 2;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\redslime.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\redslime.tga");
+            Sprite[] sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                Sprite sprite = new Sprite(5,i,0,32,24,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[6];
+            for(int i = 0; i < sprites.length; i++) {
+                Sprite sprite = new Sprite(5,i,1,32,24,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(145);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 2x
+        width *= 2;
+        height *= 2;
+        cwidth *= 2;
+        cheight *= 2;
+
+        bullets = new ArrayList<>(20);
+
+        createShadow();
+
+        projectiles = 0;
+        projectilesShooted = false;
+
+    }
 
     private void getNextPosition() {
 
@@ -153,6 +226,7 @@ public class RedSlime extends Enemy {
         }
     }
 
+    @Override
     public void update() {
         setMapPosition();
         if(isSpawning()) return;
@@ -164,9 +238,13 @@ public class RedSlime extends Enemy {
         for(int i = 0;i<bullets.size();i++){
             RedSlimebullet redslimebullet = bullets.get(i);
             redslimebullet.update();
-            if(redslimebullet.intersects(player) && !player.isFlinching() && !player.isDead()){
-                redslimebullet.setHit();
-                player.hit(1);
+            for(Player p : player){
+                if(p != null){
+                    if(redslimebullet.intersects(p) && !p.isFlinching() && !p.isDead()){
+                        redslimebullet.setHit();
+                        p.hit(1);
+                    }
+                }
             }
             for(RoomObject object: tileMap.getRoomMapObjects()){
                 if(object instanceof DestroyableObject) {
@@ -184,8 +262,9 @@ public class RedSlime extends Enemy {
         if (!projectilesShooted && dead) {
             projectilesShooted = true;
 
+            int index = theClosestPlayerIndex();
             for (int i = 0; i < projectiles; i++) {
-                RedSlimebullet redSlimebullet = new RedSlimebullet(tileMap, px - position.x, py - position.y, 1.3 * i);
+                RedSlimebullet redSlimebullet = new RedSlimebullet(tileMap, px[index] - position.x, py[index] - position.y, 1.3 * i);
                 redSlimebullet.setPosition(position.x, position.y);
                 bullets.add(redSlimebullet);
             }
@@ -200,6 +279,7 @@ public class RedSlime extends Enemy {
         checkTileMapCollision();
 
         setPosition(temp.x, temp.y);
+        super.update();
     }
 
     public void draw() {

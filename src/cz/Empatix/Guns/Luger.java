@@ -7,6 +7,7 @@ import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
@@ -41,8 +42,8 @@ public class Luger extends Weapon {
     private int lastDamage;
     private boolean lastDamageCrit;
 
-    Luger(TileMap tm, Player player){
-        super(tm,player);
+    Luger(TileMap tm, Player player, GunsManager gunsManager){
+        super(tm,player,gunsManager);
         mindamage = 1;
         maxdamage = 2;
         inaccuracy = 0.8f;
@@ -287,5 +288,14 @@ public class Luger extends Weapon {
         for(Bullet bullet : bullets){
             bullet.loadSave();
         }
+    }
+    @Override
+    public void handleBulletPacket(Network.AddBullet addBullet) {
+        Bullet bullet = new Bullet(tm,addBullet.x,addBullet.y,addBullet.inaccuracy,addBullet.speed);
+        bullet.setCritical(addBullet.critical);
+        bullet.setDamage(addBullet.damage);
+        bullet.setPosition(addBullet.px, addBullet.py);
+
+        bullets.add(bullet);
     }
 }

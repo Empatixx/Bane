@@ -46,6 +46,8 @@ public class ProgressRoomMP extends GameState {
 
     // if player is ready to start game
     public static boolean ready;
+    public boolean switchGamestate;
+
     public static int readyNumPlayers;
 
     private ProgressNPC progressNPC;
@@ -75,6 +77,8 @@ public class ProgressRoomMP extends GameState {
 
         mpManager = MultiplayerManager.getInstance();
         readyNumPlayers = 0;
+        ready = false;
+        switchGamestate = false;
 
         objectsFramebuffer = new Framebuffer();
         lightManager = new LightManager();
@@ -101,7 +105,6 @@ public class ProgressRoomMP extends GameState {
         join.username = username;
         join.host = mpManager.isHost();
         client.sendTCP(join);
-
 
         player[0].setCoins(GameStateManager.getDb().getValue("money","general"));
 
@@ -145,15 +148,36 @@ public class ProgressRoomMP extends GameState {
         tileMap.draw(Tile.BLOCKED);
 
         tileMap.preDrawObjects(false);
-        for (Player p: player) {
-            if(p != null){
-                if(p.getY() > progressNPC.getY()+40){
-                    progressNPC.draw();
-                    p.draw();
-                } else {
-                    p.draw();
-                    progressNPC.draw();
-                }
+
+        // drawing players by order by position.y
+        boolean[] used = new boolean[player.length];
+        for(int i = 0;i<player.length;i++){
+            int index = -1;
+            for(int j = 0;j < player.length;j++){
+                if(player[j] == null || used[j]) continue;
+                if(index == -1) index = j;
+                else if(player[index].getY() > player[j].getY()) index = j;
+            }
+            if(index != -1){
+                if(player[index].getY() <= progressNPC.getY()+40) player[index].draw();
+                used[index] = true;
+            }
+        }
+
+        progressNPC.draw();
+
+        // drawing players by order by position.y
+        used = new boolean[player.length];
+        for(int i = 0;i<player.length;i++){
+            int index = -1;
+            for(int j = 0;j < player.length;j++){
+                if(player[j] == null || used[j]) continue;
+                if(index == -1) index = j;
+                else if(player[index].getY() > player[j].getY()) index = j;
+            }
+            if(index != -1){
+                if(player[index].getY() > progressNPC.getY()+40) player[index].draw();
+                used[index] = true;
             }
         }
 
@@ -184,11 +208,6 @@ public class ProgressRoomMP extends GameState {
     }
     @Override
     protected void update() {
-        /*if(ready){
-            enterGame=false;
-            gsm.setState(GameStateManager.INGAME);
-            return;
-        }*/
         // loc of mouse
         mouseX = gsm.getMouseX();
         mouseY = gsm.getMouseY();
@@ -218,6 +237,14 @@ public class ProgressRoomMP extends GameState {
         }
         // all players are ready => enter game
         if(totalConPlayers == readyNumPlayers && mpManager.isHost()){
+            Network.ChangeGamestate changeGamestate = new Network.ChangeGamestate();
+            Client client = mpManager.client.getClient();
+            client.sendTCP(changeGamestate);
+
+            mpManager.client.setNumPlayers(1);
+            gsm.setState(GameStateManager.INGAMEMP);
+        }
+        if (switchGamestate){
             gsm.setState(GameStateManager.INGAMEMP);
         }
 

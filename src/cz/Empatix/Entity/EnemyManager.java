@@ -1,12 +1,17 @@
 package cz.Empatix.Entity;
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.Enemies.*;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class EnemyManager {
     private static EnemyManager enemyManager;
@@ -22,10 +27,41 @@ public class EnemyManager {
 
     private ArrayList<String> enemiesList;
 
-    private Player player;
+    private Player player[];
     private TileMap tileMap;
 
+    private ArrayList<Network.AddEnemy> queueAddEnemyPackets;
+    private Lock lock;
+
+    // singleplayer
     public EnemyManager(Player p, TileMap tm){
+        player = new Player[1];
+        player[0] = p;
+        tileMap = tm;
+
+        enemies = new ArrayList<>();
+        enemiesList = new ArrayList<>(5);
+
+
+        enemiesList.add("slime");
+        enemiesList.add("rat");
+        enemiesList.add("bat");
+        enemiesList.add("demoneye");
+        enemiesList.add("ghost");
+        enemiesList.add("snake");
+        enemiesList.add("redslime");
+        enemiesList.add("eyebat");
+
+        enemiesKilled = 0;
+
+        if(MultiplayerManager.multiplayer){
+            queueAddEnemyPackets = new ArrayList<>();
+            lock = new ReentrantLock();
+        }
+    }
+
+    // multiplayer
+    public EnemyManager(Player[] p, TileMap tm){
         player = p;
         tileMap = tm;
 
@@ -33,17 +69,23 @@ public class EnemyManager {
         enemiesList = new ArrayList<>(5);
 
 
-        enemiesList.add("Slime");
-        enemiesList.add("Rat");
-        enemiesList.add("Bat");
-        enemiesList.add("Demoneye");
-        enemiesList.add("Ghost");
-        enemiesList.add("Snake");
-        enemiesList.add("RedSlime");
-        enemiesList.add("EyeBat");
+        enemiesList.add("slime");
+        enemiesList.add("rat");
+        enemiesList.add("bat");
+        enemiesList.add("demoneye");
+        enemiesList.add("ghost");
+        enemiesList.add("snake");
+        enemiesList.add("redslime");
+        enemiesList.add("eyebat");
 
         enemiesKilled = 0;
+
+        if(MultiplayerManager.multiplayer){
+            queueAddEnemyPackets = new ArrayList<>();
+            lock = new ReentrantLock();
+        }
     }
+
     public void loadSave(){
         for(Enemy e:enemies){
             e.loadSave();
@@ -64,6 +106,19 @@ public class EnemyManager {
 
 
     public void update(){
+        if(MultiplayerManager.multiplayer){
+            try{
+                lock.lock();
+                for(Network.AddEnemy addEnemy : queueAddEnemyPackets){
+                    addEnemy(addEnemy);
+                }
+                if(!queueAddEnemyPackets.isEmpty()){
+                    queueAddEnemyPackets.clear();
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
         // updating enemies
         for(int i = 0;i < enemies.size();i++){
             Enemy enemy = enemies.get(i);
@@ -164,38 +219,76 @@ public class EnemyManager {
         int enemyType = cz.Empatix.Java.Random.nextInt(defaultsize);
         Enemy instance = null;
         String enemy = enemiesList.get(enemyType);
-        switch (enemy){
-            case "Slime":{
-                instance = new Slime(tileMap,player);
-                break;
+        if(MultiplayerManager.multiplayer) {
+            switch (enemy) {
+                case "slime": {
+                    instance = new Slime(tileMap, player);
+                    break;
+                }
+                case "rat": {
+                    instance = new Rat(tileMap, player);
+                    break;
+                }
+                case "bat": {
+                    instance = new Bat(tileMap, player);
+                    break;
+                }
+                case "demoneye": {
+                    instance = new Demoneye(tileMap, player);
+                    break;
+                }
+                case "ghost": {
+                    instance = new Ghost(tileMap, player);
+                    break;
+                }
+                case "snake": {
+                    instance = new Snake(tileMap, player);
+                    break;
+                }
+                case "redslime": {
+                    instance = new RedSlime(tileMap, player);
+                    break;
+                }
+                case "eyebat": {
+                    instance = new EyeBat(tileMap, player);
+                    break;
+                }
             }
-            case "Rat":{
-                instance = new Rat(tileMap,player);
-                break;
-            }
-            case "Bat":{
-                instance = new Bat(tileMap,player);
-                break;
-            }
-            case "Demoneye":{
-                instance = new Demoneye(tileMap,player);
-                break;
-            }
-            case "Ghost":{
-                instance = new Ghost(tileMap,player);
-                break;
-            }
-            case "Snake":{
-                instance = new Snake(tileMap,player);
-                break;
-            }
-            case "RedSlime":{
-                instance = new RedSlime(tileMap,player);
-                break;
-            }
-            case "EyeBat":{
-                instance = new EyeBat(tileMap,player);
-                break;
+        } else {
+            //singleplayer
+            switch (enemy) {
+                case "slime": {
+                    instance = new Slime(tileMap, player[0]);
+                    break;
+                }
+                case "rat": {
+                    instance = new Rat(tileMap, player[0]);
+                    break;
+                }
+                case "bat": {
+                    instance = new Bat(tileMap, player[0]);
+                    break;
+                }
+                case "demoneye": {
+                    instance = new Demoneye(tileMap, player[0]);
+                    break;
+                }
+                case "ghost": {
+                    instance = new Ghost(tileMap, player[0]);
+                    break;
+                }
+                case "snake": {
+                    instance = new Snake(tileMap, player[0]);
+                    break;
+                }
+                case "redslime": {
+                    instance = new RedSlime(tileMap, player[0]);
+                    break;
+                }
+                case "eyebat": {
+                    instance = new EyeBat(tileMap, player[0]);
+                    break;
+                }
             }
         }
 
@@ -244,9 +337,23 @@ public class EnemyManager {
 
         instance.setPosition(x,y);
         enemies.add(instance);
+
+        // multiplayer packet of new enemy
+        if(MultiplayerManager.multiplayer){
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+
+            Network.AddEnemy addEnemy = new Network.AddEnemy();
+            addEnemy.type = enemy;
+            addEnemy.x = x;
+            addEnemy.y = y;
+            addEnemy.id = instance.idEnemy;
+
+            Client client = mpManager.client.getClient();
+            client.sendTCP(addEnemy);
+        }
     }
     public void addEnemy(String enemy){
-        Enemy instance = null;
+        Enemy instance;
         switch (enemy){
             case "slime":{
                 instance = new Slime(tileMap,player);
@@ -292,7 +399,66 @@ public class EnemyManager {
                 return;
             }
         }
-        instance.setPosition(player.getX(),player.getY());
+        instance.setPosition(player[0].getX(),player[0].getY());
         enemies.add(instance);
+    }
+    public void addEnemy(Network.AddEnemy addEnemy){
+        Enemy instance;
+        switch (addEnemy.type){
+            case "slime":{
+                instance = new Slime(tileMap,player);
+                break;
+            }
+            case "rat":{
+                instance = new Rat(tileMap,player);
+                break;
+            }
+            case "bat":{
+                instance = new Bat(tileMap,player);
+                break;
+            }
+            case "demoneye":{
+                instance = new Demoneye(tileMap,player);
+                break;
+            }
+            case "ghost":{
+                instance = new Ghost(tileMap,player);
+                break;
+            }
+            case "golem":{
+                instance = new Golem(tileMap,player);
+                break;
+            }
+            case "kingslime":{
+                instance = new KingSlime(tileMap,player);
+                break;
+            }
+            case "snake":{
+                instance = new Snake(tileMap,player);
+                break;
+            }
+            case "redslime":{
+                instance = new RedSlime(tileMap,player);
+                break;
+            }
+            case "eyebat":{
+                instance = new EyeBat(tileMap,player);
+                break;
+            }
+            default:{
+                return;
+            }
+        }
+        instance.setPosition(addEnemy.x, addEnemy.y);
+        instance.idEnemy = addEnemy.id;
+        enemies.add(instance);
+    }
+    public void addEnemyPacket(Network.AddEnemy addEnemy){
+        try{
+            lock.lock();
+            queueAddEnemyPackets.add(addEnemy);
+        } finally {
+            lock.unlock();
+        }
     }
 }

@@ -1,6 +1,6 @@
 package cz.Empatix.Gamestates.Multiplayer;
 
-
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.AudioManager.Source;
@@ -16,6 +16,7 @@ import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Background;
@@ -69,11 +70,11 @@ public class InGameMP extends GameState {
     private Image skullPlayerdead;
     private Image[] logos;
 
-    private Player[] player;
+    public Player[] player;
 
     public TileMap tileMap;
 
-    private GunsManager gunsManager;
+    public GunsManager gunsManager;
 
     private float mouseX;
     private float mouseY;
@@ -87,7 +88,7 @@ public class InGameMP extends GameState {
     private Console console;
     private AlertManager alertManager;
 
-    private EnemyManager enemyManager;
+    public EnemyManager enemyManager;
 
     // postprocessing
     private Framebuffer objectsFramebuffer;
@@ -117,7 +118,7 @@ public class InGameMP extends GameState {
     private TextRender[] textRender;
 
     private MultiplayerManager mpManager;
-    private boolean mapLoaded;
+    public boolean mapLoaded;
 
     public InGameMP(GameStateManager gsm){
         this.gsm = gsm;
@@ -132,6 +133,7 @@ public class InGameMP extends GameState {
                     source.play(soundMenuClick);
                     if(type == PAUSEEXIT){
                         player[0].cleanUp();
+                        mpManager.close();
                         gsm.setState(GameStateManager.MENU);
                     } else if (type == PAUSERESUME){
                         resume();
@@ -281,13 +283,15 @@ public class InGameMP extends GameState {
         ItemManager.init(itemManager);
 
         // generate map + create objects which needs item manager & gun manager created
-        if(mpManager.isHost())tileMap.loadMap();
+        if(mpManager.isHost()){
+            tileMap.loadMap();
+            tileMap.fillMiniMap();
+            // move player to starter room
+            player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
 
-        // move player to starter room
-        player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
-
-        // make camera move smoothly
-        tileMap.setTween(0.10);
+            // make camera move smoothly
+            tileMap.setTween(0.10);
+        }
 
         //health bar
         healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,45,3);
@@ -295,8 +299,6 @@ public class InGameMP extends GameState {
         //armor bar
         armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3);
         armorBar.initArmor(player[0].getArmor(),player[0].getMaxArmor());
-        //minimap
-        tileMap.fillMiniMap();
         damageIndicator = new DamageIndicator();
         // coin
         coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
@@ -305,7 +307,7 @@ public class InGameMP extends GameState {
         //audio
         AudioManager.playSoundtrack(Soundtrack.IDLE);
 
-        enemyManager = new EnemyManager(player[0],tileMap);
+        enemyManager = new EnemyManager(player,tileMap);
         EnemyManager.init(enemyManager);
 
 
@@ -342,11 +344,23 @@ public class InGameMP extends GameState {
         skullPlayerdead.setAlpha(0f);
 
         console = new Console(gunsManager,player[0],itemManager,enemyManager);
-        if(mpManager.isHost()){
-            // todo: send map
-        }
-        if(!mpManager.isHost()) while(!mapLoaded);
 
+        Client client = MultiplayerManager.getInstance().client.getClient();
+
+        if(!mpManager.isHost()){
+            while(!mapLoaded);
+            tileMap.loadMapViaPackets();
+            tileMap.fillMiniMap();
+            // move player to starter room
+            player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
+
+            // make camera move smoothly
+            tileMap.setTween(0.10);
+        }
+        Network.RequestForPlayers request = new Network.RequestForPlayers();
+        request.exceptUsername = mpManager.getUsername();
+
+        client.sendTCP(request);
     }
 
     @Override
@@ -372,8 +386,19 @@ public class InGameMP extends GameState {
 
         artefactManager.draw();
 
-        for(Player player : player){
-            if(player != null)player.draw();
+        // drawing players by order by position.y
+        boolean[] used = new boolean[player.length];
+        for(int i = 0;i<player.length;i++){
+            int index = -1;
+            for(int j = 0;j < player.length;j++){
+                if(player[j] == null || used[j]) continue;
+                if(index == -1) index = j;
+                else if(player[index].getY() > player[j].getY()) index = j;
+            }
+            if(index != -1){
+                player[index].draw();
+                used[index] = true;
+            }
         }
 
         tileMap.drawObjects();
@@ -531,10 +556,11 @@ public class InGameMP extends GameState {
 
         AudioManager.update();
         if(player[0].isDead()){
+            if(pause) pause = false;
             enemyManager.updateOnlyAnimations();
             fade.update(transitionContinue);
             if(fade.isTransitionDone()){
-                gsm.setState(GameStateManager.PROGRESSROOM);
+                gsm.setState(GameStateManager.PROGRESSROOMMP);
                 glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
                 return;
             }

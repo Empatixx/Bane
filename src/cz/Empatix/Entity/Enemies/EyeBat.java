@@ -4,6 +4,7 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
@@ -105,7 +106,74 @@ public class EyeBat extends Enemy {
 
         currentAction = IDLE;
 
-        laserBeam = new LaserBeam(tm,player);
+        laserBeam = new LaserBeam(tm,this.player);
+        beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+    }
+
+    public EyeBat(TileMap tm, Player[] player) {
+
+        super(tm,player);
+
+        moveSpeed = 2f;
+        maxSpeed = 8.5f;
+        stopSpeed = 1.6f;
+
+        width = 80;
+        height = 80;
+        cwidth = 80;
+        cheight = 80;
+        scale = 2;
+
+
+        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        damage = 1;
+
+        type = melee;
+        facingRight = true;
+
+        spriteSheetCols = 5;
+        spriteSheetRows = 1;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\eyebat.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\eyebat.tga");
+            Sprite[] sprites = new Sprite[5];
+            for(int i = 0; i < sprites.length; i++) {
+                //Sprite sprite = new Sprite(texCoords);
+                Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(125);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 2x
+        width *= scale;
+        height *= scale;
+        cwidth *= scale;
+        cheight *= scale;
+
+        createShadow();
+
+        currentAction = IDLE;
+
+        laserBeam = new LaserBeam(tm,this.player);
         beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
     }
 
@@ -154,6 +222,7 @@ public class EyeBat extends Enemy {
         }
     }
 
+    @Override
     public void update() {
         setMapPosition();
         if(isSpawning()) return;
@@ -165,8 +234,9 @@ public class EyeBat extends Enemy {
         // ENEMY AI
         EnemyAI();
 
-        if(currentAction == IDLE && System.currentTimeMillis() - InGame.deltaPauseTime() - beamCooldown > 5000 && position.distance(player.getPosition()) > 550
-                && position.distance(player.getPosition()) < 1500
+        int indexPlayer = theClosestPlayerIndex();
+        if(currentAction == IDLE && System.currentTimeMillis() - InGame.deltaPauseTime() - beamCooldown > 5000 && position.distance(player[indexPlayer].getPosition()) > 550
+                && position.distance(player[indexPlayer].getPosition()) < 1500
             && canShot()){
             currentAction = BEAM;
             if(facingRight){
@@ -195,7 +265,8 @@ public class EyeBat extends Enemy {
         // update position
         getNextPosition();
         checkTileMapCollision();
-        setPosition(temp.x, temp.y);
+        if(MultiplayerManager.getInstance().isHost())setPosition(temp.x, temp.y);
+        super.update();
     }
 
     @Override
@@ -270,11 +341,11 @@ public class EyeBat extends Enemy {
     private static class LaserBeam extends MapObject {
         private Vector3f originalPos;
         double angle;
-        private Player p;
+        private Player[] player;
 
-        LaserBeam(TileMap tm, Player p) {
+        LaserBeam(TileMap tm, Player[] p) {
             super(tm);
-            this.p = p;
+            this.player = p;
             width = 810;
             height = 45;
             cwidth = 810;
@@ -334,8 +405,10 @@ public class EyeBat extends Enemy {
         void resetAnimation(){
             animation.setFrames(spritesheet.getSprites(0));
 
-            float y = originalPos.y - p.getY();
-            float x = originalPos.x - p.getX();
+            int indexPlayer = theClosestPlayerIndex();
+
+            float y = originalPos.y - player[indexPlayer].getY();
+            float x = originalPos.x - player[indexPlayer].getX();
             float angle = (float) Math.atan(y / x);
             this.angle += (angle - this.angle);
             position.x = originalPos.x + (width / 2 - 50) * (float) Math.cos(this.angle);
@@ -348,8 +421,11 @@ public class EyeBat extends Enemy {
         public void update() {
             animation.update();
             setMapPosition();
-            float y = originalPos.y - p.getY();
-            float x = originalPos.x - p.getX();
+
+            int indexPlayer = theClosestPlayerIndex();
+
+            float y = originalPos.y - player[indexPlayer].getY();
+            float x = originalPos.x - player[indexPlayer].getX();
             float angle = (float) Math.atan(y / x);
             if (!facingRight){
                 angle += Math.PI;
@@ -380,8 +456,8 @@ public class EyeBat extends Enemy {
             position.x = originalPos.x + (width / 2 - 50) * (float) Math.cos(this.angle);
             position.y = originalPos.y + (width / 2 - 50) * (float) Math.sin(this.angle);
 
-            if (intersects(p) && canHit()){
-                p.hit(0);
+            if (intersects(player[indexPlayer]) && canHit()){
+                player[indexPlayer].hit(0);
             }
             for (RoomObject object : tileMap.getRoomMapObjects()) {
                 if (object instanceof DestroyableObject){
@@ -614,6 +690,27 @@ public class EyeBat extends Enemy {
 
             return true;
         }
+        /**
+         *
+         * @return index of the closest player to enemy
+         */
+        public int theClosestPlayerIndex(){
+            int theClosest = 0;
+            float prevDistance = -1,distance;
+            for(int i = 0;i<player.length-1;i++){
+                Player secPlayer = player[i+1];
+                Player curPlayer = player[i];
+                if(secPlayer == null) break;
+                distance = (float)Math.sqrt(Math.pow(secPlayer.getX()-curPlayer.getX(),2)+Math.pow(secPlayer.getY()-curPlayer.getY(),2));
+                if(prevDistance == -1){
+                    prevDistance = distance;
+                } else if (prevDistance > distance){
+                    prevDistance = distance;
+                    theClosest = i+1;
+                }
+            }
+            return theClosest;
+        }
     }
     private boolean canShot(){
         Vector2f[] tilePoints = new Vector2f[4];
@@ -657,7 +754,8 @@ public class EyeBat extends Enemy {
         // get it in our additive vector form
         point12.sub(point11,r);
         Vector2f point21 = new Vector2f(position.x,position.y);
-        Vector2f point22 = new Vector2f(player.getX(),player.getY());
+        int indexPlayer = theClosestPlayerIndex();
+        Vector2f point22 = new Vector2f(player[indexPlayer].getX(),player[indexPlayer].getY());
         point22.sub(point21,s);
 
         // we use this again so only calc once

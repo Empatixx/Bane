@@ -1,12 +1,15 @@
 package cz.Empatix.Guns;
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
@@ -40,8 +43,8 @@ public class M4 extends Weapon {
     private int speedBullet;
 
 
-   M4(TileMap tm, Player player){
-        super(tm,player);
+   M4(TileMap tm, Player player, GunsManager gunsManager){
+        super(tm,player,gunsManager);
         source.setVolume(0.15f);
         mindamage = 2;
         maxdamage = 2;
@@ -102,6 +105,22 @@ public class M4 extends Weapon {
             int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
             bullet.setDamage(damage);
             bullets.add(bullet);
+            if(MultiplayerManager.multiplayer){
+                Network.AddBullet addBullet = new Network.AddBullet();
+                addBullet.x = x;
+                addBullet.y = y;
+                addBullet.px = px;
+                addBullet.py = py;
+                addBullet.inaccuracy = (float)inaccuracy;
+                addBullet.speed = speedBullet;
+                addBullet.damage = damage;
+                addBullet.critical = bullet.isCritical();
+
+                addBullet.indexWeapon = gunsManager.getIndexOfCurrentWeapon();
+
+                Client client = MultiplayerManager.getInstance().client.getClient();
+                client.sendTCP(addBullet);
+            }
             GunsManager.bulletShooted++;
             bonusShots--;
             currentMagazineAmmo--;
@@ -123,6 +142,22 @@ public class M4 extends Weapon {
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                     bullet.setDamage(damage);
                     bullets.add(bullet);
+                    if(MultiplayerManager.multiplayer){
+                        Network.AddBullet addBullet = new Network.AddBullet();
+                        addBullet.x = x;
+                        addBullet.y = y;
+                        addBullet.px = px;
+                        addBullet.py = py;
+                        addBullet.inaccuracy = (float)inaccuracy;
+                        addBullet.speed = 30;
+                        addBullet.damage = damage;
+                        addBullet.critical = bullet.isCritical();
+
+                        addBullet.indexWeapon = gunsManager.getIndexOfCurrentWeapon();
+
+                        Client client = MultiplayerManager.getInstance().client.getClient();
+                        client.sendTCP(addBullet);
+                    }
                     currentMagazineAmmo--;
                     GunsManager.bulletShooted++;
                     source.play(soundShoot);
@@ -266,5 +301,14 @@ public class M4 extends Weapon {
         for(Bullet bullet : bullets){
             bullet.loadSave();
         }
+    }
+    @Override
+    public void handleBulletPacket(Network.AddBullet addBullet) {
+        Bullet bullet = new Bullet(tm,addBullet.x,addBullet.y,addBullet.inaccuracy,addBullet.speed);
+        bullet.setCritical(addBullet.critical);
+        bullet.setDamage(addBullet.damage);
+        bullet.setPosition(addBullet.px, addBullet.py);
+
+        bullets.add(bullet);
     }
 }

@@ -4,6 +4,7 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemies.Projectiles.Slimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -33,6 +34,77 @@ public class Slime extends Enemy {
         Loader.loadImage("Textures\\Sprites\\Enemies\\slime.tga");
     }
     public Slime(TileMap tm, Player player) {
+
+        super(tm,player);
+
+        moveSpeed = 0.6f;
+        maxSpeed = 1.6f;
+        stopSpeed = 0.5f;
+
+        width = 64;
+        height = 48;
+        cwidth = 64;
+        cheight = 48;
+        scale = 2;
+
+        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        damage = 1;
+
+        type = melee;
+        facingRight = true;
+
+        spriteSheetCols = 6;
+        spriteSheetRows = 2;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
+            Sprite[] sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                Sprite sprite = new Sprite(5,i,0,32,24,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[6];
+            for(int i = 0; i < sprites.length; i++) {
+                Sprite sprite = new Sprite(5,i,1,32,24,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(175);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 2x
+        width *= 2;
+        height *= 2;
+        cwidth *= 2;
+        cheight *= 2;
+
+        bullets = new ArrayList<>(20);
+
+        createShadow();
+
+    }
+
+    public Slime(TileMap tm, Player[] player) {
 
         super(tm,player);
 
@@ -148,6 +220,7 @@ public class Slime extends Enemy {
         }
     }
 
+    @Override
     public void update() {
         setMapPosition();
         if(isSpawning()) return;
@@ -159,9 +232,13 @@ public class Slime extends Enemy {
         for(int i = 0;i<bullets.size();i++){
             Slimebullet slimebullet = bullets.get(i);
             slimebullet.update();
-            if(slimebullet.intersects(player) && !player.isFlinching() && !player.isDead()){
-                slimebullet.setHit();
-                player.hit(1);
+            for(Player p : player){
+                if(p != null){
+                    if(slimebullet.intersects(p) && !p.isFlinching() && !p.isDead()){
+                        slimebullet.setHit();
+                        p.hit(1);
+                    }
+                }
             }
             for(RoomObject object: tileMap.getRoomMapObjects()){
                 if(object instanceof DestroyableObject) {
@@ -185,8 +262,10 @@ public class Slime extends Enemy {
         }
         else if(shootready && animation.getIndexOfFrame() == 2){
             shootready=false;
-            final int tileTargetX = px/tileSize;
-            final int tileTargetY = py/tileSize;
+            int playerIndex = theClosestPlayerIndex();
+
+            final int tileTargetX = px[playerIndex]/tileSize;
+            final int tileTargetY = py[playerIndex]/tileSize;
 
             final int tileEnemyX = (int)position.x/tileSize;
             final int tileEnemyY = (int)position.y/tileSize;
@@ -194,7 +273,7 @@ public class Slime extends Enemy {
             if (Math.abs(tileEnemyX - tileTargetX) <= 12 && Math.abs(tileEnemyY - tileTargetY) <= 12) {
 
                 for (int i = 0; i < 5; i++) {
-                    Slimebullet slimebullet = new Slimebullet(tileMap, px - position.x, py - position.y, 1.3 * i);
+                    Slimebullet slimebullet = new Slimebullet(tileMap, px[playerIndex] - position.x, py[playerIndex] - position.y, 1.3 * i);
                     slimebullet.setPosition(position.x, position.y);
                     bullets.add(slimebullet);
                 }
@@ -207,7 +286,8 @@ public class Slime extends Enemy {
         getNextPosition();
         checkTileMapCollision();
 
-        setPosition(temp.x, temp.y);
+        if(MultiplayerManager.getInstance().isHost())setPosition(temp.x, temp.y);
+        super.update();
     }
 
     public void draw() {

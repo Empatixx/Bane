@@ -23,6 +23,9 @@ public class MMRoom implements Serializable {
         discovered = false;
         sideRooms = new MMRoom[4];
     }
+    /*
+    index - right(3),left(2),bottom(1),up(0)
+     */
     public void addSideRoom(MMRoom room,int index){
         sideRooms[index] = room;
     }

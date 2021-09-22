@@ -7,6 +7,7 @@ import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
 import cz.Empatix.Render.RoomObjects.RoomObject;
@@ -30,8 +31,8 @@ public class Grenadelauncher extends Weapon {
 
     private ArrayList<Grenadebullet> bullets;
 
-    Grenadelauncher(TileMap tm, Player player){
-        super(tm,player);
+    Grenadelauncher(TileMap tm, Player player, GunsManager gunsManager){
+        super(tm,player,gunsManager);
         name = "Grenade Launcher";
         mindamage = 4;
         maxdamage = 7;
@@ -208,5 +209,14 @@ public class Grenadelauncher extends Weapon {
         for(Grenadebullet grenadebullet : bullets){
             grenadebullet.loadSave();
         }
+    }
+    @Override
+    public void handleBulletPacket(Network.AddBullet addBullet) {
+        Grenadebullet bullet = new Grenadebullet(tm,addBullet.x,addBullet.y,addBullet.inaccuracy,addBullet.speed);
+        bullet.setCritical(addBullet.critical);
+        bullet.setDamage(addBullet.damage);
+        bullet.setPosition(addBullet.px, addBullet.py);
+
+        bullets.add(bullet);
     }
 }

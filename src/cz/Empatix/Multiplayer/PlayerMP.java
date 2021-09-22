@@ -21,6 +21,8 @@ public class PlayerMP extends Player {
 
         mpManager = MultiplayerManager.getInstance();
 
+        setHealth(2000);
+
     }
 
     public void setOrigin(boolean origin) {

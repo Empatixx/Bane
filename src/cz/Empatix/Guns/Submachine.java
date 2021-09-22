@@ -1,12 +1,15 @@
 package cz.Empatix.Guns;
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
@@ -36,8 +39,8 @@ public class Submachine extends Weapon{
     private ArrayList<Bullet> bullets;
     private boolean chanceToNotConsumeAmmo;
 
-    Submachine(TileMap tm, Player player){
-        super(tm,player);
+    Submachine(TileMap tm, Player player, GunsManager gunsManager){
+        super(tm,player,gunsManager);
         source.setVolume(0.15f);
         mindamage = 1;
         maxdamage = 2;
@@ -110,6 +113,22 @@ public class Submachine extends Weapon{
                     }
                     bullet.setDamage(damage);
                     bullets.add(bullet);
+                    if(MultiplayerManager.multiplayer){
+                        Network.AddBullet addBullet = new Network.AddBullet();
+                        addBullet.x = x;
+                        addBullet.y = y;
+                        addBullet.px = px;
+                        addBullet.py = py;
+                        addBullet.inaccuracy = (float)inaccuracy;
+                        addBullet.speed = 30;
+                        addBullet.damage = damage;
+                        addBullet.critical = bullet.isCritical();
+
+                        addBullet.indexWeapon = gunsManager.getIndexOfCurrentWeapon();
+
+                        Client client = MultiplayerManager.getInstance().client.getClient();
+                        client.sendTCP(addBullet);
+                    }
                     if(chanceToNotConsumeAmmo){
                         if(Math.random() <= 0.8){
                             currentMagazineAmmo--;
@@ -254,5 +273,14 @@ public class Submachine extends Weapon{
         for(Bullet bullet : bullets){
             bullet.loadSave();
         }
+    }
+    @Override
+    public void handleBulletPacket(Network.AddBullet addBullet) {
+        Bullet bullet = new Bullet(tm,addBullet.x,addBullet.y,addBullet.inaccuracy,addBullet.speed);
+        bullet.setCritical(addBullet.critical);
+        bullet.setDamage(addBullet.damage);
+        bullet.setPosition(addBullet.px, addBullet.py);
+
+        bullets.add(bullet);
     }
 }

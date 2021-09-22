@@ -37,7 +37,7 @@ public abstract class MapObject implements Serializable {
 	protected float ymap;
 	
 	// position and vector
-	protected final Vector3f position;
+	protected volatile Vector3f position;
 	protected final Vector3f speed;
 
 	// dimensions

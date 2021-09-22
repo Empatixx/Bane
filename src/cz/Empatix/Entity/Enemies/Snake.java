@@ -87,6 +87,75 @@ public class Snake extends Enemy {
         createShadow();
     }
 
+    public Snake(TileMap tm, Player[] player) {
+
+        super(tm,player);
+
+        moveSpeed = 1.4f;
+        maxSpeed = 4.6f;
+        stopSpeed = 0.35f;
+
+        width = 64;
+        height = 64;
+        cwidth = 32;
+        cheight = 30;
+        scale = 3;
+
+
+        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        damage = 2;
+
+        type = melee;
+        facingRight = true;
+
+        spriteSheetCols = 9;
+        spriteSheetRows = 2;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\snake.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\snake.tga");
+            Sprite[] sprites = new Sprite[9];
+            for(int i = 0; i < sprites.length; i++) {
+                //Sprite sprite = new Sprite(texCoords);
+                Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[5];
+            for(int i = 0; i < sprites.length; i++) {
+                Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+        }
+        vboVertices = ModelManager.getModel(width,64);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,64);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(125);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 2x
+        width *= scale;
+        height *= scale;
+        cwidth *= scale;
+        cheight *= scale;
+
+        createShadow();
+    }
+
     private void getNextPosition() {
 
         // movement
@@ -132,6 +201,7 @@ public class Snake extends Enemy {
         }
     }
 
+    @Override
     public void update() {
         setMapPosition();
         if(isSpawning()) return;
@@ -149,12 +219,13 @@ public class Snake extends Enemy {
 
         setPosition(temp.x, temp.y);
 
-        float dist = position.distance(player.getPosition());
+        float dist = position.distance(player[0].getPosition());
         if(dist < 600){
             maxSpeed = 4.6f + 8.5f * (1f - dist/600);
         } else {
             maxSpeed = 4.6f;
         }
+        super.update();
     }
 
     @Override

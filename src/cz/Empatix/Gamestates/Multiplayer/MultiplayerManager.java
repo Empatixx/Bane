@@ -44,12 +44,13 @@ public class MultiplayerManager {
 
     public void close(){
         if(!multiplayer) return;
-        if(client.isLoggedIn()){
-            Network.Disconnect disconnect = new Network.Disconnect();
-            disconnect.username = getUsername();
-            client.getClient().sendTCP(disconnect);
-        }
+
+        Network.Disconnect disconnect = new Network.Disconnect();
+        disconnect.username = getUsername();
+        client.getClient().sendTCP(disconnect);
+
         multiplayer = false;
+
         if(isHost()) {
             server.close();
             server = null;

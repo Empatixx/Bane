@@ -6,6 +6,7 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemies.Projectiles.KingSlimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
@@ -47,6 +48,85 @@ public class KingSlime extends Enemy {
         Loader.loadImage("Textures\\Sprites\\Enemies\\slimeking.tga");
     }
     public KingSlime(TileMap tm, Player player) {
+        super(tm,player);
+
+        moveSpeed = 0.6f;
+        maxSpeed = 1.6f;
+        stopSpeed = 0.5f;
+
+        width = 64;
+        height = 48;
+        cwidth = 64;
+        cheight = 48;
+        scale = 5;
+
+        health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        damage = 1;
+
+        type = melee;
+        facingRight = true;
+        bullets=new ArrayList<>(100);
+
+        spriteSheetCols = 6;
+        spriteSheetRows = 2;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slimeking.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slimeking.tga");
+            Sprite[] sprites = new Sprite[4];
+            for(int i = 0; i < sprites.length; i++) {
+                Sprite sprite = new Sprite(5,i,0,32,24,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+            }
+            spritesheet.addSprites(sprites);
+
+            sprites = new Sprite[6];
+            for(int i = 0; i < sprites.length; i++) {
+                Sprite sprite = new Sprite(5,i,1,32,24,spriteSheetRows,spriteSheetCols);
+                sprites[i] = sprite;
+
+
+            }
+            spritesheet.addSprites(sprites);
+
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(IDLE));
+        animation.setDelay(175);
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+        // because of scaling image by 2x
+        width *= scale;
+        height *= scale;
+        cwidth *= scale;
+        cheight *= scale;
+
+        angle=0;
+        chestCreated=false;
+
+        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,49,3);
+        healthBar.initHealth(health,maxHealth);
+
+        createShadow();
+
+        directionChangeCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
+        invertDirection = false;
+
+    }
+    // multiplayer
+    public KingSlime(TileMap tm, Player[] player) {
         super(tm,player);
 
         moveSpeed = 0.6f;
@@ -170,6 +250,7 @@ public class KingSlime extends Enemy {
         }
     }
 
+    @Override
     public void update() {
         setMapPosition();
         healthBar.update(health,maxHealth);
@@ -193,9 +274,13 @@ public class KingSlime extends Enemy {
         for(int i = 0;i<bullets.size();i++){
             KingSlimebullet slimebullet = bullets.get(i);
             slimebullet.update();
-            if(slimebullet.intersects(player) && !player.isFlinching() && !player.isDead()){
-                slimebullet.setHit();
-                player.hit(1);
+            for(Player p : player){
+                if(p != null){
+                    if(slimebullet.intersects(p) && !p.isFlinching() && !p.isDead()){
+                        slimebullet.setHit();
+                        p.hit(1);
+                    }
+                }
             }
             if(slimebullet.shouldRemove()) {
                 bullets.remove(i);
@@ -218,10 +303,12 @@ public class KingSlime extends Enemy {
             for (int i = 0; i < 5; ) {
                 double inaccuracy = 0.055 * i;
 
+                int index = theClosestPlayerIndex();
+
                 KingSlimebullet slimebullet = new KingSlimebullet(
                         tileMap,
-                        px-position.x,
-                        py-position.y,
+                        px[index]-position.x,
+                        py[index]-position.y,
                         inaccuracy
                 );
                 slimebullet.setPosition(position.x, position.y);
@@ -285,7 +372,8 @@ public class KingSlime extends Enemy {
         // update position
         getNextPosition();
         checkTileMapCollision();
-        setPosition(temp.x, temp.y);
+        if(MultiplayerManager.getInstance().isHost())setPosition(temp.x, temp.y);
+        super.update();
     }
 
     public void draw() {

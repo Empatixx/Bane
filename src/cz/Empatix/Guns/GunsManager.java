@@ -5,15 +5,19 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class GunsManager {
     public static void load(){
@@ -56,17 +60,20 @@ public class GunsManager {
 
     private Image weaponBorder_hud;
 
+    //multiplayer
+    private ArrayList<Network.AddBullet> queueBulletPackets;
+    private Lock lock;
 
     public GunsManager(TileMap tileMap, Player p){
         weapons = new ArrayList<>();
-        weapons.add(new Pistol(tileMap,p));
-        weapons.add(new Shotgun(tileMap,p));
-        weapons.add(new Submachine(tileMap,p));
-        weapons.add(new Revolver(tileMap,p));
-        weapons.add(new Grenadelauncher(tileMap,p));
-        weapons.add(new Luger(tileMap,p));
-        weapons.add(new M4(tileMap,p));
-        weapons.add(new Thompson(tileMap,p));
+        weapons.add(new Pistol(tileMap,p,this));
+        weapons.add(new Shotgun(tileMap,p,this));
+        weapons.add(new Submachine(tileMap,p,this));
+        weapons.add(new Revolver(tileMap,p,this));
+        weapons.add(new Grenadelauncher(tileMap,p,this));
+        weapons.add(new Luger(tileMap,p,this));
+        weapons.add(new M4(tileMap,p,this));
+        weapons.add(new Thompson(tileMap,p,this));
 
 
         weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);
@@ -84,6 +91,11 @@ public class GunsManager {
 
         bulletShooted = 0;
         hitBullets = 0;
+
+        if(MultiplayerManager.multiplayer){
+            queueBulletPackets = new ArrayList<>();
+            lock = new ReentrantLock();
+        }
     }
     public void loadSave(){
         weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);
@@ -108,6 +120,21 @@ public class GunsManager {
         }
         if(current == null) return;
         current.update();
+
+        // multiplayer
+        if(MultiplayerManager.multiplayer){
+            for(Network.AddBullet addBullet : queueBulletPackets){
+                weapons.get(addBullet.indexWeapon).handleBulletPacket(addBullet);
+            }
+            try{
+                lock.lock();
+                if(!queueBulletPackets.isEmpty()) {
+                    queueBulletPackets.clear();
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
     }
     public void draw(){
         for(Weapon weapon : weapons){
@@ -244,5 +271,17 @@ public class GunsManager {
 
     public int getCurrentslot() {
         return currentslot;
+    }
+
+    public int getIndexOfCurrentWeapon(){
+        return weapons.indexOf(current);
+    }
+    public void addBulletPacketToQueue(Network.AddBullet addBullet){
+        try{
+            lock.lock();
+            queueBulletPackets.add(addBullet);
+        } finally {
+            lock.unlock();
+        }
     }
 }

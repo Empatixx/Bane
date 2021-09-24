@@ -6,7 +6,6 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemies.Projectiles.KingSlimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
@@ -372,7 +371,7 @@ public class KingSlime extends Enemy {
         // update position
         getNextPosition();
         checkTileMapCollision();
-        if(MultiplayerManager.getInstance().isHost())setPosition(temp.x, temp.y);
+        setPosition(temp.x, temp.y);
         super.update();
     }
 

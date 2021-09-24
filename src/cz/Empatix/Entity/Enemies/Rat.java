@@ -3,7 +3,6 @@ package cz.Empatix.Entity.Enemies;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -223,7 +222,7 @@ public class Rat extends Enemy {
         getNextPosition();
         checkTileMapCollision();
 
-        if(MultiplayerManager.getInstance().isHost())setPosition(temp.x, temp.y);
+        setPosition(temp.x, temp.y);
         super.update();
     }
     @Override

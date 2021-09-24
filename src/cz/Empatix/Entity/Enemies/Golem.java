@@ -6,7 +6,6 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
@@ -397,7 +396,7 @@ public class Golem extends Enemy {
         // update position
         getNextPosition();
         checkTileMapCollision();
-        if(MultiplayerManager.getInstance().isHost())setPosition(temp.x, temp.y);
+        setPosition(temp.x, temp.y);
         super.update();
     }
 

@@ -27,88 +27,115 @@ public class ArrowTrap extends RoomObject {
     public boolean remove;
     private ArrayList<Arrow> arrows;
     public long arrowShootCooldown;
-    private Player player;
-    public ArrowTrap(TileMap tm, Player p){
+    private Player player[];
+    public ArrowTrap(TileMap tm, Player[] p){
         super(tm);
-        this.player = p;
-        arrows = new ArrayList<>();
-        width = 32;
-        height = 34;
-        cwidth = 32;
-        cheight = 34;
-        scale = 4;
+        if(tm.isServerSide()){
+            this.player = p;
+            arrows = new ArrayList<>();
+            width = 32;
+            height = 34;
+            cwidth = 32;
+            cheight = 34;
+            scale = 4;
 
-        facingRight = true;
-        flinching=false;
+            facingRight = true;
+            flinching=false;
 
-        spriteSheetCols = 2;
-        spriteSheetRows = 1;
+            animation = new Animation(2);
+            animation.setDelay(2000);
 
-        collision = false;
-        moveable=false;
-        preDraw = true;
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\arrowtrap.tga");
+            collision = false;
+            moveable=false;
+            preDraw = true;
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\arrowtrap.tga");
-            Sprite[] sprites = new Sprite[2];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float) i/spriteSheetCols,0,
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
 
-                                (float)i/spriteSheetCols,0.5f,
+            remove = false;
+        } else {
+            this.player = p;
+            arrows = new ArrayList<>();
+            width = 32;
+            height = 34;
+            cwidth = 32;
+            cheight = 34;
+            scale = 4;
 
-                                (1.0f+i)/spriteSheetCols,0.5f,
+            facingRight = true;
+            flinching=false;
 
-                                (1.0f+i)/spriteSheetCols,0
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
+            spriteSheetCols = 2;
+            spriteSheetRows = 1;
+
+            collision = false;
+            moveable=false;
+            preDraw = true;
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\arrowtrap.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\arrowtrap.tga");
+                Sprite[] sprites = new Sprite[2];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float) i/spriteSheetCols,0,
+
+                                    (float)i/spriteSheetCols,0.5f,
+
+                                    (1.0f+i)/spriteSheetCols,0.5f,
+
+                                    (1.0f+i)/spriteSheetCols,0
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
+
+                sprites = new Sprite[2];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float) i/spriteSheetCols,0.5f,
+
+                                    (float)i/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,0.5f
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
 
             }
-            spritesheet.addSprites(sprites);
-
-            sprites = new Sprite[2];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float) i/spriteSheetCols,0.5f,
-
-                                (float)i/spriteSheetCols,1,
-
-                                (1.0f+i)/spriteSheetCols,1,
-
-                                (1.0f+i)/spriteSheetCols,0.5f
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
-
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
             }
-            spritesheet.addSprites(sprites);
 
+            animation = new Animation();
+            animation.setDelay(2000);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            // because of scaling image by 8x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            remove = false;
         }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setDelay(2000);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 8x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        remove = false;
     }
 
     @Override
@@ -194,9 +221,13 @@ public class ArrowTrap extends RoomObject {
                 arrows.remove(arrow);
                 i--;
             }
-            if(arrow.intersects(player) && !player.isFlinching() && !player.isDead() && !arrow.isHit()){
-                player.hit(1);
-                arrow.setHit();
+            for(int j = 0;j<player.length;j++){
+                if(player[j] != null){
+                    if(arrow.intersects(player[j]) && !player[j].isFlinching() && !player[j].isDead() && !arrow.isHit()){
+                        player[j].hit(1);
+                        arrow.setHit();
+                    }
+                }
             }
            for(RoomObject roomObject:objects){
                if(roomObject.collision && roomObject != this && !arrow.isHit()){
@@ -265,150 +296,182 @@ public class ArrowTrap extends RoomObject {
         private boolean horizontal;
 
         public Arrow(TileMap tm, boolean horizontal) {
-
             super(tm);
-            this.horizontal = horizontal;
-            facingRight = true;
+            if(tm.isServerSide()){
+                this.horizontal = horizontal;
+                facingRight = true;
 
-            if(horizontal){
-                width = 32;
-                height = 32;
+                if(horizontal){
+                    width = 32;
+                    height = 32;
 
-                cwidth = 24;
-                cheight = 14;
-            }else {
-                width = 32;
-                height = 32;
+                    cwidth = 24;
+                    cheight = 14;
+                }else {
+                    width = 32;
+                    height = 32;
 
-                cwidth = 14;
-                cheight = 24;
-            }
-
-            scale = 4;
-
-            // load sprites
-            spriteSheetCols = 4;
-            spriteSheetRows = 2;
-
-            // try to find spritesheet if it was created once
-            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\arrow.tga");
-
-            // creating a new spritesheet
-            if (spritesheet == null){
-                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\arrow.tga");
-
-                Sprite[] images = new Sprite[4];
-
-                for(int i = 0; i < images.length; i++) {
-                    float[] texCoords =
-                            {
-                                    (float) i/spriteSheetCols,0,
-
-                                    (float) i/spriteSheetCols,1.0f/spriteSheetRows,
-
-                                    (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows,
-
-                                    (i+1.0f)/spriteSheetCols,0
-                            };
-                    Sprite sprite = new Sprite(texCoords);
-
-                    images[i] = sprite;
-
+                    cwidth = 14;
+                    cheight = 24;
                 }
-                spritesheet.addSprites(images);
 
-                images = new Sprite[3];
+                scale = 4;
 
-                for(int i = 0; i < images.length; i++) {
-                    float[] texCoords =
-                            {
-                                    (float)i/spriteSheetCols,0.5f,
-
-                                    (float)i/spriteSheetCols,1.0f,
-
-                                    (i+1.0f)/spriteSheetCols,1.0f,
-
-                                    (i+1.0f)/spriteSheetCols,0.5f
-                            };
-                    Sprite sprite = new Sprite(texCoords);
-
-                    images[i] = sprite;
-
-                }
-                spritesheet.addSprites(images);
-
-                // horizontal
-                images = new Sprite[3];
-
-                for(int i = 0; i < images.length; i++) {
-                    float[] texCoords =
-                            {
-                                    (i+1.0f)/spriteSheetCols,0,
-
-                                    (float)i/spriteSheetCols,0,
-
-                                    (float)i/spriteSheetCols,1.0f/spriteSheetRows,
-
-                                    (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows,
-
-                            };
-                    Sprite sprite = new Sprite(texCoords);
-
-                    images[i] = sprite;
-
-                }
-                spritesheet.addSprites(images);
-
-                images = new Sprite[3];
-
-                for(int i = 0; i < images.length; i++) {
-                    float[] texCoords =
-                            {
-                                    (i+1.0f)/spriteSheetCols,0.5f,
-
-                                    (float)i/spriteSheetCols,0.5f,
-
-                                    (float)i/spriteSheetCols,1.0f,
-
-                                    (i+1.0f)/spriteSheetCols,1.0f
-
-                            };
-                    Sprite sprite = new Sprite(texCoords);
-
-                    images[i] = sprite;
-
-                }
-                spritesheet.addSprites(images);
+                animation = new Animation(4);
+                animation.setDelay(140);
 
 
-            }
+                // because of scaling image by 2x
+                width *= scale;
+                height *= scale;
+                cwidth *= scale;
+                cheight *= scale;
 
-            vboVertices = ModelManager.getModel(width,height);
-            if (vboVertices == -1){
-                vboVertices = ModelManager.createModel(width,height);
-            }
-
-            animation = new Animation();
-            if(horizontal){
-                animation.setFrames(spritesheet.getSprites(horizontalSprites));
+                collisionBypass = System.currentTimeMillis() - InGame.deltaPauseTime();
             } else {
-                animation.setFrames(spritesheet.getSprites(verticalSprites));
+                this.horizontal = horizontal;
+                facingRight = true;
+
+                if(horizontal){
+                    width = 32;
+                    height = 32;
+
+                    cwidth = 24;
+                    cheight = 14;
+                }else {
+                    width = 32;
+                    height = 32;
+
+                    cwidth = 14;
+                    cheight = 24;
+                }
+
+                scale = 4;
+
+                // load sprites
+                spriteSheetCols = 4;
+                spriteSheetRows = 2;
+
+                // try to find spritesheet if it was created once
+                spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\arrow.tga");
+
+                // creating a new spritesheet
+                if (spritesheet == null){
+                    spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\arrow.tga");
+
+                    Sprite[] images = new Sprite[4];
+
+                    for(int i = 0; i < images.length; i++) {
+                        float[] texCoords =
+                                {
+                                        (float) i/spriteSheetCols,0,
+
+                                        (float) i/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                        (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                        (i+1.0f)/spriteSheetCols,0
+                                };
+                        Sprite sprite = new Sprite(texCoords);
+
+                        images[i] = sprite;
+
+                    }
+                    spritesheet.addSprites(images);
+
+                    images = new Sprite[3];
+
+                    for(int i = 0; i < images.length; i++) {
+                        float[] texCoords =
+                                {
+                                        (float)i/spriteSheetCols,0.5f,
+
+                                        (float)i/spriteSheetCols,1.0f,
+
+                                        (i+1.0f)/spriteSheetCols,1.0f,
+
+                                        (i+1.0f)/spriteSheetCols,0.5f
+                                };
+                        Sprite sprite = new Sprite(texCoords);
+
+                        images[i] = sprite;
+
+                    }
+                    spritesheet.addSprites(images);
+
+                    // horizontal
+                    images = new Sprite[3];
+
+                    for(int i = 0; i < images.length; i++) {
+                        float[] texCoords =
+                                {
+                                        (i+1.0f)/spriteSheetCols,0,
+
+                                        (float)i/spriteSheetCols,0,
+
+                                        (float)i/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                        (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                };
+                        Sprite sprite = new Sprite(texCoords);
+
+                        images[i] = sprite;
+
+                    }
+                    spritesheet.addSprites(images);
+
+                    images = new Sprite[3];
+
+                    for(int i = 0; i < images.length; i++) {
+                        float[] texCoords =
+                                {
+                                        (i+1.0f)/spriteSheetCols,0.5f,
+
+                                        (float)i/spriteSheetCols,0.5f,
+
+                                        (float)i/spriteSheetCols,1.0f,
+
+                                        (i+1.0f)/spriteSheetCols,1.0f
+
+                                };
+                        Sprite sprite = new Sprite(texCoords);
+
+                        images[i] = sprite;
+
+                    }
+                    spritesheet.addSprites(images);
+
+
+                }
+
+                vboVertices = ModelManager.getModel(width,height);
+                if (vboVertices == -1){
+                    vboVertices = ModelManager.createModel(width,height);
+                }
+
+                animation = new Animation();
+                if(horizontal){
+                    animation.setFrames(spritesheet.getSprites(horizontalSprites));
+                } else {
+                    animation.setFrames(spritesheet.getSprites(verticalSprites));
+                }
+
+                animation.setDelay(140);
+
+                shader = ShaderManager.getShader("shaders\\shader");
+                if (shader == null){
+                    shader = ShaderManager.createShader("shaders\\shader");
+                }
+
+                // because of scaling image by 2x
+                width *= scale;
+                height *= scale;
+                cwidth *= scale;
+                cheight *= scale;
+
+                collisionBypass = System.currentTimeMillis() - InGame.deltaPauseTime();
             }
-
-            animation.setDelay(140);
-
-            shader = ShaderManager.getShader("shaders\\shader");
-            if (shader == null){
-                shader = ShaderManager.createShader("shaders\\shader");
-            }
-
-            // because of scaling image by 2x
-            width *= scale;
-            height *= scale;
-            cwidth *= scale;
-            cheight *= scale;
-
-            collisionBypass = System.currentTimeMillis() - InGame.deltaPauseTime();
 
         }
         public void loadSave(){
@@ -542,10 +605,14 @@ public class ArrowTrap extends RoomObject {
         public void setHit() {
             if(hit) return;
             hit = true;
-            if(horizontal){
-                animation.setFrames(spritesheet.getSprites(horizontalHitSprites));
+            if(tileMap.isServerSide()){
+                animation = new Animation(3);
             } else {
-                animation.setFrames(spritesheet.getSprites(verticalHitSprites));
+                if(horizontal){
+                    animation.setFrames(spritesheet.getSprites(horizontalHitSprites));
+                } else {
+                    animation.setFrames(spritesheet.getSprites(verticalHitSprites));
+                }
             }
             animation.setDelay(90);
             speed.x = 0;
@@ -587,6 +654,7 @@ public class ArrowTrap extends RoomObject {
         }
     }
     public void setType(int type){
+        if(tileMap.isServerSide()) return;
         animation.setFrames(spritesheet.getSprites(type == TOP ? 0 : 1));
         if(type == RIGHT) facingRight = false;
         else facingRight = true;

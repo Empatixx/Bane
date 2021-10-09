@@ -54,7 +54,9 @@ public class Source {
             AL10.alSourcef(sourceId,AL10.AL_GAIN,volume* Settings.OVERALL * Settings.EFFECTS);
         }
     }
-    public void setPitch(float pitch) { AL10.alSourcef(sourceId,AL10.AL_PITCH,pitch);}
+    public void setPitch(float pitch) {
+        if(!AudioManager.hasAudio()) return;
+        AL10.alSourcef(sourceId,AL10.AL_PITCH,pitch);}
     public void pause(){
         if(!AudioManager.hasAudio()) return;
         AL10.alSourcePause(sourceId);

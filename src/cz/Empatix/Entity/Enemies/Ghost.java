@@ -90,117 +90,97 @@ public class Ghost extends Enemy {
 
     }
     public Ghost(TileMap tm, Player[] player) {
-
         super(tm,player);
+        if(tm.isServerSide()){
+            moveSpeed = 1.4f;
+            maxSpeed = 7.2f;
+            stopSpeed = 0.3f;
 
-        moveSpeed = 1.4f;
-        maxSpeed = 7.2f;
-        stopSpeed = 0.3f;
+            width = 22;
+            height = 28;
+            cwidth = 22;
+            cheight = 28;
+            scale = 5;
 
-        width = 22;
-        height = 28;
-        cwidth = 22;
-        cheight = 28;
-        scale = 5;
+            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 2;
 
+            type = melee;
+            facingRight = true;
 
-        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
-        damage = 2;
+            animation = new Animation(4);
+            animation.setDelay(100);
 
-        type = melee;
-        facingRight = true;
-
-        spriteSheetCols = 5;
-        spriteSheetRows = 2;
-
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\ghost.tga");
-
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\ghost.tga");
-            Sprite[] sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                //Sprite sprite = new Sprite(texCoords);
-                Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
-
-            sprites = new Sprite[5];
-            for(int i = 0; i < sprites.length; i++) {
-                Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
-        }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(100);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        createShadow();
-
-    }
-    private void getNextPosition() {
-
-        // movement
-        if(left) {
-            speed.x -= moveSpeed;
-            if(speed.x < -maxSpeed) {
-                speed.x = -maxSpeed;
-            }
-        }
-        else if(right) {
-            speed.x += moveSpeed;
-            if(speed.x > maxSpeed) {
-                speed.x = maxSpeed;
-            }
-        }
-        else {
-            if (speed.x < 0){
-                speed.x += stopSpeed;
-                if (speed.x > 0) speed.x = 0;
-            } else if (speed.x > 0){
-                speed.x -= stopSpeed;
-                if (speed.x < 0) speed.x = 0;
-            }
-        }
-        if(down) {
-            speed.y += moveSpeed;
-            if (speed.y > maxSpeed){
-                speed.y = maxSpeed;
-            }
-        } else if (up){
-            speed.y -= moveSpeed;
-            if (speed.y < -maxSpeed){
-                speed.y = -maxSpeed;
-            }
+            // because of scaling image
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
         } else {
-            if (speed.y < 0){
-                speed.y += stopSpeed;
-                if (speed.y > 0) speed.y = 0;
-            } else if (speed.y > 0){
-                speed.y -= stopSpeed;
-                if (speed.y < 0) speed.y = 0;
+            moveSpeed = 1.4f;
+            maxSpeed = 7.2f;
+            stopSpeed = 0.3f;
+
+            width = 22;
+            height = 28;
+            cwidth = 22;
+            cheight = 28;
+            scale = 5;
+
+            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 2;
+
+            type = melee;
+            facingRight = true;
+
+            spriteSheetCols = 5;
+            spriteSheetRows = 2;
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\ghost.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\ghost.tga");
+                Sprite[] sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    //Sprite sprite = new Sprite(texCoords);
+                    Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
+
+                sprites = new Sprite[5];
+                for(int i = 0; i < sprites.length; i++) {
+                    Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
             }
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(IDLE));
+            animation.setDelay(100);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            // because of scaling image
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            createShadow();
         }
+
     }
 
     @Override
@@ -212,13 +192,6 @@ public class Ghost extends Enemy {
 
         if(dead) return;
 
-        // ENEMY AI
-        EnemyAI();
-
-        // update position
-        getNextPosition();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
         if(System.currentTimeMillis()-cdRush-InGame.deltaPauseTime() > 3000){
             cdRush = System.currentTimeMillis()-InGame.deltaPauseTime();
             maxSpeed = 14.4f;
@@ -228,6 +201,8 @@ public class Ghost extends Enemy {
             rush = false;
         }
         super.update();
+        movePacket();
+
     }
 
     @Override
@@ -237,8 +212,13 @@ public class Ghost extends Enemy {
         health -= damage;
         if(health < 0) health = 0;
         if(health == 0){
-            animation.setDelay(85);
-            animation.setFrames(spritesheet.getSprites(DEAD));
+            if(tileMap.isServerSide()){
+                animation = new Animation(5);
+                animation.setDelay(85);
+            } else {
+                animation.setFrames(spritesheet.getSprites(DEAD));
+                animation.setDelay(85);
+            }
             speed.x = 0;
             speed.y = 0;
             dead = true;

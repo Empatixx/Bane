@@ -33,7 +33,6 @@ public class Grenadelauncher extends Weapon {
 
     Grenadelauncher(TileMap tm, Player player, GunsManager gunsManager){
         super(tm,player,gunsManager);
-        name = "Grenade Launcher";
         mindamage = 4;
         maxdamage = 7;
         inaccuracy = 0.7f;
@@ -71,7 +70,18 @@ public class Grenadelauncher extends Weapon {
             criticalHits=true;
         }
     }
-
+    public Grenadelauncher(TileMap tm, Player player){
+        super(tm,player);
+        mindamage = 4;
+        maxdamage = 7;
+        inaccuracy = 0.7f;
+        maxAmmo = 24;
+        maxMagazineAmmo = 6;
+        type = 4;
+        currentAmmo = maxAmmo;
+        currentMagazineAmmo = maxMagazineAmmo;
+        bullets = new ArrayList<>();
+    }
     @Override
     public void reload() {
         if (!reloading && currentAmmo != 0 && currentMagazineAmmo != maxMagazineAmmo){
@@ -210,13 +220,18 @@ public class Grenadelauncher extends Weapon {
             grenadebullet.loadSave();
         }
     }
-    @Override
-    public void handleBulletPacket(Network.AddBullet addBullet) {
-        Grenadebullet bullet = new Grenadebullet(tm,addBullet.x,addBullet.y,addBullet.inaccuracy,addBullet.speed);
-        bullet.setCritical(addBullet.critical);
-        bullet.setDamage(addBullet.damage);
-        bullet.setPosition(addBullet.px, addBullet.py);
 
-        bullets.add(bullet);
+    @Override
+    public void handleBulletPacket(Network.AddBullet response) {
+
+    }
+    @Override
+    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
+
+    }
+
+    @Override
+    public void handleHitBullet(Network.HitBullet hitBullet) {
+
     }
 }

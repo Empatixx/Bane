@@ -56,6 +56,8 @@ public class EyeBat extends Enemy {
         cheight = 80;
         scale = 2;
 
+        animation = new Animation(5);
+        animation.setDelay(125);
 
         health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
         damage = 1;
@@ -110,114 +112,98 @@ public class EyeBat extends Enemy {
     }
 
     public EyeBat(TileMap tm, Player[] player) {
-
         super(tm,player);
+        if(tm.isServerSide()){
+            moveSpeed = 2f;
+            maxSpeed = 8.5f;
+            stopSpeed = 1.6f;
 
-        moveSpeed = 2f;
-        maxSpeed = 8.5f;
-        stopSpeed = 1.6f;
-
-        width = 80;
-        height = 80;
-        cwidth = 80;
-        cheight = 80;
-        scale = 2;
+            width = 80;
+            height = 80;
+            cwidth = 80;
+            cheight = 80;
+            scale = 2;
 
 
-        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
-        damage = 1;
+            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 1;
 
-        type = melee;
-        facingRight = true;
+            type = melee;
+            facingRight = true;
 
-        spriteSheetCols = 5;
-        spriteSheetRows = 1;
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\eyebat.tga");
+            createShadow();
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\eyebat.tga");
-            Sprite[] sprites = new Sprite[5];
-            for(int i = 0; i < sprites.length; i++) {
-                //Sprite sprite = new Sprite(texCoords);
-                Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
+            currentAction = IDLE;
 
-            }
-            spritesheet.addSprites(sprites);
-
-        }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(125);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 2x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        createShadow();
-
-        currentAction = IDLE;
-
-        laserBeam = new LaserBeam(tm,this.player);
-        beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
-    }
-
-    private void getNextPosition() {
-
-        // movement
-        if(left) {
-            speed.x -= moveSpeed;
-            if(speed.x < -maxSpeed) {
-                speed.x = -maxSpeed;
-            }
-        }
-        else if(right) {
-            speed.x += moveSpeed;
-            if(speed.x > maxSpeed) {
-                speed.x = maxSpeed;
-            }
-        }
-        else {
-            if (speed.x < 0){
-                speed.x += stopSpeed;
-                if (speed.x > 0) speed.x = 0;
-            } else if (speed.x > 0){
-                speed.x -= stopSpeed;
-                if (speed.x < 0) speed.x = 0;
-            }
-        }
-        if(down) {
-            speed.y += moveSpeed;
-            if (speed.y > maxSpeed){
-                speed.y = maxSpeed;
-            }
-        } else if (up){
-            speed.y -= moveSpeed;
-            if (speed.y < -maxSpeed){
-                speed.y = -maxSpeed;
-            }
+            laserBeam = new LaserBeam(tm,this.player);
+            beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
         } else {
-            if (speed.y < 0){
-                speed.y += stopSpeed;
-                if (speed.y > 0) speed.y = 0;
-            } else if (speed.y > 0){
-                speed.y -= stopSpeed;
-                if (speed.y < 0) speed.y = 0;
+            moveSpeed = 2f;
+            maxSpeed = 8.5f;
+            stopSpeed = 1.6f;
+
+            width = 80;
+            height = 80;
+            cwidth = 80;
+            cheight = 80;
+            scale = 2;
+
+
+            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 1;
+
+            type = melee;
+            facingRight = true;
+
+            spriteSheetCols = 5;
+            spriteSheetRows = 1;
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\eyebat.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\eyebat.tga");
+                Sprite[] sprites = new Sprite[5];
+                for(int i = 0; i < sprites.length; i++) {
+                    //Sprite sprite = new Sprite(texCoords);
+                    Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
+
             }
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(IDLE));
+            animation.setDelay(125);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            // because of scaling image by 2x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            createShadow();
+
+            currentAction = IDLE;
+
+            laserBeam = new LaserBeam(tm,this.player);
+            beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
         }
     }
 
@@ -265,7 +251,8 @@ public class EyeBat extends Enemy {
         getNextPosition();
         checkTileMapCollision();
         setPosition(temp.x, temp.y);
-        super.update();
+        movePacket();
+
     }
 
     @Override
@@ -413,7 +400,6 @@ public class EyeBat extends Enemy {
             position.x = originalPos.x + (width / 2 - 50) * (float) Math.cos(this.angle);
             position.y = originalPos.y + (width / 2 - 50) * (float) Math.sin(this.angle);
         }
-        void setFacingRight(boolean f){facingRight = f;}
 
         boolean isFacingRight(){return facingRight;}
 

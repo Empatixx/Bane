@@ -35,42 +35,63 @@ public class ArtefactDrop extends ItemDrop {
 
     public ArtefactDrop(TileMap tm, Artefact artefact){
         super(tm);
-        this.artefact = artefact;
-        type = ARTEFACT;
-        canDespawn = false;
-        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
-        pickedUp = false;
+        if(tm.isServerSide()){
+            this.artefact = artefact;
+            type = ARTEFACT;
+            canDespawn = false;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
 
-        Image imageOfWeapon = artefact.getImageArtefact();
+            //TODO: server side fix
+            Image imageOfWeapon = artefact.getImageArtefact();
 
-        width=cwidth=imageOfWeapon.getWidth();
-        height=cheight=imageOfWeapon.getHeight();
-        scale = artefact.getScale();
-        facingRight = true;
+            width=cwidth=imageOfWeapon.getWidth();
+            height=cheight=imageOfWeapon.getHeight();
+            scale = artefact.getScale();
+            facingRight = true;
 
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
+            cwidth*=scale;
+            cheight*=scale;
+
+            stopSpeed = 0.35f;
+        } else {
+            this.artefact = artefact;
+            type = ARTEFACT;
+            canDespawn = false;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
+
+            Image imageOfWeapon = artefact.getImageArtefact();
+
+            width=cwidth=imageOfWeapon.getWidth();
+            height=cheight=imageOfWeapon.getHeight();
+            scale = artefact.getScale();
+            facingRight = true;
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            vboTexturesWeapon = imageOfWeapon.getVboTextures();
+            vboVerticesWeapon = imageOfWeapon.getVboVertices();
+
+
+            textureId = imageOfWeapon.getIdTexture();
+            textureWidth = width;
+            textureHeight = height;
+
+            light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
+
+            cwidth*=scale;
+            cheight*=scale;
+
+            outlineShader = ShaderManager.getShader("shaders\\outline");
+            if (outlineShader == null){
+                outlineShader = ShaderManager.createShader("shaders\\outline");
+            }
+
+            stopSpeed = 0.35f;
         }
-        vboTexturesWeapon = imageOfWeapon.getVboTextures();
-        vboVerticesWeapon = imageOfWeapon.getVboVertices();
-
-
-        textureId = imageOfWeapon.getIdTexture();
-        textureWidth = width;
-        textureHeight = height;
-
-        light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
-
-        cwidth*=scale;
-        cheight*=scale;
-
-        outlineShader = ShaderManager.getShader("shaders\\outline");
-        if (outlineShader == null){
-            outlineShader = ShaderManager.createShader("shaders\\outline");
-        }
-
-        stopSpeed = 0.35f;
     }
     public ArtefactDrop(TileMap tm, Artefact artefact, float x, float y){
         super(tm);

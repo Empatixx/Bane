@@ -8,12 +8,8 @@ import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.Network;
-import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
-import cz.Empatix.Render.RoomObjects.DestroyableObject;
-import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -83,6 +79,23 @@ public class Luger extends Weapon {
         if(numUpgrades >= 4){
             criticalHits = true;
         }
+    }
+
+    public Luger(TileMap tm, Player player){
+        super(tm,player);
+        mindamage = 1;
+        maxdamage = 2;
+        inaccuracy = 0.8f;
+        maxAmmo = 120;
+        maxMagazineAmmo = 9;
+        delayTime = 250;
+        currentAmmo = maxAmmo;
+        currentMagazineAmmo = maxMagazineAmmo;
+        type = 1;
+        bullets = new ArrayList<>();
+
+        bonusShots = 0;
+        chanceBonusShots = 0.2f;
     }
 
     @Override
@@ -217,52 +230,7 @@ public class Luger extends Weapon {
 
     @Override
     public void checkCollisions(ArrayList<Enemy> enemies) {
-        ArrayList<RoomObject> objects = tm.getRoomMapObjects();
-        A: for(Bullet bullet:bullets){
-            for(Enemy enemy:enemies){
-                if(bullet.intersects(enemy) && enemy.canReflect()){
-                    Vector3f speed = bullet.getSpeed();
-                    speed.x = -speed.x;
-                    speed.y = -speed.y;
-                    bullet.setFriendlyFire(true);
-                    continue;
-                }
-                if(bullet.isFriendlyFire()){
-                    if(bullet.intersects(player) && !bullet.isHit() && !player.isDead() && !player.isFlinching()){
-                        player.hit(bullet.getDamage());
-                        bullet.setHit();
-                        GunsManager.hitBullets++;
-                    }
-                }
-                else if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
-                    enemy.hit(bullet.getDamage());
-                    int cwidth = enemy.getCwidth();
-                    int cheight = enemy.getCheight();
-                    int x = -cwidth/4+Random.nextInt(cwidth/2);
-                    if(bullet.isCritical()){
-                        DamageIndicator.addCriticalDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
-                                ,new Vector2f(-x/25f,-1f));
-                    } else {
-                        DamageIndicator.addDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
-                                ,new Vector2f(-x/25f,-1f));
-                    }
-                    bullet.playEnemyHit();
-                    bullet.setHit();
-                    GunsManager.hitBullets++;
-                    continue A;
-                }
-            }
-            for(RoomObject object: objects){
-                if(object instanceof DestroyableObject) {
-                    if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        bullet.playEnemyHit();
-                        bullet.setHit();
-                        ((DestroyableObject) object).setHit(bullet.getDamage());
-                        continue A;
-                    }
-                }
-            }
-        }
+        checkCollisionsBullets(enemies,bullets);
     }
 
     @Override
@@ -290,12 +258,15 @@ public class Luger extends Weapon {
         }
     }
     @Override
-    public void handleBulletPacket(Network.AddBullet addBullet) {
-        Bullet bullet = new Bullet(tm,addBullet.x,addBullet.y,addBullet.inaccuracy,addBullet.speed);
-        bullet.setCritical(addBullet.critical);
-        bullet.setDamage(addBullet.damage);
-        bullet.setPosition(addBullet.px, addBullet.py);
+    public void handleBulletPacket(Network.AddBullet response) {
 
-        bullets.add(bullet);
+    }
+    @Override
+    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
+
+    }
+    @Override
+    public void handleHitBullet(Network.HitBullet hitBullet) {
+
     }
 }

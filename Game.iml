@@ -8,6 +8,7 @@
       <excludeFolder url="file://$MODULE_DIR$/Zalohy" />
       <excludeFolder url="file://$MODULE_DIR$/src/cz/Empatix/Main/Multithreading" />
       <excludeFolder url="file://$MODULE_DIR$/src/cz/Empatix/Temp" />
+      <excludeFolder url="file://$MODULE_DIR$/src/cz/Empatix/Multiplayer/dd" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -17,7 +17,12 @@ public class Animation{
     public Animation() {
         playedOnce = false;
     }
-
+    // server animation
+    public Animation(int frames) {
+        playedOnce = false;
+        Sprite[] fakeSprites = new Sprite[frames];
+        setFrames(fakeSprites);
+    }
     public void setFrames(Sprite[] frames) {
         this.frames = frames;
         currentFrame = 0;
@@ -72,7 +77,7 @@ public class Animation{
 
     /**
      *
-     * @return¨index of current frame
+     * @return index of current frame
      */
     public int getIndexOfFrame(){
         return currentFrame;

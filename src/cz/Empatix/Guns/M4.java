@@ -1,21 +1,15 @@
 package cz.Empatix.Guns;
 
-import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.Network;
-import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
-import cz.Empatix.Render.RoomObjects.DestroyableObject;
-import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -84,6 +78,23 @@ public class M4 extends Weapon {
         }
     }
 
+    public M4(TileMap tm, Player player){
+        super(tm,player);
+        mindamage = 2;
+        maxdamage = 2;
+        inaccuracy = 0.5f;
+        maxAmmo = 250;
+        maxMagazineAmmo = 32;
+        delayTime = 750;
+        currentAmmo = maxAmmo;
+        currentMagazineAmmo = maxMagazineAmmo;
+        type = 1;
+        bullets = new ArrayList<>();
+
+        speedBullet = 30;
+
+    }
+
     @Override
     public void reload() {
         if (!reloading && currentAmmo != 0 && currentMagazineAmmo != maxMagazineAmmo){
@@ -105,22 +116,6 @@ public class M4 extends Weapon {
             int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
             bullet.setDamage(damage);
             bullets.add(bullet);
-            if(MultiplayerManager.multiplayer){
-                Network.AddBullet addBullet = new Network.AddBullet();
-                addBullet.x = x;
-                addBullet.y = y;
-                addBullet.px = px;
-                addBullet.py = py;
-                addBullet.inaccuracy = (float)inaccuracy;
-                addBullet.speed = speedBullet;
-                addBullet.damage = damage;
-                addBullet.critical = bullet.isCritical();
-
-                addBullet.indexWeapon = gunsManager.getIndexOfCurrentWeapon();
-
-                Client client = MultiplayerManager.getInstance().client.getClient();
-                client.sendTCP(addBullet);
-            }
             GunsManager.bulletShooted++;
             bonusShots--;
             currentMagazineAmmo--;
@@ -142,22 +137,6 @@ public class M4 extends Weapon {
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                     bullet.setDamage(damage);
                     bullets.add(bullet);
-                    if(MultiplayerManager.multiplayer){
-                        Network.AddBullet addBullet = new Network.AddBullet();
-                        addBullet.x = x;
-                        addBullet.y = y;
-                        addBullet.px = px;
-                        addBullet.py = py;
-                        addBullet.inaccuracy = (float)inaccuracy;
-                        addBullet.speed = 30;
-                        addBullet.damage = damage;
-                        addBullet.critical = bullet.isCritical();
-
-                        addBullet.indexWeapon = gunsManager.getIndexOfCurrentWeapon();
-
-                        Client client = MultiplayerManager.getInstance().client.getClient();
-                        client.sendTCP(addBullet);
-                    }
                     currentMagazineAmmo--;
                     GunsManager.bulletShooted++;
                     source.play(soundShoot);
@@ -234,52 +213,7 @@ public class M4 extends Weapon {
 
     @Override
     public void checkCollisions(ArrayList<Enemy> enemies) {
-        ArrayList<RoomObject> objects = tm.getRoomMapObjects();
-        A: for(Bullet bullet:bullets){
-            for(Enemy enemy:enemies){
-                if(bullet.intersects(enemy) && enemy.canReflect()){
-                    Vector3f speed = bullet.getSpeed();
-                    speed.x = -speed.x;
-                    speed.y = -speed.y;
-                    bullet.setFriendlyFire(true);
-                    continue;
-                }
-                if(bullet.isFriendlyFire()){
-                    if(bullet.intersects(player) && !bullet.isHit() && !player.isDead() && !player.isFlinching()){
-                        player.hit(bullet.getDamage());
-                        bullet.setHit();
-                        GunsManager.hitBullets++;
-                    }
-                }
-                else if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
-                    enemy.hit(bullet.getDamage());
-                    int cwidth = enemy.getCwidth();
-                    int cheight = enemy.getCheight();
-                    int x = -cwidth/4+ Random.nextInt(cwidth/2);
-                    if(bullet.isCritical()){
-                        DamageIndicator.addCriticalDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
-                                ,new Vector2f(-x/25f,-1f));
-                    } else {
-                        DamageIndicator.addDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
-                                ,new Vector2f(-x/25f,-1f));
-                    }
-                    bullet.playEnemyHit();
-                    bullet.setHit();
-                    GunsManager.hitBullets++;
-                    continue A;
-                }
-            }
-            for(RoomObject object: objects){
-                if(object instanceof DestroyableObject) {
-                    if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        bullet.playEnemyHit();
-                        bullet.setHit();
-                        ((DestroyableObject) object).setHit(bullet.getDamage());
-                        continue A;
-                    }
-                }
-            }
-        }
+        checkCollisionsBullets(enemies,bullets);
     }
     @Override
     public boolean canSwap() {
@@ -303,12 +237,15 @@ public class M4 extends Weapon {
         }
     }
     @Override
-    public void handleBulletPacket(Network.AddBullet addBullet) {
-        Bullet bullet = new Bullet(tm,addBullet.x,addBullet.y,addBullet.inaccuracy,addBullet.speed);
-        bullet.setCritical(addBullet.critical);
-        bullet.setDamage(addBullet.damage);
-        bullet.setPosition(addBullet.px, addBullet.py);
+    public void handleBulletPacket(Network.AddBullet response) {
 
-        bullets.add(bullet);
+    }
+    @Override
+    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
+
+    }
+    @Override
+    public void handleHitBullet(Network.HitBullet hitBullet) {
+
     }
 }

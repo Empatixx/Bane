@@ -23,7 +23,7 @@ public class MultiplayerManager {
         multiplayer = true;
         this.host = host;
         if(host) {
-            server = new GameServer(gsm);
+            server = new GameServer();
         }
 
         client = new GameClient(gsm,"localhost");

@@ -2,6 +2,7 @@ package cz.Empatix.Multiplayer;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
+import cz.Empatix.Guns.Bullet;
 
 // This class is a convenient place to keep things common to both the client and server.
 public class Network {
@@ -22,12 +23,19 @@ public class Network {
         kryo.register(MapLoaded.class);
         kryo.register(ChangeGamestate.class);
         kryo.register(RequestForPlayers.class);
+        kryo.register(Shoot.class);
+        kryo.register(WeaponInfo.class);
+        kryo.register(Reload.class);
         kryo.register(AddBullet.class);
         kryo.register(AddEnemy.class);
         kryo.register(MoveEnemy.class);
+        kryo.register(MoveBullet.class);
+        kryo.register(ConfirmChangeGS.class);
+        kryo.register(HitBullet.class);
+        kryo.register(Bullet.TypeHit.class);
 
     }
-
+    // MAIN
     public static class Join {
         public String username;
         public boolean host;
@@ -40,14 +48,11 @@ public class Network {
     }
     public static class MovePlayer {
         public String username;
-        public int x;
-        public int y;
+        public float x;
+        public float y;
         public boolean up,down,left,right;
     }
-    public static class MoveEnemy {
-        public float x,y;
-        public int id;
-    }
+    // PROGRESS ROOM + MAP GENERATION
     public static class Ready {
         public String username;
         public boolean state;
@@ -71,17 +76,49 @@ public class Network {
     public static class ChangeGamestate{
         public int gamestate;
     }
+    public static class ConfirmChangeGS {
+    }
+
+    // GUNS
+    public static class Shoot {
+        public float x,y;
+        public String username;
+    }
+    public static class Reload {
+        public String username;
+    }
     public static class AddBullet {
         public float x,y;
         public float px,py;
-        public boolean critical;
-        public float inaccuracy;
-        public int speed, damage;
         public int indexWeapon;
+        public int damage;
+        public boolean critical;
+        public int speed;
+        public float inaccuracy;
+        public int id;
+    }
+    public static class MoveBullet{
+        public float x,y;
+        public int id;
+    }
+    public static class HitBullet{
+        public Bullet.TypeHit type;
+        public int id;
+        public int idHit;
+    }
+    public static class MoveEnemy {
+        public float x,y;
+        public int id;
+        public boolean up,down,right,left,facingRight;
     }
     public static class AddEnemy {
         public float x,y;
         public String type;
         public int id;
+    }
+    public static class WeaponInfo {
+        public String username;
+        public int currentAmmo;
+        public int currentMagazineAmmo;
     }
 }

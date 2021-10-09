@@ -20,11 +20,10 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.awt.*;
-import java.io.Serializable;
 
 import static org.lwjgl.opengl.GL20.*;
 
-public abstract class MapObject implements Serializable {
+public abstract class MapObject {
 
 	public static void load(){
 		Loader.loadImage("Textures\\shadow.tga");
@@ -37,7 +36,7 @@ public abstract class MapObject implements Serializable {
 	protected float ymap;
 	
 	// position and vector
-	protected volatile Vector3f position;
+	protected Vector3f position;
 	protected final Vector3f speed;
 
 	// dimensions
@@ -393,6 +392,7 @@ public abstract class MapObject implements Serializable {
 	 * Getting shifts of tilemap
 	 */
 	public void setMapPosition() {
+		if(tileMap.isServerSide()) return;
 		xmap = tileMap.getX();
 		ymap = tileMap.getY();
 	}
@@ -634,4 +634,7 @@ public abstract class MapObject implements Serializable {
 		return scale;
 	}
 
+	public void setFacingRight(boolean facingRight) {
+		this.facingRight = facingRight;
+	}
 }

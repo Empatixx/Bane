@@ -19,66 +19,89 @@ public class ShotgunAmmo extends ItemDrop{
     }
     public ShotgunAmmo(TileMap tm){
         super(tm);
-        type = SHOTGUNAMMO;
-        canDespawn = true;
-        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
-        pickedUp = false;
+        if(tm.isServerSide()){
+            type = SHOTGUNAMMO;
+            canDespawn = true;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
 
-        width = 16;
-        height = 45;
-        cwidth = 16;
-        cheight = 45;
-        scale = 1;
-        facingRight = true;
+            width = 16;
+            height = 45;
+            cwidth = 16;
+            cheight = 45;
+            scale = 1;
+            facingRight = true;
 
-        amount = Random.nextInt(8) + 5;
+            amount = Random.nextInt(8) + 5;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\shotgun_bullet.tga");
+            // because of scaling image by 3x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\shotgun_bullet.tga");
-            Sprite[] sprites = new Sprite[1];
-            float[] texCoords =
-                    {
-                            0,0,
+            stopSpeed = 0.35f;
+        } else {
+            type = SHOTGUNAMMO;
+            canDespawn = true;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
 
-                            0,1,
+            width = 16;
+            height = 45;
+            cwidth = 16;
+            cheight = 45;
+            scale = 1;
+            facingRight = true;
 
-                            1,1,
+            amount = Random.nextInt(8) + 5;
 
-                            1,0
-                    };
-            Sprite sprite = new Sprite(texCoords);
-            sprites[0] = sprite;
-            spritesheet.addSprites(sprites);
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\shotgun_bullet.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\shotgun_bullet.tga");
+                Sprite[] sprites = new Sprite[1];
+                float[] texCoords =
+                        {
+                                0,0,
+
+                                0,1,
+
+                                1,1,
+
+                                1,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[0] = sprite;
+                spritesheet.addSprites(sprites);
+            }
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(0));
+            animation.setDelay(-1);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+
+            // because of scaling image by 3x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
+
+
+            stopSpeed = 0.35f;
         }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(0));
-        animation.setDelay(-1);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-
-        // because of scaling image by 3x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
-
-
-        stopSpeed = 0.35f;
-
     }
 
     @Override

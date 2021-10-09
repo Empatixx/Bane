@@ -18,64 +18,84 @@ public class HealingPot extends ItemDrop{
     }
     public HealingPot(TileMap tm){
         super(tm);
-        type = HP;
-        canDespawn = true;
-        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
-        pickedUp = false;
+        if(tm.isServerSide()){
+            type = HP;
+            canDespawn = true;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
 
-        width = 32;
-        height = 32;
-        cwidth = 32;
-        cheight = 32;
-        scale = 2;
-        facingRight = true;
+            width = 32;
+            height = 32;
+            cwidth = 32;
+            cheight = 32;
+            scale = 2;
+            facingRight = true;
 
-        //amount = Random.nextInt(3) + 1;
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+            stopSpeed = 0.35f;
+        } else {
+            type = HP;
+            canDespawn = true;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\healingpot.tga");
+            width = 32;
+            height = 32;
+            cwidth = 32;
+            cheight = 32;
+            scale = 2;
+            facingRight = true;
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\healingpot.tga");
-            Sprite[] sprites = new Sprite[1];
-            float[] texCoords =
-                    {
-                            0.f,0.f,
+            //amount = Random.nextInt(3) + 1;
 
-                            0.f,1.f,
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\healingpot.tga");
 
-                            1.f,1.f,
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\healingpot.tga");
+                Sprite[] sprites = new Sprite[1];
+                float[] texCoords =
+                        {
+                                0.f,0.f,
 
-                            1.f,0.f
-                    };
-            Sprite sprite = new Sprite(texCoords);
-            sprites[0] = sprite;
-            spritesheet.addSprites(sprites);
+                                0.f,1.f,
+
+                                1.f,1.f,
+
+                                1.f,0.f
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[0] = sprite;
+                spritesheet.addSprites(sprites);
+            }
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(0));
+            animation.setDelay(-1);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+
+            // because of scaling image by 3x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            light = LightManager.createLight(new Vector3f(.0f,1.0f,.0f),new Vector2f(0,0),1.25f,this);
+
+            stopSpeed = 0.35f;
         }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(0));
-        animation.setDelay(-1);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-
-        // because of scaling image by 3x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        light = LightManager.createLight(new Vector3f(.0f,1.0f,.0f),new Vector2f(0,0),1.25f,this);
-
-        stopSpeed = 0.35f;
 
     }
 

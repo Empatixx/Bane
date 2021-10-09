@@ -1,8 +1,10 @@
 package cz.Empatix.Guns;
 
 import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
@@ -10,12 +12,8 @@ import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.Network;
-import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
-import cz.Empatix.Render.RoomObjects.DestroyableObject;
-import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -83,12 +81,25 @@ public class Pistol extends Weapon {
         }
 
     }
+    public Pistol(TileMap tm, Player player){
+        super(tm,player);
+        mindamage = 1;
+        maxdamage = 3;
+        inaccuracy = 0.8f;
+        maxAmmo = 120;
+        maxMagazineAmmo = 7;
+        delayTime = 250;
+        currentAmmo = maxAmmo;
+        currentMagazineAmmo = maxMagazineAmmo;
+        type = 1;
+        bullets = new ArrayList<>();
+    }
 
     @Override
     public void reload() {
         if (!reloading && currentAmmo != 0 && currentMagazineAmmo != maxMagazineAmmo){
             reloadDelay = System.currentTimeMillis() - InGame.deltaPauseTime();
-            reloadsource.play(soundReload);
+            if(!tm.isServerSide())reloadsource.play(soundReload);
             reloading = true;
 
             dots = 0;
@@ -97,100 +108,110 @@ public class Pistol extends Weapon {
 
     @Override
     public void shot(float x,float y,float px,float py) {
-        long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-        if(doubleShots && delta > 75 && secondShotReady){
-            double inaccuracy = 0;
-            delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-            Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,30);
-            bullet.setPosition(px, py);
-            int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
-            if(criticalHits){
-                if(Math.random() > 0.9){
-                    damage*=2;
-                    bullet.setCritical(true);
+        if(MultiplayerManager.multiplayer && !tm.isServerSide()){
+            if(isShooting()) {
+                if (currentMagazineAmmo != 0) {
+                    if (reloading) return;
+                    Network.Shoot shoot = new Network.Shoot();
+                    shoot.username = MultiplayerManager.getInstance().getUsername();
+                    shoot.x = x;
+                    shoot.y = y;
+                    Client client = MultiplayerManager.getInstance().client.getClient();
+                    client.sendTCP(shoot);
+                } else if (currentAmmo != 0) {
+                    Network.Reload reload = new Network.Reload();
+                    reload.username = MultiplayerManager.getInstance().getUsername();
+                    Client client = MultiplayerManager.getInstance().client.getClient();
+                    client.sendTCP(reload);
+                    reload();
+                } else {
+                    source.play(soundEmptyShoot);
+                    outOfAmmo();
                 }
-            }
-            bullet.setDamage(damage);
-            bullets.add(bullet);
-            if(MultiplayerManager.multiplayer){
-                Network.AddBullet addBullet = new Network.AddBullet();
-                addBullet.x = x;
-                addBullet.y = y;
-                addBullet.px = px;
-                addBullet.py = py;
-                addBullet.inaccuracy = (float)inaccuracy;
-                addBullet.speed = 30;
-                addBullet.damage = damage;
-                addBullet.critical = bullet.isCritical();
+                setShooting(false);
 
-                addBullet.indexWeapon = gunsManager.getIndexOfCurrentWeapon();
-
-                Client client = MultiplayerManager.getInstance().client.getClient();
-                client.sendTCP(addBullet);
             }
-            currentMagazineAmmo--;
-            GunsManager.bulletShooted++;
-            secondShotReady=false;
-        }
-        if(isShooting()) {
-            if (currentMagazineAmmo != 0) {
-                if (reloading) return;
-                // delta - time between shoots
-                // InGame.deltaPauseTime(); returns delayed time because of pause time
-                if (delta > delayTime) {
-                    double inaccuracy = 0;
-                    if (delta < 400) {
-                        inaccuracy = 0.055 * 400 / delta * (Random.nextInt(2) * 2 - 1);
+        } else {
+            long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
+            if(doubleShots && delta > 75 && secondShotReady){
+                double inaccuracy = 0;
+                delay = System.currentTimeMillis() - InGame.deltaPauseTime();
+                Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,30);
+                bullet.setPosition(px, py);
+                int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                if(criticalHits){
+                    if(Math.random() > 0.9){
+                        damage*=2;
+                        bullet.setCritical(true);
                     }
-                    delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
-                    bullet.setPosition(px, py);
-                    int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
-                    if(criticalHits){
-                        if(Math.random() > 0.9){
-                            damage*=2;
-                            bullet.setCritical(true);
+                }
+                bullet.setDamage(damage);
+                bullets.add(bullet);
+                currentMagazineAmmo--;
+                GunsManager.bulletShooted++;
+                secondShotReady=false;
+            }
+            if(isShooting()) {
+                if (currentMagazineAmmo != 0) {
+                    if (reloading) return;
+                    // delta - time between shoots
+                    // InGame.deltaPauseTime(); returns delayed time because of pause time
+                    if (delta > delayTime) {
+                        double inaccuracy = 0;
+                        if (delta < 400) {
+                            inaccuracy = 0.055 * 400 / delta * (Random.nextInt(2) * 2 - 1);
                         }
+                        delay = System.currentTimeMillis() - InGame.deltaPauseTime();
+                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+                        bullet.setPosition(px, py);
+                        int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                        if(criticalHits){
+                            if(Math.random() > 0.9){
+                                damage*=2;
+                                bullet.setCritical(true);
+                            }
+                        }
+                        bullet.setDamage(damage);
+                        bullets.add(bullet);
+                        currentMagazineAmmo--;
+                        GunsManager.bulletShooted++;
+                        if(tm.isServerSide()){
+                            Network.AddBullet response = new Network.AddBullet();
+                            response.x = x;
+                            response.y = y;
+                            response.px = px;
+                            response.py = py;
+                            response.critical = bullet.isCritical();
+                            response.speed = 30;
+                            response.damage = damage;
+                            response.id = bullet.getId();
+                            System.out.println("ID: "+response.id);
+
+                            Server server = MultiplayerManager.getInstance().server.getServer();
+                            server.sendToAllTCP(response);
+                            System.out.println("RESPONSE SENT");
+                        } else {
+                            source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
+                        }
+
+                        lastX = x;
+                        lastY = y;
+                        if(currentMagazineAmmo > 0 && doubleShots) secondShotReady = true;
+
+                        double atan = Math.atan2(y, x);
+                        push = 30;
+                        pushX = Math.cos(atan);
+                        pushY = Math.sin(atan);
                     }
-                    bullet.setDamage(damage);
-                    bullets.add(bullet);
-                    if(MultiplayerManager.multiplayer){
-                        Network.AddBullet addBullet = new Network.AddBullet();
-                        addBullet.x = x;
-                        addBullet.y = y;
-                        addBullet.px = px;
-                        addBullet.py = py;
-                        addBullet.inaccuracy = (float)inaccuracy;
-                        addBullet.speed = 30;
-                        addBullet.damage = damage;
-                        addBullet.critical = bullet.isCritical();
-
-                        addBullet.indexWeapon = gunsManager.getIndexOfCurrentWeapon();
-
-                        Client client = MultiplayerManager.getInstance().client.getClient();
-                        client.sendTCP(addBullet);
-                    }
-                    currentMagazineAmmo--;
-                    GunsManager.bulletShooted++;
-                    source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
-
-                    lastX = x;
-                    lastY = y;
-                    if(currentMagazineAmmo > 0 && doubleShots) secondShotReady = true;
-
-                    double atan = Math.atan2(y, x);
-                    push = 30;
-                    pushX = Math.cos(atan);
-                    pushY = Math.sin(atan);
+                } else if (currentAmmo != 0) {
+                    reload();
+                } else {
+                    source.play(soundEmptyShoot);
+                    outOfAmmo();
                 }
-            } else if (currentAmmo != 0) {
-                reload();
-            } else {
-                source.play(soundEmptyShoot);
-                outOfAmmo();
-            }
-            setShooting(false);
+                setShooting(false);
 
+            }
         }
     }
 
@@ -230,10 +251,12 @@ public class Pistol extends Weapon {
             }
             reloading = false;
         }
-        if (push > 0) push-=5;
-        if (push < 0) push+=5;
-        push = -push;
-        tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
+        if(!tm.isServerSide()){
+            if (push > 0) push-=5;
+            if (push < 0) push+=5;
+            push = -push;
+            tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
+        }
     }
 
     @Override
@@ -249,52 +272,7 @@ public class Pistol extends Weapon {
 
     @Override
     public void checkCollisions(ArrayList<Enemy> enemies) {
-        ArrayList<RoomObject> objects = tm.getRoomMapObjects();
-        A: for(Bullet bullet:bullets){
-            for(Enemy enemy:enemies){
-                if(bullet.intersects(enemy) && enemy.canReflect()){
-                    Vector3f speed = bullet.getSpeed();
-                    speed.x = -speed.x;
-                    speed.y = -speed.y;
-                    bullet.setFriendlyFire(true);
-                    continue;
-                }
-                if(bullet.isFriendlyFire()){
-                    if(bullet.intersects(player) && !bullet.isHit() && !player.isDead() && !player.isFlinching()){
-                        player.hit(bullet.getDamage());
-                        bullet.setHit();
-                        GunsManager.hitBullets++;
-                    }
-                }
-                else if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
-                    enemy.hit(bullet.getDamage());
-                    int cwidth = enemy.getCwidth();
-                    int cheight = enemy.getCheight();
-                    int x = -cwidth/4+Random.nextInt(cwidth/2);
-                    if(bullet.isCritical()){
-                        DamageIndicator.addCriticalDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
-                                ,new Vector2f(-x/25f,-1f));
-                    } else {
-                        DamageIndicator.addDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
-                                ,new Vector2f(-x/25f,-1f));
-                    }
-                    bullet.playEnemyHit();
-                    bullet.setHit();
-                    GunsManager.hitBullets++;
-                    continue A;
-                }
-            }
-            for(RoomObject object: objects){
-                if(object instanceof DestroyableObject) {
-                    if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        bullet.playEnemyHit();
-                        bullet.setHit();
-                        ((DestroyableObject) object).setHit(bullet.getDamage());
-                        continue A;
-                    }
-                }
-            }
-        }
+        checkCollisionsBullets(enemies,bullets);
     }
     @Override
     public boolean canSwap() {
@@ -320,12 +298,34 @@ public class Pistol extends Weapon {
     }
 
     @Override
-    public void handleBulletPacket(Network.AddBullet addBullet) {
-        Bullet bullet = new Bullet(tm,addBullet.x,addBullet.y,addBullet.inaccuracy,addBullet.speed);
-        bullet.setCritical(addBullet.critical);
-        bullet.setDamage(addBullet.damage);
-        bullet.setPosition(addBullet.px, addBullet.py);
-
+    public void handleBulletPacket(Network.AddBullet response) {
+        Bullet bullet = new Bullet(tm, response.id);
+        bullet.setPosition(response.px, response.py);
+        System.out.println("X: "+response.px+" Y: "+response.py);
+        bullet.setCritical(response.critical);
+        bullet.setDamage(response.damage);
         bullets.add(bullet);
+    }
+
+    @Override
+    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
+        for(Bullet b : bullets){
+            if(b.getId() == moveBullet.id){
+                b.setPosition(moveBullet.x, moveBullet.y);
+            }
+        }
+    }
+    @Override
+    public void handleHitBullet(Network.HitBullet hitBullet) {
+        for(Bullet b : bullets){
+            if(b.getId() == hitBullet.id){
+                b.setHit(hitBullet.type);
+                if(hitBullet.type == Bullet.TypeHit.ENEMY){
+                    EnemyManager em = EnemyManager.getInstance();
+                    Enemy e = em.handleHitEnemyPacket(hitBullet.idHit,b.getDamage());
+                    showDamageIndicator(b.getDamage(),b.isCritical(),e);
+                }
+            }
+        }
     }
 }

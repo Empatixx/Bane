@@ -83,7 +83,7 @@ public class RingOfFire extends Artefact {
                 if(bullet.isFriendlyFire()){
                     if(bullet.intersects(p) && !bullet.isHit() && !p.isDead() && !p.isFlinching()){
                         p.hit(bullet.getDamage());
-                        bullet.setHit();
+                        bullet.setHit(Bullet.TypeHit.PLAYER);
                         GunsManager.hitBullets++;
                     }
                 }
@@ -100,16 +100,14 @@ public class RingOfFire extends Artefact {
                         DamageIndicator.addDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
                                 ,new Vector2f(-x/25f,-1f));
                     }
-                    bullet.playEnemyHit();
-                    bullet.setHit();
+                    bullet.setHit(Bullet.TypeHit.ENEMY);
                     continue A;
                 }
             }
             for(RoomObject object: objects){
                 if(object instanceof DestroyableObject) {
                     if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        bullet.playEnemyHit();
-                        bullet.setHit();
+                        bullet.setHit(Bullet.TypeHit.ROOMOBJECT);
                         ((DestroyableObject) object).setHit(bullet.getDamage());
                         continue A;
                     }

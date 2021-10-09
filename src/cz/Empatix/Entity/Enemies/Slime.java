@@ -33,7 +33,6 @@ public class Slime extends Enemy {
         Loader.loadImage("Textures\\Sprites\\Enemies\\slime.tga");
     }
     public Slime(TileMap tm, Player player) {
-
         super(tm,player);
 
         moveSpeed = 0.6f;
@@ -104,120 +103,102 @@ public class Slime extends Enemy {
     }
 
     public Slime(TileMap tm, Player[] player) {
-
         super(tm,player);
+        if(tm.isServerSide()){
+            moveSpeed = 0.6f;
+            maxSpeed = 1.6f;
+            stopSpeed = 0.5f;
 
-        moveSpeed = 0.6f;
-        maxSpeed = 1.6f;
-        stopSpeed = 0.5f;
+            width = 64;
+            height = 48;
+            cwidth = 64;
+            cheight = 48;
+            scale = 2;
 
-        width = 64;
-        height = 48;
-        cwidth = 64;
-        cheight = 48;
-        scale = 2;
+            animation = new Animation(4);
+            animation.setDelay(175);
 
-        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
-        damage = 1;
+            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 1;
 
-        type = melee;
-        facingRight = true;
+            type = melee;
+            facingRight = true;
 
-        spriteSheetCols = 6;
-        spriteSheetRows = 2;
+            width *= 2;
+            height *= 2;
+            cwidth *= 2;
+            cheight *= 2;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
-
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
-            Sprite[] sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                Sprite sprite = new Sprite(5,i,0,32,24,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
-
-            sprites = new Sprite[6];
-            for(int i = 0; i < sprites.length; i++) {
-                Sprite sprite = new Sprite(5,i,1,32,24,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
-
-        }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(175);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 2x
-        width *= 2;
-        height *= 2;
-        cwidth *= 2;
-        cheight *= 2;
-
-        bullets = new ArrayList<>(20);
-
-        createShadow();
-
-    }
-
-    private void getNextPosition() {
-
-        // movement
-        if(left) {
-            speed.x -= moveSpeed;
-            if(speed.x < -maxSpeed) {
-                speed.x = -maxSpeed;
-            }
-        }
-        else if(right) {
-            speed.x += moveSpeed;
-            if(speed.x > maxSpeed) {
-                speed.x = maxSpeed;
-            }
-        }
-        else {
-            if (speed.x < 0){
-                speed.x += stopSpeed;
-                if (speed.x > 0) speed.x = 0;
-            } else if (speed.x > 0){
-                speed.x -= stopSpeed;
-                if (speed.x < 0) speed.x = 0;
-            }
-        }
-        if(down) {
-            speed.y += moveSpeed;
-            if (speed.y > maxSpeed){
-                speed.y = maxSpeed;
-            }
-        } else if (up){
-            speed.y -= moveSpeed;
-            if (speed.y < -maxSpeed){
-                speed.y = -maxSpeed;
-            }
+            bullets = new ArrayList<>(20);
         } else {
-            if (speed.y < 0){
-                speed.y += stopSpeed;
-                if (speed.y > 0) speed.y = 0;
-            } else if (speed.y > 0){
-                speed.y -= stopSpeed;
-                if (speed.y < 0) speed.y = 0;
+            moveSpeed = 0.6f;
+            maxSpeed = 1.6f;
+            stopSpeed = 0.5f;
+
+            width = 64;
+            height = 48;
+            cwidth = 64;
+            cheight = 48;
+            scale = 2;
+
+            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 1;
+
+            type = melee;
+            facingRight = true;
+
+            spriteSheetCols = 6;
+            spriteSheetRows = 2;
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slime.tga");
+                Sprite[] sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    Sprite sprite = new Sprite(5,i,0,32,24,spriteSheetRows,spriteSheetCols);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
+
+                sprites = new Sprite[6];
+                for(int i = 0; i < sprites.length; i++) {
+                    Sprite sprite = new Sprite(5,i,1,32,24,spriteSheetRows,spriteSheetCols);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
+
             }
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(IDLE));
+            animation.setDelay(175);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            // because of scaling image by 2x
+            width *= 2;
+            height *= 2;
+            cwidth *= 2;
+            cheight *= 2;
+
+            bullets = new ArrayList<>(20);
+
+            createShadow();
         }
+
     }
+
 
     @Override
     public void update() {
@@ -245,8 +226,11 @@ public class Slime extends Enemy {
                         slimebullet.setHit();
                         ((DestroyableObject) object).setHit(1);
                     }
+                } else if(object.collision && slimebullet.intersects(object)){
+                    slimebullet.setHit();
                 }
             }
+
             if(slimebullet.shouldRemove()) {
                 bullets.remove(i);
                 i--;
@@ -278,15 +262,9 @@ public class Slime extends Enemy {
                 }
             }
         }
-        // ENEMY AI
-        EnemyAI();
-
-        // update position
-        getNextPosition();
-        checkTileMapCollision();
-
-        setPosition(temp.x, temp.y);
         super.update();
+        movePacket();
+
     }
 
     public void draw() {
@@ -304,8 +282,13 @@ public class Slime extends Enemy {
         health -= damage;
         if(health < 0) health = 0;
         if(health == 0){
-            animation.setDelay(65);
-            animation.setFrames(spritesheet.getSprites(DEAD));
+            if(tileMap.isServerSide()){
+                animation = new Animation(6);
+                animation.setDelay(65);
+            } else {
+                animation.setFrames(spritesheet.getSprites(DEAD));
+                animation.setDelay(65);
+            }
             speed.x = 0;
             speed.y = 0;
             dead = true;

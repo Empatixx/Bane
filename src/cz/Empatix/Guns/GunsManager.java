@@ -62,6 +62,7 @@ public class GunsManager {
 
     //multiplayer
     private ArrayList<Network.AddBullet> queueBulletPackets;
+    private ArrayList<Network.HitBullet> queueHitBulletPackets;
     private Lock lock;
 
     public GunsManager(TileMap tileMap, Player p){
@@ -94,6 +95,7 @@ public class GunsManager {
 
         if(MultiplayerManager.multiplayer){
             queueBulletPackets = new ArrayList<>();
+            queueHitBulletPackets = new ArrayList<>();
             lock = new ReentrantLock();
         }
     }
@@ -123,13 +125,22 @@ public class GunsManager {
 
         // multiplayer
         if(MultiplayerManager.multiplayer){
-            for(Network.AddBullet addBullet : queueBulletPackets){
-                weapons.get(addBullet.indexWeapon).handleBulletPacket(addBullet);
-            }
             try{
                 lock.lock();
+                for(Network.AddBullet adBullet : queueBulletPackets){
+                    current.handleBulletPacket(adBullet);
+                }
+                for(Network.HitBullet hitBullet : queueHitBulletPackets){
+                    for(Weapon w : weapons){
+                        w.handleHitBullet(hitBullet);
+                    }
+                }
                 if(!queueBulletPackets.isEmpty()) {
                     queueBulletPackets.clear();
+                }
+
+                if(!queueHitBulletPackets.isEmpty()) {
+                    queueHitBulletPackets.clear();
                 }
             } finally {
                 lock.unlock();
@@ -276,12 +287,35 @@ public class GunsManager {
     public int getIndexOfCurrentWeapon(){
         return weapons.indexOf(current);
     }
-    public void addBulletPacketToQueue(Network.AddBullet addBullet){
+    public void handleAddBulletPacket(Network.AddBullet response){
         try{
             lock.lock();
-            queueBulletPackets.add(addBullet);
+            queueBulletPackets.add(response);
         } finally {
             lock.unlock();
+        }
+    }
+
+    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
+        for(Weapon w : weapons){
+            w.handleBulletMovePacket(moveBullet);
+        }
+    }
+
+    public void handleHitBulletPacket(Network.HitBullet hitBullet) {
+        try{
+            lock.lock();
+            queueHitBulletPackets.add(hitBullet);
+        } finally {
+            lock.unlock();
+        }
+    }
+    public void handleWeaponInfoPacket(Network.WeaponInfo weaponInfo){
+        String username = MultiplayerManager.getInstance().getUsername();
+        if(username.equalsIgnoreCase(weaponInfo.username)){
+            if(current != null){
+                current.handleWeaponInfoPacket(weaponInfo);
+            }
         }
     }
 }

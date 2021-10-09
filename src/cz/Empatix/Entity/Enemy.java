@@ -1,6 +1,6 @@
 package cz.Empatix.Entity;
 
-import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.AI.Path;
 import cz.Empatix.Entity.AI.PathNode;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
@@ -108,21 +108,22 @@ public abstract class Enemy extends MapObject{
         itemDropped=false;
         reflectBullets = false;
 
-        outlineShader = ShaderManager.getShader("shaders\\outline");
-        if (outlineShader == null){
-            outlineShader = ShaderManager.createShader("shaders\\outline");
-        }
+        if(!tm.isServerSide()){
+            outlineShader = ShaderManager.getShader("shaders\\outline");
+            if (outlineShader == null){
+                outlineShader = ShaderManager.createShader("shaders\\outline");
+            }
 
-        spawnShader = ShaderManager.getShader("shaders\\spawn");
-        if (spawnShader == null){
-            spawnShader = ShaderManager.createShader("shaders\\spawn");
-        }
-
-        spawnTime=System.currentTimeMillis()-InGame.deltaPauseTime();
-        if(MultiplayerManager.multiplayer){
+            spawnShader = ShaderManager.getShader("shaders\\spawn");
+            if (spawnShader == null){
+                spawnShader = ShaderManager.createShader("shaders\\spawn");
+            }
+        } else {
             idEnemy = idGen;
             idGen++;
+            idGen++;
         }
+        spawnTime=System.currentTimeMillis()-InGame.deltaPauseTime();
     }
 
     public boolean isSpawning(){
@@ -707,18 +708,76 @@ public abstract class Enemy extends MapObject{
     }
 
     public void update() {
-        if(MultiplayerManager.multiplayer ){
-            MultiplayerManager mpManager = MultiplayerManager.getInstance();
-            if(mpManager.isHost()){
-                Client client = mpManager.client.getClient();
-                Network.MoveEnemy moveEnemy = new Network.MoveEnemy();
-                moveEnemy.x = position.x;
-                moveEnemy.y = position.y;
-                moveEnemy.id = idEnemy;
-                client.sendUDP(moveEnemy);
+        if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
+            // ENEMY AI
+            EnemyAI();
+
+            // update position
+            getNextPosition();
+            checkTileMapCollision();
+            setPosition(temp.x, temp.y);
+        }
+    }
+    public void movePacket(){
+        if(tileMap.isServerSide()){
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            Network.MoveEnemy moveEnemy = new Network.MoveEnemy();
+            moveEnemy.x = position.x;
+            moveEnemy.y = position.y;
+            moveEnemy.id = idEnemy;
+            moveEnemy.down = down;
+            moveEnemy.up = up;
+            moveEnemy.left = left;
+            moveEnemy.right = right;
+            moveEnemy.facingRight = facingRight;
+            server.sendToAllUDP(moveEnemy);
+        }
+    }
+    public void getNextPosition() {
+
+        // movement
+        if(left) {
+            speed.x -= moveSpeed;
+            if(speed.x < -maxSpeed) {
+                speed.x = -maxSpeed;
+            }
+        }
+        else if(right) {
+            speed.x += moveSpeed;
+            if(speed.x > maxSpeed) {
+                speed.x = maxSpeed;
+            }
+        }
+        else {
+            if (speed.x < 0){
+                speed.x += stopSpeed;
+                if (speed.x > 0) speed.x = 0;
+            } else if (speed.x > 0){
+                speed.x -= stopSpeed;
+                if (speed.x < 0) speed.x = 0;
+            }
+        }
+        if(down) {
+            speed.y += moveSpeed;
+            if (speed.y > maxSpeed){
+                speed.y = maxSpeed;
+            }
+        } else if (up){
+            speed.y -= moveSpeed;
+            if (speed.y < -maxSpeed){
+                speed.y = -maxSpeed;
+            }
+        } else {
+            if (speed.y < 0){
+                speed.y += stopSpeed;
+                if (speed.y > 0) speed.y = 0;
+            } else if (speed.y > 0){
+                speed.y -= stopSpeed;
+                if (speed.y < 0) speed.y = 0;
             }
         }
     }
+
     // ENEMY AI
 
     private void updatePlayerCords(){
@@ -788,4 +847,7 @@ public abstract class Enemy extends MapObject{
         return theClosest;
     }
 
+    public int getId() {
+        return idEnemy;
+    }
 }

@@ -53,8 +53,8 @@ public class PlayerMP extends Player {
             movePlayer.up = up;
             movePlayer.left = left;
             movePlayer.right = right;
-            movePlayer.x = (int)position.x;
-            movePlayer.y = (int)position.y;
+            movePlayer.x = position.x;
+            movePlayer.y = position.y;
             client.sendUDP(movePlayer);
         }
     }

@@ -354,7 +354,7 @@ public class InGame extends GameState {
 
         setCursor(Game.CROSSHAIR);
 
-        miniMap = new MiniMap();
+        miniMap = new MiniMap(false);
 
         // Tile map
         tileMap = new TileMap(64,miniMap);

@@ -33,124 +33,143 @@ public class PathWall extends RoomObject {
     private int direction;
 
     public void setDirection(int d){
+        if(tileMap.isServerSide()) return;
         direction = d;
         animation.setFrames(spritesheet.getSprites(d));
     }
 
     public PathWall(TileMap tm){
         super(tm);
-        collision=false;
-        moveable=false;
-        preDraw = false;
-        reverse=false;
-        height = 64;
-        width = 64;
-        cwidth = 65;
-        cheight = 65;
-        scale = 2;
-        spriteSheetCols=4;
+        if(tm.isServerSide()){
+            collision=false;
+            moveable=false;
+            preDraw = false;
+            reverse=false;
+            height = 64;
+            width = 64;
+            cwidth = 65;
+            cheight = 65;
+            scale = 2;
+            animation = new Animation(4);
+            animation.setDelay(75);
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+        } else {
+            collision=false;
+            moveable=false;
+            preDraw = false;
+            reverse=false;
+            height = 64;
+            width = 64;
+            cwidth = 65;
+            cheight = 65;
+            scale = 2;
+            spriteSheetCols=4;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\wall.tga");
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\wall.tga");
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\wall.tga");
-            // TOP
-            Sprite[] sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float) i/spriteSheetCols,0,
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\wall.tga");
+                // TOP
+                Sprite[] sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float) i/spriteSheetCols,0,
 
-                                (float)i/spriteSheetCols,1,
+                                    (float)i/spriteSheetCols,1,
 
-                                (1.0f+i)/spriteSheetCols,1,
+                                    (1.0f+i)/spriteSheetCols,1,
 
-                                (1.0f+i)/spriteSheetCols,0
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
+                                    (1.0f+i)/spriteSheetCols,0
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
 
+                }
+                spritesheet.addSprites(sprites);
+                // LEFT
+                sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (1.0f+i)/spriteSheetCols,0,
+
+                                    (float) i/spriteSheetCols,0,
+
+                                    (float)i/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,1
+
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
+                // BOTTOM
+                sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (1.0f+i)/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,0,
+
+                                    (float) i/spriteSheetCols,0,
+
+                                    (float)i/spriteSheetCols,1
+
+
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
+                // RIGHT
+                sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float)i/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,0,
+
+                                    (float) i/spriteSheetCols,0
+
+
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
             }
-            spritesheet.addSprites(sprites);
-            // LEFT
-            sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (1.0f+i)/spriteSheetCols,0,
-
-                                (float) i/spriteSheetCols,0,
-
-                                (float)i/spriteSheetCols,1,
-
-                                (1.0f+i)/spriteSheetCols,1
-
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
-
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
             }
-            spritesheet.addSprites(sprites);
-            // BOTTOM
-            sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (1.0f+i)/spriteSheetCols,1,
 
-                                (1.0f+i)/spriteSheetCols,0,
+            animation = new Animation();
+            animation.setDelay(75);
 
-                                (float) i/spriteSheetCols,0,
-
-                                (float)i/spriteSheetCols,1
-
-
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
-
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
             }
-            spritesheet.addSprites(sprites);
-            // RIGHT
-            sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float)i/spriteSheetCols,1,
-
-                                (1.0f+i)/spriteSheetCols,1,
-
-                                (1.0f+i)/spriteSheetCols,0,
-
-                                (float) i/spriteSheetCols,0
-
-
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
+            // because of scaling image by 8x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
         }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setDelay(75);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 8x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
     }
 
     @Override

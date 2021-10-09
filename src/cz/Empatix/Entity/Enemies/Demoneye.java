@@ -89,43 +89,65 @@ public class Demoneye extends Enemy {
 
     }
     public Demoneye(TileMap tm, Player[] player) {
-
         super(tm,player);
+        if(tm.isServerSide()){
+            moveSpeed = 2f;
+            maxSpeed = 8.5f;
+            stopSpeed = 1.6f;
 
-        moveSpeed = 2f;
-        maxSpeed = 8.5f;
-        stopSpeed = 1.6f;
+            width = 76;
+            height = 64;
+            cwidth = 76;
+            cheight = 64;
+            scale = 2;
 
-        width = 76;
-        height = 64;
-        cwidth = 76;
-        cheight = 64;
-        scale = 2;
+            animation = new Animation(4);
+            animation.setDelay(125);
+
+            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 3;
+
+            type = melee;
+            facingRight = true;
+            width *= 2;
+            height *= 2;
+            cwidth *= 2;
+            cheight *= 2;
+        } else {
+            moveSpeed = 2f;
+            maxSpeed = 8.5f;
+            stopSpeed = 1.6f;
+
+            width = 76;
+            height = 64;
+            cwidth = 76;
+            cheight = 64;
+            scale = 2;
 
 
-        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
-        damage = 3;
+            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 3;
 
-        type = melee;
-        facingRight = true;
+            type = melee;
+            facingRight = true;
 
-        spriteSheetCols = 4;
-        spriteSheetRows = 1;
+            spriteSheetCols = 4;
+            spriteSheetRows = 1;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\demoneye.tga");
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\demoneye.tga");
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\demoneye.tga");
-            Sprite[] sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                //Sprite sprite = new Sprite(texCoords);
-                Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\demoneye.tga");
+                Sprite[] sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    //Sprite sprite = new Sprite(texCoords);
+                    Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
+                    sprites[i] = sprite;
 
-            }
-            spritesheet.addSprites(sprites);
+                }
+                spritesheet.addSprites(sprites);
 
             /*sprites = new Sprite[4];
             for(int i = 0; i < sprites.length; i++) {
@@ -136,73 +158,29 @@ public class Demoneye extends Enemy {
             spritesheet.addSprites(sprites);
 
              */
-        }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
+            }
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(IDLE));
+            animation.setDelay(125);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            // because of scaling image by 2x
+            width *= 2;
+            height *= 2;
+            cwidth *= 2;
+            cheight *= 2;
+
+            createShadow();
         }
 
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(125);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 2x
-        width *= 2;
-        height *= 2;
-        cwidth *= 2;
-        cheight *= 2;
-
-        createShadow();
-
-    }
-
-    private void getNextPosition() {
-
-        // movement
-        if(left) {
-            speed.x -= moveSpeed;
-            if(speed.x < -maxSpeed) {
-                speed.x = -maxSpeed;
-            }
-        }
-        else if(right) {
-            speed.x += moveSpeed;
-            if(speed.x > maxSpeed) {
-                speed.x = maxSpeed;
-            }
-        }
-        else {
-            if (speed.x < 0){
-                speed.x += stopSpeed;
-                if (speed.x > 0) speed.x = 0;
-            } else if (speed.x > 0){
-                speed.x -= stopSpeed;
-                if (speed.x < 0) speed.x = 0;
-            }
-        }
-        if(down) {
-            speed.y += moveSpeed;
-            if (speed.y > maxSpeed){
-                speed.y = maxSpeed;
-            }
-        } else if (up){
-            speed.y -= moveSpeed;
-            if (speed.y < -maxSpeed){
-                speed.y = -maxSpeed;
-            }
-        } else {
-            if (speed.y < 0){
-                speed.y += stopSpeed;
-                if (speed.y > 0) speed.y = 0;
-            } else if (speed.y > 0){
-                speed.y -= stopSpeed;
-                if (speed.y < 0) speed.y = 0;
-            }
-        }
     }
 
     @Override
@@ -214,15 +192,9 @@ public class Demoneye extends Enemy {
 
         if(dead) return;
 
-        // ENEMY AI
-        EnemyAI();
-
-        // update position
-        getNextPosition();
-        checkTileMapCollision();
-
-        setPosition(temp.x, temp.y);
         super.update();
+        movePacket();
+
     }
 
     @Override

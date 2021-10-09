@@ -2,6 +2,7 @@ package cz.Empatix.Entity;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
@@ -183,7 +184,7 @@ public class Player extends MapObject {
 
         rolling = false;
 
-        sprintParticles = new ArrayList<>(5);
+        sprintParticles = new ArrayList<>(3);
 
         createShadow();
     }
@@ -312,7 +313,7 @@ public class Player extends MapObject {
                 hitVignette[0].updateFadeTime();
             }
         }
-        if(Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed){
+        if((Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed) && !tileMap.isServerSide()){
             float value = Math.abs(speed.x);
             if(value < Math.abs(speed.y)) value = Math.abs(speed.y);
             if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 400-value*20){
@@ -346,7 +347,7 @@ public class Player extends MapObject {
         checkTileMapCollision();
         checkRoomObjectsCollision();
 
-        setPosition(temp.x, temp.y);
+        if(tileMap.isServerSide() || !MultiplayerManager.multiplayer)setPosition(temp.x, temp.y);
 
         if (right || left) {
             if (currentAction != SIDE) {

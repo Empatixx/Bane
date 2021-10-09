@@ -118,7 +118,7 @@ public class InGameMP extends GameState {
     private TextRender[] textRender;
 
     private MultiplayerManager mpManager;
-    public boolean mapLoaded;
+    public volatile boolean mapLoaded;
 
     public InGameMP(GameStateManager gsm){
         this.gsm = gsm;
@@ -185,6 +185,10 @@ public class InGameMP extends GameState {
         if(pause) return;
 
         if (k == ControlSettings.getValue(ControlSettings.RELOAD)){
+            Network.Reload reload = new Network.Reload();
+            reload.username = MultiplayerManager.getInstance().getUsername();
+            Client client = MultiplayerManager.getInstance().client.getClient();
+            client.sendTCP(reload);
             gunsManager.reload();
         }
     }
@@ -253,7 +257,7 @@ public class InGameMP extends GameState {
 
         setCursor(Game.CROSSHAIR);
 
-        miniMap = new MiniMap();
+        miniMap = new MiniMap(false);
 
         // Tile map
         tileMap = new TileMap(64,miniMap);
@@ -281,17 +285,6 @@ public class InGameMP extends GameState {
         // load item manager with instances of objects
         itemManager = new ItemManager(tileMap,gunsManager,artefactManager,player[0]);
         ItemManager.init(itemManager);
-
-        // generate map + create objects which needs item manager & gun manager created
-        if(mpManager.isHost()){
-            tileMap.loadMap();
-            tileMap.fillMiniMap();
-            // move player to starter room
-            player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
-
-            // make camera move smoothly
-            tileMap.setTween(0.10);
-        }
 
         //health bar
         healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,45,3);
@@ -347,16 +340,23 @@ public class InGameMP extends GameState {
 
         Client client = MultiplayerManager.getInstance().client.getClient();
 
-        if(!mpManager.isHost()){
-            while(!mapLoaded);
-            tileMap.loadMapViaPackets();
-            tileMap.fillMiniMap();
-            // move player to starter room
-            player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
+        Network.ConfirmChangeGS changeGamestate = new Network.ConfirmChangeGS();
+        client.sendTCP(changeGamestate);
 
-            // make camera move smoothly
-            tileMap.setTween(0.10);
+        long delay = System.currentTimeMillis();
+        while(!mapLoaded){
+            if(System.currentTimeMillis() > delay) {
+                delay+=1000;
+                System.out.println("STILL NOT LOADED MAP");
+            }
         }
+        tileMap.loadMapViaPackets();
+        tileMap.fillMiniMap();
+        // move player to starter room
+        player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
+
+        // make camera move smoothly
+        tileMap.setTween(0.10);
         Network.RequestForPlayers request = new Network.RequestForPlayers();
         request.exceptUsername = mpManager.getUsername();
 
@@ -555,28 +555,28 @@ public class InGameMP extends GameState {
     protected void update() {
 
         AudioManager.update();
-        if(player[0].isDead()){
-            if(pause) pause = false;
+        if (player[0].isDead()) {
+            if (pause) pause = false;
             enemyManager.updateOnlyAnimations();
             fade.update(transitionContinue);
-            if(fade.isTransitionDone()){
+            if (fade.isTransitionDone()) {
                 gsm.setState(GameStateManager.PROGRESSROOMMP);
-                glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
+                glfwSetInputMode(Game.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
                 return;
             }
-            for(Player player : player){
-                if(player != null)player.update();
+            for (Player player : player) {
+                if (player != null) player.update();
             }
             alertManager.update();
             healthBar.update(player[0].getHealth(), player[0].getMaxHealth());
-            float time = (System.currentTimeMillis()-player[0].getDeathTime());
-            if(time > 2000){
+            float time = (System.currentTimeMillis() - player[0].getDeathTime());
+            if (time > 2000) {
                 Vector3f pos = skullPlayerdead.getPos();
-                float y = pos.y() + (140-pos.y()) * time/40000;
-                Vector3f newpos = new Vector3f(pos.x(),y,0);
+                float y = pos.y() + (140 - pos.y()) * time / 40000;
+                Vector3f newpos = new Vector3f(pos.x(), y, 0);
                 skullPlayerdead.setPosition(newpos);
             }
-            skullPlayerdead.setAlpha(time/4500f);
+            skullPlayerdead.setAlpha(time / 4500f);
             return;
         }
         // loc of mouse
@@ -585,8 +585,8 @@ public class InGameMP extends GameState {
 
         // mouse location-moving direction of mouse of tilemap
         tileMap.setPosition(
-                tileMap.getX()-(mouseX-960)/30,
-                tileMap.getY()-(mouseY- 540)/30);
+                tileMap.getX() - (mouseX - 960) / 30,
+                tileMap.getY() - (mouseY - 540) / 30);
 
         // updating player
         // updating tilemap by player position
@@ -599,7 +599,7 @@ public class InGameMP extends GameState {
 
         itemManager.update();
 
-        if(pause) {
+        if (pause) {
             for (MenuBar hud : pauseBars) {
                 hud.setClick(false);
                 if (hud.intersects(mouseX, mouseY)) {
@@ -609,8 +609,8 @@ public class InGameMP extends GameState {
         }
         ArrayList<Enemy> enemies = EnemyManager.getInstance().getEnemies();
 
-        for(Player player : player){
-            if(player != null)player.update();
+        for (Player player : player) {
+            if (player != null) player.update();
         }
 
         tileMap.updateObjects();
@@ -630,8 +630,8 @@ public class InGameMP extends GameState {
         float py = player[0].getY();
         float mx = tileMap.getX();
         float my = tileMap.getY();
-        if(!pause){
-            gunsManager.shot(mouseX-mx-px, mouseY-my-py,px,py);
+        if (!pause) {
+            gunsManager.shot(mouseX - mx - px, mouseY - my - py, px, py);
         }
         gunsManager.update();
         // updating if player shoots any enemies
@@ -640,7 +640,7 @@ public class InGameMP extends GameState {
         console.update();
 
         // check bullet collision with enemies
-        gunsManager.checkCollisions(enemies);
+        //gunsManager.checkCollisions(enemies);
         player[0].checkCollision(enemies);
 
         healthBar.update(player[0].getHealth(), player[0].getMaxHealth());

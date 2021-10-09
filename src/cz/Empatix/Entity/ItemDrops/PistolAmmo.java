@@ -19,28 +19,51 @@ public class PistolAmmo extends ItemDrop {
     }
     public PistolAmmo(TileMap tm){
         super(tm);
-        type = PISTOLAMMO;
-        canDespawn = true;
-        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
-        pickedUp = false;
+        if(tm.isServerSide()){
+            type = PISTOLAMMO;
+            canDespawn = true;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
 
-        width = 16;
-        height = 45;
-        cwidth = 16;
-        cheight = 45;
-        scale = 1;
-        facingRight = true;
+            width = 16;
+            height = 45;
+            cwidth = 16;
+            cheight = 45;
+            scale = 1;
+            facingRight = true;
 
-        amount = Random.nextInt(5) + 3;
+            amount = Random.nextInt(5) + 3;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\pistol_bullet.tga");
+            // because of scaling image by 3x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\pistol_bullet.tga");
-            Sprite[] sprites = new Sprite[1];
-            float[] texCoords =
+            stopSpeed = 0.35f;
+        } else {
+            type = PISTOLAMMO;
+            canDespawn = true;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
+
+            width = 16;
+            height = 45;
+            cwidth = 16;
+            cheight = 45;
+            scale = 1;
+            facingRight = true;
+
+            amount = Random.nextInt(5) + 3;
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\pistol_bullet.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\pistol_bullet.tga");
+                Sprite[] sprites = new Sprite[1];
+                float[] texCoords =
                         {
                                 0,0,
 
@@ -50,33 +73,34 @@ public class PistolAmmo extends ItemDrop {
 
                                 1,0
                         };
-            Sprite sprite = new Sprite(texCoords);
-            sprites[0] = sprite;
-            spritesheet.addSprites(sprites);
+                Sprite sprite = new Sprite(texCoords);
+                sprites[0] = sprite;
+                spritesheet.addSprites(sprites);
+            }
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(0));
+            animation.setDelay(-1);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+
+            // because of scaling image by 3x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
+
+            stopSpeed = 0.35f;
         }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(0));
-        animation.setDelay(-1);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-
-        // because of scaling image by 3x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
-
-        stopSpeed = 0.35f;
 
     }
 

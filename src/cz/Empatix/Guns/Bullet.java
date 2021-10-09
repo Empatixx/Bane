@@ -1,10 +1,13 @@
 package cz.Empatix.Guns;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -41,7 +44,142 @@ public class Bullet extends MapObject implements Serializable {
 
     private boolean friendlyFire;
 
+    private int idBullet;
+    // unique id for every bullet, everytime we create new bullet, we set his id to ++idGen;
+    private static int idGen = 0;
+
+    public enum TypeHit {
+        WALL,
+        ENEMY,
+        ROOMOBJECT,
+        PLAYER
+    }
+
     public Bullet(TileMap tm, float x, float y,double inaccuracy, int speed) {
+        super(tm);
+        if(tm.isServerSide()){
+            facingRight = true;
+            crit=false;
+
+            width = 16;
+            height = 16;
+
+            cwidth = 16;
+            cheight = 16;
+
+            scale = 2;
+
+            double atan = Math.atan2(y,x) + inaccuracy;
+            // 30 - speed of bullet
+            this.speed.x = (float)(Math.cos(atan) * speed);
+            this.speed.y = (float)(Math.sin(atan) * speed);
+
+            // because of scaling image by 2x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            idBullet = idGen++;
+        } else {
+            facingRight = true;
+            crit=false;
+
+            width = 16;
+            height = 16;
+
+            cwidth = 16;
+            cheight = 16;
+
+            scale = 2;
+
+            // load sprites
+            spriteSheetCols = 4;
+            spriteSheetRows = 2;
+
+            double atan = Math.atan2(y,x) + inaccuracy;
+            // 30 - speed of bullet
+            this.speed.x = (float)(Math.cos(atan) * speed);
+            this.speed.y = (float)(Math.sin(atan) * speed);
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
+
+                Sprite[] images = new Sprite[4];
+
+                for(int i = 0; i < images.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float)i/spriteSheetCols,0,
+
+                                    (float)i/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                    (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                    (i+1.0f)/spriteSheetCols,0
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+
+                    images[i] = sprite;
+
+                }
+                spritesheet.addSprites(images);
+
+                images = new Sprite[3];
+                for(int i = 0; i < images.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float)i/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                    (float) i/spriteSheetCols,1,
+
+                                    (i+1.0f)/spriteSheetCols,1,
+
+                                    (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+
+                    images[i] = sprite;
+
+                }
+                spritesheet.addSprites(images);
+            }
+
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(sprites));
+            animation.setDelay(70);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+
+            // because of scaling image by 2x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            // audio
+            soundWallhit = AudioManager.loadSound("guns\\wallhit.ogg");
+            soundEnemyhit = AudioManager.loadSound("guns\\enemyhit.ogg");
+            source = AudioManager.createSource(Source.EFFECTS,0.35f);
+
+            light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f(x+xmap,y+ymap), 1.75f,this);
+
+        }
+
+    }
+    public Bullet(TileMap tm, int id) {
 
         super(tm);
         facingRight = true;
@@ -59,10 +197,8 @@ public class Bullet extends MapObject implements Serializable {
         spriteSheetCols = 4;
         spriteSheetRows = 2;
 
-        double atan = Math.atan2(y,x) + inaccuracy;
-        // 30 - speed of bullet
-        this.speed.x = (float)(Math.cos(atan) * speed);
-        this.speed.y = (float)(Math.sin(atan) * speed);
+        speed.x = 1;
+        speed.y = 1;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
@@ -136,7 +272,9 @@ public class Bullet extends MapObject implements Serializable {
         soundEnemyhit = AudioManager.loadSound("guns\\enemyhit.ogg");
         source = AudioManager.createSource(Source.EFFECTS,0.35f);
 
-        light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f((float)x+xmap,(float)y+ymap), 1.75f,this);
+        light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f(xmap,ymap), 1.75f,this);
+
+        idBullet = id;
     }
     public void loadSave(){
         width = 16;
@@ -211,56 +349,130 @@ public class Bullet extends MapObject implements Serializable {
         soundEnemyhit = AudioManager.loadSound("guns\\enemyhit.ogg");
         source = AudioManager.createSource(Source.EFFECTS,0.35f);
 
-        light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f(position.x+xmap,position.y+ymap), 1.75f,this);
+        if(tileMap.isServerSide()){
+            idBullet = idGen;
+            idGen++;
+        }
     }
 
     public void setDamage(int damage) {
         this.damage = damage;
     }
 
-    public void setHit() {
+    public void setHit(TypeHit type) {
         if(hit) return;
+        if(tileMap.isServerSide()){
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            Network.HitBullet hitBullet = new Network.HitBullet();
+            hitBullet.type = type;
+            hitBullet.id = idBullet;
+            server.sendToAllTCP(hitBullet);
+        } else {
+            if(type == TypeHit.WALL){
+                source.play(soundWallhit);
+            } else {
+                source.play(soundEnemyhit);
+            }
+        }
         hit = true;
-        animation.setFrames(spritesheet.getSprites(hitSprites));
-        animation.setDelay(70);
+        if(!tileMap.isServerSide()){
+            animation.setFrames(spritesheet.getSprites(hitSprites));
+            animation.setDelay(70);
+        }
         speed.x = 0;
         speed.y = 0;
     }
-
+    public void setHit(TypeHit type, int idHit) {
+        if(hit) return;
+        if(tileMap.isServerSide()){
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            Network.HitBullet hitBullet = new Network.HitBullet();
+            hitBullet.type = type;
+            hitBullet.id = idBullet;
+            hitBullet.idHit = idHit;
+            server.sendToAllTCP(hitBullet);
+        } else {
+            if(type == TypeHit.WALL){
+                source.play(soundWallhit);
+            } else {
+                source.play(soundEnemyhit);
+            }
+        }
+        hit = true;
+        if(!tileMap.isServerSide()){
+            animation.setFrames(spritesheet.getSprites(hitSprites));
+            animation.setDelay(70);
+        }
+        speed.x = 0;
+        speed.y = 0;
+    }
     public int getDamage() {
         return damage;
     }
 
-    public boolean shouldRemove() { return remove && !source.isPlaying(); }
+    public boolean shouldRemove() {
+        if(tileMap.isServerSide()) return remove;
+        else return remove && !source.isPlaying();
+    }
 
     public void update() {
-        setMapPosition();
-        ArrayList<RoomObject> roomObjects = tileMap.getRoomMapObjects();
-        for(RoomObject obj : roomObjects){
-            if(this.intersects(obj) && obj.collision){
-                setHit();
-                break;
+        if(tileMap.isServerSide()){
+            ArrayList<RoomObject> roomObjects = tileMap.getRoomMapObjects();
+            for(RoomObject obj : roomObjects){
+                if(this.intersects(obj) && obj.collision){
+                    setHit(TypeHit.WALL);
+                    break;
+                }
             }
-        }
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
+            checkTileMapCollision();
+            setPosition(temp.x, temp.y);
 
-        if((speed.x == 0 || speed.y == 0) && !hit) {
-            source.play(soundWallhit);
-            setHit();
-        }
-        if(remove && !source.isPlaying()){
-            source.delete();
-        }
+            if((speed.x == 0 || speed.y == 0) && !hit) {
+                setHit(TypeHit.WALL);
+            }
 
-        animation.update();
-        if(hit) {
-            if (animation.hasPlayedOnce()){
+            if(hit) {
                 remove = true;
-                light.remove();
-            } else {
-                // decrease intensity every time we use next sprite of hitBullet
-                light.setIntensity(1.5f-0.5f*animation.getIndexOfFrame());
+            }
+
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            Network.MoveBullet moveBullet = new Network.MoveBullet();
+            moveBullet.x = position.x;
+            moveBullet.y = position.y;
+            moveBullet.id = idBullet;
+            server.sendToAllUDP(moveBullet);
+
+        } else {
+            setMapPosition();
+            if(!MultiplayerManager.multiplayer){
+                ArrayList<RoomObject> roomObjects = tileMap.getRoomMapObjects();
+                for(RoomObject obj : roomObjects){
+                    if(this.intersects(obj) && obj.collision){
+                        setHit(TypeHit.WALL);
+                        break;
+                    }
+                }
+                checkTileMapCollision();
+                setPosition(temp.x, temp.y);
+            }
+
+            if((speed.x == 0 || speed.y == 0) && !hit) {
+                source.play(soundWallhit);
+                setHit(TypeHit.WALL);
+            }
+            if(remove && !source.isPlaying()){
+                source.delete();
+            }
+
+            animation.update();
+            if(hit) {
+                if (animation.hasPlayedOnce()){
+                    remove = true;
+                    light.remove();
+                } else {
+                    // decrease intensity every time we use next sprite of hitBullet
+                    light.setIntensity(1.5f-0.5f*animation.getIndexOfFrame());
+                }
             }
         }
 
@@ -273,9 +485,6 @@ public class Bullet extends MapObject implements Serializable {
     }
     public boolean isHit() {return hit;}
 
-    public void playEnemyHit(){
-        source.play(soundEnemyhit);
-    }
 
     public boolean isCritical() {
         return crit;
@@ -298,4 +507,11 @@ public class Bullet extends MapObject implements Serializable {
         if(damage < 1) damage = 1;
     }
 
+    public int getId() {
+        return idBullet;
+    }
+
+    public void setId(int idBullet) {
+        this.idBullet = idBullet;
+    }
 }

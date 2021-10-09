@@ -1,7 +1,7 @@
-package cz.Empatix.Render;
+package cz.Empatix.Multiplayer.dd;
 
 
-import com.esotericsoftware.kryonet.Server;
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
@@ -11,9 +11,7 @@ import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Java.RomanNumber;
 import cz.Empatix.Multiplayer.Network;
-import cz.Empatix.Render.Graphics.ByteBufferImage;
-import cz.Empatix.Render.Graphics.Shaders.Shader;
-import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.*;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.Hud.Minimap.MiniMap;
 import cz.Empatix.Render.RoomObjects.Ladder;
@@ -24,65 +22,29 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
-import java.nio.ByteBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL43.*;
 
-public class TileMap {
-
-	public static void load(){
-		Loader.loadImage("Textures\\tileset64.tga");
-	}
+public class TileMapMP extends TileMap{
 	// gamestate
 	private int floor;
 
 	// instances
 	private MiniMap miniMap;
-	private Player[] player;
+	private Player[] players;
 
-	// position
-	private Vector3f position;
-	private Camera camera;
-	private Shader shader;
-
-
-	// bounds
-	private float xmin;
-	private float ymin;
-	private float xmax;
-	private float ymax;
-	
-	private double tween;
-	
 	// map
 	private byte[][] map;
 	private int tileSize;
 	private int numRows;
 	private int numCols;
-	
+
 	// tileset
 	private int numTilesAcross;
 	private Tile[][] tiles;
-	
-	// drawing
-	private int rowOffset;
-	private int colOffset;
-
-	private int previousrowOffset;
-	private int previouscolOffset;
-
-	private int numRowsToDraw;
-	private int numColsToDraw;
-
-	// opengl id of texture (tileset)
-	private int tilesetId;
-	private int[] vboVertices;
-	private int[] vboTexCoords;
-	//matrix4f opengl
-	private Matrix4f target;
 
 	// rooms
 	private Room[] roomArrayList;
@@ -101,110 +63,22 @@ public class TileMap {
 	private float playerStartY;
 
 	private long nextFloorEnterTime;
-	private TextRender[] title;
-
-	// if tilemap is server-side
-	private boolean serverSide;
 
 
-	public TileMap(int tileSize, MiniMap miniMap) {
+	public TileMapMP(int tileSize, MiniMap miniMap) {
 		this.tileSize = tileSize;
 		this.miniMap = miniMap;
-		// 2x scale
-		numRowsToDraw = Camera.getHEIGHT() / (tileSize*2) + 2;
-		numColsToDraw = Camera.getWIDTH() / (tileSize*2) + 2;
-
-		position = new Vector3f(0,0,0);
-
-		this.camera = Camera.getInstance();
-		tween = 1;
-
-		target = new Matrix4f();
 		floor = 0;
 
 		sideRooms = new Room[4];
-		title = new TextRender[2];
-		for(int i = 0;i<2;i++){
-			title[i] = new TextRender();
-		}
-		player = new Player[1];
-	}
-	public TileMap(int tileSize) {
-		this.tileSize = tileSize;
-		// 2x scale
-		numRowsToDraw = Camera.getHEIGHT() / (tileSize*2) + 2;
-		numColsToDraw = Camera.getWIDTH() / (tileSize*2) + 2;
 
-		position = new Vector3f(0,0,0);
-
-		this.camera = Camera.getInstance();
-		tween = 1;
-
-		target = new Matrix4f();
-		floor = 0;
-		// singleplayer - creating only one instance of player
-		player = new Player[1];
-	}
-	// constructor for multiplayer
-	public TileMap(int tileSize,MiniMap miniMap, int playerCount) {
-		this.tileSize = tileSize;
-		this.miniMap = miniMap;
-
-		sideRooms = new Room[4];
-		floor = 0;
-
-		player = new Player[playerCount];
-
-		serverSide = true;
-	}
-	public void loadSave(){
-		tileSize /=2;
-		vboTexCoords = new int[]{glGenBuffers(),glGenBuffers()};
-		vboVertices = new int[]{glGenBuffers(),glGenBuffers()};
-
-		ByteBufferImage decoder = Loader.getImage("Textures\\tileset64.tga");
-		ByteBuffer tileset = decoder.getBuffer();
-
-		tilesetId = glGenTextures();
-
-		glBindTexture(GL_TEXTURE_2D, tilesetId);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, tileset);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-
-		shader = ShaderManager.getShader("shaders\\shader");
-		if (shader == null){
-			shader = ShaderManager.createShader("shaders\\shader");
-		}
-
-		camera = Camera.getInstance();
-
-		title = new TextRender[2];
-		for(int i = 0;i<2;i++){
-			title[i] = new TextRender();
-		}
-		// because we are scaling image by 2x we must increase size of tileSize
-		tileSize *=2;
-		for(Room room :roomArrayList) {
-			for (RoomObject obj : room.getMapObjects()) {
-				obj.loadSave();
-			}
-		}
-		// starter's room loading text renders
-		roomArrayList[0].loadSave();
+		players = new Player[2];
 	}
 
-	public void setPlayer(Player p){
-		this.player[0] = p;
+	public void setPlayers(Player p, int index){
+		this.players[index] = p;
 	}
-	public void setPlayers(Player[] p){
-		for(int i = 0;i<player.length && i < p.length;i++){
-			this.player[i] = p[i];
-		}
-	}
+
 	public int getNumRows() {
 		return numRows;
 	}
@@ -213,69 +87,15 @@ public class TileMap {
 	}
 
 	public void loadTiles(String s) {
-		vboTexCoords = new int[]{glGenBuffers(),glGenBuffers()};
-		vboVertices = new int[]{glGenBuffers(),glGenBuffers()};
-
-		ByteBufferImage decoder = Loader.getImage(s);
-		ByteBuffer tileset = decoder.getBuffer();
-
-		tilesetId = glGenTextures();
-
-		glBindTexture(GL_TEXTURE_2D, tilesetId);
-
-		glTexStorage2D(GL_TEXTURE_2D, 5, GL_RGBA8, decoder.getWidth(), decoder.getHeight());
-		glTexSubImage2D(GL_TEXTURE_2D,0,0,0,decoder.getWidth(),decoder.getHeight(),GL_RGBA,GL_UNSIGNED_BYTE,tileset);
-		glGenerateMipmap(GL_TEXTURE_2D);  //Generate num_mipmaps number of mipmaps here.
-
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, tileset);
-
-		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-
-
-		numTilesAcross = decoder.getWidth() / tileSize;
 		tiles = new Tile[2][numTilesAcross];
 			
 		for(int col = 0; col < numTilesAcross; col++) {
-			double[] texCoords =
-					{
-							(double)col/numTilesAcross,0,
-							(double)col/numTilesAcross,1.0/2,
-							(col+1.0)/numTilesAcross,1.0/2,
-							(col+1.0)/numTilesAcross,0
-					};
-			tiles[0][col] = new Tile(texCoords, Tile.NORMAL);
-			double[] texCoordsCol =
-					{
-							(double)col/numTilesAcross,1.0/2,
-							(double)col/numTilesAcross,1,
-							(col+1.0)/numTilesAcross,1,
-							(col+1.0)/numTilesAcross,1.0/2
-					};
-			tiles[1][col] = new Tile(texCoordsCol, Tile.BLOCKED);
-		}
-
-		shader = ShaderManager.getShader("shaders\\shader");
-		if (shader == null){
-			shader = ShaderManager.createShader("shaders\\shader");
+			tiles[0][col] = new Tile(null, Tile.NORMAL);
+			tiles[1][col] = new Tile(null, Tile.BLOCKED);
 		}
 
 		// because we are scaling image by 2x we must increase size of tileSize
         tileSize *=2;
-
-	}
-	// loading tiles in multiplayer
-	public void loadTilesMP(String s) {
-		ByteBufferImage decoder = Loader.getImage(s);
-		numTilesAcross = decoder.getWidth() / tileSize;
-		tiles = new Tile[2][numTilesAcross];
-		for(int col = 0; col < numTilesAcross; col++) {
-			// texCoords is null, because we never render in multiplayer
-			tiles[0][col] = new Tile(null, Tile.NORMAL);
-			tiles[1][col] = new Tile(null, Tile.BLOCKED);
-		}
-		// because we are scaling image by 2x we must increase size of tileSize
-		tileSize *=2;
 
 	}
 	private int getIdGen(){
@@ -318,15 +138,7 @@ public class TileMap {
 		playerStartX = numCols/2*tileSize;
 		playerStartY = numRows/2*tileSize;
 
-
-		xmin = (Camera.getWIDTH() - room.getNumCols()*tileSize);
-		xmax = 0;
-
-		ymin = (Camera.getHEIGHT() - room.getNumRows()*tileSize);
-		ymax = 0;
-
 		autoTile();
-
 
 		room.createObjects(this,null);
 	}
@@ -343,18 +155,10 @@ public class TileMap {
 		// converting 1 and 0 into tiles id textures
 		autoTile();
 
+
 		// create map objects into all rooms
 		for(Room room : roomArrayList){
-			room.createObjects(this,player);
-		}
-
-		// server created map -> send packet to all clients
-		if(serverSide){
-			Server server = MultiplayerManager.getInstance().server.getServer();
-			Network.MapLoaded mapLoaded = new Network.MapLoaded();
-			server.sendToAllTCP(mapLoaded);
-			System.out.println("MAP LOADED SENT");
-			return;
+			room.createObjects(this, players);
 		}
 
 		// getting XY max/min
@@ -384,6 +188,12 @@ public class TileMap {
 
 		}
 		setPosition(Camera.getWIDTH() / 2f - playerStartX,Camera.getHEIGHT() / 2f - playerStartY);
+
+		if(MultiplayerManager.multiplayer){
+			Client client = MultiplayerManager.getInstance().client.getClient();
+			Network.MapLoaded mapLoaded = new Network.MapLoaded();
+			client.sendTCP(mapLoaded);
+		}
 	}
 
 	public void loadMapViaPackets() {
@@ -396,7 +206,7 @@ public class TileMap {
 
 		// create map objects into all rooms
 		for(Room room : roomArrayList){
-			room.createObjects(this,player);
+			room.createObjects(this, players);
 		}
 
 		// getting XY max/min
@@ -486,10 +296,8 @@ public class TileMap {
 					yMax -= tileSize*2;
 					yMin += tileSize*2;
 					if (!room.hasEntered() && y > yMin && y < yMax && x > xMin && x < xMax) {
-						if(!MultiplayerManager.multiplayer){
-							// event trigger on entering a new room
-							room.entered(this);
-						}
+						// event trigger on entering a new room
+						room.entered(this);
 						room.showRoomOnMinimap();
 					}
 					if(currentRoom != room){
@@ -524,94 +332,28 @@ public class TileMap {
 			}
 		}
 	}
-	// Method if players entered some new rooms, this method works only for multiplayer!
-	public void updateCurrentRoom() {
-		for (Room room : roomArrayList) {
-			// getting X max/min of room
-			int xMax = room.getxMax();
-			int xMin = room.getxMin();
-
-			// getting Y max/min of room
-			int yMax = room.getyMax();
-			int yMin = room.getyMin();
-
-			for (Player player : player) {
-				if (player != null) {
-					int x = (int)player.getX();
-					int y = (int)player.getY();
-
-					if (x > xMin && x < xMax) {
-						if (y > yMin && y < yMax) {
-							xMax -= tileSize * 2;
-							xMin += tileSize * 2;
-							// getting Y max/min of room
-							yMax -= tileSize * 2;
-							yMin += tileSize * 2;
-
-							if (!room.hasEntered() && y > yMin && y < yMax && x > xMin && x < xMax) {
-								// event trigger on entering a new room
-								room.entered(this);
-							}
-
-							if(currentRoom != room){
-								currentRoom = room;
-								A: for(int i = 0;i < roomY;i++){
-									for(int j = 0;j <roomX;j++){
-										if(roomMap[i][j] == room.getId()){
-											if(roomY > i+1 && currentRoom.isBottom()){
-												sideRooms[0] = getRoom(roomMap[i+1][j]);
-											}
-											else sideRooms[0] = null;
-											if(0 <= i-1 && currentRoom.isTop()){
-												sideRooms[1] = getRoom(roomMap[i-1][j]);
-											}
-											else sideRooms[1] = null;
-											if(roomX > j+1 && currentRoom.isRight()){
-												sideRooms[2] = getRoom(roomMap[i][j+1]);
-											}
-											else sideRooms[2] = null;
-											if(0 <= j-1 && currentRoom.isLeft()){
-												sideRooms[3] = getRoom(roomMap[i][j-1]);
-											}
-											else sideRooms[3] = null;
-											break A;
-										}
-									}
-								}
-							}
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
 	public void updateObjects(){
-		currentRoom.updateObjects(this);
+		currentRoom.updateObjects();
 		ArrayList<RoomObject> objects = currentRoom.getMapObjects();
 		for(Room r : sideRooms){
 			if(r != null){
-				r.updateObjects(this);
+				r.updateObjects();
 				for(int i = 0;i<objects.size();i++){
-					for (Player p : player) {
-						if (p != null) {
-							RoomObject object = objects.get(i);
+					RoomObject object = objects.get(i);
 
-							int x = (int) object.getX();
-							int y = (int) object.getY();
+					int x = (int)object.getX();
+					int y = (int)object.getY();
 
-							int cwidth = object.getCwidth() / 2;
-							int cheight = object.getCheight() / 2;
+					int cwidth = object.getCwidth()/2;
+					int cheight = object.getCheight()/2;
 
-							int pcheight = p.getCheight() / 2;
-							int pcwidth = p.getCwidth() / 2;
+					int pcheight = players.getCheight()/2;
+					int pcwidth = players.getCwidth()/2;
 
-							if (x - cwidth - pcwidth >= r.getxMin() && x + cwidth + pcwidth <= r.getxMax() && y - cheight - pcheight >= r.getyMin() && y + cheight + pcheight <= r.getyMax()) {
-								currentRoom.removeObject(object);
-								r.addObject(object);
-								i--;
-							}
-						}
+					if(x-cwidth-pcwidth >= r.getxMin() && x+cwidth+pcwidth<= r.getxMax() && y-cheight-pcheight >= r.getyMin() && y+cheight+pcheight <= r.getyMax()){
+						currentRoom.removeObject(object);
+						r.addObject(object);
+						i--;
 					}
 				}
 			}
@@ -673,8 +415,8 @@ public class TileMap {
 					transferRoom.y = y;
 					transferRoom.index = currentRooms;
 
-					Server server = MultiplayerManager.getInstance().server.getServer();
-					server.sendToAllTCP(transferRoom);
+					Client client = MultiplayerManager.getInstance().client.getClient();
+					client.sendTCP(transferRoom);
 				}
 				// counting how many rooms have been created.
 				currentRooms++;
@@ -822,8 +564,8 @@ public class TileMap {
 							transferRoom.left = rndDirection == 3;
 							transferRoom.right = rndDirection == 2;
 
-							Server server = MultiplayerManager.getInstance().server.getServer();
-							server.sendToAllTCP(transferRoom);
+							Client client = MultiplayerManager.getInstance().client.getClient();
+							client.sendTCP(transferRoom);
 						}
 						newRooms++;
 					}
@@ -1217,8 +959,7 @@ public class TileMap {
 			transferRoomMap.roomX = roomX;
 			transferRoomMap.roomY = roomY;
 
-			Server server = mpManager.server.getServer();
-			server.sendToAllTCP(transferRoomMap);
+			mpManager.client.getClient().sendTCP(transferRoomMap);
 		}
 	}
 
@@ -1522,16 +1263,9 @@ public class TileMap {
 		loadMap();
 
 		fillMiniMap();
-		player[0].setPosition(playerStartX, playerStartY);
+		players.setPosition(playerStartX, playerStartY);
 		setTween(0.10);
 
-		floor++;
-		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();
-
-		//DiscordRP.getInstance().update("In-Game","Floor "+RomanNumber.toRoman(floor+1));
-	}
-	//TODO: multiplayer newMap
-	public void newMapMP(){
 		floor++;
 		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();
 
@@ -1635,13 +1369,5 @@ public class TileMap {
 				}
 			}
 		}
-	}
-
-	public boolean isServerSide() {
-		return serverSide;
-	}
-
-	public void lockRoom(){
-		currentRoom.lockRoom(true);
 	}
 }

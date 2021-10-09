@@ -18,64 +18,86 @@ public class ArmorPot extends ItemDrop{
     }
     public ArmorPot(TileMap tm){
         super(tm);
-        type = ARMOR;
-        canDespawn = true;
-        liveTime = System.currentTimeMillis()- InGame.deltaPauseTime();
-        pickedUp = false;
+        if(tm.isServerSide()){
+            type = ARMOR;
+            canDespawn = true;
+            liveTime = System.currentTimeMillis()- InGame.deltaPauseTime();
+            pickedUp = false;
 
-        width = 32;
-        height = 32;
-        cwidth = 32;
-        cheight = 32;
-        scale = 2;
-        facingRight = true;
+            width = 32;
+            height = 32;
+            cwidth = 32;
+            cheight = 32;
+            scale = 2;
+            facingRight = true;
 
-        //amount = Random.nextInt(3) + 1;
+            // because of scaling image by 3x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\armorpot.tga");
+            stopSpeed = 0.35f;
+        } else {
+            type = ARMOR;
+            canDespawn = true;
+            liveTime = System.currentTimeMillis()- InGame.deltaPauseTime();
+            pickedUp = false;
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\armorpot.tga");
-            Sprite[] sprites = new Sprite[1];
-            float[] texCoords =
-                    {
-                            0,0,
+            width = 32;
+            height = 32;
+            cwidth = 32;
+            cheight = 32;
+            scale = 2;
+            facingRight = true;
 
-                            0,1,
+            //amount = Random.nextInt(3) + 1;
 
-                            1,1,
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\armorpot.tga");
 
-                            1,0
-                    };
-            Sprite sprite = new Sprite(texCoords);
-            sprites[0] = sprite;
-            spritesheet.addSprites(sprites);
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\armorpot.tga");
+                Sprite[] sprites = new Sprite[1];
+                float[] texCoords =
+                        {
+                                0,0,
+
+                                0,1,
+
+                                1,1,
+
+                                1,0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[0] = sprite;
+                spritesheet.addSprites(sprites);
+            }
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(0));
+            animation.setDelay(-1);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+
+            // because of scaling image by 3x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            light = LightManager.createLight(new Vector3f(.0f,1.0f,.0f),new Vector2f(0,0),1.25f,this);
+
+            stopSpeed = 0.35f;
         }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(0));
-        animation.setDelay(-1);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-
-        // because of scaling image by 3x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        light = LightManager.createLight(new Vector3f(.0f,1.0f,.0f),new Vector2f(0,0),1.25f,this);
-
-        stopSpeed = 0.35f;
 
     }
     public void loadSave(){

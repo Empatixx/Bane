@@ -8,25 +8,25 @@ import java.io.Serializable;
 public abstract class ItemDrop extends MapObject implements Serializable {
     int amount;
 
-    static final int PISTOLAMMO = 1;
-    static final int SHOTGUNAMMO = 3;
-    static final int SUBMACHINE = 2;
-    static final int EXPLOSIVEAMMO = 4;
+    public static final int PISTOLAMMO = 1;
+    public static final int SHOTGUNAMMO = 3;
+    public static final int SUBMACHINE = 2;
+    public static final int EXPLOSIVEAMMO = 4;
 
-    static final int HP = 0;
-    static final int ARTEFACT = 8;
-    static final int ARMOR = 7;
-    static final int GUN = 6;
-    static final int COIN = 5;
+    public static final int HP = 0;
+    public static final int ARTEFACT = 8;
+    public static final int ARMOR = 7;
+    public static final int GUN = 6;
+    public static final int COIN = 5;
 
-    int type;
-    boolean pickedUp;
+    public int type;
+    public boolean pickedUp;
 
-    boolean shop;
-    int price;
+    public boolean shop;
+    public int price;
 
-    boolean canDespawn;
-    long liveTime;
+    public boolean canDespawn;
+    public long liveTime;
 
     public ItemDrop(TileMap tm){
         super(tm);

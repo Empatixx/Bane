@@ -14,7 +14,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
@@ -22,7 +21,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 
-public class MiniMap implements Serializable {
+public class MiniMap {
     public static void load(){
         Loader.loadImage("Textures\\minimap.tga");
         Loader.loadImage("Textures\\player-icon.tga");
@@ -43,7 +42,12 @@ public class MiniMap implements Serializable {
     private MMRoom[] rooms;
 
 
-    public MiniMap(){
+    public MiniMap(boolean serverSide){
+        // only for multiplayer server side
+        if(serverSide){
+            rooms = new MMRoom[9];
+            return;
+        }
         minimapBorders = new Image("Textures\\minimap.tga",new Vector3f(1770,150,0),2);
         playerIcon = new Image("Textures\\player-icon.tga",new Vector3f(1770,150,0),1);
         rooms = new MMRoom[9];

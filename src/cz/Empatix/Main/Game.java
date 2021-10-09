@@ -208,7 +208,7 @@ public class Game{
      * FPS SYSTEM
      */
     public void run() {
-        Configuration.DEBUG_MEMORY_ALLOCATOR.set(true);
+        Configuration.DEBUG_MEMORY_ALLOCATOR.set(false);
 
         long lastTime = System.nanoTime();
         long timer = System.currentTimeMillis();

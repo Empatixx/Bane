@@ -10,6 +10,7 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.Shopkeeper;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Main.ControlSettings;
+import cz.Empatix.Multiplayer.EnemyManagerMP;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.RoomObjects.*;
 import cz.Empatix.Render.RoomObjects.ProgressRoom.Portal;
@@ -71,7 +72,7 @@ public class Room implements Serializable {
 
 
 
-    Room(int type, int id, int x, int y){
+    public Room(int type, int id, int x, int y){
         entered = false;
         closed = false;
 
@@ -90,7 +91,7 @@ public class Room implements Serializable {
         loadRoom(mapFilepath);
     }
 
-    Room(int type, int id, int x, int y, String mapFilepath){
+    public Room(int type, int id, int x, int y, String mapFilepath){
         entered = false;
         closed = false;
 
@@ -153,7 +154,7 @@ public class Room implements Serializable {
         }
     }
 
-    byte[][] getRoomMap() {
+    public byte[][] getRoomMap() {
         return roomMap;
     }
 
@@ -179,27 +180,27 @@ public class Room implements Serializable {
         return x;
     }
 
-    void setTop(boolean top) {
+    public void setTop(boolean top) {
         minimapRoom.setTop(top);
         this.top = top;
     }
 
-    void setLeft(boolean left) {
+    public void setLeft(boolean left) {
         minimapRoom.setLeft(left);
         this.left = left;
     }
 
-    void setBottom(boolean bottom) {
+    public void setBottom(boolean bottom) {
         minimapRoom.setBottom(bottom);
         this.bottom = bottom;
     }
 
-    void setRight(boolean right) {
+    public void setRight(boolean right) {
         minimapRoom.setRight(right);
         this.right = right;
     }
 
-    void setCorners(int xMin,int xMax,int yMin, int yMax){
+    public void setCorners(int xMin,int xMax,int yMin, int yMax){
         this.xMin = xMin;
         this.xMax = xMax;
         this.yMax = yMax;
@@ -216,7 +217,7 @@ public class Room implements Serializable {
 
     boolean hasEntered(){ return entered; }
 
-    void entered(TileMap tileMap){
+    public void entered(TileMap tileMap){
         entered = true;
         if (type == Room.Classic){
 
@@ -224,20 +225,19 @@ public class Room implements Serializable {
 
 
             for (int i = 0; i < maxMobs;i++){
-                EnemyManager enemyManager = EnemyManager.getInstance();
-
                 // multiplayer
-                if(MultiplayerManager.multiplayer){
-                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
-                    if(mpManager.isHost()) enemyManager.addEnemy(xMin,xMax,yMin,yMax);
+                if(tileMap.isServerSide()){
+                    EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
+                    enemyManager.addEnemy(xMin,xMax,yMin,yMax);
                 }
                 // singleplayer
                 else {
+                    EnemyManager enemyManager = EnemyManager.getInstance();
                     enemyManager.addEnemy(xMin,xMax,yMin,yMax);
                 }
+            }{
+                if(!MultiplayerManager.multiplayer || tileMap.isServerSide())lockRoom(true);
             }
-
-            lockRoom(true);
         } else if (type == Room.Boss){
 
             int y=yMin + (yMax - yMin) / 2;
@@ -251,7 +251,7 @@ public class Room implements Serializable {
             lockRoom(true);
         }
     }
-    private void lockRoom(boolean b){
+    public void lockRoom(boolean b){
         closed = b;
         for(RoomObject obj:mapObjects){
             if(obj instanceof PathWall) obj.collision=b;
@@ -259,36 +259,36 @@ public class Room implements Serializable {
     }
 
 
-    boolean isRight() {
+    public boolean isRight() {
         return right;
     }
 
-    boolean isBottom() {
+    public boolean isBottom() {
         return bottom;
     }
 
-    boolean isLeft() {
+    public boolean isLeft() {
         return left;
     }
 
-    boolean isTop() {
+    public boolean isTop() {
         return top;
     }
 
 
-    RoomPath[] getRoomPaths() {
+    public RoomPath[] getRoomPaths() {
         return roomPaths;
     }
-    void setTopRoomPath(RoomPath roomPath){
+    public void setTopRoomPath(RoomPath roomPath){
         roomPaths[0] = roomPath;
     }
-    void setBottomRoomPath(RoomPath roomPath){
+    public void setBottomRoomPath(RoomPath roomPath){
         roomPaths[1] = roomPath;
     }
-    void setLeftRoomPath(RoomPath roomPath){
+    public void setLeftRoomPath(RoomPath roomPath){
         roomPaths[2] = roomPath;
     }
-    void setRightRoomPath(RoomPath roomPath){
+    public void setRightRoomPath(RoomPath roomPath){
         roomPaths[3] = roomPath;
     }
 
@@ -329,7 +329,7 @@ public class Room implements Serializable {
             }
         }
     }
-    public void updateObjects(){
+    public void updateObjects(TileMap tm){
         for(int i = 0;i<mapObjects.size();i++){
             RoomObject object = mapObjects.get(i);
             if(object instanceof DestroyableObject){
@@ -352,16 +352,26 @@ public class Room implements Serializable {
             object.update();
         }
         if(type == Boss || type == Classic) {
-            EnemyManager enemyManager = EnemyManager.getInstance();
-            if (enemyManager.areEnemiesDead() && closed) {
-                lockRoom(false);
-                // adds 1 point to artifact for cleared room
-                ArtefactManager am = ArtefactManager.getInstance();
-                am.charge();
+            if(tm.isServerSide()){
+                EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
+                if (enemyManager.areEnemiesDead() && closed) {
+                    lockRoom(false);
+                    // adds 1 point to artifact for cleared room
+                    ArtefactManager am = ArtefactManager.getInstance();
+                    am.charge();
+                }
+            } else {
+                EnemyManager enemyManager = EnemyManager.getInstance();
+                if (enemyManager.areEnemiesDead() && closed) {
+                    lockRoom(false);
+                    // adds 1 point to artifact for cleared room
+                    ArtefactManager am = ArtefactManager.getInstance();
+                    am.charge();
+                }
             }
         }
     }
-    public void createObjects(TileMap tm, Player player) {
+    public void createObjects(TileMap tm, Player[] player) {
         if(type == Classic){
             int num = cz.Empatix.Java.Random.nextInt(3);
 

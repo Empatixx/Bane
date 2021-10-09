@@ -30,69 +30,96 @@ public class Spike extends RoomObject {
     private boolean damageDone;
     public Spike(TileMap tm){
         super(tm);
-        width = 16;
-        height = 16;
-        cwidth = 8;
-        cheight = 8;
-        scale = 8;
+        if(tm.isServerSide()){
+            width = 16;
+            height = 16;
+            cwidth = 8;
+            cheight = 8;
+            scale = 8;
 
-        facingRight = true;
-        flinching=false;
+            facingRight = true;
+            flinching=false;
 
-        spriteSheetCols = 4;
-        spriteSheetRows = 1;
+            collision = false;
+            moveable=false;
+            preDraw = true;
+            behindCollision = true;
 
-        collision = false;
-        moveable=false;
-        preDraw = true;
-        behindCollision = true;
+            animation = new Animation(4);
+            animation.setDelay(250);
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\spike.tga");
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\spike.tga");
-            Sprite[] sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float) i/spriteSheetCols,0,
+            damageAnimation = true;
+            remove = false;
+        } else {
+            width = 16;
+            height = 16;
+            cwidth = 8;
+            cheight = 8;
+            scale = 8;
 
-                                (float)i/spriteSheetCols,1,
+            facingRight = true;
+            flinching=false;
 
-                                (1.0f+i)/spriteSheetCols,1,
+            spriteSheetCols = 4;
+            spriteSheetRows = 1;
 
-                                (1.0f+i)/spriteSheetCols,0
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
+            collision = false;
+            moveable=false;
+            preDraw = true;
+            behindCollision = true;
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\spike.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\spike.tga");
+                Sprite[] sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float) i/spriteSheetCols,0,
+
+                                    (float)i/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,0
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
 
             }
-            spritesheet.addSprites(sprites);
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
 
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(0));
+            animation.setDelay(250);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            // because of scaling image by 8x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            damageAnimation = true;
+            remove = false;
         }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(0));
-        animation.setDelay(250);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 8x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        damageAnimation = true;
-        remove = false;
     }
 
     @Override

@@ -3,9 +3,7 @@ package cz.Empatix.Render.RoomObjects;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Render.TileMap;
 
-import java.io.Serializable;
-
-public abstract class RoomObject extends MapObject implements Serializable {
+public abstract class RoomObject extends MapObject{
     public boolean moveable;
     public boolean collision;
     public boolean preDraw;

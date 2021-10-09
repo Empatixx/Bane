@@ -1,6 +1,6 @@
 package cz.Empatix.Entity;
 
-import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Enemies.*;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
@@ -53,11 +53,6 @@ public class EnemyManager {
         enemiesList.add("eyebat");
 
         enemiesKilled = 0;
-
-        if(MultiplayerManager.multiplayer){
-            queueAddEnemyPackets = new ArrayList<>();
-            lock = new ReentrantLock();
-        }
     }
 
     // multiplayer
@@ -80,10 +75,8 @@ public class EnemyManager {
 
         enemiesKilled = 0;
 
-        if(MultiplayerManager.multiplayer){
-            queueAddEnemyPackets = new ArrayList<>();
-            lock = new ReentrantLock();
-        }
+        queueAddEnemyPackets = new ArrayList<>();
+        lock = new ReentrantLock();
     }
 
     public void loadSave(){
@@ -110,6 +103,9 @@ public class EnemyManager {
             try{
                 lock.lock();
                 for(Network.AddEnemy addEnemy : queueAddEnemyPackets){
+                    if(areEnemiesDead()){
+                        tileMap.getCurrentRoom().lockRoom(true);
+                    }
                     addEnemy(addEnemy);
                 }
                 if(!queueAddEnemyPackets.isEmpty()){
@@ -337,20 +333,111 @@ public class EnemyManager {
 
         instance.setPosition(x,y);
         enemies.add(instance);
-
-        // multiplayer packet of new enemy
-        if(MultiplayerManager.multiplayer){
-            MultiplayerManager mpManager = MultiplayerManager.getInstance();
-
-            Network.AddEnemy addEnemy = new Network.AddEnemy();
-            addEnemy.type = enemy;
-            addEnemy.x = x;
-            addEnemy.y = y;
-            addEnemy.id = instance.idEnemy;
-
-            Client client = mpManager.client.getClient();
-            client.sendTCP(addEnemy);
+    }
+    // only for server side - sending packet to all clients
+    public void addEnemyServerSide(int xMin,int xMax, int yMin,int yMax){
+        int defaultsize = 3;
+        if(tileMap.getFloor() >= 1){
+            defaultsize+=3;
         }
+        if(tileMap.getFloor() >= 2){
+            defaultsize+=2;
+        }
+        int enemyType = cz.Empatix.Java.Random.nextInt(defaultsize);
+        Enemy instance = null;
+        String enemy = enemiesList.get(enemyType);
+        if(MultiplayerManager.multiplayer) {
+            switch (enemy) {
+                case "slime": {
+                    instance = new Slime(tileMap, player);
+                    break;
+                }
+                case "rat": {
+                    instance = new Rat(tileMap, player);
+                    break;
+                }
+                case "bat": {
+                    instance = new Bat(tileMap, player);
+                    break;
+                }
+                case "demoneye": {
+                    instance = new Demoneye(tileMap, player);
+                    break;
+                }
+                case "ghost": {
+                    instance = new Ghost(tileMap, player);
+                    break;
+                }
+                case "snake": {
+                    instance = new Snake(tileMap, player);
+                    break;
+                }
+                case "redslime": {
+                    instance = new RedSlime(tileMap, player);
+                    break;
+                }
+                case "eyebat": {
+                    instance = new EyeBat(tileMap, player);
+                    break;
+                }
+            }
+        }
+
+        int tileSize = tileMap.getTileSize();
+
+        int x;
+        int y;
+
+        int cwidth = instance.getCwidth();
+        int cheight = instance.getCheight();
+
+
+        // tiles
+        int leftTile;
+        int rightTile;
+        int topTile;
+        int bottomTile;
+
+
+        // getting type of tile
+        int tl;
+        int tr;
+        int bl;
+        int br;
+
+        boolean loop;
+        do
+        {
+            x = getRandom(xMin,xMax);
+            y = getRandom(yMin,yMax);
+
+            leftTile = (x - cwidth / 2) / tileSize;
+            rightTile = (x + cwidth / 2 - 1) / tileSize;
+            topTile = (y - cheight / 2) / tileSize;
+            bottomTile = (y + cheight / 2 - 1) / tileSize;
+
+
+            // getting type of tile
+            tl = tileMap.getType(topTile, leftTile);
+            tr = tileMap.getType(topTile, rightTile);
+            bl = tileMap.getType(bottomTile, leftTile);
+            br = tileMap.getType(bottomTile, rightTile);
+
+            loop = (tl == Tile.BLOCKED || tr == Tile.BLOCKED || bl == Tile.BLOCKED || br == Tile.BLOCKED);
+        }while(loop);
+
+        instance.setPosition(x,y);
+        enemies.add(instance);
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+
+        Network.AddEnemy addEnemy = new Network.AddEnemy();
+        addEnemy.type = enemy;
+        addEnemy.x = x;
+        addEnemy.y = y;
+        addEnemy.id = instance.idEnemy;
+
+        Server server = mpManager.server.getServer();
+        server.sendToAllTCP(addEnemy);
     }
     public void addEnemy(String enemy){
         Enemy instance;
@@ -460,5 +547,15 @@ public class EnemyManager {
         } finally {
             lock.unlock();
         }
+    }
+
+    public Enemy handleHitEnemyPacket(int id, int damage) {
+        for(Enemy e : enemies){
+            if(e.getId() == id){
+                e.hit(damage);
+                return e;
+            }
+        }
+        return null;
     }
 }

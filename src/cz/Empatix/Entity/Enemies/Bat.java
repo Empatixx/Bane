@@ -87,116 +87,96 @@ public class Bat extends Enemy {
     }
 
     public Bat(TileMap tm, Player[] player) {
-
         super(tm,player);
+        if(tm.isServerSide()){
+            moveSpeed = 1.4f;
+            maxSpeed = 5.2f;
+            stopSpeed = 0.8f;
 
-        moveSpeed = 1.4f;
-        maxSpeed = 5.2f;
-        stopSpeed = 0.8f;
+            width = 64;
+            height = 64;
+            cwidth = 64;
+            cheight = 64;
+            scale = 2;
 
-        width = 64;
-        height = 64;
-        cwidth = 64;
-        cheight = 64;
-        scale = 2;
+            animation = new Animation(4);
+            animation.setDelay(125);
 
+            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 2;
 
-        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
-        damage = 2;
+            type = melee;
+            facingRight = true;
 
-        type = melee;
-        facingRight = true;
-
-        spriteSheetCols = 4;
-        spriteSheetRows = 2;
-
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\bat.tga");
-
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\bat.tga");
-            Sprite[] sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                //Sprite sprite = new Sprite(texCoords);
-                Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
-
-            sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
-        }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(125);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 2x
-        width *= 2;
-        height *= 2;
-        cwidth *= 2;
-        cheight *= 2;
-
-        createShadow();
-    }
-
-    private void getNextPosition() {
-
-        // movement
-        if(left) {
-            speed.x -= moveSpeed;
-            if(speed.x < -maxSpeed) {
-                speed.x = -maxSpeed;
-            }
-        }
-        else if(right) {
-            speed.x += moveSpeed;
-            if(speed.x > maxSpeed) {
-                speed.x = maxSpeed;
-            }
-        }
-        else {
-            if (speed.x < 0){
-                speed.x += stopSpeed;
-                if (speed.x > 0) speed.x = 0;
-            } else if (speed.x > 0){
-                speed.x -= stopSpeed;
-                if (speed.x < 0) speed.x = 0;
-            }
-        }
-        if(down) {
-            speed.y += moveSpeed;
-            if (speed.y > maxSpeed){
-                speed.y = maxSpeed;
-            }
-        } else if (up){
-            speed.y -= moveSpeed;
-            if (speed.y < -maxSpeed){
-                speed.y = -maxSpeed;
-            }
+            // because of scaling image by 2x
+            width *= 2;
+            height *= 2;
+            cwidth *= 2;
+            cheight *= 2;
         } else {
-            if (speed.y < 0){
-                speed.y += stopSpeed;
-                if (speed.y > 0) speed.y = 0;
-            } else if (speed.y > 0){
-                speed.y -= stopSpeed;
-                if (speed.y < 0) speed.y = 0;
+            moveSpeed = 1.4f;
+            maxSpeed = 5.2f;
+            stopSpeed = 0.8f;
+
+            width = 64;
+            height = 64;
+            cwidth = 64;
+            cheight = 64;
+            scale = 2;
+
+
+            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 2;
+
+            type = melee;
+            facingRight = true;
+
+            spriteSheetCols = 4;
+            spriteSheetRows = 2;
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\bat.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\bat.tga");
+                Sprite[] sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    //Sprite sprite = new Sprite(texCoords);
+                    Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
+
+                sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
             }
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(IDLE));
+            animation.setDelay(125);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            // because of scaling image by 2x
+            width *= 2;
+            height *= 2;
+            cwidth *= 2;
+            cheight *= 2;
+
+            createShadow();
         }
     }
 
@@ -209,14 +189,8 @@ public class Bat extends Enemy {
 
         if(dead) return;
 
-        // ENEMY AI
-        EnemyAI();
-
-        // update position
-        getNextPosition();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
         super.update();
+        movePacket();
     }
 
     @Override
@@ -226,8 +200,13 @@ public class Bat extends Enemy {
         health -= damage;
         if(health < 0) health = 0;
         if(health == 0){
-            animation.setDelay(100);
-            animation.setFrames(spritesheet.getSprites(DEAD));
+            if(tileMap.isServerSide()){
+                animation = new Animation(4);
+                animation.setDelay(100);
+            } else {
+                animation.setFrames(spritesheet.getSprites(DEAD));
+                animation.setDelay(100);
+            }
             speed.x = 0;
             speed.y = 0;
             dead = true;

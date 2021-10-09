@@ -32,68 +32,92 @@ public class Portal extends RoomObject {
 
     public Portal(TileMap tm){
         super(tm);
-        width = 86;
-        height = 80;
-        cwidth = 43;
-        cheight = 40;
-        scale = 4;
+        if(tm.isServerSide()){
+            width = 86;
+            height = 80;
+            cwidth = 43;
+            cheight = 40;
+            scale = 4;
 
-        facingRight = true;
-        flinching=false;
+            facingRight = true;
+            flinching=false;
 
-        spriteSheetCols = 8;
-        spriteSheetRows = 1;
+            spriteSheetCols = 8;
+            spriteSheetRows = 1;
 
-        collision = false;
-        moveable=false;
-        preDraw = true;
+            collision = false;
+            moveable=false;
+            preDraw = true;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\portal.tga");
+            // because of scaling image by 8x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+        } else {
+            width = 86;
+            height = 80;
+            cwidth = 43;
+            cheight = 40;
+            scale = 4;
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\portal.tga");
-            Sprite[] sprites = new Sprite[8];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float) i/spriteSheetCols,0,
+            facingRight = true;
+            flinching=false;
 
-                                (float)i/spriteSheetCols,1,
+            spriteSheetCols = 8;
+            spriteSheetRows = 1;
 
-                                (1.0f+i)/spriteSheetCols,1,
+            collision = false;
+            moveable=false;
+            preDraw = true;
 
-                                (1.0f+i)/spriteSheetCols,0
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\portal.tga");
 
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\portal.tga");
+                Sprite[] sprites = new Sprite[8];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float) i/spriteSheetCols,0,
+
+                                    (float)i/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,0
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
             }
-            spritesheet.addSprites(sprites);
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(IDLE));
+            animation.setDelay(125);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            // because of scaling image by 8x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            light = LightManager.createLight(new Vector3f(0.466f, 0.043f, 0.596f),new Vector2f(0,0),8f,this);
+
+            textRender = new TextRender();
         }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(125);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 8x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        light = LightManager.createLight(new Vector3f(0.466f, 0.043f, 0.596f),new Vector2f(0,0),8f,this);
-
-        textRender = new TextRender();
     }
 
     @Override

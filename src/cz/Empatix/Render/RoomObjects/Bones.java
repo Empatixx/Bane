@@ -16,33 +16,57 @@ public class Bones extends RoomObject {
     }
     public Bones(TileMap tm){
         super(tm);
-        width = 16;
-        height = 16;
-        cwidth = 16;
-        cheight = 16;
-        scale = 8;
+        if(tm.isServerSide()){
+            width = 16;
+            height = 16;
+            cwidth = 16;
+            cheight = 16;
+            scale = 8;
 
-        facingRight = true;
-        flinching=false;
+            facingRight = true;
+            flinching=false;
 
-        spriteSheetCols = 1;
-        spriteSheetRows = 2;
+            collision = false;
+            moveable=false;
+            preDraw = true;
 
-        collision = false;
-        moveable=false;
-        preDraw = true;
+            animation = new Animation(1);
+            animation.setDelay(-1);
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\bones.tga");
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\bones.tga");
-            for(int j = 0;j < spriteSheetRows;j++){
-                Sprite[] sprites = new Sprite[1];
+            remove = false;
+        } else {
+            width = 16;
+            height = 16;
+            cwidth = 16;
+            cheight = 16;
+            scale = 8;
 
-                float[] texCoords =
-                        {
+            facingRight = true;
+            flinching=false;
+
+            spriteSheetCols = 1;
+            spriteSheetRows = 2;
+
+            collision = false;
+            moveable=false;
+            preDraw = true;
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\bones.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\bones.tga");
+                for(int j = 0;j < spriteSheetRows;j++){
+                    Sprite[] sprites = new Sprite[1];
+
+                    float[] texCoords =
+                            {
                                     0, (float)j/spriteSheetRows,
 
                                     0, (float)(j+1)/spriteSheetRows,
@@ -51,34 +75,35 @@ public class Bones extends RoomObject {
 
                                     1, (float)j/spriteSheetRows,
                             };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[0] = sprite;
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[0] = sprite;
 
-                spritesheet.addSprites(sprites);
+                    spritesheet.addSprites(sprites);
+
+                }
 
             }
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
 
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(Random.nextInt(2)));
+            animation.setDelay(-1);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            // because of scaling image by 8x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            remove = false;
         }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(Random.nextInt(2)));
-        animation.setDelay(-1);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 8x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        remove = false;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class Golem extends Enemy {
 
     private boolean chestCreated;
 
-    private final LaserBeam laserBeam;
+    private LaserBeam laserBeam;
 
 
     private HealthBar healthBar;
@@ -147,134 +147,125 @@ public class Golem extends Enemy {
     // multiplayer
     public Golem(TileMap tm, Player[] player) {
         super(tm,player);
+        if(tm.isServerSide()){
+            moveSpeed = 0.7f;
+            maxSpeed = 5.2f;
+            stopSpeed = 0.75f;
 
-        moveSpeed = 0.7f;
-        maxSpeed = 5.2f;
-        stopSpeed = 0.75f;
+            width = 100;
+            height = 100;
+            cwidth = 50;
+            cheight = 40;
+            scale = 6;
 
-        width = 100;
-        height = 100;
-        cwidth = 50;
-        cheight = 40;
-        scale = 6;
+            health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 2;
 
-        health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
-        damage = 2;
+            type = melee;
+            facingRight = true;
 
-        type = melee;
-        facingRight = true;
+            currentAction = IDLE;
 
-        spriteSheetCols = 14;
-        spriteSheetRows = 8;
+            // because of scaling image by 2x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\golem.png");
+            chestCreated=false;
 
-        // creating a new spritesheet
+            speedBuff = false;
+            speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+            shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+            beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+            lastRegen = System.currentTimeMillis() - InGame.deltaPauseTime();
+            // MULTIPLAYER SUPPORT
+            laserBeam = new LaserBeam(tm,player);
 
-        int[] numSprites = new int[]{4,8,9,8,7,7,10,14};
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\golem.png");
-            for(int j = 0;j<numSprites.length;j++) {
-                Sprite[] sprites = new Sprite[numSprites[j]];
-                for (int i = 0; i < numSprites[j]; i++) {
-                    Sprite sprite = new Sprite(new float[]
-                            {(float) i / spriteSheetCols, (float)j/spriteSheetRows,
-
-                                    (float) i / spriteSheetCols, (1.0f+j) / spriteSheetRows,
-
-                                    (1.0f + i) / spriteSheetCols, (1.0f+j) / spriteSheetRows,
-
-                                    (1.0f + i) / spriteSheetCols, (float)j/spriteSheetRows}
-                    );
-                    sprites[i] = sprite;
-
-                }
-                spritesheet.addSprites(sprites);
-            }
-        }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(145);
-        currentAction = IDLE;
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 2x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        chestCreated=false;
-
-        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,49,3);
-        healthBar.initHealth(health,maxHealth);
-
-        createShadow();
-
-        speedBuff = false;
-        speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
-        shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
-        beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
-        lastRegen = System.currentTimeMillis() - InGame.deltaPauseTime();
-        // MULTIPLAYER SUPPORT
-        laserBeam = new LaserBeam(tm,player);
-
-        shieldStacks = 0;
-
-    }
-
-    private void getNextPosition() {
-
-        // movement
-        if(left) {
-            speed.x -= moveSpeed;
-            if(speed.x < -maxSpeed) {
-                speed.x = -maxSpeed;
-            }
-        }
-        else if(right) {
-            speed.x += moveSpeed;
-            if(speed.x > maxSpeed) {
-                speed.x = maxSpeed;
-            }
-        }
-        else {
-            if (speed.x < 0){
-                speed.x += stopSpeed;
-                if (speed.x > 0) speed.x = 0;
-            } else if (speed.x > 0){
-                speed.x -= stopSpeed;
-                if (speed.x < 0) speed.x = 0;
-            }
-        }
-        if(down) {
-            speed.y += moveSpeed;
-            if (speed.y > maxSpeed){
-                speed.y = maxSpeed;
-            }
-        } else if (up){
-            speed.y -= moveSpeed;
-            if (speed.y < -maxSpeed){
-                speed.y = -maxSpeed;
-            }
+            shieldStacks = 0;
         } else {
-            if (speed.y < 0){
-                speed.y += stopSpeed;
-                if (speed.y > 0) speed.y = 0;
-            } else if (speed.y > 0){
-                speed.y -= stopSpeed;
-                if (speed.y < 0) speed.y = 0;
+            moveSpeed = 0.7f;
+            maxSpeed = 5.2f;
+            stopSpeed = 0.75f;
+
+            width = 100;
+            height = 100;
+            cwidth = 50;
+            cheight = 40;
+            scale = 6;
+
+            health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 2;
+
+            type = melee;
+            facingRight = true;
+
+            spriteSheetCols = 14;
+            spriteSheetRows = 8;
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\golem.png");
+
+            // creating a new spritesheet
+
+            int[] numSprites = new int[]{4,8,9,8,7,7,10,14};
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\golem.png");
+                for(int j = 0;j<numSprites.length;j++) {
+                    Sprite[] sprites = new Sprite[numSprites[j]];
+                    for (int i = 0; i < numSprites[j]; i++) {
+                        Sprite sprite = new Sprite(new float[]
+                                {(float) i / spriteSheetCols, (float)j/spriteSheetRows,
+
+                                        (float) i / spriteSheetCols, (1.0f+j) / spriteSheetRows,
+
+                                        (1.0f + i) / spriteSheetCols, (1.0f+j) / spriteSheetRows,
+
+                                        (1.0f + i) / spriteSheetCols, (float)j/spriteSheetRows}
+                        );
+                        sprites[i] = sprite;
+
+                    }
+                    spritesheet.addSprites(sprites);
+                }
             }
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(IDLE));
+            animation.setDelay(145);
+            currentAction = IDLE;
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            // because of scaling image by 2x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            chestCreated=false;
+
+            healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,49,3);
+            healthBar.initHealth(health,maxHealth);
+
+            createShadow();
+
+            speedBuff = false;
+            speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+            shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+            beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+            lastRegen = System.currentTimeMillis() - InGame.deltaPauseTime();
+            laserBeam = new LaserBeam(tm,this.player);
+
+            shieldStacks = 0;
         }
+
     }
     @Override
     public void update() {
@@ -397,7 +388,7 @@ public class Golem extends Enemy {
         getNextPosition();
         checkTileMapCollision();
         setPosition(temp.x, temp.y);
-        super.update();
+        movePacket();
     }
 
     public void draw() {

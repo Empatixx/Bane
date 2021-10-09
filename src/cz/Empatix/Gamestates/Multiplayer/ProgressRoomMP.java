@@ -236,15 +236,8 @@ public class ProgressRoomMP extends GameState {
             if(playerReady != null) totalConPlayers++;
         }
         // all players are ready => enter game
-        if(totalConPlayers == readyNumPlayers && mpManager.isHost()){
-            Network.ChangeGamestate changeGamestate = new Network.ChangeGamestate();
-            Client client = mpManager.client.getClient();
-            client.sendTCP(changeGamestate);
-
+        if(totalConPlayers == readyNumPlayers){
             mpManager.client.setNumPlayers(1);
-            gsm.setState(GameStateManager.INGAMEMP);
-        }
-        if (switchGamestate){
             gsm.setState(GameStateManager.INGAMEMP);
         }
 

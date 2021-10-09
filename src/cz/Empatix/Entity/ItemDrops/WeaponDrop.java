@@ -2,7 +2,7 @@ package cz.Empatix.Entity.ItemDrops;
 
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
-import cz.Empatix.Guns.Weapon;
+import cz.Empatix.Guns.*;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -35,44 +35,89 @@ public class WeaponDrop extends ItemDrop {
 
     public WeaponDrop(TileMap tm,Weapon weapon, float x,float y){
         super(tm);
-        this.weapon = weapon;
-        type = GUN;
-        canDespawn = false;
-        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
-        pickedUp = false;
+        if(tm.isServerSide()){
+            this.weapon = weapon;
+            type = GUN;
+            canDespawn = false;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
 
-        Image imageOfWeapon = weapon.getWeaponHud();
+            if(weapon instanceof Pistol){
+                width=cwidth=41;
+                height=cheight=34;
+            } else if (weapon instanceof Luger){
+                width=cwidth=50;
+                height=cheight=38;
+            } else if (weapon instanceof Grenadelauncher){
+                width=cwidth=98;
+                height=cheight=52;
+            } else if (weapon instanceof M4){
+                width=cwidth=98;
+                height=cheight=40;
+            } else if (weapon instanceof Revolver){
+                width=cwidth=71;
+                height=cheight=44;
+            } else if (weapon instanceof Shotgun){
+                width=cwidth=97;
+                height=cheight=36;
+            } else if (weapon instanceof Submachine){
+                width=cwidth=66;
+                height=cheight=58;
+            } else if (weapon instanceof Thompson){
+                width=cwidth=97;
+                height=cheight=47;
+            }
+            scale = 1.5f;
+            facingRight = true;
 
-        width=cwidth=imageOfWeapon.getWidth();
-        height=cheight=imageOfWeapon.getHeight();
-        scale = 1.5f;
-        facingRight = true;
+            double atan = Math.atan2(y,x);
+            speed.x = (float)(Math.cos(atan) * 10);
+            speed.y = (float)(Math.sin(atan) * 10);
+            stopSpeed = 0.35f;
 
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        vboTexturesWeapon = imageOfWeapon.getVboTextures();
-        vboVerticesWeapon = imageOfWeapon.getVboVertices();
+            cwidth*=scale;
+            cheight*=scale;
+
+        } else {
+            this.weapon = weapon;
+            type = GUN;
+            canDespawn = false;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
+
+            Image imageOfWeapon = weapon.getWeaponHud();
+
+            width=cwidth=imageOfWeapon.getWidth();
+            height=cheight=imageOfWeapon.getHeight();
+            scale = 1.5f;
+            facingRight = true;
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            vboTexturesWeapon = imageOfWeapon.getVboTextures();
+            vboVerticesWeapon = imageOfWeapon.getVboVertices();
 
 
-        textureId = imageOfWeapon.getIdTexture();
-        textureWidth = width;
-        textureHeight = height;
+            textureId = imageOfWeapon.getIdTexture();
+            textureWidth = width;
+            textureHeight = height;
 
-        light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
+            light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
 
-        double atan = Math.atan2(y,x);
-        speed.x = (float)(Math.cos(atan) * 10);
-        speed.y = (float)(Math.sin(atan) * 10);
-        stopSpeed = 0.35f;
+            double atan = Math.atan2(y,x);
+            speed.x = (float)(Math.cos(atan) * 10);
+            speed.y = (float)(Math.sin(atan) * 10);
+            stopSpeed = 0.35f;
 
-        cwidth*=scale;
-        cheight*=scale;
+            cwidth*=scale;
+            cheight*=scale;
 
-        outlineShader = ShaderManager.getShader("shaders\\outline");
-        if (outlineShader == null){
-            outlineShader = ShaderManager.createShader("shaders\\outline");
+            outlineShader = ShaderManager.getShader("shaders\\outline");
+            if (outlineShader == null){
+                outlineShader = ShaderManager.createShader("shaders\\outline");
+            }
         }
     }
 
@@ -110,41 +155,83 @@ public class WeaponDrop extends ItemDrop {
 
     public WeaponDrop(TileMap tm, Weapon weapon){
         super(tm);
-        this.weapon = weapon;
-        type = GUN;
-        canDespawn = false;
-        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
-        pickedUp = false;
+        if(tm.isServerSide()){
+            this.weapon = weapon;
+            type = GUN;
+            canDespawn = false;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
 
-        Image imageOfWeapon = weapon.getWeaponHud();
+            if(weapon instanceof Pistol){
+                width=cwidth=41;
+                height=cheight=34;
+            } else if (weapon instanceof Luger){
+                width=cwidth=50;
+                height=cheight=38;
+            } else if (weapon instanceof Grenadelauncher){
+                width=cwidth=98;
+                height=cheight=52;
+            } else if (weapon instanceof M4){
+                width=cwidth=98;
+                height=cheight=40;
+            } else if (weapon instanceof Revolver){
+                width=cwidth=71;
+                height=cheight=44;
+            } else if (weapon instanceof Shotgun){
+                width=cwidth=97;
+                height=cheight=36;
+            } else if (weapon instanceof Submachine){
+                width=cwidth=66;
+                height=cheight=58;
+            } else if (weapon instanceof Thompson){
+                width=cwidth=97;
+                height=cheight=47;
+            }
+            scale = 1.5f;
+            facingRight = true;
 
-        width=cwidth=imageOfWeapon.getWidth();
-        height=cheight=imageOfWeapon.getHeight();
-        scale = 1.5f;
-        facingRight = true;
+            stopSpeed = 0.35f;
 
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        vboTexturesWeapon = imageOfWeapon.getVboTextures();
-        vboVerticesWeapon = imageOfWeapon.getVboVertices();
+            cwidth*=scale;
+            cheight*=scale;
+
+        } else {
+            this.weapon = weapon;
+            type = GUN;
+            canDespawn = false;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
+
+            Image imageOfWeapon = weapon.getWeaponHud();
+
+            width=cwidth=imageOfWeapon.getWidth();
+            height=cheight=imageOfWeapon.getHeight();
+            scale = 1.5f;
+            facingRight = true;
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            vboTexturesWeapon = imageOfWeapon.getVboTextures();
+            vboVerticesWeapon = imageOfWeapon.getVboVertices();
 
 
-        textureId = imageOfWeapon.getIdTexture();
-        textureWidth = width;
-        textureHeight = height;
+            textureId = imageOfWeapon.getIdTexture();
+            textureWidth = width;
+            textureHeight = height;
 
-        light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
+            light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
+            
+            stopSpeed = 0.35f;
 
-        stopSpeed = 0.35f;
+            cwidth*=scale;
+            cheight*=scale;
 
-        cwidth*=scale;
-        cheight*=scale;
-
-        outlineShader = ShaderManager.getShader("shaders\\outline");
-        if (outlineShader == null){
-            outlineShader = ShaderManager.createShader("shaders\\outline");
+            outlineShader = ShaderManager.getShader("shaders\\outline");
+            if (outlineShader == null){
+                outlineShader = ShaderManager.createShader("shaders\\outline");
+            }
         }
     }
     public void draw(){

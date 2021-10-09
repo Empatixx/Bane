@@ -127,126 +127,114 @@ public class KingSlime extends Enemy {
     // multiplayer
     public KingSlime(TileMap tm, Player[] player) {
         super(tm,player);
+        if(tm.isServerSide()){
+            moveSpeed = 0.6f;
+            maxSpeed = 1.6f;
+            stopSpeed = 0.5f;
 
-        moveSpeed = 0.6f;
-        maxSpeed = 1.6f;
-        stopSpeed = 0.5f;
+            width = 64;
+            height = 48;
+            cwidth = 64;
+            cheight = 48;
+            scale = 5;
 
-        width = 64;
-        height = 48;
-        cwidth = 64;
-        cheight = 48;
-        scale = 5;
+            animation = new Animation(4);
+            animation.setDelay(175);
 
-        health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
-        damage = 1;
+            health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 1;
 
-        type = melee;
-        facingRight = true;
-        bullets=new ArrayList<>(100);
+            type = melee;
+            facingRight = true;
+            bullets=new ArrayList<>(100);
 
-        spriteSheetCols = 6;
-        spriteSheetRows = 2;
+            // because of scaling image by 2x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slimeking.tga");
+            angle=0;
+            chestCreated=false;
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slimeking.tga");
-            Sprite[] sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                Sprite sprite = new Sprite(5,i,0,32,24,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
+            directionChangeCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
+            invertDirection = false;
+        } else  {
+            moveSpeed = 0.6f;
+            maxSpeed = 1.6f;
+            stopSpeed = 0.5f;
+
+            width = 64;
+            height = 48;
+            cwidth = 64;
+            cheight = 48;
+            scale = 5;
+
+            health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            damage = 1;
+
+            type = melee;
+            facingRight = true;
+            bullets=new ArrayList<>(100);
+
+            spriteSheetCols = 6;
+            spriteSheetRows = 2;
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slimeking.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slimeking.tga");
+                Sprite[] sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    Sprite sprite = new Sprite(5,i,0,32,24,spriteSheetRows,spriteSheetCols);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
+
+                sprites = new Sprite[6];
+                for(int i = 0; i < sprites.length; i++) {
+                    Sprite sprite = new Sprite(5,i,1,32,24,spriteSheetRows,spriteSheetCols);
+                    sprites[i] = sprite;
+
+
+                }
+                spritesheet.addSprites(sprites);
 
             }
-            spritesheet.addSprites(sprites);
-
-            sprites = new Sprite[6];
-            for(int i = 0; i < sprites.length; i++) {
-                Sprite sprite = new Sprite(5,i,1,32,24,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
-
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
             }
-            spritesheet.addSprites(sprites);
 
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(IDLE));
+            animation.setDelay(175);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            // because of scaling image by 2x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            angle=0;
+            chestCreated=false;
+
+            healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,49,3);
+            healthBar.initHealth(health,maxHealth);
+
+            createShadow();
+
+            directionChangeCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
+            invertDirection = false;
         }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
 
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(175);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 2x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        angle=0;
-        chestCreated=false;
-
-        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,49,3);
-        healthBar.initHealth(health,maxHealth);
-
-        createShadow();
-
-        directionChangeCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
-        invertDirection = false;
-
-    }
-
-    private void getNextPosition() {
-
-        // movement
-        if(left) {
-            speed.x -= moveSpeed;
-            if(speed.x < -maxSpeed) {
-                speed.x = -maxSpeed;
-            }
-        }
-        else if(right) {
-            speed.x += moveSpeed;
-            if(speed.x > maxSpeed) {
-                speed.x = maxSpeed;
-            }
-        }
-        else {
-            if (speed.x < 0){
-                speed.x += stopSpeed;
-                if (speed.x > 0) speed.x = 0;
-            } else if (speed.x > 0){
-                speed.x -= stopSpeed;
-                if (speed.x < 0) speed.x = 0;
-            }
-        }
-        if(down) {
-            speed.y += moveSpeed;
-            if (speed.y > maxSpeed){
-                speed.y = maxSpeed;
-            }
-        } else if (up){
-            speed.y -= moveSpeed;
-            if (speed.y < -maxSpeed){
-                speed.y = -maxSpeed;
-            }
-        } else {
-            if (speed.y < 0){
-                speed.y += stopSpeed;
-                if (speed.y > 0) speed.y = 0;
-            } else if (speed.y > 0){
-                speed.y -= stopSpeed;
-                if (speed.y < 0) speed.y = 0;
-            }
-        }
     }
 
     @Override
@@ -291,6 +279,8 @@ public class KingSlime extends Enemy {
                         slimebullet.setHit();
                         ((DestroyableObject) object).setHit(1);
                     }
+                } else if(object.collision && slimebullet.intersects(object)){
+                    slimebullet.setHit();
                 }
             }
         }
@@ -365,14 +355,9 @@ public class KingSlime extends Enemy {
 
 
         }
-        // ENEMY AI
-        EnemyAI();
-
-        // update position
-        getNextPosition();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
         super.update();
+        movePacket();
+
     }
 
     public void draw() {
@@ -396,8 +381,13 @@ public class KingSlime extends Enemy {
         health -= damage;
         if(health < 0) health = 0;
         if(health == 0){
-            animation.setDelay(85);
-            animation.setFrames(spritesheet.getSprites(DEAD));
+            if(tileMap.isServerSide()){
+                animation = new Animation(6);
+                animation.setDelay(85);
+            } else {
+                animation.setFrames(spritesheet.getSprites(DEAD));
+                animation.setDelay(85);
+            }
             speed.x = 0;
             speed.y = 0;
             dead = true;

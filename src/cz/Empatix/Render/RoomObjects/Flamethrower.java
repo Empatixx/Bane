@@ -26,7 +26,7 @@ public class Flamethrower extends RoomObject {
         Loader.loadImage("Textures\\Sprites\\flamethrower.tga");
     }
     public boolean remove;
-    private Player player;
+    private Player[] player;
     private boolean damageAnimation;
 
     private long cooldownTime;
@@ -37,83 +37,109 @@ public class Flamethrower extends RoomObject {
 
     private int type;
 
-    public Flamethrower(TileMap tm, Player player){
+    public Flamethrower(TileMap tm, Player[] player){
         super(tm);
-        this.player = player;
-        width = 16;
-        height = 32;
-        cwidth = 12;
-        cheight = 32;
-        scale = 8;
+        if(tm.isServerSide()){
+            this.player = player;
+            width = 16;
+            height = 32;
+            cwidth = 12;
+            cheight = 32;
+            scale = 8;
 
-        facingRight = true;
-        flinching=false;
+            facingRight = true;
+            flinching=false;
 
-        spriteSheetCols = 4;
-        spriteSheetRows = 1;
+            collision = false;
+            moveable=false;
+            preDraw = true;
 
-        collision = false;
-        moveable=false;
-        preDraw = true;
+            animation = new Animation(4);
+            animation.setDelay(150);
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\flamethrower.tga");
+            cwidth *= scale;
+            cheight *= scale;
+            damageAnimation = true;
+            remove = false;
+            ready = true;
+        } else {
+            this.player = player;
+            width = 16;
+            height = 32;
+            cwidth = 12;
+            cheight = 32;
+            scale = 8;
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\flamethrower.tga");
-            Sprite[] sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float) i/spriteSheetCols,0,
+            facingRight = true;
+            flinching=false;
 
-                                (float)i/spriteSheetCols,1,
+            spriteSheetCols = 4;
+            spriteSheetRows = 1;
 
-                                (1.0f+i)/spriteSheetCols,1,
+            collision = false;
+            moveable=false;
+            preDraw = true;
 
-                                (1.0f+i)/spriteSheetCols,0
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\flamethrower.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\flamethrower.tga");
+                Sprite[] sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float) i/spriteSheetCols,0,
+
+                                    (float)i/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,0
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
+
+                sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (1.0f+i)/spriteSheetCols,0,
+
+                                    (float) i/spriteSheetCols,0,
+
+                                    (float)i/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,1
+
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
 
             }
-            spritesheet.addSprites(sprites);
 
-            sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (1.0f+i)/spriteSheetCols,0,
+            animation = new Animation();
+            animation.setDelay(150);
 
-                                (float) i/spriteSheetCols,0,
-
-                                (float)i/spriteSheetCols,1,
-
-                                (1.0f+i)/spriteSheetCols,1
-
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
-
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
             }
-            spritesheet.addSprites(sprites);
-
+            // because of scaling image by 8x
+            cwidth *= scale;
+            cheight *= scale;
+            damageAnimation = true;
+            remove = false;
+            ready = true;
         }
 
-        animation = new Animation();
-        animation.setDelay(150);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 8x
-        cwidth *= scale;
-        cheight *= scale;
-        damageAnimation = true;
-        remove = false;
-        ready = true;
     }
 
     @Override
@@ -205,8 +231,12 @@ public class Flamethrower extends RoomObject {
             damageAnimation = true;
             ready = false;
         }
-        if(damageAnimation && this.intersects(player)){
-            player.hit(1);
+        for(int j = 0;j<player.length;j++){
+            if(player[j] != null){
+                if(damageAnimation && this.intersects(player[j])){
+                    player[j].hit(1);
+                }
+            }
         }
     }
 
@@ -291,19 +321,22 @@ public class Flamethrower extends RoomObject {
     }
 
     public void setType(int type){
-        animation.setFrames(spritesheet.getSprites(type));
         this.type = type;
-
-        if(type == VERTICAL){
-            vboVertices = ModelManager.getModel(width,height);
-            if (vboVertices == -1){
-                vboVertices = ModelManager.createModel(width,height);
+        if(!tileMap.isServerSide()){
+            animation.setFrames(spritesheet.getSprites(type));
+            if(type == VERTICAL){
+                vboVertices = ModelManager.getModel(width,height);
+                if (vboVertices == -1){
+                    vboVertices = ModelManager.createModel(width,height);
+                }
+            } else {
+                vboVertices = ModelManager.getModel(height,width);
+                if (vboVertices == -1){
+                    vboVertices = ModelManager.createModel(height,width);
+                }
             }
-        } else {
-            vboVertices = ModelManager.getModel(height,width);
-            if (vboVertices == -1){
-                vboVertices = ModelManager.createModel(height,width);
-            }
+        }
+        if (type != VERTICAL){
             int prevWidth;
             prevWidth = width;
             width = height;

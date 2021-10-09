@@ -48,7 +48,6 @@ public class GameClient{
                         ((InGameMP) gameState).player[numPlayers] = playerMP;
                         numPlayers++;
                     }
-                    System.out.println("ADDING PLAYERS");
                 }
                 else if (object instanceof Network.Disconnect) {
                     Network.Disconnect packet = (Network.Disconnect) object;
@@ -71,9 +70,6 @@ public class GameClient{
                 }
                 else if (object instanceof Network.MovePlayer){
                     handleMove((Network.MovePlayer) object);
-                }
-                else if (object instanceof Network.MoveEnemy){
-                    handleMove((Network.MoveEnemy) object);
                 }
                 else if (object instanceof Network.Ready){
                     boolean state = ((Network.Ready) object).state;
@@ -113,25 +109,36 @@ public class GameClient{
                         ((InGameMP)gameState).mapLoaded = true;
                     }
                 }
-                else if(object instanceof Network.ChangeGamestate){
-                    GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof ProgressRoomMP) {
-                        ((ProgressRoomMP)gameState).switchGamestate = true;
-                        numPlayers = 1;
-                    }
-                }
                 else if(object instanceof Network.AddBullet){
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
-                        ((InGameMP)gameState).gunsManager.addBulletPacketToQueue((Network.AddBullet) object);
+                        ((InGameMP)gameState).gunsManager.handleAddBulletPacket((Network.AddBullet) object);
                     }
+                }
+                else if(object instanceof Network.HitBullet){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        ((InGameMP)gameState).gunsManager.handleHitBulletPacket((Network.HitBullet) object);
+                    }
+                }
+                else if(object instanceof Network.WeaponInfo){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        ((InGameMP)gameState).gunsManager.handleWeaponInfoPacket((Network.WeaponInfo) object);
+                    }
+                }
+                else if (object instanceof Network.MoveBullet){
+                    handleMove((Network.MoveBullet) object);
                 }
                 else if(object instanceof Network.AddEnemy){
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
                         ((InGameMP)gameState).enemyManager.addEnemyPacket((Network.AddEnemy) object);
-                        System.out.println("WUT");
+                        ((InGameMP)gameState).tileMap.lockRoom();
                     }
+                }
+                else if (object instanceof Network.MoveEnemy){
+                    handleMove((Network.MoveEnemy) object);
                 }
             }
         });
@@ -164,10 +171,12 @@ public class GameClient{
                     if (p instanceof PlayerMP) {
                         if (((PlayerMP) p).getUsername().equalsIgnoreCase(movePlayerPacket.username)) {
                             p.setPosition(movePlayerPacket.x, movePlayerPacket.y);
-                            p.setUp(movePlayerPacket.up);
-                            p.setDown(movePlayerPacket.down);
-                            p.setRight(movePlayerPacket.right);
-                            p.setLeft(movePlayerPacket.left);
+                            if(!((PlayerMP) p).isOrigin()){
+                                p.setDown(movePlayerPacket.down);
+                                p.setUp(movePlayerPacket.up);
+                                p.setRight(movePlayerPacket.right);
+                                p.setLeft(movePlayerPacket.left);
+                            }
                         }
                     }
                 }
@@ -181,10 +190,12 @@ public class GameClient{
                     if (p instanceof PlayerMP) {
                         if (((PlayerMP) p).getUsername().equalsIgnoreCase(movePlayerPacket.username)) {
                             p.setPosition(movePlayerPacket.x, movePlayerPacket.y);
-                            p.setUp(movePlayerPacket.up);
-                            p.setDown(movePlayerPacket.down);
-                            p.setRight(movePlayerPacket.right);
-                            p.setLeft(movePlayerPacket.left);
+                            if(!((PlayerMP) p).isOrigin()){
+                                p.setDown(movePlayerPacket.down);
+                                p.setUp(movePlayerPacket.up);
+                                p.setRight(movePlayerPacket.right);
+                                p.setLeft(movePlayerPacket.left);
+                            }
                         }
                     }
                 }
@@ -193,8 +204,6 @@ public class GameClient{
     }
     public void handleMove(Network.MoveEnemy moveEnemyPacket){
         GameState gameState = gsm.getCurrentGamestate();
-        System.out.println("CHANGING2");
-
         if(gameState instanceof InGameMP) {
             EnemyManager enemyManager = EnemyManager.getInstance();
             ArrayList<Enemy> enemies = enemyManager.getEnemies();
@@ -202,9 +211,19 @@ public class GameClient{
             for (Enemy e : enemies) {
                 if (e.idEnemy == moveEnemyPacket.id) {
                     e.setPosition(moveEnemyPacket.x, moveEnemyPacket.y);
-                    System.out.println("CHANGING");
+                    e.setDown(moveEnemyPacket.down);
+                    e.setUp(moveEnemyPacket.up);
+                    e.setRight(moveEnemyPacket.right);
+                    e.setLeft(moveEnemyPacket.left);
+                    e.setFacingRight(moveEnemyPacket.facingRight);
                 }
             }
+        }
+    }
+    public void handleMove(Network.MoveBullet movePacket) {
+        GameState gameState = gsm.getCurrentGamestate();
+        if (gameState instanceof InGameMP) {
+            ((InGameMP) gameState).gunsManager.handleBulletMovePacket(movePacket);
         }
     }
     public void close(){

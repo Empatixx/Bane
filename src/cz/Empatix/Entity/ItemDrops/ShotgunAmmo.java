@@ -34,6 +34,9 @@ public class ShotgunAmmo extends ItemDrop{
 
             amount = Random.nextInt(8) + 5;
 
+            animation = new Animation(1);
+            animation.setDelay(-1);
+
             // because of scaling image by 3x
             width *= scale;
             height *= scale;
@@ -153,8 +156,6 @@ public class ShotgunAmmo extends ItemDrop{
 
     public void update(){
         super.update();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
 
         long timeNow = System.currentTimeMillis();
         float time = (float)(timeNow - liveTime - InGame.deltaPauseTime())/1000;

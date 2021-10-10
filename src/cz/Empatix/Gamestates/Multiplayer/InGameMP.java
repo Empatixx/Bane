@@ -70,7 +70,7 @@ public class InGameMP extends GameState {
     private Image skullPlayerdead;
     private Image[] logos;
 
-    public Player[] player;
+    public PlayerMP[] player;
 
     public TileMap tileMap;
 
@@ -100,8 +100,8 @@ public class InGameMP extends GameState {
     private LightManager lightManager;
 
 
-    private ItemManager itemManager;
-    private ArtefactManager artefactManager;
+    public ItemManager itemManager;
+    public ArtefactManager artefactManager;
     //
     // Paused game
     //
@@ -265,17 +265,17 @@ public class InGameMP extends GameState {
 
         // player
         // create player object
-        player = new Player[2];
+        player = new PlayerMP[2];
 
         String username = mpManager.getUsername();
         player[0] = new PlayerMP(tileMap,username);
-        ((PlayerMP)player[0]).setOrigin(true);
+        player[0].setOrigin(true);
 
         tileMap.setPlayer(player[0]);
 
         // weapons
         // load gun manager with tilemap object
-        gunsManager = new GunsManager(tileMap,player[0]);
+        gunsManager = new GunsManager(tileMap,player);
         GunsManager.init(gunsManager);
 
         artefactManager = new ArtefactManager(tileMap,player[0]);
@@ -631,7 +631,7 @@ public class InGameMP extends GameState {
         float mx = tileMap.getX();
         float my = tileMap.getY();
         if (!pause) {
-            gunsManager.shot(mouseX - mx - px, mouseY - my - py, px, py);
+            gunsManager.shoot(mouseX - mx - px, mouseY - my - py, px, py,player[0].getUsername());
         }
         gunsManager.update();
         // updating if player shoots any enemies
@@ -652,7 +652,7 @@ public class InGameMP extends GameState {
         lightManager.update();
     }
     public void pause(){
-        if(!pause && !player[0].isDead()) {
+        if(!pause) {
             setCursor(ARROW);
             player[0].setLeft(false);
             player[0].setRight(false);

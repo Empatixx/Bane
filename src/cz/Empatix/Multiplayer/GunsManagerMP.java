@@ -2,12 +2,10 @@ package cz.Empatix.Multiplayer;
 
 import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Enemy;
-import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Guns.*;
 import cz.Empatix.Java.Random;
-import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Render.TileMap;
 
 import java.util.ArrayList;
@@ -28,8 +26,9 @@ public class GunsManagerMP {
 
     public GunsManagerMP(TileMap tileMap, PlayerMP[] p){
         weapons = new ArrayList<>();
-        weapons.add(new Pistol(tileMap,p[0]));
-        weapons.add(new Pistol(tileMap,p[0]));
+        for(int i = 0;i < p.length;i++){
+            weapons.add(new Pistol(tileMap,p[0]));
+        }
         weapons.add(new Shotgun(tileMap,p[0]));
         weapons.add(new Submachine(tileMap,p[0]));
         weapons.add(new Revolver(tileMap,p[0]));
@@ -98,14 +97,11 @@ public class GunsManagerMP {
         }
     }
     public Weapon randomGun(){
-        Weapon weapon = weapons.get(2+ Random.nextInt(weapons.size()-2));
+        Weapon weapon = weapons.get(players.length+ Random.nextInt(weapons.size()-players.length));
         while(weapon.hasAlreadyDropped()){
-            weapon = weapons.get(2+Random.nextInt(weapons.size()-2));
+            weapon = weapons.get(players.length+Random.nextInt(weapons.size()-players.length));
         }
         return weapon;
-    }
-    public Weapon getWeapon(int index){
-        return weapons.get(index);
     }
     public void changeGunScroll(String username){
         for(PlayerWeapons playerWeapons : playerWeapons){
@@ -120,13 +116,27 @@ public class GunsManagerMP {
         }
         return null;
     }
-    public boolean addAmmo(int amountprocent, int type, String username) {
+    public boolean addAmmo(int amountpercent, int type, String username) {
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            if(playerWeapons.isThisPlayer(username)) return playerWeapons.addAmmo(amountprocent,type,username);
+            if(playerWeapons.isThisPlayer(username)) return playerWeapons.addAmmo(amountpercent,type,username);
         }
         return false;
     }
+    public void switchWeaponSlot(Network.SwitchWeaponSlot weaponSlot){
+        for(PlayerWeapons playerWeapons : playerWeapons){
+            if(playerWeapons == null) continue;
+            playerWeapons.switchWeapon(weaponSlot);
+        }
+    }
+
+    public void handleDropWeaponPacket(Network.PlayerDropWeapon dropWeapon) {
+        for(PlayerWeapons playerWeapons : playerWeapons){
+            if(playerWeapons == null) continue;
+            playerWeapons.dropPlayerWeapon(dropWeapon);
+        }
+    }
+
     private class PlayerWeapons{
         private float px,py;
         private float mouseX,mouseY;
@@ -138,6 +148,7 @@ public class GunsManagerMP {
         private Weapon[] equipedweapons;
 
         private long switchDelay;
+
         public PlayerWeapons(PlayerMP p, int index){
             equipedweapons = new Weapon[2];
 
@@ -153,13 +164,20 @@ public class GunsManagerMP {
         }
         public void shoot(){
             if(current != null){
-                current.shot(mouseX,mouseY,px,py);
+                current.shoot(mouseX,mouseY,px,py,username);
             }
         }
         public void reload(String username){
             if(current == null)return;
             if(username.equalsIgnoreCase(this.username)) {
                 current.reload();
+            }
+        }
+        public void switchWeapon(Network.SwitchWeaponSlot weaponSlot){
+            if(weaponSlot.username.equalsIgnoreCase(username)){
+                weaponSlot.sucessful = setCurrentWeapon(equipedweapons[weaponSlot.slot], weaponSlot.slot);
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(weaponSlot);
             }
         }
         public void update(){
@@ -174,11 +192,12 @@ public class GunsManagerMP {
 
             server.sendToAllUDP(weaponInfo);
         }
-        public void setCurrentWeapon(Weapon current, int slot) {
-            if (System.currentTimeMillis() - InGame.deltaPauseTime() - switchDelay < 500) return;
+        // return true - if swapping was successful, false if not
+        public boolean setCurrentWeapon(Weapon current, int slot) {
+            if (System.currentTimeMillis() - InGame.deltaPauseTime() - switchDelay < 500) return false;
             // when slot is same as current
             if (currentslot == slot) {
-                return;
+                return false;
             }
             // when current gun is not realoding
             if (this.current == null) {
@@ -186,12 +205,15 @@ public class GunsManagerMP {
                 switchDelay = System.currentTimeMillis() - InGame.deltaPauseTime();
                 this.current = current;
                 stopShooting();
+                return true;
             } else if (this.current.canSwap()) {
                 currentslot = slot;
                 switchDelay = System.currentTimeMillis() - InGame.deltaPauseTime();
                 this.current = current;
                 stopShooting();
+                return true;
             }
+            return false;
         }
         public void stopShooting(String username){
             if(this.username.equalsIgnoreCase(username)){
@@ -213,30 +235,13 @@ public class GunsManagerMP {
             if(current == null) return;
             current.setShooting(true);
         }
-        public void keyPressed(int k, int x, int y, String username){
-            if(this.username.equalsIgnoreCase(username)){
-                if(k == ControlSettings.getValue(ControlSettings.WEAPON_DROP)){
-                    if(current != null){
-                        stopShooting();
-                        ItemManager itemManager = ItemManager.getInstance();
-                        itemManager.dropPlayerWeapon(current, x,y);
-                    }
-                    current = null;
-                    equipedweapons[currentslot] = null;
-                } else if (k == ControlSettings.getValue(ControlSettings.WEAPON_SLOT1)){
-                    setCurrentWeapon(equipedweapons[FIRSTSLOT],FIRSTSLOT);
-                } else if (k == ControlSettings.getValue(ControlSettings.WEAPON_SLOT2)){
-                    setCurrentWeapon(equipedweapons[SECONDARYSLOT],SECONDARYSLOT);
-                }
-            }
-        }
-        public boolean addAmmo(int amountprocent, int type, String username) {
+        public boolean addAmmo(int amountpercent, int type, String username) {
             if(this.username.equalsIgnoreCase(username)){
                 // first check main gun in hand
                 if(current != null){
                     if(current.getType() == type){
                         if(current.isFullAmmo()) return false;
-                        current.addAmmo(amountprocent);
+                        current.addAmmo(amountpercent);
                         return true;
                     }
                 }
@@ -246,7 +251,7 @@ public class GunsManagerMP {
                     if (weapon == null) continue;
                     if (weapon.getType() == type) {
                         if(weapon.isFullAmmo()) return false;
-                        weapon.addAmmo(amountprocent);
+                        weapon.addAmmo(amountpercent);
                         return true;
                     }
                 }
@@ -271,8 +276,9 @@ public class GunsManagerMP {
                     }
                 }
                 // if player's slots are already filled
-                ItemManager itemManager = ItemManager.getInstance();
-                itemManager.dropPlayerWeapon(current,x,y);
+
+                ItemManagerMP itemManager = ItemManagerMP.getInstance();
+                itemManager.dropPlayerWeapon(current,x,y,weapons.indexOf(current),username);
                 equipedweapons[currentslot] = weapon;
                 current=weapon;
             }
@@ -302,6 +308,21 @@ public class GunsManagerMP {
         public void setPlayerLocation(float x, float y){
             px = x;
             py = y;
+        }
+
+        public void dropPlayerWeapon(Network.PlayerDropWeapon dropWeapon) {
+            if(username.equalsIgnoreCase(dropWeapon.username)){
+                if(current != null){
+                    stopShooting();
+                    ItemManagerMP itemManagerMP = ItemManagerMP.getInstance();
+                    itemManagerMP.dropPlayerWeapon(current, dropWeapon.x, dropWeapon.y,weapons.indexOf(current),username);
+                }
+                current = null;
+                equipedweapons[currentslot] = null;
+                dropWeapon.sucessful = true;
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(dropWeapon);
+            }
         }
     }
     public void handleShootPacket(Network.Shoot shoot){

@@ -33,6 +33,12 @@ public class Network {
         kryo.register(ConfirmChangeGS.class);
         kryo.register(HitBullet.class);
         kryo.register(Bullet.TypeHit.class);
+        kryo.register(DropItem.class);
+        kryo.register(RemoveItem.class);
+        kryo.register(SwitchWeaponSlot.class);
+        kryo.register(PlayerDropWeapon.class);
+        kryo.register(DropWeapon.class);
+        kryo.register(ObjectInteract.class);
 
     }
     // MAIN
@@ -62,12 +68,12 @@ public class Network {
         public int roomX,roomY;
     }
     public static class TransferRoom {
-        public int id,x,y;
+        public int id, x, y;
         public String mapFilepath;
         public int type;
         public int index; // index in roomArrayList
         public int previousIndex; // index of old mm room, that we will add new one
-        public boolean top,bottom,left,right;
+        public boolean top, bottom, left, right;
     }
     public static class MapLoaded {}
     public static class RequestForPlayers {
@@ -88,9 +94,9 @@ public class Network {
         public String username;
     }
     public static class AddBullet {
+        public String username;
         public float x,y;
         public float px,py;
-        public int indexWeapon;
         public int damage;
         public boolean critical;
         public int speed;
@@ -106,10 +112,20 @@ public class Network {
         public int id;
         public int idHit;
     }
-    public static class MoveEnemy {
-        public float x,y;
+
+    public static class DropItem{
+        public int type;
         public int id;
-        public boolean up,down,right,left,facingRight;
+        public int x, y;
+        public int amount;
+    }
+    public static class RemoveItem{
+        public int id;
+    }
+    public static class MoveEnemy {
+        public float x, y;
+        public int id;
+        public boolean up, down, right, left, facingRight;
     }
     public static class AddEnemy {
         public float x,y;
@@ -120,5 +136,26 @@ public class Network {
         public String username;
         public int currentAmmo;
         public int currentMagazineAmmo;
+    }
+    public static class SwitchWeaponSlot{
+        public String username;
+        public int slot;
+        public boolean sucessful;
+    }
+    public static class PlayerDropWeapon{
+        public String username;
+        public boolean sucessful;
+        public int x, y;
+    }
+    public static class DropWeapon{
+        public int x, y;
+        public int id;
+        public int slot;
+    }
+    public static class ObjectInteract {
+        public String username;
+        public boolean sucessful;
+        public int id;
+        public int x, y;
     }
 }

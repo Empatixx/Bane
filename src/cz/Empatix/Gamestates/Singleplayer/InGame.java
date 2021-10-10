@@ -689,7 +689,7 @@ public class InGame extends GameState {
             float py = player.getY();
             float mx = tileMap.getX();
             float my = tileMap.getY();
-            gunsManager.shot(mouseX-mx-px,
+            gunsManager.shoot(mouseX-mx-px,
                     mouseY-my-py,
                     px,
                     py);

@@ -17,10 +17,9 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class Weapon implements Serializable {
+public abstract class Weapon{
     protected String name;
     private boolean shooting;
     //ammo vars
@@ -81,7 +80,10 @@ public abstract class Weapon implements Serializable {
         this.player = player;
     }
 
-    public abstract void shot(float x, float y, float px, float py);
+    // SINGLEPLAYER
+    public abstract void shoot(float x, float y, float px, float py);
+    // MULTIPLAYER
+    public abstract void shoot(float x, float y, float px, float py, String username);
 
     public abstract void reload();
 
@@ -173,7 +175,7 @@ public abstract class Weapon implements Serializable {
 
     public abstract void handleBulletMovePacket(Network.MoveBullet moveBullet);
 
-    public abstract void handleHitBullet(Network.HitBullet hitBullet);
+    public abstract void handleHitBulletPacket(Network.HitBullet hitBullet);
 
     public void handleWeaponInfoPacket(Network.WeaponInfo weaponInfo){
         currentAmmo = weaponInfo.currentAmmo;
@@ -240,4 +242,5 @@ public abstract class Weapon implements Serializable {
             }
         }
     }
+    public abstract void shootSound();
 }

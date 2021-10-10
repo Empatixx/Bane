@@ -31,6 +31,9 @@ public class ArmorPot extends ItemDrop{
             scale = 2;
             facingRight = true;
 
+            animation = new Animation(1);
+            animation.setDelay(-1);
+
             // because of scaling image by 3x
             width *= scale;
             height *= scale;
@@ -148,8 +151,6 @@ public class ArmorPot extends ItemDrop{
 
     public void update(){
         super.update();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
 
         animation.update();
         long timeNow = System.currentTimeMillis();

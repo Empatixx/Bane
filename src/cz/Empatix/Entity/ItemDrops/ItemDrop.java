@@ -1,6 +1,7 @@
 package cz.Empatix.Entity.ItemDrops;
 
 import cz.Empatix.Entity.MapObject;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Render.TileMap;
 
 import java.io.Serializable;
@@ -28,9 +29,16 @@ public abstract class ItemDrop extends MapObject implements Serializable {
     public boolean canDespawn;
     public long liveTime;
 
+    private static int idGen = 0;
+    private int idDrop;
+
     public ItemDrop(TileMap tm){
         super(tm);
         shop = false;
+
+        if(tm.isServerSide()){
+            idDrop = idGen++;
+        }
     }
 
     public void setAmount(int amount) {
@@ -41,10 +49,15 @@ public abstract class ItemDrop extends MapObject implements Serializable {
         return pickedUp;
     }
     public void update() {
-        getMovementSpeed();
+        if(MultiplayerManager.multiplayer || tileMap.isServerSide()){
+            checkTileMapCollision();
+            setPosition(temp.x, temp.y);
+            getMovementSpeed();
+        }
     }
 
     public void remove(){
+        if(tileMap.isServerSide()) return;
         light.remove();
     }
     private void getMovementSpeed() {
@@ -90,5 +103,13 @@ public abstract class ItemDrop extends MapObject implements Serializable {
 
     public void preventDespawn(){
         canDespawn = false;
+    }
+
+    public int getId() {
+        return idDrop;
+    }
+
+    public void setId(int id) {
+        this.idDrop = id;
     }
 }

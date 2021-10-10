@@ -110,7 +110,7 @@ public class Luger extends Weapon {
     }
 
     @Override
-    public void shot(float x,float y,float px,float py) {
+    public void shoot(float x, float y, float px, float py) {
         long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
         if(bonusShots > 0 && delta > delayTime-bonusShots*16.6){
             double inaccuracy = 0;
@@ -173,6 +173,11 @@ public class Luger extends Weapon {
             setShooting(false);
 
         }
+    }
+
+    @Override
+    public void shoot(float x, float y, float px, float py, String username) {
+
     }
 
     @Override
@@ -266,7 +271,12 @@ public class Luger extends Weapon {
 
     }
     @Override
-    public void handleHitBullet(Network.HitBullet hitBullet) {
+    public void handleHitBulletPacket(Network.HitBullet hitBullet) {
+
+    }
+
+    @Override
+    public void shootSound() {
 
     }
 }

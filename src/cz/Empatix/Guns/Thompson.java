@@ -99,7 +99,7 @@ public class Thompson extends Weapon{
     }
 
     @Override
-    public void shot(float x,float y,float px,float py) {
+    public void shoot(float x, float y, float px, float py) {
         if(isShooting()) {
             if (currentMagazineAmmo != 0) {
                 if (reloading) return;
@@ -149,6 +149,11 @@ public class Thompson extends Weapon{
                 if(delayTime > 200) delayTime = 200;
             }
         }
+    }
+
+    @Override
+    public void shoot(float x, float y, float px, float py, String username) {
+
     }
 
     @Override
@@ -235,7 +240,12 @@ public class Thompson extends Weapon{
 
     }
     @Override
-    public void handleHitBullet(Network.HitBullet hitBullet) {
+    public void handleHitBulletPacket(Network.HitBullet hitBullet) {
+
+    }
+
+    @Override
+    public void shootSound() {
 
     }
 }

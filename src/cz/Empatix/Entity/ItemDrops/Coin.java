@@ -38,7 +38,8 @@ public class Coin extends ItemDrop{
             }
             amount = 1 + minIncrease + Random.nextInt(tm.getFloor()+1);
 
-            spriteSheetCols = 10;
+            animation = new Animation(10);
+            animation.setDelay(100);
 
             // because of scaling image by 3x
             width *= scale;
@@ -173,8 +174,6 @@ public class Coin extends ItemDrop{
 
     public void update(){
         super.update();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
 
         animation.update();
         long timeNow = System.currentTimeMillis();

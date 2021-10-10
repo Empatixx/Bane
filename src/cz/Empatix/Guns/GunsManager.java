@@ -1,5 +1,6 @@
 package cz.Empatix.Guns;
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
@@ -11,6 +12,7 @@ import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
@@ -65,6 +67,8 @@ public class GunsManager {
     private ArrayList<Network.HitBullet> queueHitBulletPackets;
     private Lock lock;
 
+    private Player[] players;
+
     public GunsManager(TileMap tileMap, Player p){
         weapons = new ArrayList<>();
         weapons.add(new Pistol(tileMap,p,this));
@@ -99,6 +103,43 @@ public class GunsManager {
             lock = new ReentrantLock();
         }
     }
+
+    public GunsManager(TileMap tileMap, PlayerMP[] p){
+        weapons = new ArrayList<>();
+        weapons.add(new Pistol(tileMap,p[0],this));
+        weapons.add(new Shotgun(tileMap,p[0],this));
+        weapons.add(new Submachine(tileMap,p[0],this));
+        weapons.add(new Revolver(tileMap,p[0],this));
+        weapons.add(new Grenadelauncher(tileMap,p[0],this));
+        weapons.add(new Luger(tileMap,p[0],this));
+        weapons.add(new M4(tileMap,p[0],this));
+        weapons.add(new Thompson(tileMap,p[0],this));
+
+
+        weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);
+
+
+        soundSwitchingGun = AudioManager.loadSound("guns\\switchgun.ogg");
+        source = AudioManager.createSource(Source.EFFECTS,0.35f);
+
+        equipedweapons = new Weapon[2];
+
+        equipedweapons[0] = weapons.get(0);
+
+        current = equipedweapons[FIRSTSLOT];
+        currentslot = FIRSTSLOT;
+
+        bulletShooted = 0;
+        hitBullets = 0;
+
+        if(MultiplayerManager.multiplayer){
+            queueBulletPackets = new ArrayList<>();
+            queueHitBulletPackets = new ArrayList<>();
+            lock = new ReentrantLock();
+        }
+
+        this.players = p;
+    }
     public void loadSave(){
         weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);
 
@@ -108,9 +149,15 @@ public class GunsManager {
             weapon.loadSave();
         }
     }
-    public void shot(float x,float y,float px,float py){
+    // singleplayer
+    public void shoot(float x, float y, float px, float py){
         if(current == null) return;
-        current.shot(x,y,px,py);
+        current.shoot(x,y,px,py);
+    }
+    // multiplayer
+    public void shoot(float x, float y, float px, float py, String username){
+        if(current == null) return;
+        current.shoot(x,y,px,py,username);
     }
     public void reload(){
         if(current == null)return;
@@ -120,8 +167,6 @@ public class GunsManager {
         for(Weapon weapon : weapons){
             weapon.updateAmmo();
         }
-        if(current == null) return;
-        current.update();
 
         // multiplayer
         if(MultiplayerManager.multiplayer){
@@ -132,7 +177,7 @@ public class GunsManager {
                 }
                 for(Network.HitBullet hitBullet : queueHitBulletPackets){
                     for(Weapon w : weapons){
-                        w.handleHitBullet(hitBullet);
+                        w.handleHitBulletPacket(hitBullet);
                     }
                 }
                 if(!queueBulletPackets.isEmpty()) {
@@ -146,6 +191,9 @@ public class GunsManager {
                 lock.unlock();
             }
         }
+
+        if(current == null) return;
+        current.update();
     }
     public void draw(){
         for(Weapon weapon : weapons){
@@ -190,17 +238,43 @@ public class GunsManager {
 
     public void keyPressed(int k, int x,int y) {
         if(k == ControlSettings.getValue(ControlSettings.WEAPON_DROP)){
-            if(current != null){
-                stopShooting();
-                ItemManager itemManager = ItemManager.getInstance();
-                itemManager.dropPlayerWeapon(current, x,y);
+            if(MultiplayerManager.multiplayer){
+                MultiplayerManager mp = MultiplayerManager.getInstance();
+                Client client = mp.client.getClient();
+                Network.PlayerDropWeapon dropWeapon = new Network.PlayerDropWeapon();
+                dropWeapon.username = mp.getUsername();
+                dropWeapon.x = x;
+                dropWeapon.y = y;
+                client.sendTCP(dropWeapon);
+            } else {
+                if(current != null){
+                    stopShooting();
+                    ItemManager itemManager = ItemManager.getInstance();
+                    itemManager.dropPlayerWeapon(current, x,y);
+                }
+                current = null;
+                equipedweapons[currentslot] = null;
             }
-            current = null;
-            equipedweapons[currentslot] = null;
         } else if (k == ControlSettings.getValue(ControlSettings.WEAPON_SLOT1)){
-            setCurrentWeapon(equipedweapons[FIRSTSLOT],FIRSTSLOT);
+            if(MultiplayerManager.multiplayer){
+                Client client = MultiplayerManager.getInstance().client.getClient();
+                Network.SwitchWeaponSlot switchWeaponSlot = new Network.SwitchWeaponSlot();
+                switchWeaponSlot.username = MultiplayerManager.getInstance().getUsername();
+                switchWeaponSlot.slot = FIRSTSLOT;
+                client.sendTCP(switchWeaponSlot);
+            } else {
+                setCurrentWeapon(equipedweapons[FIRSTSLOT],FIRSTSLOT);
+            }
         } else if (k == ControlSettings.getValue(ControlSettings.WEAPON_SLOT2)){
-            setCurrentWeapon(equipedweapons[SECONDARYSLOT],SECONDARYSLOT);
+            if(MultiplayerManager.multiplayer){
+                Client client = MultiplayerManager.getInstance().client.getClient();
+                Network.SwitchWeaponSlot switchWeaponSlot = new Network.SwitchWeaponSlot();
+                switchWeaponSlot.username = MultiplayerManager.getInstance().getUsername();
+                switchWeaponSlot.slot = SECONDARYSLOT;
+                client.sendTCP(switchWeaponSlot);
+            } else {
+                setCurrentWeapon(equipedweapons[SECONDARYSLOT],SECONDARYSLOT);
+            }
         }
     }
     public void stopShooting(){
@@ -211,12 +285,12 @@ public class GunsManager {
         if(current == null) return;
         current.setShooting(true);
     }
-    public boolean addAmmo(int amountprocent, int type) {
+    public boolean addAmmo(int amountpercent, int type) {
         // first check main gun in hand
         if(current != null){
             if(current.getType() == type){
                 if(current.isFullAmmo()) return false;
-                current.addAmmo(amountprocent);
+                current.addAmmo(amountpercent);
                 return true;
             }
         }
@@ -226,7 +300,7 @@ public class GunsManager {
             if (weapon == null) continue;
             if (weapon.getType() == type) {
                 if(weapon.isFullAmmo()) return false;
-                weapon.addAmmo(amountprocent);
+                weapon.addAmmo(amountpercent);
                 return true;
             }
         }
@@ -252,6 +326,26 @@ public class GunsManager {
         // if player's slots are already filled
         ItemManager itemManager = ItemManager.getInstance();
         itemManager.dropPlayerWeapon(current,x,y);
+        equipedweapons[currentslot] = weapon;
+        current=weapon;
+    }
+    public void changeGun(Weapon weapon){
+        source.play(soundSwitchingGun);
+        stopShooting();
+        // check player's currentslot
+        if(equipedweapons[currentslot] == null){
+            equipedweapons[currentslot] = weapon;
+            current = weapon;
+            return;
+        }
+        // check player's all slots
+        for(int i = 0;i<2;i++){
+            if(equipedweapons[i] == null){
+                if(i==currentslot) current = weapon;
+                equipedweapons[i] = weapon;
+                return;
+            }
+        }
         equipedweapons[currentslot] = weapon;
         current=weapon;
     }
@@ -284,15 +378,17 @@ public class GunsManager {
         return currentslot;
     }
 
-    public int getIndexOfCurrentWeapon(){
-        return weapons.indexOf(current);
-    }
     public void handleAddBulletPacket(Network.AddBullet response){
         try{
             lock.lock();
             queueBulletPackets.add(response);
         } finally {
             lock.unlock();
+        }
+        if(current != null){
+            if(MultiplayerManager.getInstance().getUsername().equalsIgnoreCase(response.username)){
+                current.shootSound();
+            }
         }
     }
 
@@ -317,5 +413,35 @@ public class GunsManager {
                 current.handleWeaponInfoPacket(weaponInfo);
             }
         }
+    }
+
+    public void handleSwitchWeaponPacket(Network.SwitchWeaponSlot switchWeapon) {
+        if(switchWeapon.sucessful){
+            if(MultiplayerManager.getInstance().getUsername().equalsIgnoreCase(switchWeapon.username)){
+                setCurrentWeapon(equipedweapons[switchWeapon.slot],switchWeapon.slot);
+            }
+        }
+    }
+
+    public void handleDropPlayerWeaponPacket(Network.PlayerDropWeapon playerDropWeapon) {
+        if(playerDropWeapon.sucessful){
+            if(MultiplayerManager.getInstance().getUsername().equalsIgnoreCase(playerDropWeapon.username)){
+                if(current != null){
+                    stopShooting();
+                }
+                current = null;
+                equipedweapons[currentslot] = null;
+            }
+            source.play(soundSwitchingGun);
+        }
+    }
+
+    public void handleDropWeaponPacket(Network.DropWeapon dropWeapon) {
+        ItemManager itemManager = ItemManager.getInstance();
+        // converting indexing from server to client ones
+        int index = dropWeapon.slot-players.length;
+        if(index < 0) index = 0;
+        dropWeapon.slot = index;
+        itemManager.handleWeaponDropPacket(dropWeapon);
     }
 }

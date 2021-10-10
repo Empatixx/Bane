@@ -105,8 +105,17 @@ public class GameServer {
                 else if(object instanceof Network.Reload){
                     gunsManager.reload(((Network.Reload) object).username);
                 }
+                else if(object instanceof Network.SwitchWeaponSlot){
+                    gunsManager.switchWeaponSlot((Network.SwitchWeaponSlot) object);
+                }
+                else if(object instanceof Network.PlayerDropWeapon){
+                    gunsManager.handleDropWeaponPacket((Network.PlayerDropWeapon)object);
+                }
                 else if (object instanceof Network.Ready){
                     server.sendToAllTCP(object);
+                }
+                else if (object instanceof Network.ObjectInteract){
+                    itemManager.pickup((Network.ObjectInteract)object);
                 }
                 else if (    object instanceof Network.AddPlayer ||
                         object instanceof Network.TransferRoomMap ||
@@ -159,6 +168,7 @@ public class GameServer {
                             gunsManager.checkCollisions(EnemyManagerMP.getInstance().getEnemies());
                             tileMap.updateCurrentRoom();
                             tileMap.updateObjects();
+                            itemManager.update();
                         }
 
                         updates++;

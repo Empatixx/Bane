@@ -359,8 +359,6 @@ public class WeaponDrop extends ItemDrop {
     @Override
     public void update() {
         super.update();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
     }
 
     public void setCanPick(boolean canPick) {

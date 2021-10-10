@@ -94,7 +94,7 @@ public class Grenadelauncher extends Weapon {
     }
 
     @Override
-    public void shot(float x,float y,float px,float py) {
+    public void shoot(float x, float y, float px, float py) {
         if(isShooting()) {
             if (currentMagazineAmmo != 0) {
                 if (reloading) return;
@@ -128,6 +128,11 @@ public class Grenadelauncher extends Weapon {
             }
             setShooting(false);
         }
+    }
+
+    @Override
+    public void shoot(float x, float y, float px, float py, String username) {
+
     }
 
     @Override
@@ -231,7 +236,12 @@ public class Grenadelauncher extends Weapon {
     }
 
     @Override
-    public void handleHitBullet(Network.HitBullet hitBullet) {
+    public void handleHitBulletPacket(Network.HitBullet hitBullet) {
+
+    }
+
+    @Override
+    public void shootSound() {
 
     }
 }

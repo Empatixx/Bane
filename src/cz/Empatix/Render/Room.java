@@ -336,10 +336,12 @@ public class Room implements Serializable {
                 if(((DestroyableObject) object).canDrop()){
                     ((DestroyableObject)object).itemDropped();
                     if(Math.random() > 0.6){
-                        ItemManager itemManager = ItemManager.getInstance();
-                        ItemDrop drop = itemManager.createDrop(object.getX(),object.getY());
-                        if(((DestroyableObject)object).isPreventItemDespawn()){
-                            drop.preventDespawn();
+                        if(!MultiplayerManager.multiplayer){
+                            ItemManager itemManager = ItemManager.getInstance();
+                            ItemDrop drop = itemManager.createDrop(object.getX(),object.getY());
+                            if(((DestroyableObject)object).isPreventItemDespawn()){
+                                drop.preventDespawn();
+                            }
                         }
                     }
                 }

@@ -63,7 +63,7 @@ public class GameClient{
                         if(!packetUsername.equalsIgnoreCase(playerUsername)) AlertManager.add(AlertManager.WARNING,packetUsername+" has left the lobby!");
                     }
                     if(gameState instanceof InGameMP){
-                        ((PlayerMP)((InGameMP) gameState).player[numPlayers]).remove();
+                        (((InGameMP) gameState).player[numPlayers]).remove();
                         ((InGameMP) gameState).player[numPlayers] = null;
                         if(!packetUsername.equalsIgnoreCase(playerUsername)) AlertManager.add(AlertManager.WARNING,packetUsername+" has left the game!");
                     }
@@ -127,6 +127,18 @@ public class GameClient{
                         ((InGameMP)gameState).gunsManager.handleWeaponInfoPacket((Network.WeaponInfo) object);
                     }
                 }
+                else if(object instanceof Network.DropItem){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        ((InGameMP)gameState).itemManager.handleDropItemPacket((Network.DropItem) object);
+                    }
+                }
+                else if(object instanceof Network.RemoveItem){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        ((InGameMP)gameState).itemManager.handleRemoveItemPacket((Network.RemoveItem) object);
+                    }
+                }
                 else if (object instanceof Network.MoveBullet){
                     handleMove((Network.MoveBullet) object);
                 }
@@ -139,6 +151,31 @@ public class GameClient{
                 }
                 else if (object instanceof Network.MoveEnemy){
                     handleMove((Network.MoveEnemy) object);
+                }
+                else if (object instanceof Network.SwitchWeaponSlot){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        ((InGameMP)gameState).gunsManager.handleSwitchWeaponPacket((Network.SwitchWeaponSlot)object);
+                    }
+                }
+                else if (object instanceof Network.PlayerDropWeapon){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        ((InGameMP)gameState).gunsManager.handleDropPlayerWeaponPacket((Network.PlayerDropWeapon)object);
+                    }
+                }
+                else if (object instanceof Network.DropWeapon){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        ((InGameMP)gameState).gunsManager.handleDropWeaponPacket((Network.DropWeapon)object);
+                    }
+                }
+                else if (object instanceof Network.ObjectInteract){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        ((InGameMP)gameState).itemManager.handleObjectInteract((Network.ObjectInteract)object);
+                    }
+                    System.out.println("RECEIVED BACK");
                 }
             }
         });

@@ -106,8 +106,75 @@ public class Pistol extends Weapon {
         }
     }
 
+    // SINGLEPLAYER
     @Override
-    public void shot(float x,float y,float px,float py) {
+    public void shoot(float x, float y, float px, float py) {
+        long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
+        if(doubleShots && delta > 75 && secondShotReady){
+            double inaccuracy = 0;
+            delay = System.currentTimeMillis() - InGame.deltaPauseTime();
+            Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,30);
+            bullet.setPosition(px, py);
+            int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+            if(criticalHits){
+                if(Math.random() > 0.9){
+                    damage*=2;
+                    bullet.setCritical(true);
+                }
+            }
+            bullet.setDamage(damage);
+            bullets.add(bullet);
+            currentMagazineAmmo--;
+            GunsManager.bulletShooted++;
+            secondShotReady=false;
+        }
+        if(isShooting()) {
+            if (currentMagazineAmmo != 0) {
+                if (reloading) return;
+                // delta - time between shoots
+                // InGame.deltaPauseTime(); returns delayed time because of pause time
+                if (delta > delayTime) {
+                    double inaccuracy = 0;
+                    if (delta < 400) {
+                        inaccuracy = 0.055 * 400 / delta * (Random.nextInt(2) * 2 - 1);
+                    }
+                    delay = System.currentTimeMillis() - InGame.deltaPauseTime();
+                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+                    bullet.setPosition(px, py);
+                    int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                    if(criticalHits){
+                        if(Math.random() > 0.9){
+                            damage*=2;
+                            bullet.setCritical(true);
+                        }
+                    }
+                    bullet.setDamage(damage);
+                    bullets.add(bullet);
+                    currentMagazineAmmo--;
+                    GunsManager.bulletShooted++;
+                    source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
+
+                    lastX = x;
+                    lastY = y;
+                    if(currentMagazineAmmo > 0 && doubleShots) secondShotReady = true;
+
+                    double atan = Math.atan2(y, x);
+                    push = 30;
+                    pushX = Math.cos(atan);
+                    pushY = Math.sin(atan);
+                }
+            } else if (currentAmmo != 0) {
+                reload();
+            } else {
+                source.play(soundEmptyShoot);
+                outOfAmmo();
+            }
+            setShooting(false);
+        }
+    }
+    // MULTIPLAYER
+    @Override
+    public void shoot(float x, float y, float px, float py, String username) {
         if(MultiplayerManager.multiplayer && !tm.isServerSide()){
             if(isShooting()) {
                 if (currentMagazineAmmo != 0) {
@@ -117,7 +184,7 @@ public class Pistol extends Weapon {
                     shoot.x = x;
                     shoot.y = y;
                     Client client = MultiplayerManager.getInstance().client.getClient();
-                    client.sendTCP(shoot);
+                    client.sendUDP(shoot);
                 } else if (currentAmmo != 0) {
                     Network.Reload reload = new Network.Reload();
                     reload.username = MultiplayerManager.getInstance().getUsername();
@@ -185,15 +252,10 @@ public class Pistol extends Weapon {
                             response.speed = 30;
                             response.damage = damage;
                             response.id = bullet.getId();
-                            System.out.println("ID: "+response.id);
-
+                            response.username = username;
                             Server server = MultiplayerManager.getInstance().server.getServer();
                             server.sendToAllTCP(response);
-                            System.out.println("RESPONSE SENT");
-                        } else {
-                            source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
                         }
-
                         lastX = x;
                         lastY = y;
                         if(currentMagazineAmmo > 0 && doubleShots) secondShotReady = true;
@@ -301,7 +363,6 @@ public class Pistol extends Weapon {
     public void handleBulletPacket(Network.AddBullet response) {
         Bullet bullet = new Bullet(tm, response.id);
         bullet.setPosition(response.px, response.py);
-        System.out.println("X: "+response.px+" Y: "+response.py);
         bullet.setCritical(response.critical);
         bullet.setDamage(response.damage);
         bullets.add(bullet);
@@ -316,7 +377,7 @@ public class Pistol extends Weapon {
         }
     }
     @Override
-    public void handleHitBullet(Network.HitBullet hitBullet) {
+    public void handleHitBulletPacket(Network.HitBullet hitBullet) {
         for(Bullet b : bullets){
             if(b.getId() == hitBullet.id){
                 b.setHit(hitBullet.type);
@@ -327,5 +388,10 @@ public class Pistol extends Weapon {
                 }
             }
         }
+    }
+
+    @Override
+    public void shootSound() {
+        source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
     }
 }

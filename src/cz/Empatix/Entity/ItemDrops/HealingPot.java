@@ -31,6 +31,9 @@ public class HealingPot extends ItemDrop{
             scale = 2;
             facingRight = true;
 
+            animation = new Animation(1);
+            animation.setDelay(-1);
+
             width *= scale;
             height *= scale;
             cwidth *= scale;
@@ -148,10 +151,7 @@ public class HealingPot extends ItemDrop{
 
     public void update(){
         super.update();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
 
-        animation.update();
         long timeNow = System.currentTimeMillis();
         float time = (float)(timeNow - liveTime - InGame.deltaPauseTime())/1000;
         if(time >= 30 && canDespawn){

@@ -5,6 +5,7 @@ import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Entity.Shopkeeper;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
@@ -16,9 +17,7 @@ import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.Hud.Minimap.MiniMap;
-import cz.Empatix.Render.RoomObjects.Ladder;
-import cz.Empatix.Render.RoomObjects.PathWall;
-import cz.Empatix.Render.RoomObjects.RoomObject;
+import cz.Empatix.Render.RoomObjects.*;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -106,6 +105,8 @@ public class TileMap {
 	// if tilemap is server-side
 	private boolean serverSide;
 
+	private ArrayList<Network.AddRoomObject> addRoomObjects;
+
 
 	public TileMap(int tileSize, MiniMap miniMap) {
 		this.tileSize = tileSize;
@@ -128,6 +129,9 @@ public class TileMap {
 			title[i] = new TextRender();
 		}
 		player = new Player[1];
+		if(MultiplayerManager.multiplayer){
+			addRoomObjects = new ArrayList<>();
+		}
 	}
 	public TileMap(int tileSize) {
 		this.tileSize = tileSize;
@@ -343,19 +347,20 @@ public class TileMap {
 		// converting 1 and 0 into tiles id textures
 		autoTile();
 
-		// create map objects into all rooms
-		for(Room room : roomArrayList){
-			room.createObjects(this,player);
-		}
-
 		// server created map -> send packet to all clients
 		if(serverSide){
 			Server server = MultiplayerManager.getInstance().server.getServer();
 			Network.MapLoaded mapLoaded = new Network.MapLoaded();
 			server.sendToAllTCP(mapLoaded);
 			System.out.println("MAP LOADED SENT");
-			return;
 		}
+
+		// create map objects into all rooms
+		for(Room room : roomArrayList){
+			room.createObjects(this,player);
+		}
+		if(serverSide) return;
+
 
 		// getting XY max/min
 		for (Room room : roomArrayList){
@@ -393,11 +398,8 @@ public class TileMap {
 		// converting 1 and 0 into tiles id textures
 		autoTile();
 
+		createRoomObjectsViaPackets();
 
-		// create map objects into all rooms
-		for(Room room : roomArrayList){
-			room.createObjects(this,player);
-		}
 
 		// getting XY max/min
 		for (Room room : roomArrayList){
@@ -1245,6 +1247,7 @@ public class TileMap {
 	public void setTween(double d) { tween = d; }
 	
 	public void setPosition(double x, double y) {
+		if(serverSide) return;
 
 		position.x += (x - position.x) * tween;
 		position.y += (y - position.y) * tween;
@@ -1641,7 +1644,80 @@ public class TileMap {
 		return serverSide;
 	}
 
+
+
 	public void lockRoom(){
 		currentRoom.lockRoom(true);
+	}
+	public void handleAddRoomObjectPacket(Network.AddRoomObject object){
+		addRoomObjects.add(object);
+	}
+	public void createRoomObjectsViaPackets() {
+		for(Network.AddRoomObject object:addRoomObjects){
+			for(Room room : roomArrayList){
+				if(object.idRoom != room.getId()) continue;
+				RoomObject roomObject;
+				switch (object.type){
+					case POT:{
+						roomObject = new Pot(this);
+						break;
+					}
+					case FLAG:{
+						roomObject = new Flag(this);
+						break;
+					}
+					case BONES:{
+						roomObject = new Bones(this);
+						break;
+					}
+					case CHEST:{
+						roomObject = new Chest(this);
+						break;
+					}
+					case SPIKE:{
+						roomObject = new Spike(this);
+						break;
+					}
+					case BARREL:{
+						roomObject = new Barrel(this);
+						break;
+					}
+					case LADDER:{
+						roomObject = new Ladder(this);
+						break;
+					}
+					case SHOPKEEPER:{
+						roomObject = new Shopkeeper(this);
+						break;
+					}
+					case SHOPTABLE:{
+						roomObject = new ShopTable(this);
+						break;
+					}
+					case TORCH:{
+						roomObject = new Torch(this);
+						((Torch)roomObject).setType(object.objectType);
+						break;
+					}
+					case ARROWTRAP:{
+						roomObject = new ArrowTrap(this,player);
+						((ArrowTrap)roomObject).setType(object.objectType);
+						break;
+					}
+					case FLAMETHROWER:{
+						roomObject = new Flamethrower(this,player);
+						((Flamethrower)roomObject).setType(object.objectType);
+						break;
+					}
+					default:{
+						roomObject = null;
+						break;
+					}
+				}
+				roomObject.setPosition(object.x,object.y);
+				roomObject.setId(object.id);
+				room.addObject(roomObject);
+			}
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package cz.Empatix.Render;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.EnemyManager;
@@ -11,6 +12,7 @@ import cz.Empatix.Entity.Shopkeeper;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Multiplayer.EnemyManagerMP;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.RoomObjects.*;
 import cz.Empatix.Render.RoomObjects.ProgressRoom.Portal;
@@ -409,6 +411,8 @@ public class Room implements Serializable {
                 Spike spike = new Spike(tm);
                 spike.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
                 addObject(spike);
+                sendAddRoomObjectPacket(spike,tm);
+
             }
             // flags
             num = cz.Empatix.Java.Random.nextInt(3);
@@ -430,6 +434,8 @@ public class Room implements Serializable {
                 Flag flag = new Flag(tm);
                 flag.setPosition(x*tileSize+tileSize/2,y*tileSize-tileSize/2);
                 this.addObject(flag);
+                sendAddRoomObjectPacket(flag,tm);
+
             }
             for(int i = 0;i<3;i++){
                 if(Math.random() > 0.5){
@@ -450,6 +456,8 @@ public class Room implements Serializable {
                     Bones bones = new Bones(tm);
                     bones.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
                     this.addObject(bones);
+                    sendAddRoomObjectPacket(bones,tm);
+
                 }
             }
             for(int i = 0;i<2;i++){
@@ -471,6 +479,8 @@ public class Room implements Serializable {
                     Barrel barrel = new Barrel(tm);
                     barrel.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
                     this.addObject(barrel);
+                    sendAddRoomObjectPacket(barrel,tm);
+
                 }
             }
             // arrows traps
@@ -504,6 +514,8 @@ public class Room implements Serializable {
                         (tm.getType(y, x + 1) != Tile.BLOCKED || tm.getType(y +1, x + 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED)  ||
                         intersectsObjects(arrowTrap));
                 this.addObject(arrowTrap);
+                sendAddRoomObjectPacket(arrowTrap,tm);
+
             }
             // torches
             for(int i = 0;i<5;i++) {
@@ -540,6 +552,8 @@ public class Room implements Serializable {
                         (tm.getType(y, x + 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) ||
                         intersectsObjects(torch)) ;
                 addObject(torch);
+                sendAddRoomObjectPacket(torch,tm);
+
             }
 
             if(Math.random() < 0.2){
@@ -563,6 +577,8 @@ public class Room implements Serializable {
                     } while ((tm.getType(y - 1, x) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) ||
                             intersectsObjects(flamethrower)) ;
                     addObject(flamethrower);
+                    sendAddRoomObjectPacket(flamethrower,tm);
+
                 }
             }
         }
@@ -571,6 +587,7 @@ public class Room implements Serializable {
             chest.enableDropWeapon();
             chest.setPosition(xMin + (float) (xMax - xMin) / 2, yMin + (float) (yMax - yMin) / 2);
             mapObjects.add(chest);
+            sendAddRoomObjectPacket(chest,tm);
 
             int tileSize = tm.getTileSize();
 
@@ -579,23 +596,27 @@ public class Room implements Serializable {
             torch.setType(type);
             torch.setPosition(xMin + 4 * tileSize + tileSize / 2, yMin + 4 * tileSize + tileSize / 2);
             mapObjects.add(torch);
+            sendAddRoomObjectPacket(torch,tm);
 
             torch = new Torch(tm);
             type = Torch.TOP;
             torch.setType(type);
             torch.setPosition(xMin + 4 * tileSize + tileSize / 2, yMin + 10 * tileSize + tileSize / 2);
             mapObjects.add(torch);
+            sendAddRoomObjectPacket(torch,tm);
 
             torch = new Torch(tm);
             torch.setType(type);
             torch.setPosition(xMin + 15 * tileSize + tileSize / 2, yMin + 4 * tileSize + tileSize / 2);
             mapObjects.add(torch);
+            sendAddRoomObjectPacket(torch,tm);
 
             torch = new Torch(tm);
             type = Torch.TOP;
             torch.setType(type);
             torch.setPosition(xMin + 15 * tileSize + tileSize / 2, yMin + 10 * tileSize + tileSize / 2);
             mapObjects.add(torch);
+            sendAddRoomObjectPacket(torch,tm);
         }
         if(type == Shop){
             for(int i = 1;i<=3;i++){
@@ -603,21 +624,26 @@ public class Room implements Serializable {
                 table.setPosition(xMin+ (float) (xMax - xMin) / 4 * i,yMin + (float) (yMax - yMin) / 2);
                 table.createItem();
                 mapObjects.add(table);
+                sendAddRoomObjectPacket(table,tm);
 
                 if(i == 2){
                     Shopkeeper shopkeeper = new Shopkeeper(tm);
                     shopkeeper.setPosition(xMin+ (float) (xMax - xMin) / 4 * i,yMin + (float) (yMax - yMin) / 2 - 300);
                     this.addObject(shopkeeper);
+                    sendAddRoomObjectPacket(shopkeeper,tm);
+
                 }
             }
             int tileSize = tm.getTileSize();
             Pot pot = new Pot(tm);
             pot.setPosition(xMin+2*tileSize+tileSize/2,yMax-2*tileSize-tileSize/2);
             addObject(pot);
+            sendAddRoomObjectPacket(pot,tm);
 
             pot = new Pot(tm);
             pot.setPosition(xMax-2*tileSize-tileSize/2,yMax-2*tileSize-tileSize/2);
             addObject(pot);
+            sendAddRoomObjectPacket(pot,tm);
         }
         if(type == Boss){
             int tileSize = tm.getTileSize();
@@ -628,21 +654,26 @@ public class Room implements Serializable {
                     barrel.setPosition(xMin + i*tileSize, yMin + j*tileSize);
                     barrel.setPreventItemDespawn(true);
                     mapObjects.add(barrel);
+                    sendAddRoomObjectPacket(barrel,tm);
 
                     barrel = new Barrel(tm);
                     barrel.setPosition(xMax - i*tileSize, yMin + j*tileSize);
                     barrel.setPreventItemDespawn(true);
                     mapObjects.add(barrel);
+                    sendAddRoomObjectPacket(barrel,tm);
 
                     barrel = new Barrel(tm);
                     barrel.setPosition(xMax - i*tileSize, yMax - j*tileSize);
                     barrel.setPreventItemDespawn(true);
                     mapObjects.add(barrel);
+                    sendAddRoomObjectPacket(barrel,tm);
 
                     barrel = new Barrel(tm);
                     barrel.setPosition(xMin + i*tileSize, yMax - j*tileSize);
                     barrel.setPreventItemDespawn(true);
                     mapObjects.add(barrel);
+                    sendAddRoomObjectPacket(barrel,tm);
+
                 }
             }
         }
@@ -735,5 +766,104 @@ public class Room implements Serializable {
 
     public String getMapFilepath() {
         return mapFilepath;
+    }
+
+    public void sendAddRoomObjectPacket(RoomObject object, TileMap tm){
+        int tileSize = tm.getTileSize();
+        if(!tm.isServerSide()) return;
+        if(object instanceof Spike){
+            Network.AddRoomObject roomObject = new Network.AddRoomObject();
+            roomObject.x = (int)object.getX();
+            roomObject.y = (int)object.getY();
+            roomObject.type = Network.TypeRoomObject.SPIKE;
+            roomObject.id = object.getId();
+            roomObject.idRoom = this.id;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(roomObject);
+        } else if (object instanceof Flag){
+            Network.AddRoomObject roomObject = new Network.AddRoomObject();
+            roomObject.x = (int)object.getX();
+            roomObject.y = (int)object.getY();
+            roomObject.type = Network.TypeRoomObject.FLAG;
+            roomObject.id = object.getId();
+            roomObject.idRoom = this.id;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(roomObject);
+        } else if (object instanceof Bones){
+            Network.AddRoomObject roomObject = new Network.AddRoomObject();
+            roomObject.x = (int)object.getX();
+            roomObject.y = (int)object.getY();
+            roomObject.type = Network.TypeRoomObject.BONES;
+            roomObject.id = object.getId();
+            roomObject.idRoom = this.id;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(roomObject);
+        } else if (object instanceof Barrel){
+            Network.AddRoomObject roomObject = new Network.AddRoomObject();
+            roomObject.x = (int)object.getX();
+            roomObject.y = (int)object.getY();
+            roomObject.type = Network.TypeRoomObject.BARREL;
+            roomObject.id = object.getId();
+            roomObject.idRoom = this.id;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(roomObject);
+        } else if (object instanceof ArrowTrap){
+            Network.AddRoomObject roomObject = new Network.AddRoomObject();
+            roomObject.x = (int)object.getX();
+            roomObject.y = (int)object.getY();
+            roomObject.type = Network.TypeRoomObject.ARROWTRAP;
+            roomObject.objectType = ((ArrowTrap) object).getType();
+            roomObject.id = object.getId();
+            roomObject.idRoom = this.id;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(roomObject);
+        } else if (object instanceof Torch){
+            Network.AddRoomObject roomObject = new Network.AddRoomObject();
+            roomObject.x = (int)object.getX();
+            roomObject.y = (int)object.getY();
+            roomObject.type = Network.TypeRoomObject.TORCH;
+            roomObject.objectType = ((Torch) object).getType();
+            roomObject.id = object.getId();
+            roomObject.idRoom = this.id;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(roomObject);
+        } else if (object instanceof Flamethrower){
+            Network.AddRoomObject roomObject = new Network.AddRoomObject();
+            roomObject.x = (int)object.getX();
+            roomObject.y = (int)object.getY();
+            roomObject.type = Network.TypeRoomObject.ARROWTRAP;
+            roomObject.objectType = ((Flamethrower) object).getType();
+            roomObject.id = object.getId();
+            roomObject.idRoom = this.id;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(roomObject);
+        } else if (object instanceof Pot){
+            Network.AddRoomObject roomObject = new Network.AddRoomObject();
+            roomObject.x = (int)object.getX();
+            roomObject.y = (int)object.getY();
+            roomObject.type = Network.TypeRoomObject.POT;
+            roomObject.id = object.getId();
+            roomObject.idRoom = this.id;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(roomObject);
+        } else if (object instanceof Chest){
+            Network.AddRoomObject roomObject = new Network.AddRoomObject();
+            roomObject.x = (int)object.getX();
+            roomObject.y = (int)object.getY();
+            roomObject.type = Network.TypeRoomObject.CHEST;
+            roomObject.id = object.getId();
+            roomObject.idRoom = this.id;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(roomObject);
+        } else if (object instanceof Shopkeeper){
+            Network.AddRoomObject roomObject = new Network.AddRoomObject();
+            roomObject.x = (int)object.getX();
+            roomObject.y = (int)object.getY();
+            roomObject.type = Network.TypeRoomObject.SHOPKEEPER;
+            roomObject.id = object.getId();
+            roomObject.idRoom = this.id;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(roomObject);
+        }
     }
 }

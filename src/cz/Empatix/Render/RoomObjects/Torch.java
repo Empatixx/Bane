@@ -30,6 +30,8 @@ public class Torch extends RoomObject {
     public static final int SIDERIGHT = 1;
     public static final int TOP = 2;
 
+    private int type;
+
     public Torch(TileMap tm){
         super(tm);
         if(tm.isServerSide()){
@@ -283,6 +285,7 @@ public class Torch extends RoomObject {
 
     }
     public void setType(int type){
+        this.type = type;
         if(tileMap.isServerSide()) return;
         animation.setFrames(spritesheet.getSprites(type == TOP ? 1 : 0));
         if(type == SIDELEFT) facingRight = false;
@@ -293,5 +296,9 @@ public class Torch extends RoomObject {
     public void delete() {
         super.delete();
         light.remove();
+    }
+
+    public int getType() {
+        return type;
     }
 }

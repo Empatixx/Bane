@@ -39,6 +39,9 @@ public class Network {
         kryo.register(PlayerDropWeapon.class);
         kryo.register(DropWeapon.class);
         kryo.register(ObjectInteract.class);
+        kryo.register(MoveDropItem.class);
+        kryo.register(TypeRoomObject.class);
+        kryo.register(AddRoomObject.class);
 
     }
     // MAIN
@@ -101,6 +104,7 @@ public class Network {
         public boolean critical;
         public int speed;
         public float inaccuracy;
+        public int slot;
         public int id;
     }
     public static class MoveBullet{
@@ -118,6 +122,10 @@ public class Network {
         public int id;
         public int x, y;
         public int amount;
+    }
+    public static class MoveDropItem{
+        public float x,y;
+        public int id;
     }
     public static class RemoveItem{
         public int id;
@@ -157,5 +165,16 @@ public class Network {
         public boolean sucessful;
         public int id;
         public int x, y;
+    }
+    public enum TypeRoomObject{
+        CHEST,SPIKE,BONES,TORCH,BARREL,POT,SHOPKEEPER,SHOPTABLE,FLAMETHROWER,LADDER,
+        FLAG,ARROWTRAP
+    }
+    public static class AddRoomObject{
+        public int id;
+        public int idRoom;
+        public int x, y;
+        public TypeRoomObject type;
+        public int objectType; // type as TOP/LEFT/RIGHT torch, or TOP/SIDE arrowtrap
     }
 }

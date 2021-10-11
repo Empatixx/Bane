@@ -12,12 +12,20 @@ public abstract class RoomObject extends MapObject{
     public boolean behindCollision;
 
     public float maxMovement;
+
+    public static int idGen = 0;
+    private int idRoomObject;
+
     public RoomObject(TileMap tm){
         super(tm);
         remove = false;
         behindCollision=false;
 
         maxMovement = 1f;
+
+        if(tm.isServerSide()){
+            idRoomObject = idGen++;
+        }
     }
     public abstract void touchEvent(MapObject o);
     public abstract void update();
@@ -42,5 +50,11 @@ public abstract class RoomObject extends MapObject{
 
     public float getMaxMovement() {
         return maxMovement;
+    }
+
+    public int getId(){return idRoomObject;}
+
+    public void setId(int id) {
+        idRoomObject = id;
     }
 }

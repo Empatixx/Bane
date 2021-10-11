@@ -133,6 +133,12 @@ public class GameClient{
                         ((InGameMP)gameState).itemManager.handleDropItemPacket((Network.DropItem) object);
                     }
                 }
+                else if(object instanceof Network.MoveDropItem){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        ((InGameMP)gameState).itemManager.handleMoveDropItemPacket((Network.MoveDropItem)object);
+                    }
+                }
                 else if(object instanceof Network.RemoveItem){
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
@@ -175,7 +181,13 @@ public class GameClient{
                     if(gameState instanceof InGameMP) {
                         ((InGameMP)gameState).itemManager.handleObjectInteract((Network.ObjectInteract)object);
                     }
-                    System.out.println("RECEIVED BACK");
+                }
+                else if (object instanceof Network.AddRoomObject){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        ((InGameMP)gameState).tileMap.handleAddRoomObjectPacket((Network.AddRoomObject)object);
+                        System.out.println("TYPE: "+((Network.AddRoomObject) object).type);
+                    }
                 }
             }
         });

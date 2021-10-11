@@ -109,7 +109,7 @@ public class ItemManagerMP {
         }
         int random = cz.Empatix.Java.Random.nextInt(drops);
 
-        int[] weaponTypes = gm.getWeaponTypes(((PlayerMP)player[randomIndexPlayer]).getUsername());
+        int[] weaponTypes = gm.getWeaponTypes(player[randomIndexPlayer].getUsername());
         ItemDrop drop = null;
         if (random == 0) {
             int numWeapons = 0;
@@ -273,6 +273,16 @@ public class ItemManagerMP {
         drop.setSpeed(speed.x, speed.y);
         drop.setPosition(x, y);
         itemDrops.add(drop);
+
+        // adding weapon drop to all players
+        Network.DropWeapon dropWeapon = new Network.DropWeapon();
+        dropWeapon.id = drop.getId();
+        dropWeapon.x = x;
+        dropWeapon.y = y;
+        dropWeapon.slot = gm.getWeaponSlot(weapon);
+
+        Server server = MultiplayerManager.getInstance().server.getServer();
+        server.sendToAllTCP(dropWeapon);
     }
     public void dropWeapon(Weapon weapon, int x, int y, Vector2f speed) {
         weapon.drop();
@@ -293,10 +303,20 @@ public class ItemManagerMP {
         drop.setPosition((int)player[0].getX(), (int)player[0].getY()+30);
         itemDrops.add(drop);
     }
-    public void createDrop(float x, float y, Vector2f speed, String username) {
-        int random = cz.Empatix.Java.Random.nextInt(5);
-        ItemDrop drop;
-        int[] weaponTypes = gm.getWeaponTypes(username);
+    public void createDrop(float x, float y, Vector2f speed) {
+        int drops = 3;
+        int randomIndexPlayer;
+        do{
+            randomIndexPlayer = Random.nextInt(player.length);
+        } while(player[randomIndexPlayer] == null);
+
+        if (player[randomIndexPlayer].getHealth() == player[randomIndexPlayer].getMaxHealth()) {
+            drops--;
+        }
+        int random = cz.Empatix.Java.Random.nextInt(drops);
+        int[] weaponTypes = gm.getWeaponTypes(player[randomIndexPlayer].getUsername());
+
+        ItemDrop drop = null;
         if (random == 0) {
             int numWeapons = 0;
             for(int type : weaponTypes) {
@@ -347,18 +367,8 @@ public class ItemManagerMP {
                     itemDrops.add(drop);
                 }
             }
-        } else if (random == 1) {
-            drop = new ShotgunAmmo(tm);
-            drop.setPosition(x, y);
-            drop.setSpeed(speed.x, speed.y);
-            itemDrops.add(drop);
-        } else if (random == 3) {
+        } else if (random == 2) {
             drop = new HealingPot(tm);
-            drop.setPosition(x, y);
-            drop.setSpeed(speed.x, speed.y);
-            itemDrops.add(drop);
-        } else if (random == 4) {
-            drop = new ExplosiveAmmo(tm);
             drop.setPosition(x, y);
             drop.setSpeed(speed.x, speed.y);
             itemDrops.add(drop);
@@ -368,6 +378,14 @@ public class ItemManagerMP {
             drop.setSpeed(speed.x, speed.y);
             itemDrops.add(drop);
         }
+        Server server = MultiplayerManager.getInstance().server.getServer();
+        Network.DropItem dropItem = new Network.DropItem();
+        dropItem.type = random;
+        dropItem.id = drop.getId();
+        dropItem.x = (int)x;
+        dropItem.y = (int)y;
+        dropItem.amount = drop.getAmount();
+        server.sendToAllTCP(dropItem);
     }
 
     public void dropPlayerWeapon(Weapon weapon, int x, int y, int slot, String username) {
@@ -378,7 +396,6 @@ public class ItemManagerMP {
                     int px = (int) p.getX();
                     int py = (int) p.getY()+30;
                     drop.setPosition((int) p.getX(), (int) p.getY()+30);
-                    System.out.println("SERVER -> X: "+px+" Y: "+py);
 
                     // adding weapon drop to all players
                     Network.DropWeapon dropWeapon = new Network.DropWeapon();

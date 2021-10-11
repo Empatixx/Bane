@@ -255,8 +255,13 @@ public class Pot extends DestroyableObject {
 
         animation.update();
         if(currentAnimation == HIT && animation.hasPlayedOnce()){
-            animation.setFrames(spritesheet.getSprites(NORMAL));
+            if(tileMap.isServerSide()){
+                animation = new Animation(1);
+            } else {
+                animation.setFrames(spritesheet.getSprites(NORMAL));
+            }
             animation.setDelay(-1);
+
             currentAnimation = NORMAL;
         }
         if(destroyed && animation.getIndexOfFrame() == 6){

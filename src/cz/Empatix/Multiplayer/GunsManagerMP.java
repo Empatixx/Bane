@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 public class GunsManagerMP {
 
+    private static GunsManagerMP instance;
+
     public static int bulletShooted;
     public static int hitBullets;
 
@@ -50,7 +52,15 @@ public class GunsManagerMP {
         hitBullets = 0;
 
         players = p;
+
+        instance = this;
     }
+    public static GunsManagerMP getInstance(){return instance;}
+
+    public int getWeaponSlot(Weapon weapon){
+        return weapons.indexOf(weapon);
+    }
+
     public void stopShooting(String username){
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;

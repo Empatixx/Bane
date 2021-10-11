@@ -3,8 +3,10 @@ package cz.Empatix.Render.RoomObjects;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.MapObject;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.ItemManagerMP;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -212,30 +214,60 @@ public class Chest extends RoomObject {
     }
     public void update(){
         setMapPosition();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
-        if(opened && animation.hasPlayedOnce()){
-            remove=true;
 
-            Vector2f speed = new Vector2f();
+        if(tileMap.isServerSide()){
+            checkTileMapCollision();
+            setPosition(temp.x, temp.y);
+            if(opened && animation.hasPlayedOnce()){
+                remove=true;
 
-            float x = (float) Random.nextDouble()*(-1+Random.nextInt(2)*2);
-            float y = (float)Random.nextDouble()*(-1+Random.nextInt(2)*2);
+                Vector2f speed = new Vector2f();
 
-            ItemManager itemManager = ItemManager.getInstance();
+                float x = (float) Random.nextDouble()*(-1+Random.nextInt(2)*2);
+                float y = (float)Random.nextDouble()*(-1+Random.nextInt(2)*2);
 
-            if(dropGun) itemManager.dropWeapon((int)position.x,(int)position.y,speed);
-            if(dropArtefact) itemManager.dropArtefact((int)position.x,(int)position.y);
+                ItemManagerMP itemManager = ItemManagerMP.getInstance();
 
-            for(int i = 0;i<5;i++){
-                double atan = Math.atan2(x,
-                        y) + 1.3 * i;
-                speed.x = (float)(Math.cos(atan) * 10);
-                speed.y = (float)(Math.sin(atan) * 10);
-                itemManager.createDrop(position.x,position.y,speed);
+                if(dropGun) itemManager.dropWeapon((int)position.x,(int)position.y,speed);
+                if(dropArtefact) itemManager.dropArtefact((int)position.x,(int)position.y);
+
+                for(int i = 0;i<5;i++){
+                    double atan = Math.atan2(x,
+                            y) + 1.3 * i;
+                    speed.x = (float)(Math.cos(atan) * 10);
+                    speed.y = (float)(Math.sin(atan) * 10);
+
+                    itemManager.createDrop((int)position.x,(int)position.y,speed);
+                }
             }
-        }
 
+        } else if (!MultiplayerManager.multiplayer){
+            checkTileMapCollision();
+            setPosition(temp.x, temp.y);
+            if(opened && animation.hasPlayedOnce()){
+                remove=true;
+
+                Vector2f speed = new Vector2f();
+
+                float x = (float) Random.nextDouble()*(-1+Random.nextInt(2)*2);
+                float y = (float)Random.nextDouble()*(-1+Random.nextInt(2)*2);
+
+                ItemManager itemManager = ItemManager.getInstance();
+
+                if(dropGun) itemManager.dropWeapon((int)position.x,(int)position.y,speed);
+                if(dropArtefact) itemManager.dropArtefact((int)position.x,(int)position.y);
+
+                for(int i = 0;i<5;i++){
+                    double atan = Math.atan2(x,
+                            y) + 1.3 * i;
+                    speed.x = (float)(Math.cos(atan) * 10);
+                    speed.y = (float)(Math.sin(atan) * 10);
+
+                    itemManager.createDrop((int)position.x,(int)position.y,speed);
+                }
+            }
+
+        }
         animation.update();
 
         if (speed.x < 0){
@@ -265,7 +297,12 @@ public class Chest extends RoomObject {
         opened = true;
         collision = false;
         moveable = false;
-        animation.setFrames(spritesheet.getSprites(OPEN));
+        if(tileMap.isServerSide()){
+            animation = new Animation(4);
+            animation.setDelay(175);
+        } else {
+            animation.setFrames(spritesheet.getSprites(OPEN));
+        }
         speed.mul(1.7f);
     }
 

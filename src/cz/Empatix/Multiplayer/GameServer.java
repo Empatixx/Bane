@@ -12,6 +12,7 @@ import cz.Empatix.Render.TileMap;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.StampedLock;
 
 public class GameServer {
     private final Server server;
@@ -28,7 +29,10 @@ public class GameServer {
 
     int changeGamestateConfirms;
 
+    private StampedLock lock;
+
     public GameServer() {
+        lock = new StampedLock();
         connectedPlayers = new ArrayList<>();
         map = new MiniMap(true);
         tileMap = new TileMap(64,map,2);
@@ -148,18 +152,23 @@ public class GameServer {
                     lastTime = now;
 
                     while (delta >= 1){
-                        for(Player player: connectedPlayers){
-                            player.update();
-                            Network.MovePlayer movePlayer = new Network.MovePlayer();
-                            movePlayer.username = ((PlayerMP)player).getUsername();
-                            movePlayer.x = player.getX();
-                            movePlayer.y = player.getY();
-                            movePlayer.up = player.isMovingUp();
-                            movePlayer.down = player.isMovingDown();
-                            movePlayer.right = player.isMovingRight();
-                            movePlayer.left = player.isMovingLeft();
-                            server.sendToAllUDP(movePlayer);
+                        long stamp = lock.tryOptimisticRead();
+                        try{
+                            for(Player player: connectedPlayers){
+                                player.update();
+                                Network.MovePlayer movePlayer = new Network.MovePlayer();
+                                movePlayer.username = ((PlayerMP)player).getUsername();
+                                movePlayer.x = player.getX();
+                                movePlayer.y = player.getY();
+                                movePlayer.up = player.isMovingUp();
+                                movePlayer.down = player.isMovingDown();
+                                movePlayer.right = player.isMovingRight();
+                                movePlayer.left = player.isMovingLeft();
+                                server.sendToAllUDP(movePlayer);
+                            }
+                        } finally {
                         }
+
                         if(gameState == GameStateManager.INGAME){
                             gunsManager.updatePlayerLocations();
                             gunsManager.update();
@@ -189,15 +198,20 @@ public class GameServer {
     private void handleDisconnect(Network.Disconnect disconnectPacket) {
         String packetUsername = disconnectPacket.username;
 
-        // player is already connceted
-        for(int i = 0;i<connectedPlayers.size();i++){
-            PlayerMP player = connectedPlayers.get(i);
-            if (player.getUsername().equalsIgnoreCase(packetUsername)) {
-                connectedPlayers.remove(i);
-                i--;
+        long stamp = lock.writeLock();
+        try{
+            // player is already connceted
+            for(int i = 0;i<connectedPlayers.size();i++){
+                PlayerMP player = connectedPlayers.get(i);
+                if (player.getUsername().equalsIgnoreCase(packetUsername)) {
+                    connectedPlayers.remove(i);
+                    i--;
+                }
             }
+            server.sendToAllTCP(disconnectPacket);
+        } finally {
+            lock.unlock(stamp);
         }
-        server.sendToAllTCP(disconnectPacket);
 
     }
 
@@ -205,13 +219,17 @@ public class GameServer {
     private void handleMovement(Object movePacket, Connection connection) {
         if(movePacket instanceof Network.MovePlayer){
             Network.MovePlayer movePlayer = (Network.MovePlayer) movePacket;
-            for(PlayerMP playerMP : connectedPlayers){
-                if(movePlayer.username.equalsIgnoreCase(playerMP.getUsername())){
-                    playerMP.setUp(movePlayer.up);
-                    playerMP.setDown(movePlayer.down);
-                    playerMP.setLeft(movePlayer.left);
-                    playerMP.setRight(movePlayer.right);
+            long stamp = lock.tryOptimisticRead();
+            try{
+                for(PlayerMP playerMP : connectedPlayers){
+                    if(movePlayer.username.equalsIgnoreCase(playerMP.getUsername())){
+                        playerMP.setUp(movePlayer.up);
+                        playerMP.setDown(movePlayer.down);
+                        playerMP.setLeft(movePlayer.left);
+                        playerMP.setRight(movePlayer.right);
+                    }
                 }
+            } finally {
             }
         }
     }
@@ -220,22 +238,27 @@ public class GameServer {
         playerMP.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
         playerMP.remove();
 
-        if(join.host){
-            connectedPlayers.add(playerMP);
-        } else {
-            for (PlayerMP otherPlayer : connectedPlayers) {
+        long stamp = lock.writeLock();
+        try{
+            if(join.host){
+                connectedPlayers.add(playerMP);
+            } else {
+                for (PlayerMP otherPlayer : connectedPlayers) {
+                    Network.AddPlayer addPlayer = new Network.AddPlayer();
+                    addPlayer.username = otherPlayer.getUsername();
+                    // send other players to new player
+                    connection.sendTCP(addPlayer);
+                }
+
+                connectedPlayers.add(playerMP);
+
                 Network.AddPlayer addPlayer = new Network.AddPlayer();
-                addPlayer.username = otherPlayer.getUsername();
-                // send other players to new player
-                connection.sendTCP(addPlayer);
+                addPlayer.username = join.username;
+                // send new player to others players
+                server.sendToAllExceptTCP(connection.getID(),addPlayer);
             }
-
-            connectedPlayers.add(playerMP);
-
-            Network.AddPlayer addPlayer = new Network.AddPlayer();
-            addPlayer.username = join.username;
-            // send new player to others players
-            server.sendToAllExceptTCP(connection.getID(),addPlayer);
+        } finally {
+            lock.unlock(stamp);
         }
     }
     public Server getServer() {

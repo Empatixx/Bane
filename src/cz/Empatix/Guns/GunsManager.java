@@ -172,8 +172,10 @@ public class GunsManager {
         if(MultiplayerManager.multiplayer){
             try{
                 lock.lock();
-                for(Network.AddBullet adBullet : queueBulletPackets){
-                    current.handleBulletPacket(adBullet);
+                for(Network.AddBullet addBullet : queueBulletPackets){
+                    int index = addBullet.slot-players.length;
+                    if(index < 0) index = 0;
+                    weapons.get(index).handleBulletPacket(addBullet);
                 }
                 for(Network.HitBullet hitBullet : queueHitBulletPackets){
                     for(Weapon w : weapons){
@@ -428,11 +430,11 @@ public class GunsManager {
             if(MultiplayerManager.getInstance().getUsername().equalsIgnoreCase(playerDropWeapon.username)){
                 if(current != null){
                     stopShooting();
+                    source.play(soundSwitchingGun);
                 }
                 current = null;
                 equipedweapons[currentslot] = null;
             }
-            source.play(soundSwitchingGun);
         }
     }
 

@@ -1,7 +1,9 @@
 package cz.Empatix.Entity.ItemDrops;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.TileMap;
 
 import java.io.Serializable;
@@ -53,6 +55,14 @@ public abstract class ItemDrop extends MapObject implements Serializable {
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
             getMovementSpeed();
+            if(tileMap.isServerSide()){
+                Network.MoveDropItem moveDropItem = new Network.MoveDropItem();
+                moveDropItem.id = idDrop;
+                moveDropItem.x = position.x;
+                moveDropItem.y = position.y;
+                Server server = MultiplayerManager.getInstance().server.getServer();;
+                server.sendToAllUDP(moveDropItem);
+            }
         }
     }
 

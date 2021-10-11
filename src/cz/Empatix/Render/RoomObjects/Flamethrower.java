@@ -349,4 +349,8 @@ public class Flamethrower extends RoomObject {
         width *= scale;
         height *= scale;
     }
+
+    public int getType() {
+        return type;
+    }
 }

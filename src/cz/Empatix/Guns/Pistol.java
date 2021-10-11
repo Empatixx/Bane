@@ -11,6 +11,7 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.GunsManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
@@ -253,6 +254,7 @@ public class Pistol extends Weapon {
                             response.damage = damage;
                             response.id = bullet.getId();
                             response.username = username;
+                            response.slot = GunsManagerMP.getInstance().getWeaponSlot(this);
                             Server server = MultiplayerManager.getInstance().server.getServer();
                             server.sendToAllTCP(response);
                         }

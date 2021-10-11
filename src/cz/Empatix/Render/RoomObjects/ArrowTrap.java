@@ -654,10 +654,14 @@ public class ArrowTrap extends RoomObject {
         }
     }
     public void setType(int type){
+        this.type = type;
         if(tileMap.isServerSide()) return;
         animation.setFrames(spritesheet.getSprites(type == TOP ? 0 : 1));
         if(type == RIGHT) facingRight = false;
         else facingRight = true;
-        this.type = type;
+    }
+
+    public int getType() {
+        return type;
     }
 }

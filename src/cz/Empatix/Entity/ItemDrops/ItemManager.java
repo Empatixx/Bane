@@ -243,10 +243,6 @@ public class ItemManager {
 
     public void update() {
         if(MultiplayerManager.multiplayer){
-            for(int i = 0;i<itemDrops.size();i++){
-                ItemDrop d = itemDrops.get(i);
-                System.out.println(i+". DROP ID: "+d.getId());
-            }
             try{
                 lock.lock();
                 for(Network.DropItem dropItem : queueDropItemPackets){
@@ -263,10 +259,13 @@ public class ItemManager {
                 }
                 for(Network.ObjectInteract objectInteract : queueInteractPackets){
                     for(ItemDrop drop:itemDrops){
-                        if(objectInteract.sucessful && drop.getId() == objectInteract.id && ((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username)){
+                        if(objectInteract.sucessful && drop.getId() == objectInteract.id){
                             drop.pickedUp = true;
-                            Weapon weapon = ((WeaponDrop)drop).getWeapon();
-                            gm.changeGun(weapon);
+                            // if player is the one that interacted with drop
+                            if(((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username)){
+                                Weapon weapon = ((WeaponDrop)drop).getWeapon();
+                                gm.changeGun(weapon);
+                            }
                         }
                     }
                 }
@@ -667,6 +666,19 @@ public class ItemManager {
         try {
             lock.lock();
             queueInteractPackets.add(interact);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void handleMoveDropItemPacket(Network.MoveDropItem dropItem) {
+        try {
+            lock.lock();
+            for(ItemDrop drop: itemDrops){
+                if(drop.getId() == dropItem.id){
+                    drop.setPosition(dropItem.x, dropItem.y);
+                }
+            }
         } finally {
             lock.unlock();
         }

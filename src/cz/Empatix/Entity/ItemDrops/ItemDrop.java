@@ -51,7 +51,7 @@ public abstract class ItemDrop extends MapObject implements Serializable {
         return pickedUp;
     }
     public void update() {
-        if(MultiplayerManager.multiplayer || tileMap.isServerSide()){
+        if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
             getMovementSpeed();
@@ -60,7 +60,7 @@ public abstract class ItemDrop extends MapObject implements Serializable {
                 moveDropItem.id = idDrop;
                 moveDropItem.x = position.x;
                 moveDropItem.y = position.y;
-                Server server = MultiplayerManager.getInstance().server.getServer();;
+                Server server = MultiplayerManager.getInstance().server.getServer();
                 server.sendToAllUDP(moveDropItem);
             }
         }

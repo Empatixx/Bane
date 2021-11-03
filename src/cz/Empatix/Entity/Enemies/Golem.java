@@ -9,6 +9,7 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -792,5 +793,17 @@ public class Golem extends Enemy {
             }
             return theClosest;
         }
+    }
+    @Override
+    public void handleAddEnemyProjectile(Network.AddEnemyProjectile o) {
+    }
+
+    @Override
+    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o) {
+    }
+
+    @Override
+    public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
+
     }
 }

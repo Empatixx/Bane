@@ -5,7 +5,6 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Database.Database;
-import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
@@ -15,8 +14,10 @@ import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.ControlSettings;
+import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Background;
@@ -37,8 +38,6 @@ import cz.Empatix.Render.TileMap;
 import cz.Empatix.Utility.Console;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.ArrayList;
 
 import static cz.Empatix.Main.Game.ARROW;
 import static cz.Empatix.Main.Game.setCursor;
@@ -150,7 +149,7 @@ public class InGameMP extends GameState {
     @Override
     protected void mousePressed(int button) {
         if(button == ControlSettings.getValue(ControlSettings.SHOOT)){
-            gunsManager.startShooting();
+            if(!pause)gunsManager.startShooting();
         }
     }
     @Override
@@ -216,10 +215,15 @@ public class InGameMP extends GameState {
         player[0].keyPressed(k);
         miniMap.keyPressed(k);
 
-        // if player interracts with something like artefact/gun
-        boolean interract = itemManager.keyPressed(k,(int)(mouseX-mx-px),(int)(mouseY-my-py));
-        if(!interract){
-            tileMap.keyPressed(k,player[0]);
+        //if(!interract){
+        //    tileMap.keyPressed(k,player[0]);
+        if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT)) {
+            Client client = MultiplayerManager.getInstance().client.getClient();
+            Network.ObjectInteract pickup = new Network.ObjectInteract();
+            pickup.username = player[0].getUsername();
+            pickup.x = (int)(mouseX-mx-px);
+            pickup.y = (int)(mouseY-my-py);
+            client.sendTCP(pickup);
         }
 
         if(k == ControlSettings.getValue(ControlSettings.ARTEFACT_USE)){
@@ -230,7 +234,7 @@ public class InGameMP extends GameState {
 
     @Override
     protected void init() {
-        //DiscordRP.getInstance().update("In-Game","Floor I");
+        DiscordRP.getInstance().update("Multiplayer - In-Game","Floor I");
 
         textRender = new TextRender[17];
         for(int i = 0;i<17;i++) textRender[i] = new TextRender();
@@ -553,7 +557,6 @@ public class InGameMP extends GameState {
 
     @Override
     protected void update() {
-
         AudioManager.update();
         if (player[0].isDead()) {
             if (pause) pause = false;
@@ -582,11 +585,10 @@ public class InGameMP extends GameState {
         // loc of mouse
         mouseX = gsm.getMouseX();
         mouseY = gsm.getMouseY();
-
         // mouse location-moving direction of mouse of tilemap
         tileMap.setPosition(
-                tileMap.getX() - (mouseX - 960) / 30,
-                tileMap.getY() - (mouseY - 540) / 30);
+                tileMap.getX()-(mouseX-960)/30,
+                tileMap.getY()-(mouseY- 540)/30);
 
         // updating player
         // updating tilemap by player position
@@ -594,6 +596,7 @@ public class InGameMP extends GameState {
                 Camera.getWIDTH() / 2f - player[0].getX(),
                 Camera.getHEIGHT() / 2f - player[0].getY()
         );
+
 
         artefactManager.update(pause);
 
@@ -607,12 +610,48 @@ public class InGameMP extends GameState {
                 }
             }
         }
-        ArrayList<Enemy> enemies = EnemyManager.getInstance().getEnemies();
-
         for (Player player : player) {
             if (player != null) player.update();
         }
+        // movement of players
+        Object[] objects = mpManager.packetHolder.getWithoutClear(PacketHolder.MOVEPLAYER);
+        for(PlayerMP p : player){
+            if(p != null){
+                Network.MovePlayer recentPacket = null;
+                for(Object o : objects){
+                    Network.MovePlayer movePlayerPacket = (Network.MovePlayer) o;
 
+                    if (p.getUsername().equalsIgnoreCase(movePlayerPacket.username)) {
+                        recentPacket = movePlayerPacket;
+                        break;
+                    }
+                }
+                if(recentPacket != null){
+                    p.setPosition(recentPacket.x, recentPacket.y);
+                    if(!p.isOrigin()){
+                        p.setDown(recentPacket.down);
+                        p.setUp(recentPacket.up);
+                        p.setRight(recentPacket.right);
+                        p.setLeft(recentPacket.left);
+                    }
+                    mpManager.packetHolder.remove(PacketHolder.MOVEPLAYER,recentPacket);
+                } else {
+                    p.setPosition(p.getTempX(), p.getTempY());
+                }
+            }
+        }
+        Object[] playerHitPackets = mpManager.packetHolder.get(PacketHolder.PLAYERHIT);
+        for(PlayerMP p : player) {
+            if (p != null) {
+                for(Object o : playerHitPackets){
+                    Network.PlayerHit playerHit = (Network.PlayerHit) o;
+                    if(p.getUsername().equalsIgnoreCase(playerHit.username)){
+                        p.fakeHit(playerHit);
+                    }
+                }
+            }
+        }
+        tileMap.createRoomObjectsViaPackets();
         tileMap.updateObjects();
 
         // updating if player entered some another room
@@ -639,17 +678,37 @@ public class InGameMP extends GameState {
         damageIndicator.update();
         console.update();
 
-        // check bullet collision with enemies
-        //gunsManager.checkCollisions(enemies);
-        player[0].checkCollision(enemies);
+        Object[] packets = mpManager.packetHolder.get(PacketHolder.PLAYERINFO);
+        for(Object o : packets){
+            Network.PlayerInfo info = (Network.PlayerInfo) o;
+            for(PlayerMP p : player){
+                if(p == null) continue;
+                if(p.getUsername().equalsIgnoreCase(info.username)){
+                    p.setCoins(info.coins);
+                    p.setHealth(info.health);
+                    p.setMaxArmor(info.maxArmor);
+                    p.setMaxHealth(info.maxHealth);
+                    p.setArmor(info.armor);
+                }
+            }
+        }
 
         healthBar.update(player[0].getHealth(), player[0].getMaxHealth());
         armorBar.update(player[0].getArmor(),player[0].getMaxArmor());
 
+        Object[] AlertPackets = mpManager.packetHolder.get(PacketHolder.ALERT);
+        for(Object o : AlertPackets){
+            Network.Alert alert = (Network.Alert) o;
+            if(mpManager.getUsername().equalsIgnoreCase(alert.username)){
+                AlertManager.add(alert.type,alert.text);
+            }
+        }
         alertManager.update();
+
 
         gaussianBlur.update(pause);
         lightManager.update();
+
     }
     public void pause(){
         if(!pause) {

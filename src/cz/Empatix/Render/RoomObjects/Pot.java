@@ -246,12 +246,13 @@ public class Pot extends DestroyableObject {
     public void update(){
         // set location by player collisions
         setMapPosition();
-        checkTileMapCollision();
 
-        //boolean[] collisionCheck = new boolean[tileMap.getRoomMapObjects().size()];
-        //checkRoomObjectsCollision(this,collisionCheck);
-
-        setPosition(temp.x, temp.y);
+        if(tileMap.isServerSide()){
+            checkTileMapCollision();
+            setPosition(temp.x, temp.y);
+            stopping();
+            sendMovePacket();
+        }
 
         animation.update();
         if(currentAnimation == HIT && animation.hasPlayedOnce()){
@@ -268,6 +269,15 @@ public class Pot extends DestroyableObject {
             animation.setDelay(-1);
         }
 
+
+    }
+
+    @Override
+    public void touchEvent(MapObject o) {
+
+    }
+
+    public void stopping(){
         if (speed.x < 0){
             speed.x += stopSpeed;
             if (speed.x > 0) speed.x = 0;
@@ -283,11 +293,6 @@ public class Pot extends DestroyableObject {
             speed.y -= stopSpeed;
             if (speed.y < 0) speed.y = 0;
         }
-    }
-
-    @Override
-    public void touchEvent(MapObject o) {
-
     }
 
 

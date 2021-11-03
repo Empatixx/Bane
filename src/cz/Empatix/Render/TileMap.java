@@ -12,6 +12,7 @@ import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Java.RomanNumber;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -105,9 +106,6 @@ public class TileMap {
 	// if tilemap is server-side
 	private boolean serverSide;
 
-	private ArrayList<Network.AddRoomObject> addRoomObjects;
-
-
 	public TileMap(int tileSize, MiniMap miniMap) {
 		this.tileSize = tileSize;
 		this.miniMap = miniMap;
@@ -129,9 +127,6 @@ public class TileMap {
 			title[i] = new TextRender();
 		}
 		player = new Player[1];
-		if(MultiplayerManager.multiplayer){
-			addRoomObjects = new ArrayList<>();
-		}
 	}
 	public TileMap(int tileSize) {
 		this.tileSize = tileSize;
@@ -395,8 +390,33 @@ public class TileMap {
 		// converting rooms into 1 big tile map
 		formatMap();
 
+		A: for(int i = 0;i < roomY;i++){
+			for(int j = 0;j <roomX;j++){
+				if(roomMap[i][j] == currentRoom.getId()){
+					if(roomY > i+1 && currentRoom.isBottom()){
+						sideRooms[0] = getRoom(roomMap[i+1][j]);
+					}
+					else sideRooms[0] = null;
+					if(0 <= i-1 && currentRoom.isTop()){
+						sideRooms[1] = getRoom(roomMap[i-1][j]);
+					}
+					else sideRooms[1] = null;
+					if(roomX > j+1 && currentRoom.isRight()){
+						sideRooms[2] = getRoom(roomMap[i][j+1]);
+					}
+					else sideRooms[2] = null;
+					if(0 <= j-1 && currentRoom.isLeft()){
+						sideRooms[3] = getRoom(roomMap[i][j-1]);
+					}
+					else sideRooms[3] = null;
+					break A;
+				}
+			}
+		}
+
 		// converting 1 and 0 into tiles id textures
 		autoTile();
+
 
 		createRoomObjectsViaPackets();
 
@@ -612,6 +632,18 @@ public class TileMap {
 								currentRoom.removeObject(object);
 								r.addObject(object);
 								i--;
+							}
+						}
+					}
+				}
+				if(!serverSide && MultiplayerManager.multiplayer){
+					Object[] packets = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.OPENCHEST);
+					for(Object o : packets){
+						Network.OpenChest openChest = (Network.OpenChest) o;
+						for(int i = 0;i<objects.size();i++){
+							RoomObject object = objects.get(i);
+							if(object.getId() == openChest.id) {
+								((Chest)object).open();
 							}
 						}
 					}
@@ -1497,6 +1529,18 @@ public class TileMap {
 
 	public void addObject(RoomObject obj){
 		currentRoom.addObject(obj);
+		if(serverSide){
+			if(obj instanceof Chest){
+				Network.AddRoomObject roomObject = new Network.AddRoomObject();
+				roomObject.x = (int)obj.getX();
+				roomObject.y = (int)obj.getY();
+				roomObject.type = Network.TypeRoomObject.CHEST;
+				roomObject.id = obj.getId();
+				roomObject.idRoom = currentRoom.getId();
+				Server server = MultiplayerManager.getInstance().server.getServer();
+				server.sendToAllTCP(roomObject);
+			}
+		}
 	}
 	public void addLadder(){
 		int xMin = currentRoom.getxMin();
@@ -1508,6 +1552,17 @@ public class TileMap {
 		Ladder ladder = new Ladder(this);
 		ladder.setPosition(xMin + (float) (xMax - xMin) / 2, yMin + (float) (yMax - yMin) / 2);
 		addObject(ladder);
+
+		if(serverSide){
+			Network.AddRoomObject roomObject = new Network.AddRoomObject();
+			roomObject.x = (int)ladder.getX();
+			roomObject.y = (int)ladder.getY();
+			roomObject.type = Network.TypeRoomObject.LADDER;
+			roomObject.id = ladder.getId();
+			roomObject.idRoom = currentRoom.getId();
+			Server server = MultiplayerManager.getInstance().server.getServer();
+			server.sendToAllTCP(roomObject);
+		}
 	}
 	public void newMap(){
 		tween = 1;
@@ -1611,33 +1666,6 @@ public class TileMap {
 		roomMap = map.roomMap;
 		roomX = map.roomX;
 		roomY = map.roomY;
-		A: for(int i = 0;i < roomY;i++){
-			for(int j = 0;j < roomX;j++){
-				if(roomMap[i][j] == currentRoom.getId()){
-					if(i+1 < roomY){
-						sideRooms[0] = getRoom(roomMap[i+1][j]);
-					} else {
-						sideRooms[0] = null;
-					}
-					if(i-1 > 0){
-						sideRooms[1] = getRoom(roomMap[i-1][j]);
-					} else {
-						sideRooms[1] = null;
-					}
-					if(j+1 < roomX){
-						sideRooms[2] = getRoom(roomMap[i][j+1]);
-					} else {
-						sideRooms[2] = null;
-					}
-					if(j-1 > 0){
-						sideRooms[3] = getRoom(roomMap[i][j-1]);
-					} else {
-						sideRooms[3] = null;
-					}
-					break A;
-				}
-			}
-		}
 	}
 
 	public boolean isServerSide() {
@@ -1649,15 +1677,14 @@ public class TileMap {
 	public void lockRoom(){
 		currentRoom.lockRoom(true);
 	}
-	public void handleAddRoomObjectPacket(Network.AddRoomObject object){
-		addRoomObjects.add(object);
-	}
 	public void createRoomObjectsViaPackets() {
-		for(Network.AddRoomObject object:addRoomObjects){
+		PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
+		for(Object o:packetHolder.get(PacketHolder.ADDROOMOBJECT)){
+			Network.AddRoomObject addRoomPacket = (Network.AddRoomObject) o;
 			for(Room room : roomArrayList){
-				if(object.idRoom != room.getId()) continue;
+				if(addRoomPacket.idRoom != room.getId()) continue;
 				RoomObject roomObject;
-				switch (object.type){
+				switch (addRoomPacket.type){
 					case POT:{
 						roomObject = new Pot(this);
 						break;
@@ -1692,21 +1719,22 @@ public class TileMap {
 					}
 					case SHOPTABLE:{
 						roomObject = new ShopTable(this);
+						((ShopTable) roomObject).createItem();
 						break;
 					}
 					case TORCH:{
 						roomObject = new Torch(this);
-						((Torch)roomObject).setType(object.objectType);
+						((Torch)roomObject).setType(addRoomPacket.objectType);
 						break;
 					}
 					case ARROWTRAP:{
 						roomObject = new ArrowTrap(this,player);
-						((ArrowTrap)roomObject).setType(object.objectType);
+						((ArrowTrap)roomObject).setType(addRoomPacket.objectType);
 						break;
 					}
 					case FLAMETHROWER:{
 						roomObject = new Flamethrower(this,player);
-						((Flamethrower)roomObject).setType(object.objectType);
+						((Flamethrower)roomObject).setType(addRoomPacket.objectType);
 						break;
 					}
 					default:{
@@ -1714,9 +1742,30 @@ public class TileMap {
 						break;
 					}
 				}
-				roomObject.setPosition(object.x,object.y);
-				roomObject.setId(object.id);
+				roomObject.setPosition(addRoomPacket.x,addRoomPacket.y);
+				roomObject.setId(addRoomPacket.id);
 				room.addObject(roomObject);
+			}
+		}
+	}
+
+	public void handleRoomMovePacket(Network.MoveRoomObject movePacket) {
+		ArrayList<RoomObject> roomObjects;
+		roomObjects = getRoomMapObjects();
+		for(RoomObject roomObject : roomObjects){
+			if(roomObject.getId() == movePacket.id){
+				roomObject.setPosition(movePacket.x,movePacket.y);
+				return;
+			}
+		}
+		for(Room sideRoom : sideRooms){
+			if(sideRoom == null) continue;
+			roomObjects = currentRoom.getMapObjects();
+			for(RoomObject roomObject : roomObjects){
+				if(roomObject.getId() == movePacket.id){
+					roomObject.setPosition(movePacket.x,movePacket.y);
+					return;
+				}
 			}
 		}
 	}

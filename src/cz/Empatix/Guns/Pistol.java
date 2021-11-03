@@ -1,7 +1,5 @@
 package cz.Empatix.Guns;
 
-import com.esotericsoftware.kryonet.Client;
-import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
@@ -11,9 +9,10 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
-import cz.Empatix.Multiplayer.GunsManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Image;
+import cz.Empatix.Render.RoomObjects.DestroyableObject;
+import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
@@ -180,17 +179,7 @@ public class Pistol extends Weapon {
             if(isShooting()) {
                 if (currentMagazineAmmo != 0) {
                     if (reloading) return;
-                    Network.Shoot shoot = new Network.Shoot();
-                    shoot.username = MultiplayerManager.getInstance().getUsername();
-                    shoot.x = x;
-                    shoot.y = y;
-                    Client client = MultiplayerManager.getInstance().client.getClient();
-                    client.sendUDP(shoot);
                 } else if (currentAmmo != 0) {
-                    Network.Reload reload = new Network.Reload();
-                    reload.username = MultiplayerManager.getInstance().getUsername();
-                    Client client = MultiplayerManager.getInstance().client.getClient();
-                    client.sendTCP(reload);
                     reload();
                 } else {
                     source.play(soundEmptyShoot);
@@ -218,6 +207,7 @@ public class Pistol extends Weapon {
                 currentMagazineAmmo--;
                 GunsManager.bulletShooted++;
                 secondShotReady=false;
+                sendAddBulletPacket(bullet,x,y,px,py,username);
             }
             if(isShooting()) {
                 if (currentMagazineAmmo != 0) {
@@ -243,21 +233,9 @@ public class Pistol extends Weapon {
                         bullets.add(bullet);
                         currentMagazineAmmo--;
                         GunsManager.bulletShooted++;
-                        if(tm.isServerSide()){
-                            Network.AddBullet response = new Network.AddBullet();
-                            response.x = x;
-                            response.y = y;
-                            response.px = px;
-                            response.py = py;
-                            response.critical = bullet.isCritical();
-                            response.speed = 30;
-                            response.damage = damage;
-                            response.id = bullet.getId();
-                            response.username = username;
-                            response.slot = GunsManagerMP.getInstance().getWeaponSlot(this);
-                            Server server = MultiplayerManager.getInstance().server.getServer();
-                            server.sendToAllTCP(response);
-                        }
+
+                        sendAddBulletPacket(bullet,x,y,px,py,username);
+
                         lastX = x;
                         lastY = y;
                         if(currentMagazineAmmo > 0 && doubleShots) secondShotReady = true;
@@ -269,9 +247,6 @@ public class Pistol extends Weapon {
                     }
                 } else if (currentAmmo != 0) {
                     reload();
-                } else {
-                    source.play(soundEmptyShoot);
-                    outOfAmmo();
                 }
                 setShooting(false);
 
@@ -373,7 +348,7 @@ public class Pistol extends Weapon {
     @Override
     public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
         for(Bullet b : bullets){
-            if(b.getId() == moveBullet.id){
+            if(b.id== moveBullet.id){
                 b.setPosition(moveBullet.x, moveBullet.y);
             }
         }
@@ -381,19 +356,32 @@ public class Pistol extends Weapon {
     @Override
     public void handleHitBulletPacket(Network.HitBullet hitBullet) {
         for(Bullet b : bullets){
-            if(b.getId() == hitBullet.id){
+            if(b.id == hitBullet.id){
                 b.setHit(hitBullet.type);
                 if(hitBullet.type == Bullet.TypeHit.ENEMY){
                     EnemyManager em = EnemyManager.getInstance();
                     Enemy e = em.handleHitEnemyPacket(hitBullet.idHit,b.getDamage());
                     showDamageIndicator(b.getDamage(),b.isCritical(),e);
+                } else if (hitBullet.type == Bullet.TypeHit.ROOMOBJECT){
+                    ArrayList<RoomObject> roomObjects = tm.getRoomMapObjects();
+                    for(RoomObject obj : roomObjects){
+                        if(obj.getId() == hitBullet.idHit){
+                            if(obj instanceof DestroyableObject){
+                                ((DestroyableObject) obj).setHit(b.getDamage());
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
     @Override
-    public void shootSound() {
+    public void shootSound(Network.AddBullet response) {
         source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
+        double atan = Math.atan2(response.y, response.x);
+        push = 30;
+        pushX = Math.cos(atan);
+        pushY = Math.sin(atan);
     }
 }

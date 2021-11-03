@@ -4,11 +4,13 @@ import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Multiplayer.GameClient;
 import cz.Empatix.Multiplayer.GameServer;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PacketHolder;
 
 public class MultiplayerManager {
 
     private static MultiplayerManager multiplayerManager;
 
+    public PacketHolder packetHolder;
     public GameClient client;
     public GameServer server;
 
@@ -21,6 +23,7 @@ public class MultiplayerManager {
     public MultiplayerManager(boolean host, GameStateManager gsm) {
         multiplayerManager = this;
         multiplayer = true;
+        packetHolder = new PacketHolder();
         this.host = host;
         if(host) {
             server = new GameServer();
@@ -57,5 +60,7 @@ public class MultiplayerManager {
         }
         client.close();
         client = null;
+        packetHolder = null;
     }
+
 }

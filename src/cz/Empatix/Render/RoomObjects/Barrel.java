@@ -2,6 +2,7 @@ package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -212,14 +213,14 @@ public class Barrel extends DestroyableObject {
     }
 
     public void update(){
-        // set location by player collisions
         setMapPosition();
-        checkTileMapCollision();
-
-        //boolean[] collisionCheck = new boolean[tileMap.getRoomMapObjects().size()];
-        checkRoomObjectsCollision();
-
-        setPosition(temp.x, temp.y);
+        if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
+            checkTileMapCollision();
+            checkRoomObjectsCollision();
+            setPosition(temp.x, temp.y);
+            stopping();
+            sendMovePacket();
+        }
 
         animation.update();
         if(currentAnimation == HIT && animation.hasPlayedOnce()){
@@ -231,6 +232,8 @@ public class Barrel extends DestroyableObject {
             animation.setDelay(-1);
         }
 
+    }
+    public void stopping(){
         if (speed.x < 0){
             speed.x += stopSpeed;
             if (speed.x > 0) speed.x = 0;

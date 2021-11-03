@@ -58,10 +58,6 @@ public abstract class Enemy extends MapObject{
 
     protected boolean reflectBullets;
 
-    public int idEnemy;
-    // unique id for every enemy, everytime we create new monster, we set his id to ++idGen;
-    private static int idGen = 0;
-
     public Enemy(TileMap tm, Player player) {
         super(tm);
         this.player = new Player[1];
@@ -89,10 +85,6 @@ public abstract class Enemy extends MapObject{
 
         spawnTime=System.currentTimeMillis()-InGame.deltaPauseTime();
 
-        if(MultiplayerManager.multiplayer){
-            idEnemy = idGen;
-            idGen++;
-        }
     }
 
     public Enemy(TileMap tm, Player[] player) {
@@ -118,10 +110,6 @@ public abstract class Enemy extends MapObject{
             if (spawnShader == null){
                 spawnShader = ShaderManager.createShader("shaders\\spawn");
             }
-        } else {
-            idEnemy = idGen;
-            idGen++;
-            idGen++;
         }
         spawnTime=System.currentTimeMillis()-InGame.deltaPauseTime();
     }
@@ -724,7 +712,7 @@ public abstract class Enemy extends MapObject{
             Network.MoveEnemy moveEnemy = new Network.MoveEnemy();
             moveEnemy.x = position.x;
             moveEnemy.y = position.y;
-            moveEnemy.id = idEnemy;
+            moveEnemy.id = id;
             moveEnemy.down = down;
             moveEnemy.up = up;
             moveEnemy.left = left;
@@ -846,8 +834,7 @@ public abstract class Enemy extends MapObject{
         }
         return theClosest;
     }
-
-    public int getId() {
-        return idEnemy;
-    }
+    public abstract void handleAddEnemyProjectile(Network.AddEnemyProjectile o);
+    public abstract void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o);
+    public abstract void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket);
 }

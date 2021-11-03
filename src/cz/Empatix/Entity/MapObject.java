@@ -97,17 +97,23 @@ public abstract class MapObject {
 	public int shadowVboVertices;
     public boolean shadow;
 
+    private volatile static int idGen = 0;
+	public int id;
 
 	// constructor
 	public MapObject(TileMap tm) {
 		tileMap = tm;
-		// when adding to arraylist to hosting server, tm is null
-		if(tm != null)tileSize = tm.getTileSize();
+		tileSize = tm.getTileSize();
 
 		temp = new Vector2f(0,0);
 		dest = new Vector2f(0,0);
 		speed = new Vector3f(0,0,0);
 		position = new Vector3f(0,0,0);
+		synchronized (this){
+			if(tm.isServerSide()) {
+				id = idGen++;
+			}
+		}
 	}
 	
 	public boolean intersects(MapObject o) {
@@ -637,4 +643,14 @@ public abstract class MapObject {
 	public void setFacingRight(boolean facingRight) {
 		this.facingRight = facingRight;
 	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	public float getTempX(){return temp.x;}
+	public float getTempY(){return temp.y;}
 }

@@ -153,6 +153,7 @@ public class RedSlimebullet extends MapObject {
     }
 
     public void draw() {
+        if (animation.hasPlayedOnce() && hit) return;
         super.draw();
 
     }

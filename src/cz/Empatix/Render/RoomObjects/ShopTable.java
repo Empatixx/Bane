@@ -3,9 +3,12 @@ package cz.Empatix.Render.RoomObjects;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.MapObject;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.ItemManagerMP;
+import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -17,6 +20,7 @@ import org.joml.Matrix4f;
 import static org.lwjgl.opengl.GL20.*;
 
 public class ShopTable extends RoomObject{
+    private boolean itemCreated;
     public static void load(){
         Loader.loadImage("Textures\\table.tga");
     }
@@ -157,8 +161,8 @@ public class ShopTable extends RoomObject{
     public void createItem(){
         if(tileMap.isServerSide()){
             ItemManagerMP itemManagerMP = ItemManagerMP.getInstance();
-            itemManagerMP.createShopDrop(position.x,position.y-20);
-        } else {
+            itemManagerMP.createShopDrop(position.x,position.y-20,getId());
+        } else if (!MultiplayerManager.multiplayer) {
             ItemManager itemManager = ItemManager.getInstance();
             itemManager.createShopDrop(position.x,position.y-20);
         }
@@ -184,6 +188,21 @@ public class ShopTable extends RoomObject{
         } else if (speed.y > 0){
             speed.y -= stopSpeed;
             if (speed.y < 0) speed.y = 0;
+        }
+        // handling packets of shop item drop
+        if(!itemCreated && MultiplayerManager.multiplayer && !tileMap.isServerSide()) {
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+            Object[] packets = mpManager.packetHolder.getWithoutClear(PacketHolder.SHOPITEM);
+            for(Object o : packets){
+                Network.ShopDropitem packet = (Network.ShopDropitem) o;
+                if(packet.idObject == getId()){
+                    itemCreated = true;
+                    ItemManager itemManager = ItemManager.getInstance();
+                    itemManager.createShopDrop(packet,position.x,position.y-20);
+                    mpManager.packetHolder.remove(PacketHolder.SHOPITEM,o);
+                    break;
+                }
+            }
         }
     }
 

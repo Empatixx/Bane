@@ -7,8 +7,10 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.ProgressNPC;
 import cz.Empatix.Gamestates.GameState;
 import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Camera;
@@ -27,7 +29,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class ProgressRoomMP extends GameState {
 
-    public Player[] player;
+    public PlayerMP[] player;
     public PlayerReady[] playerReadies;
 
     public TileMap tileMap;
@@ -73,8 +75,6 @@ public class ProgressRoomMP extends GameState {
     @Override
     protected void init() {
         Game.setCursor(ARROW);
-        //DiscordRP.getInstance().update("In-Game","Rest room");
-
         mpManager = MultiplayerManager.getInstance();
         readyNumPlayers = 0;
         ready = false;
@@ -92,12 +92,12 @@ public class ProgressRoomMP extends GameState {
 
         // player
         // create player object
-        player = new Player[2];
+        player = new PlayerMP[2];
         playerReadies = new PlayerReady[2];
 
         String username = mpManager.getUsername();
         player[0] = new PlayerMP(tileMap,username);
-        ((PlayerMP)player[0]).setOrigin(true);
+        player[0].setOrigin(true);
         playerReadies[0] = new PlayerReady(username);
 
         Client client = mpManager.client.getClient();
@@ -130,6 +130,8 @@ public class ProgressRoomMP extends GameState {
         int upgradesCount = progressNPC.getCountAvailableUpgrades(player[0]);
         if(upgradesCount > 0) AlertManager.add(AlertManager.INFORMATION,"You can buy "+upgradesCount+" upgrades");
         AlertManager.add(AlertManager.INFORMATION,"Go to the portal");
+
+        DiscordRP.getInstance().update("Multiplayer - In-Game","Lobby "+mpManager.client.getTotalPlayers()+"/2");
     }
 
     @Override
@@ -217,12 +219,16 @@ public class ProgressRoomMP extends GameState {
                 tileMap.getX()-(mouseX-960)/30,
                 tileMap.getY()-(mouseY- 540)/30);
 
+
+
         // updating player
         // updating tilemap by player position
         tileMap.setPosition(
-                Camera.getWIDTH() / 2f - player[0].getX(),
-                Camera.getHEIGHT() / 2f - player[0].getY()
+                1920 / 2f - player[0].getX(),
+                1080 / 2f - player[0].getY()
         );
+
+
 
         readyNumPlayers = 0;
         for(PlayerReady playerReady : playerReadies){
@@ -239,6 +245,8 @@ public class ProgressRoomMP extends GameState {
         if(totalConPlayers == readyNumPlayers){
             mpManager.client.setNumPlayers(1);
             gsm.setState(GameStateManager.INGAMEMP);
+            mpManager.packetHolder.get(PacketHolder.MOVEPLAYER); // CLEARING ARRAY
+
         }
 
         tileMap.updateObjects();
@@ -246,7 +254,33 @@ public class ProgressRoomMP extends GameState {
         for(Player p : player){
             if(p != null)p.update();
         }
+        // movement of players
+        Object[] objects = mpManager.packetHolder.getWithoutClear(PacketHolder.MOVEPLAYER);
+        for(PlayerMP p : player){
+            if(p != null){
+                Network.MovePlayer recentPacket = null;
+                for(Object o : objects){
+                    Network.MovePlayer movePlayerPacket = (Network.MovePlayer) o;
 
+                    if (p.getUsername().equalsIgnoreCase(movePlayerPacket.username)) {
+                        recentPacket = movePlayerPacket;
+                        break;
+                    }
+                }
+                if(recentPacket != null){
+                    p.setPosition(recentPacket.x, recentPacket.y);
+                    if(!p.isOrigin()){
+                        p.setDown(recentPacket.down);
+                        p.setUp(recentPacket.up);
+                        p.setRight(recentPacket.right);
+                        p.setLeft(recentPacket.left);
+                    }
+                    mpManager.packetHolder.remove(PacketHolder.MOVEPLAYER,recentPacket);
+                } else {
+                    p.setPosition(p.getTempX(), p.getTempY());
+                }
+            }
+        }
 
         progressNPC.update(mouseX,mouseY);
         progressNPC.touching(player[0]);

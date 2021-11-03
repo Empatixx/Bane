@@ -2,13 +2,17 @@ package cz.Empatix.Guns;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Image;
+import cz.Empatix.Render.RoomObjects.DestroyableObject;
+import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
@@ -91,9 +95,9 @@ public class Thompson extends Weapon{
     public void reload() {
         if (!reloading && currentAmmo != 0 && currentMagazineAmmo != maxMagazineAmmo){
             reloadDelay = System.currentTimeMillis() - InGame.deltaPauseTime();
-            reloadsource.play(soundReload);
+            if(!tm.isServerSide())reloadsource.play(soundReload);
             reloading = true;
-            delayTime = 200;
+
             dots = 0;
         }
     }
@@ -153,7 +157,65 @@ public class Thompson extends Weapon{
 
     @Override
     public void shoot(float x, float y, float px, float py, String username) {
+        if(MultiplayerManager.multiplayer && !tm.isServerSide()){
+            if(isShooting()) {
+                if (currentMagazineAmmo != 0) {
+                    if (reloading) return;
+                } else if (currentAmmo != 0) {
+                    reload();
+                } else {
+                    source.play(soundEmptyShoot);
+                    outOfAmmo();
+                }
+            }
+        } else {
+            if(isShooting()) {
+                if (currentMagazineAmmo != 0) {
+                    if (reloading) return;
+                    // delta - time between shoots
+                    // InGame.deltaPauseTime(); returns delayed time because of pause time
+                    long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
+                    if (delta > delayTime) {
+                        double inaccuracy = 0;
+                        if (delta < 200) {
+                            inaccuracy = (Math.random() * 0.085) * (Random.nextInt(2) * 2 - 1);
+                        }
+                        delay = System.currentTimeMillis() - InGame.deltaPauseTime();
+                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+                        bullet.setPosition(px, py);
+                        int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                        if(criticalHits){
+                            if(Math.random() > 0.9){
+                                damage*=2;
+                                bullet.setCritical(true);
+                            }
+                        }
+                        bullet.setDamage(damage);
+                        bullets.add(bullet);
 
+                        currentMagazineAmmo--;
+                        sendAddBulletPacket(bullet,x,y,px,py,username);
+                        GunsManager.bulletShooted++;
+                        if(boostFirerate){
+                            delayTime -= 5;
+                            if(delayTime < 130) delayTime = 130;
+                        }
+                        double atan = Math.atan2(y, x);
+                        push = 30;
+                        pushX = Math.cos(atan);
+                        pushY = Math.sin(atan);
+                    }
+                } else if (currentAmmo != 0) {
+                    reload();
+                }
+
+            } else {
+                if(boostFirerate){
+                    delayTime += 2;
+                    if(delayTime > 200) delayTime = 200;
+                }
+            }
+        }
     }
 
     @Override
@@ -192,10 +254,12 @@ public class Thompson extends Weapon{
             }
             reloading = false;
         }
-        if (push > 0) push-=5;
-        if (push < 0) push+=5;
-        push = -push;
-        tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
+        if(!tm.isServerSide()){
+            if (push > 0) push-=5;
+            if (push < 0) push+=5;
+            push = -push;
+            tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
+        }
     }
 
     @Override
@@ -233,19 +297,50 @@ public class Thompson extends Weapon{
     }
     @Override
     public void handleBulletPacket(Network.AddBullet response) {
-
+        Bullet bullet = new Bullet(tm, response.id);
+        bullet.setPosition(response.px, response.py);
+        bullet.setCritical(response.critical);
+        bullet.setDamage(response.damage);
+        bullets.add(bullet);
     }
+
     @Override
     public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
-
+        for(Bullet b : bullets){
+            if(b.getId() == moveBullet.id){
+                b.setPosition(moveBullet.x, moveBullet.y);
+            }
+        }
     }
     @Override
     public void handleHitBulletPacket(Network.HitBullet hitBullet) {
-
+        for(Bullet b : bullets){
+            if(b.getId() == hitBullet.id){
+                b.setHit(hitBullet.type);
+                if(hitBullet.type == Bullet.TypeHit.ENEMY){
+                    EnemyManager em = EnemyManager.getInstance();
+                    Enemy e = em.handleHitEnemyPacket(hitBullet.idHit,b.getDamage());
+                    showDamageIndicator(b.getDamage(),b.isCritical(),e);
+                } else if (hitBullet.type == Bullet.TypeHit.ROOMOBJECT){
+                    ArrayList<RoomObject> roomObjects = tm.getRoomMapObjects();
+                    for(RoomObject obj : roomObjects){
+                        if(obj.getId() == hitBullet.idHit){
+                            if(obj instanceof DestroyableObject){
+                                ((DestroyableObject) obj).setHit(b.getDamage());
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
-    public void shootSound() {
-
+    public void shootSound(Network.AddBullet response) {
+        source.play(soundShoot);
+        double atan = Math.atan2(response.y, response.x);
+        push = 30;
+        pushX = Math.cos(atan);
+        pushY = Math.sin(atan);
     }
 }

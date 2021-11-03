@@ -1,11 +1,14 @@
 package cz.Empatix.Entity.Enemies;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemies.Projectiles.Slimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -211,26 +214,74 @@ public class Slime extends Enemy {
         }
         for(int i = 0;i<bullets.size();i++){
             Slimebullet slimebullet = bullets.get(i);
+            boolean preHit = slimebullet.isHit();
             slimebullet.update();
-            for(Player p : player){
-                if(p != null){
-                    if(slimebullet.intersects(p) && !p.isFlinching() && !p.isDead()){
-                        slimebullet.setHit();
-                        p.hit(1);
-                    }
+            // multiplayer - serverside
+            if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
+                // if bullet hitted wall
+                if(!preHit && slimebullet.isHit() && tileMap.isServerSide()){
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                    enemyProjectile.id = slimebullet.id;
+                    enemyProjectile.idEnemy = getId();
+                    server.sendToAllTCP(enemyProjectile);
                 }
-            }
-            for(RoomObject object: tileMap.getRoomMapObjects()){
-                if(object instanceof DestroyableObject) {
-                    if (slimebullet.intersects(object) && !slimebullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        slimebullet.setHit();
-                        ((DestroyableObject) object).setHit(1);
-                    }
-                } else if(object.collision && slimebullet.intersects(object)){
-                    slimebullet.setHit();
+                if(slimebullet.isHit()) continue;
+                if(tileMap.isServerSide()){
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    Network.MoveEnemyProjectile moveEnemyProjectile = new Network.MoveEnemyProjectile();
+                    moveEnemyProjectile.idEnemy = id;
+                    moveEnemyProjectile.id = slimebullet.id;
+                    moveEnemyProjectile.x = slimebullet.getX();
+                    moveEnemyProjectile.y = slimebullet.getY();
+                    server.sendToAllTCP(moveEnemyProjectile);
                 }
-            }
 
+                for(Player p : player){
+                    if(p != null){
+                        if(slimebullet.intersects(p) && !p.isFlinching() && !p.isDead()){
+                            slimebullet.setHit();
+                            p.hit(1);
+
+                            if(tileMap.isServerSide()){
+                                Server server = MultiplayerManager.getInstance().server.getServer();
+                                Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                                enemyProjectile.id = slimebullet.id;
+                                enemyProjectile.idEnemy = getId();
+                                server.sendToAllTCP(enemyProjectile);
+                            }
+                        }
+                    }
+                }
+                for(RoomObject object: tileMap.getRoomMapObjects()){
+                    if(object instanceof DestroyableObject) {
+                        if (slimebullet.intersects(object) && !((DestroyableObject) object).isDestroyed()) {
+                            slimebullet.setHit();
+                            ((DestroyableObject) object).setHit(1);
+
+                            if(tileMap.isServerSide()){
+                                Server server = MultiplayerManager.getInstance().server.getServer();
+                                Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                                enemyProjectile.id = slimebullet.id;
+                                enemyProjectile.idEnemy = getId();
+                                enemyProjectile.idHit = object.getId();
+                                server.sendToAllTCP(enemyProjectile);
+                            }
+                        }
+                    } else if(object.collision && slimebullet.intersects(object)){
+                        slimebullet.setHit();
+
+                        if(tileMap.isServerSide()) {
+                            Server server = MultiplayerManager.getInstance().server.getServer();
+                            Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                            enemyProjectile.id = slimebullet.id;
+                            enemyProjectile.idEnemy = getId();
+                            server.sendToAllTCP(enemyProjectile);
+                        }
+                    }
+                }
+            // singleplayer
+            }
             if(slimebullet.shouldRemove()) {
                 bullets.remove(i);
                 i--;
@@ -243,7 +294,7 @@ public class Slime extends Enemy {
             shootready = true;
             shootCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
         }
-        else if(shootready && animation.getIndexOfFrame() == 2){
+        else if(shootready && animation.getIndexOfFrame() == 2 && (!MultiplayerManager.multiplayer || tileMap.isServerSide())){
             shootready=false;
             int playerIndex = theClosestPlayerIndex();
 
@@ -259,6 +310,16 @@ public class Slime extends Enemy {
                     Slimebullet slimebullet = new Slimebullet(tileMap, px[playerIndex] - position.x, py[playerIndex] - position.y, 1.3 * i);
                     slimebullet.setPosition(position.x, position.y);
                     bullets.add(slimebullet);
+                    if(tileMap.isServerSide()){
+                        Network.AddEnemyProjectile addEnemyProjectile = new Network.AddEnemyProjectile();
+                        addEnemyProjectile.idEnemy = id;
+                        addEnemyProjectile.id = slimebullet.id;
+                        addEnemyProjectile.x = px[playerIndex] - position.x;
+                        addEnemyProjectile.y = py[playerIndex] - position.y;
+                        addEnemyProjectile.inaccuracy = 1.3f*i;
+                        Server server = MultiplayerManager.getInstance().server.getServer();
+                        server.sendToAllTCP(addEnemyProjectile);
+                    }
                 }
             }
         }
@@ -354,6 +415,41 @@ public class Slime extends Enemy {
         }
 
         createShadow();
+    }
+
+    @Override
+    public void handleAddEnemyProjectile(Network.AddEnemyProjectile o) {
+        Slimebullet slimebullet = new Slimebullet(tileMap,o.x,o.y,o.inaccuracy);
+        slimebullet.setPosition(position.x,position.y);
+        slimebullet.setId(o.id);
+        bullets.add(slimebullet);
+    }
+
+    @Override
+    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o) {
+        for(Slimebullet bullet : bullets){
+            if(bullet.getId() == o.id){
+                bullet.setPosition(o.x,o.y);
+            }
+
+        }
+    }
+    @Override
+    public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
+        for(Slimebullet bullet : bullets){
+            if(bullet.getId() == hitPacket.id){
+                bullet.setHit();
+                // player was hitted
+                if (hitPacket.idHit != -1){
+                    for(RoomObject roomObject : tileMap.getRoomMapObjects()){
+                        if(roomObject.getId() == hitPacket.idHit){
+                            ((DestroyableObject)roomObject).setHit(1);
+                        }
+                    }
+                }
+            }
+
+        }
     }
 }
 

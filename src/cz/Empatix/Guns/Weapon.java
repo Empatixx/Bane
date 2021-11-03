@@ -1,11 +1,14 @@
 package cz.Empatix.Guns;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.GunsManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
@@ -234,7 +237,7 @@ public abstract class Weapon{
             for(RoomObject object: objects){
                 if(object instanceof DestroyableObject) {
                     if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        bullet.setHit(Bullet.TypeHit.ROOMOBJECT);
+                        bullet.setHit(Bullet.TypeHit.ROOMOBJECT,object.getId());
                         ((DestroyableObject) object).setHit(bullet.getDamage());
                         continue A;
                     }
@@ -242,5 +245,21 @@ public abstract class Weapon{
             }
         }
     }
-    public abstract void shootSound();
+    public abstract void shootSound(Network.AddBullet response);
+
+    public void sendAddBulletPacket(Bullet bullet, float x, float y, float px, float py, String username){
+        Network.AddBullet response = new Network.AddBullet();
+        response.x = x;
+        response.y = y;
+        response.px = px;
+        response.py = py;
+        response.critical = bullet.isCritical();
+        response.speed = 30;
+        response.damage = bullet.getDamage();
+        response.id = bullet.getId();
+        response.username = username;
+        response.slot = GunsManagerMP.getInstance().getWeaponSlot(this);
+        Server server = MultiplayerManager.getInstance().server.getServer();
+        server.sendToAllTCP(response);
+    }
 }

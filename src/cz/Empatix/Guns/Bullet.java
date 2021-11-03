@@ -44,10 +44,6 @@ public class Bullet extends MapObject implements Serializable {
 
     private boolean friendlyFire;
 
-    private int idBullet;
-    // unique id for every bullet, everytime we create new bullet, we set his id to ++idGen;
-    private static int idGen = 0;
-
     public enum TypeHit {
         WALL,
         ENEMY,
@@ -80,7 +76,6 @@ public class Bullet extends MapObject implements Serializable {
             cwidth *= scale;
             cheight *= scale;
 
-            idBullet = idGen++;
         } else {
             facingRight = true;
             crit=false;
@@ -273,8 +268,7 @@ public class Bullet extends MapObject implements Serializable {
         source = AudioManager.createSource(Source.EFFECTS,0.35f);
 
         light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f(xmap,ymap), 1.75f,this);
-
-        idBullet = id;
+        this.id = id;
     }
     public void loadSave(){
         width = 16;
@@ -348,11 +342,6 @@ public class Bullet extends MapObject implements Serializable {
         soundWallhit = AudioManager.loadSound("guns\\wallhit.ogg");
         soundEnemyhit = AudioManager.loadSound("guns\\enemyhit.ogg");
         source = AudioManager.createSource(Source.EFFECTS,0.35f);
-
-        if(tileMap.isServerSide()){
-            idBullet = idGen;
-            idGen++;
-        }
     }
 
     public void setDamage(int damage) {
@@ -365,7 +354,7 @@ public class Bullet extends MapObject implements Serializable {
             Server server = MultiplayerManager.getInstance().server.getServer();
             Network.HitBullet hitBullet = new Network.HitBullet();
             hitBullet.type = type;
-            hitBullet.id = idBullet;
+            hitBullet.id = id;
             server.sendToAllTCP(hitBullet);
         } else {
             if(type == TypeHit.WALL){
@@ -388,7 +377,7 @@ public class Bullet extends MapObject implements Serializable {
             Server server = MultiplayerManager.getInstance().server.getServer();
             Network.HitBullet hitBullet = new Network.HitBullet();
             hitBullet.type = type;
-            hitBullet.id = idBullet;
+            hitBullet.id = id;
             hitBullet.idHit = idHit;
             server.sendToAllTCP(hitBullet);
         } else {
@@ -401,6 +390,9 @@ public class Bullet extends MapObject implements Serializable {
         hit = true;
         if(!tileMap.isServerSide()){
             animation.setFrames(spritesheet.getSprites(hitSprites));
+            animation.setDelay(70);
+        } else {
+            animation = new Animation(3);
             animation.setDelay(70);
         }
         speed.x = 0;
@@ -439,7 +431,7 @@ public class Bullet extends MapObject implements Serializable {
             Network.MoveBullet moveBullet = new Network.MoveBullet();
             moveBullet.x = position.x;
             moveBullet.y = position.y;
-            moveBullet.id = idBullet;
+            moveBullet.id = id;
             server.sendToAllUDP(moveBullet);
 
         } else {
@@ -479,7 +471,8 @@ public class Bullet extends MapObject implements Serializable {
     }
 
     public void draw() {
-        if(source.isPlaying() && remove) return;
+        if((source.isPlaying() && remove ) ||
+        (animation.hasPlayedOnce() && hit)) return;
         super.draw();
 
     }
@@ -505,13 +498,5 @@ public class Bullet extends MapObject implements Serializable {
         }
         damage /= 2;
         if(damage < 1) damage = 1;
-    }
-
-    public int getId() {
-        return idBullet;
-    }
-
-    public void setId(int idBullet) {
-        this.idBullet = idBullet;
     }
 }

@@ -12,6 +12,7 @@ import cz.Empatix.Entity.Shopkeeper;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Multiplayer.EnemyManagerMP;
+import cz.Empatix.Multiplayer.ItemManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.RoomObjects.*;
@@ -172,7 +173,7 @@ public class Room implements Serializable {
         return numRows;
     }
 
-    int getId(){ return id;}
+    public int getId(){ return id;}
 
     public int getY() {
         return y;
@@ -244,9 +245,16 @@ public class Room implements Serializable {
 
             int y=yMin + (yMax - yMin) / 2;
             int x=xMin + (xMax - xMin) / 2;
-
-            EnemyManager enemyManager = EnemyManager.getInstance();
-            enemyManager.spawnBoss(x,y);
+            // multiplayer
+            if(tileMap.isServerSide()){
+                EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
+                enemyManager.spawnBoss(x,y);
+            }
+            // singleplayer
+            else {
+                EnemyManager enemyManager = EnemyManager.getInstance();
+                enemyManager.addEnemy(xMin,xMax,yMin,yMax);
+            }
 
             AudioManager.playSoundtrack(Soundtrack.BOSS);
 
@@ -340,6 +348,12 @@ public class Room implements Serializable {
                     if(Math.random() > 0.6){
                         if(!MultiplayerManager.multiplayer){
                             ItemManager itemManager = ItemManager.getInstance();
+                            ItemDrop drop = itemManager.createDrop(object.getX(),object.getY());
+                            if(((DestroyableObject)object).isPreventItemDespawn()){
+                                drop.preventDespawn();
+                            }
+                        } else if(tm.isServerSide()){
+                            ItemManagerMP itemManager = ItemManagerMP.getInstance();
                             ItemDrop drop = itemManager.createDrop(object.getX(),object.getY());
                             if(((DestroyableObject)object).isPreventItemDespawn()){
                                 drop.preventDespawn();
@@ -860,6 +874,15 @@ public class Room implements Serializable {
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.SHOPKEEPER;
+            roomObject.id = object.getId();
+            roomObject.idRoom = this.id;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(roomObject);
+        } else if (object instanceof ShopTable){
+            Network.AddRoomObject roomObject = new Network.AddRoomObject();
+            roomObject.x = (int)object.getX();
+            roomObject.y = (int)object.getY();
+            roomObject.type = Network.TypeRoomObject.SHOPTABLE;
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
             Server server = MultiplayerManager.getInstance().server.getServer();

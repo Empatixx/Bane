@@ -73,7 +73,7 @@ public class GunsManagerMP {
             playerWeapons.startShooting(username);
         }
     }
-    public void shot(){
+    public void shoot(){
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
             playerWeapons.shoot();
@@ -163,6 +163,7 @@ public class GunsManagerMP {
             equipedweapons = new Weapon[2];
 
             equipedweapons[0] = weapons.get(index);
+            equipedweapons[0] = weapons.get(6);
 
             current = equipedweapons[FIRSTSLOT];
             currentslot = FIRSTSLOT;
@@ -335,13 +336,11 @@ public class GunsManagerMP {
             }
         }
     }
-    public void handleShootPacket(Network.Shoot shoot){
+    public void handleMouseCoords(Network.MouseCoords coords){
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            if(playerWeapons.isThisPlayer(shoot.username)){
-
-                playerWeapons.setMouseLocations(shoot.x,shoot.y);
-                playerWeapons.startShooting();
+            if(playerWeapons.isThisPlayer(coords.username)){
+                playerWeapons.setMouseLocations(coords.x,coords.y);
             }
         }
     }

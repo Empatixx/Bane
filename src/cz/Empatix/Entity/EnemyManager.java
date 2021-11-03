@@ -1,17 +1,15 @@
 package cz.Empatix.Entity;
 
-import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Enemies.*;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 
 import java.util.ArrayList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class EnemyManager {
     private static EnemyManager enemyManager;
@@ -29,9 +27,6 @@ public class EnemyManager {
 
     private Player player[];
     private TileMap tileMap;
-
-    private ArrayList<Network.AddEnemy> queueAddEnemyPackets;
-    private Lock lock;
 
     // singleplayer
     public EnemyManager(Player p, TileMap tm){
@@ -75,8 +70,6 @@ public class EnemyManager {
 
         enemiesKilled = 0;
 
-        queueAddEnemyPackets = new ArrayList<>();
-        lock = new ReentrantLock();
     }
 
     public void loadSave(){
@@ -100,19 +93,53 @@ public class EnemyManager {
 
     public void update(){
         if(MultiplayerManager.multiplayer){
-            try{
-                lock.lock();
-                for(Network.AddEnemy addEnemy : queueAddEnemyPackets){
-                    if(areEnemiesDead()){
-                        tileMap.getCurrentRoom().lockRoom(true);
+            PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
+
+            for(Object o : packetHolder.get(PacketHolder.ADDENEMY)){
+                Network.AddEnemy addEnemy = (Network.AddEnemy) o;
+                if(areEnemiesDead()){
+                    tileMap.getCurrentRoom().lockRoom(true);
+                }
+                addEnemy(addEnemy);
+            }
+            for(Object o : packetHolder.get(PacketHolder.ADD_ENEMYPROJECTION)){
+                Network.AddEnemyProjectile addEnemyProjectile = (Network.AddEnemyProjectile) o;
+                for(Enemy e : enemies){
+                    if(e.getId() == addEnemyProjectile.idEnemy){
+                        e.handleAddEnemyProjectile(addEnemyProjectile);
                     }
-                    addEnemy(addEnemy);
                 }
-                if(!queueAddEnemyPackets.isEmpty()){
-                    queueAddEnemyPackets.clear();
+            }
+            for(Object o : packetHolder.get(PacketHolder.HIT_ENEMYPROJECTILE)){
+                Network.HitEnemyProjectile hit = (Network.HitEnemyProjectile) o;
+                for(Enemy e : enemies){
+                    if(e.getId() == hit.idEnemy){
+                        e.handleHitEnemyProjectile(hit);
+                    }
                 }
-            } finally {
-                lock.unlock();
+            }
+            for(Object o : packetHolder.get(PacketHolder.MOVEENEMY)){
+                Network.MoveEnemy moveEnemyPacket = (Network.MoveEnemy) o;
+                for (Enemy e : enemies) {
+                    if (e.id == moveEnemyPacket.id) {
+                        e.setPosition(moveEnemyPacket.x, moveEnemyPacket.y);
+                        e.setDown(moveEnemyPacket.down);
+                        e.setUp(moveEnemyPacket.up);
+                        e.setRight(moveEnemyPacket.right);
+                        e.setLeft(moveEnemyPacket.left);
+                        e.setFacingRight(moveEnemyPacket.facingRight);
+                        break;
+                    }
+                }
+            }
+            for(Object o : packetHolder.get(PacketHolder.MOVE_ENEMYPROJECTILE)){
+                Network.MoveEnemyProjectile moveProjectile = (Network.MoveEnemyProjectile) o;
+                for(Enemy e : enemies){
+                    if(e.getId() == moveProjectile.idEnemy){
+                        e.handleMoveEnemyProjectile(moveProjectile);
+                        break;
+                    }
+                }
             }
         }
         // updating enemies
@@ -138,6 +165,7 @@ public class EnemyManager {
             }
         }
     }
+
     public void updateOnlyAnimations(){
         for(int i = 0;i < enemies.size();i++) {
             Enemy enemy = enemies.get(i);
@@ -178,8 +206,6 @@ public class EnemyManager {
         for(Enemy e : enemies){
             if(e instanceof KingSlime) {
                 ((KingSlime)e).drawHud();
-            } else if(e instanceof ArcaneMage) {
-                ((ArcaneMage) e).drawHud();
             } else if(e instanceof Golem) {
                 ((Golem) e).drawHud();
             }
@@ -334,111 +360,6 @@ public class EnemyManager {
         instance.setPosition(x,y);
         enemies.add(instance);
     }
-    // only for server side - sending packet to all clients
-    public void addEnemyServerSide(int xMin,int xMax, int yMin,int yMax){
-        int defaultsize = 3;
-        if(tileMap.getFloor() >= 1){
-            defaultsize+=3;
-        }
-        if(tileMap.getFloor() >= 2){
-            defaultsize+=2;
-        }
-        int enemyType = cz.Empatix.Java.Random.nextInt(defaultsize);
-        Enemy instance = null;
-        String enemy = enemiesList.get(enemyType);
-        if(MultiplayerManager.multiplayer) {
-            switch (enemy) {
-                case "slime": {
-                    instance = new Slime(tileMap, player);
-                    break;
-                }
-                case "rat": {
-                    instance = new Rat(tileMap, player);
-                    break;
-                }
-                case "bat": {
-                    instance = new Bat(tileMap, player);
-                    break;
-                }
-                case "demoneye": {
-                    instance = new Demoneye(tileMap, player);
-                    break;
-                }
-                case "ghost": {
-                    instance = new Ghost(tileMap, player);
-                    break;
-                }
-                case "snake": {
-                    instance = new Snake(tileMap, player);
-                    break;
-                }
-                case "redslime": {
-                    instance = new RedSlime(tileMap, player);
-                    break;
-                }
-                case "eyebat": {
-                    instance = new EyeBat(tileMap, player);
-                    break;
-                }
-            }
-        }
-
-        int tileSize = tileMap.getTileSize();
-
-        int x;
-        int y;
-
-        int cwidth = instance.getCwidth();
-        int cheight = instance.getCheight();
-
-
-        // tiles
-        int leftTile;
-        int rightTile;
-        int topTile;
-        int bottomTile;
-
-
-        // getting type of tile
-        int tl;
-        int tr;
-        int bl;
-        int br;
-
-        boolean loop;
-        do
-        {
-            x = getRandom(xMin,xMax);
-            y = getRandom(yMin,yMax);
-
-            leftTile = (x - cwidth / 2) / tileSize;
-            rightTile = (x + cwidth / 2 - 1) / tileSize;
-            topTile = (y - cheight / 2) / tileSize;
-            bottomTile = (y + cheight / 2 - 1) / tileSize;
-
-
-            // getting type of tile
-            tl = tileMap.getType(topTile, leftTile);
-            tr = tileMap.getType(topTile, rightTile);
-            bl = tileMap.getType(bottomTile, leftTile);
-            br = tileMap.getType(bottomTile, rightTile);
-
-            loop = (tl == Tile.BLOCKED || tr == Tile.BLOCKED || bl == Tile.BLOCKED || br == Tile.BLOCKED);
-        }while(loop);
-
-        instance.setPosition(x,y);
-        enemies.add(instance);
-        MultiplayerManager mpManager = MultiplayerManager.getInstance();
-
-        Network.AddEnemy addEnemy = new Network.AddEnemy();
-        addEnemy.type = enemy;
-        addEnemy.x = x;
-        addEnemy.y = y;
-        addEnemy.id = instance.idEnemy;
-
-        Server server = mpManager.server.getServer();
-        server.sendToAllTCP(addEnemy);
-    }
     public void addEnemy(String enemy){
         Enemy instance;
         switch (enemy){
@@ -537,18 +458,9 @@ public class EnemyManager {
             }
         }
         instance.setPosition(addEnemy.x, addEnemy.y);
-        instance.idEnemy = addEnemy.id;
+        instance.id = addEnemy.id;
         enemies.add(instance);
     }
-    public void addEnemyPacket(Network.AddEnemy addEnemy){
-        try{
-            lock.lock();
-            queueAddEnemyPackets.add(addEnemy);
-        } finally {
-            lock.unlock();
-        }
-    }
-
     public Enemy handleHitEnemyPacket(int id, int damage) {
         for(Enemy e : enemies){
             if(e.getId() == id){
@@ -556,6 +468,11 @@ public class EnemyManager {
                 return e;
             }
         }
+        System.out.println("LOOKING FOR "+id);
+        for(Enemy e : enemies){
+            System.out.println("FOUND "+e.getId());
+        }
         return null;
     }
+
 }

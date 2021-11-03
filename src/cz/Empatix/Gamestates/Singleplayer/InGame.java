@@ -328,7 +328,7 @@ public class InGame extends GameState {
 
     @Override
     protected void init() {
-        DiscordRP.getInstance().update("In-Game","Floor I");
+        DiscordRP.getInstance().update("Singleplayer - In-Game","Floor I");
 
         textRender = new TextRender[17];
         for(int i = 0;i<17;i++) textRender[i] = new TextRender();
@@ -649,12 +649,10 @@ public class InGame extends GameState {
                 tileMap.getX()-(mouseX-960)/30,
                 tileMap.getY()-(mouseY- 540)/30);
 
-        // updating player
-        // updating tilemap by player position
         tileMap.setPosition(
-                Camera.getWIDTH() / 2f - player.getX(),
-                Camera.getHEIGHT() / 2f - player.getY()
-        );
+                Camera.getWIDTH()/2f-player.getX(),
+                Camera.getHEIGHT()/2f-player.getY());
+
 
         artefactManager.update(pause);
 

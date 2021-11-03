@@ -1,6 +1,9 @@
 package cz.Empatix.Render.RoomObjects;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.MapObject;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.TileMap;
 
 public abstract class RoomObject extends MapObject{
@@ -13,8 +16,6 @@ public abstract class RoomObject extends MapObject{
 
     public float maxMovement;
 
-    public static int idGen = 0;
-    private int idRoomObject;
 
     public RoomObject(TileMap tm){
         super(tm);
@@ -23,9 +24,7 @@ public abstract class RoomObject extends MapObject{
 
         maxMovement = 1f;
 
-        if(tm.isServerSide()){
-            idRoomObject = idGen++;
-        }
+
     }
     public abstract void touchEvent(MapObject o);
     public abstract void update();
@@ -52,9 +51,16 @@ public abstract class RoomObject extends MapObject{
         return maxMovement;
     }
 
-    public int getId(){return idRoomObject;}
-
-    public void setId(int id) {
-        idRoomObject = id;
+    public void sendMovePacket(){
+        if(tileMap.isServerSide()){
+            Network.MoveRoomObject moveRoomObject = new Network.MoveRoomObject();
+            moveRoomObject.id = getId();
+            moveRoomObject.x = position.x;
+            moveRoomObject.y = position.y;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllUDP(moveRoomObject);
+        }
     }
+
+
 }

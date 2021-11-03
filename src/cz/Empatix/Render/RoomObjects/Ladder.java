@@ -33,98 +33,120 @@ public class Ladder extends RoomObject {
 
     public Ladder(TileMap tm){
         super(tm);
-        width = 32;
-        height = 32;
-        cwidth = 16;
-        cheight = 16;
-        scale = 4;
+        if(tm.isServerSide()){
+            width = 32;
+            height = 32;
+            cwidth = 16;
+            cheight = 16;
+            scale = 4;
 
-        facingRight = true;
-        flinching=false;
+            facingRight = true;
+            flinching=false;
 
-        spriteSheetCols = 1;
-        spriteSheetRows = 1;
+            collision = false;
+            moveable=false;
+            preDraw = true;
 
-        collision = false;
-        moveable=false;
-        preDraw = true;
+            // because of scaling image by 8x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+        } else {
+            width = 32;
+            height = 32;
+            cwidth = 16;
+            cheight = 16;
+            scale = 4;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\ladder.tga");
+            facingRight = true;
+            flinching=false;
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\ladder.tga");
-            Sprite[] sprites = new Sprite[1];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float) i/spriteSheetCols,0,
+            spriteSheetCols = 1;
+            spriteSheetRows = 1;
 
-                                (float)i/spriteSheetCols,1,
+            collision = false;
+            moveable=false;
+            preDraw = true;
 
-                                (1.0f+i)/spriteSheetCols,1,
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\ladder.tga");
 
-                                (1.0f+i)/spriteSheetCols,0
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\ladder.tga");
+                Sprite[] sprites = new Sprite[1];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float) i/spriteSheetCols,0,
 
-            }
-            spritesheet.addSprites(sprites);
+                                    (float)i/spriteSheetCols,1,
 
-        }
+                                    (1.0f+i)/spriteSheetCols,1,
 
-        // try to find spritesheet if it was created once
-        spritesheetArrowPointer = SpritesheetManager.getSpritesheet("Textures\\arrowpointer.tga");
+                                    (1.0f+i)/spriteSheetCols,0
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
 
-        // creating a new spritesheet
-        if (spritesheetArrowPointer == null){
-            spritesheetArrowPointer = SpritesheetManager.createSpritesheet("Textures\\arrowpointer.tga");
-            Sprite[] sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float) i/4,0,
-
-                                (float)i/4,1,
-
-                                (1.0f+i)/4,1,
-
-                                (1.0f+i)/4,0
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
+                }
+                spritesheet.addSprites(sprites);
 
             }
-            spritesheetArrowPointer.addSprites(sprites);
 
+            // try to find spritesheet if it was created once
+            spritesheetArrowPointer = SpritesheetManager.getSpritesheet("Textures\\arrowpointer.tga");
+
+            // creating a new spritesheet
+            if (spritesheetArrowPointer == null){
+                spritesheetArrowPointer = SpritesheetManager.createSpritesheet("Textures\\arrowpointer.tga");
+                Sprite[] sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float) i/4,0,
+
+                                    (float)i/4,1,
+
+                                    (1.0f+i)/4,1,
+
+                                    (1.0f+i)/4,0
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+
+                }
+                spritesheetArrowPointer.addSprites(sprites);
+
+            }
+
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(0));
+            animation.setDelay(-1);
+
+            animationPointer = new Animation();
+            animationPointer.setFrames(spritesheetArrowPointer.getSprites(0));
+            animationPointer.setDelay(100);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            // because of scaling image by 8x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            textRender = new TextRender();
         }
 
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(0));
-        animation.setDelay(-1);
-
-        animationPointer = new Animation();
-        animationPointer.setFrames(spritesheetArrowPointer.getSprites(0));
-        animationPointer.setDelay(100);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 8x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        textRender = new TextRender();
     }
 
     @Override
@@ -212,8 +234,10 @@ public class Ladder extends RoomObject {
         setMapPosition();
         checkTileMapCollision();
 
-        animation.update();
-        animationPointer.update();
+        if(!tileMap.isServerSide()){
+            animation.update();
+            animationPointer.update();
+        }
     }
 
     @Override

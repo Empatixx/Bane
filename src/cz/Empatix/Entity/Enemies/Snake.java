@@ -5,6 +5,7 @@ import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -279,5 +280,17 @@ public class Snake extends Enemy {
         cheight *= scale;
 
         createShadow();
+    }
+    @Override
+    public void handleAddEnemyProjectile(Network.AddEnemyProjectile o) {
+    }
+
+    @Override
+    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o) {
+    }
+
+    @Override
+    public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
+
     }
 }

@@ -6,6 +6,7 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.ProgressNPC;
 import cz.Empatix.Gamestates.GameState;
 import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Camera;
@@ -59,7 +60,7 @@ public class ProgressRoom extends GameState {
     @Override
     protected void init() {
         Game.setCursor(ARROW);
-        //DiscordRP.getInstance().update("In-Game","Rest room");
+        DiscordRP.getInstance().update("Singplayer - In-Game","Rest room");
 
         objectsFramebuffer = new Framebuffer();
         lightManager = new LightManager();
@@ -170,6 +171,8 @@ public class ProgressRoom extends GameState {
                 Camera.getWIDTH() / 2f - player.getX(),
                 Camera.getHEIGHT() / 2f - player.getY()
         );
+
+
         tileMap.updateObjects();
 
         player.update();

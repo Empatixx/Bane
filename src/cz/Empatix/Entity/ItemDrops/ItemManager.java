@@ -1,6 +1,5 @@
 package cz.Empatix.Entity.ItemDrops;
 
-import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
@@ -13,6 +12,7 @@ import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Hud.Image;
@@ -22,8 +22,6 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class ItemManager {
     private static ItemManager itemManager;
@@ -64,14 +62,6 @@ public class ItemManager {
 
     private long alertCooldown;
 
-    //multiplayer
-    private ArrayList<Network.DropItem> queueDropItemPackets;
-    private ArrayList<Network.DropWeapon> queueDropWeaponPackets;
-    private ArrayList<Network.RemoveItem> queueRemoveDropPackets;
-    private ArrayList<Network.ObjectInteract> queueInteractPackets;
-
-    private Lock lock;
-
     public ItemManager(TileMap tm, GunsManager gm,ArtefactManager am, Player player) {
         this.tm = tm;
         this.gm = gm;
@@ -93,13 +83,6 @@ public class ItemManager {
         textRender = new TextRender[2];
         for(int i=0;i<2;i++) textRender[i] = new TextRender();
 
-        if(MultiplayerManager.multiplayer){
-            queueDropItemPackets = new ArrayList<>();
-            queueRemoveDropPackets = new ArrayList<>();
-            queueDropWeaponPackets = new ArrayList<>();
-            queueInteractPackets = new ArrayList<>();
-            lock = new ReentrantLock();
-        }
     }
     public void loadSave(){
         pickupSound = AudioManager.loadSound("pickup.ogg");
@@ -138,32 +121,21 @@ public class ItemManager {
         ItemDrop drop;
         if (random == 0) {
             drop = new PistolAmmo(tm);
-            drop.setPosition(x, y);
             drop.setAmount(60);
-            itemDrops.add(drop);
         } else if (random == 3) {
             drop = new ShotgunAmmo(tm);
-            drop.setPosition(x, y);
             drop.setAmount(60);
-            itemDrops.add(drop);
         } else if (random == 4) {
             drop = new ArmorPot(tm);
-            drop.setPosition(x, y);
-            itemDrops.add(drop);
         } else if (random == 2) {
             drop = new HealingPot(tm);
-            drop.setPosition(x, y);
-            itemDrops.add(drop);
         } else if (random == 5) {
             drop = new ExplosiveAmmo(tm);
             drop.setPosition(x, y);
-            itemDrops.add(drop);
         } else {
             Weapon weapon = gm.randomGun();
             weapon.drop();
             drop = new WeaponDrop(tm, weapon);
-            drop.setPosition(x, y);
-            itemDrops.add(drop);
         }
         if(drop instanceof WeaponDrop){
             drop.setShop(Random.nextInt(5+tm.getFloor()*2)
@@ -171,6 +143,9 @@ public class ItemManager {
         } else {
             drop.setShop(Random.nextInt(3+tm.getFloor()) + 2+tm.getFloor()*2);
         }
+        drop.setPosition(x, y);
+        itemDrops.add(drop);
+
     }
 
     public ItemDrop createDrop(float x, float y) {
@@ -198,16 +173,15 @@ public class ItemManager {
                         if (type == ItemDrop.PISTOLAMMO) {
                             drop = new PistolAmmo(tm);
                             drop.setPosition(x, y);
-                            itemDrops.add(drop);
                         } else if (type == ItemDrop.EXPLOSIVEAMMO){
                             drop = new ExplosiveAmmo(tm);
                             drop.setPosition(x, y);
-                            itemDrops.add(drop);
                         } else{
                             drop = new ShotgunAmmo(tm);
                             drop.setPosition(x, y);
-                            itemDrops.add(drop);
                         }
+                        itemDrops.add(drop);
+
                     }
                 }
             } else {
@@ -218,16 +192,14 @@ public class ItemManager {
                 if (type == ItemDrop.PISTOLAMMO) {
                     drop = new PistolAmmo(tm);
                     drop.setPosition(x, y);
-                    itemDrops.add(drop);
                 } else if (type == ItemDrop.EXPLOSIVEAMMO){
                     drop = new ExplosiveAmmo(tm);
                     drop.setPosition(x, y);
-                    itemDrops.add(drop);
                 } else {
                     drop = new ShotgunAmmo(tm);
                     drop.setPosition(x, y);
-                    itemDrops.add(drop);
                 }
+                itemDrops.add(drop);
             }
         } else if (random == 2) {
             drop = new HealingPot(tm);
@@ -243,47 +215,45 @@ public class ItemManager {
 
     public void update() {
         if(MultiplayerManager.multiplayer){
-            try{
-                lock.lock();
-                for(Network.DropItem dropItem : queueDropItemPackets){
-                    createDrop(dropItem);
-                }
-                for(Network.DropWeapon dropWeapon : queueDropWeaponPackets){
-                    dropPlayerWeapon(dropWeapon);
-                }
-                for(Network.RemoveItem removeItem : queueRemoveDropPackets){
-                    for(ItemDrop drop:itemDrops){
-                        if(drop.getId() == removeItem.id) drop.pickedUp = true;
+            PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
+            for(Object dropItem : packetHolder.get(PacketHolder.DROPITEM)){
+                createDrop((Network.DropItem) dropItem);
+            }
+            for(Object dropWeapon : packetHolder.get(PacketHolder.DROPWEAPON)){
+                dropPlayerWeapon((Network.DropWeapon) dropWeapon);
+            }
+            for(Object removeItem : packetHolder.get(PacketHolder.REMOVEITEM)){
+                for(ItemDrop drop:itemDrops){
+                    if(drop.getId() == ((Network.RemoveItem)(removeItem)).id){
+                        if(drop instanceof Coin){
+                            source.play(pickupCoinSound);
+                        } else {
+                            source.play(pickupSound);
+                        }
+                        drop.pickedUp = true;
                         break;
                     }
                 }
-                for(Network.ObjectInteract objectInteract : queueInteractPackets){
-                    for(ItemDrop drop:itemDrops){
-                        if(objectInteract.sucessful && drop.getId() == objectInteract.id){
+            }
+            for(Object o : packetHolder.get(PacketHolder.OBJECTINTERACT)){
+                Network.ObjectInteract objectInteract = (Network.ObjectInteract) o;
+                for(ItemDrop drop:itemDrops){
+                    if(objectInteract.sucessful && drop.getId() == objectInteract.id){
+                        // if player is the one that interacted with drop
+                        if(((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username) && drop instanceof WeaponDrop){
                             drop.pickedUp = true;
-                            // if player is the one that interacted with drop
-                            if(((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username)){
-                                Weapon weapon = ((WeaponDrop)drop).getWeapon();
-                                gm.changeGun(weapon);
+                            Weapon weapon = ((WeaponDrop)drop).getWeapon();
+                            gm.changeGun(weapon);
+                            if(drop.isShop()){
+                                drop.shopBuy();
+                                buysource.play(soundShopBuy);
                             }
+                        } else if (drop.isShop()) {
+                            drop.shopBuy();
+                            buysource.play(soundShopBuy);
                         }
                     }
                 }
-                if(!queueRemoveDropPackets.isEmpty()) {
-                    queueRemoveDropPackets.clear();
-                }
-
-                if(!queueDropItemPackets.isEmpty()) {
-                    queueDropItemPackets.clear();
-                }
-                if(!queueDropWeaponPackets.isEmpty()) {
-                    queueDropWeaponPackets.clear();
-                }
-                if(!queueInteractPackets.isEmpty()) {
-                    queueInteractPackets.clear();
-                }
-            } finally {
-                lock.unlock();
             }
         }
         for (int i = 0; i < itemDrops.size(); i++) {
@@ -312,19 +282,19 @@ public class ItemManager {
                     shopHud.setPosition(new Vector3f(drop.getX() + tm.getX(), drop.getY() + tm.getY() - 125, 0));
                     shopItem = drop;
                 } else {
-                    if (type == ItemDrop.PISTOLAMMO || type == ItemDrop.SHOTGUNAMMO || type == ItemDrop.EXPLOSIVEAMMO) {
+                    if ((type == ItemDrop.PISTOLAMMO || type == ItemDrop.SHOTGUNAMMO || type == ItemDrop.EXPLOSIVEAMMO) && !MultiplayerManager.multiplayer) {
                         boolean done = gm.addAmmo(drop.getAmount(), type);
                         if (done) {
                             drop.pickedUp = true;
                             source.play(pickupSound);
                         }
-                    } else if (type == ItemDrop.HP) {
+                    } else if (type == ItemDrop.HP && !MultiplayerManager.multiplayer) {
                         if (player.getHealth() != player.getMaxHealth()) {
                             player.addHealth(2);
                             drop.pickedUp = true;
                             source.play(pickupSound);
                         }
-                    } else if (type == ItemDrop.COIN) {
+                    } else if (type == ItemDrop.COIN && !MultiplayerManager.multiplayer) {
                         player.addCoins(drop.getAmount());
                         totalCoins+=drop.getAmount();
                         drop.pickedUp = true;
@@ -341,7 +311,7 @@ public class ItemManager {
                             distance = newDist;
                             selectedDrop = drop;
                         }
-                    } else if (type == ItemDrop.ARMOR) {
+                    } else if (type == ItemDrop.ARMOR && !MultiplayerManager.multiplayer) {
                         if (player.getArmor() != player.getMaxArmor()) {
                             player.addArmor(2);
                             drop.pickedUp = true;
@@ -428,20 +398,14 @@ public class ItemManager {
                     if(type != -1){
                         if (type == ItemDrop.PISTOLAMMO) {
                             drop = new PistolAmmo(tm);
-                            drop.setPosition(x, y);
-                            drop.setSpeed(speed.x, speed.y);
-                            itemDrops.add(drop);
                         } else if (type == ItemDrop.EXPLOSIVEAMMO){
                             drop = new ExplosiveAmmo(tm);
-                            drop.setPosition(x, y);
-                            drop.setSpeed(speed.x, speed.y);
-                            itemDrops.add(drop);
                         } else{
                             drop = new ShotgunAmmo(tm);
-                            drop.setPosition(x, y);
-                            drop.setSpeed(speed.x, speed.y);
-                            itemDrops.add(drop);
                         }
+                        drop.setPosition(x, y);
+                        drop.setSpeed(speed.x, speed.y);
+                        itemDrops.add(drop);
                     }
                 }
             } else {
@@ -451,20 +415,14 @@ public class ItemManager {
                 }
                 if (type == ItemDrop.PISTOLAMMO) {
                     drop = new PistolAmmo(tm);
-                    drop.setPosition(x, y);
-                    drop.setSpeed(speed.x, speed.y);
-                    itemDrops.add(drop);
                 } else if (type == ItemDrop.EXPLOSIVEAMMO){
                     drop = new ExplosiveAmmo(tm);
-                    drop.setPosition(x, y);
-                    drop.setSpeed(speed.x, speed.y);
-                    itemDrops.add(drop);
                 } else {
                     drop = new ShotgunAmmo(tm);
-                    drop.setPosition(x, y);
-                    drop.setSpeed(speed.x, speed.y);
-                    itemDrops.add(drop);
                 }
+                drop.setPosition(x, y);
+                drop.setSpeed(speed.x, speed.y);
+                itemDrops.add(drop);
             }
         } else if (random == 2) {
             drop = new HealingPot(tm);
@@ -499,76 +457,68 @@ public class ItemManager {
 
     public boolean keyPressed(int k, int x, int y) {
         if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT)){
-            if(MultiplayerManager.multiplayer){
-                Client client = MultiplayerManager.getInstance().client.getClient();
-                Network.ObjectInteract pickup = new Network.ObjectInteract();
-                pickup.username = ((PlayerMP)player).getUsername();
-                pickup.x = x;
-                pickup.y = y;
-                client.sendTCP(pickup);
-            } else {
-                // picking gun from ground
-                float distance = -1;
-                ItemDrop selectedDrop = null;
-                for (ItemDrop drop : itemDrops) {
-                    if (drop.type == ItemDrop.GUN){
-                        if (((WeaponDrop) drop).isCanPick()){
-                            float newDist = (float) ((WeaponDrop) drop).distance(player.getX(), player.getY());
-                            if (distance > newDist || distance == -1){
-                                distance = newDist;
-                                selectedDrop = drop;
-                            }
-                        }
-                    }
-                    if (drop.type == ItemDrop.ARTEFACT) {
-                        if (((ArtefactDrop) drop).isCanPick()) {
-                            float newDist = (float) ((ArtefactDrop) drop).distance(player.getX(), player.getY());
-                            if (distance > newDist || distance == -1) {
-                                distance = newDist;
-                                selectedDrop = drop;
-                            }
+            // picking gun from ground
+            float distance = -1;
+            ItemDrop selectedDrop = null;
+            for (ItemDrop drop : itemDrops) {
+                if (drop.type == ItemDrop.GUN){
+                    if (((WeaponDrop) drop).isCanPick()){
+                        float newDist = (float) ((WeaponDrop) drop).distance(player.getX(), player.getY());
+                        if (distance > newDist || distance == -1){
+                            distance = newDist;
+                            selectedDrop = drop;
                         }
                     }
                 }
-                if (selectedDrop != null) {
-                    if(selectedDrop instanceof WeaponDrop){
-                        gm.changeGun(x, y, ((WeaponDrop) selectedDrop).getWeapon());
-                        selectedDrop.pickedUp = true;
-                    } else {
-                        am.setCurrentArtefact(((ArtefactDrop) selectedDrop).getArtefact(),x,y);
-                        selectedDrop.pickedUp = true;
-                    }
-                    return true;
-                }
-                if(showShopHud){
-                    // buying item from shop
-                    if(shopItem instanceof WeaponDrop){
-                        if(player.getCoins() >= shopItem.getPrice()) {
-                            buysource.play(soundShopBuy);
-                            player.removeCoins(shopItem.getPrice());
-                            gm.changeGun(x, y, ((WeaponDrop) shopItem).getWeapon());
-                            shopItem.pickedUp = true;
-                        } else {
-                            if(System.currentTimeMillis() - alertCooldown > 2000){
-                                alertCooldown = System.currentTimeMillis();
-                                AlertManager.add(AlertManager.WARNING,"You don't have enough coins");
-                            }
+                if (drop.type == ItemDrop.ARTEFACT) {
+                    if (((ArtefactDrop) drop).isCanPick()) {
+                        float newDist = (float) ((ArtefactDrop) drop).distance(player.getX(), player.getY());
+                        if (distance > newDist || distance == -1) {
+                            distance = newDist;
+                            selectedDrop = drop;
                         }
+                    }
+                }
+            }
+            if (selectedDrop != null) {
+                if(selectedDrop instanceof WeaponDrop){
+                    gm.changeGun(x, y, ((WeaponDrop) selectedDrop).getWeapon());
+                    selectedDrop.pickedUp = true;
+                } else {
+                    am.setCurrentArtefact(((ArtefactDrop) selectedDrop).getArtefact(),x,y);
+                    selectedDrop.pickedUp = true;
+                }
+                return true;
+            }
+            if(showShopHud){
+                // buying item from shop
+                if(shopItem instanceof WeaponDrop){
+                    if(player.getCoins() >= shopItem.getPrice()) {
+                        buysource.play(soundShopBuy);
+                        player.removeCoins(shopItem.getPrice());
+                        gm.changeGun(x, y, ((WeaponDrop) shopItem).getWeapon());
+                        shopItem.pickedUp = true;
                     } else {
-                        if(player.getCoins() >= shopItem.getPrice()) {
-                            buysource.play(soundShopBuy);
-                            player.removeCoins(shopItem.getPrice());
-                            shopItem.shopBuy();
-                        } else {
-                            if(System.currentTimeMillis() - alertCooldown > 2000){
-                                alertCooldown = System.currentTimeMillis();
-                                AlertManager.add(AlertManager.WARNING,"You don't have enough coins");
-                            }
+                        if(System.currentTimeMillis() - alertCooldown > 2000){
+                            alertCooldown = System.currentTimeMillis();
+                            AlertManager.add(AlertManager.WARNING,"You don't have enough coins");
+                        }
+                    }
+                } else {
+                    if(player.getCoins() >= shopItem.getPrice()) {
+                        buysource.play(soundShopBuy);
+                        player.removeCoins(shopItem.getPrice());
+                        shopItem.shopBuy();
+                    } else {
+                        if(System.currentTimeMillis() - alertCooldown > 2000){
+                            alertCooldown = System.currentTimeMillis();
+                            AlertManager.add(AlertManager.WARNING,"You don't have enough coins");
                         }
                     }
                 }
             }
         }
+
         return false;
     }
     public int getTotalCoins(){
@@ -636,51 +586,48 @@ public class ItemManager {
         itemDrops.add(drop);
     }
 
-    public void handleDropItemPacket(Network.DropItem item) {
-        try {
-            lock.lock();
-            queueDropItemPackets.add(item);
-        } finally {
-            lock.unlock();
-        }
-    }
-    public void handleRemoveItemPacket(Network.RemoveItem item) {
-        try {
-            lock.lock();
-            queueRemoveDropPackets.add(item);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void handleWeaponDropPacket(Network.DropWeapon dropWeapon) {
-        try {
-            lock.lock();
-            queueDropWeaponPackets.add(dropWeapon);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public void handleObjectInteract(Network.ObjectInteract interact) {
-        try {
-            lock.lock();
-            queueInteractPackets.add(interact);
-        } finally {
-            lock.unlock();
-        }
-    }
-
     public void handleMoveDropItemPacket(Network.MoveDropItem dropItem) {
-        try {
-            lock.lock();
-            for(ItemDrop drop: itemDrops){
-                if(drop.getId() == dropItem.id){
-                    drop.setPosition(dropItem.x, dropItem.y);
-                }
+        for(ItemDrop drop: itemDrops){
+            if(drop.getId() == dropItem.id){
+                drop.setPosition(dropItem.x, dropItem.y);
             }
-        } finally {
-            lock.unlock();
         }
+    }
+
+    public void createShopDrop(Network.ShopDropitem packet, float x, float y) {
+        int random = packet.type;
+
+        ItemDrop drop;
+        if (random == 0) {
+            drop = new PistolAmmo(tm);
+            drop.setPosition(x, y);
+        } else if (random == 3) {
+            drop = new ShotgunAmmo(tm);
+            drop.setPosition(x, y);
+        } else if (random == 4) {
+            drop = new ArmorPot(tm);
+            drop.setPosition(x, y);
+        } else if (random == 2) {
+            drop = new HealingPot(tm);
+            drop.setPosition(x, y);
+        } else if (random == 5) {
+            drop = new ExplosiveAmmo(tm);
+            drop.setPosition(x, y);
+        } else {
+            // converting indexing from server to client ones
+            int totalPlayers = MultiplayerManager.getInstance().client.getTotalPlayers();
+            int index = packet.weaponSlot-(totalPlayers-1);
+            if(index < 0) index = 0;
+            packet.weaponSlot = index;
+
+            Weapon weapon = gm.getWeapon(packet.weaponSlot);
+            weapon.drop();
+            drop = new WeaponDrop(tm, weapon);
+            drop.setPosition(x, y);
+        }
+        drop.setShop(packet.price);
+        drop.setAmount(packet.amount);
+        drop.setId(packet.id);
+        itemDrops.add(drop);
     }
 }

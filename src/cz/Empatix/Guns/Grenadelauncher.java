@@ -241,7 +241,7 @@ public class Grenadelauncher extends Weapon {
     }
 
     @Override
-    public void shootSound() {
+    public void shootSound(Network.AddBullet response) {
 
     }
 }

@@ -2,6 +2,7 @@ package cz.Empatix.Entity.Enemies.Projectiles;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -47,6 +48,8 @@ public class Slimebullet extends MapObject {
             speed.x = (float)(Math.cos(atan) * 10);
             speed.y = (float)(Math.sin(atan) * 10);
 
+            animation = new Animation(4);
+            animation.setDelay(70);
 
             // because of scaling image by 2x
             width *= 2;
@@ -152,6 +155,9 @@ public class Slimebullet extends MapObject {
         if(!tileMap.isServerSide()){
             animation.setFrames(spritesheet.getSprites(hitSprites));
             animation.setDelay(70);
+        } else {
+            animation = new Animation(3);
+            animation.setDelay(70);
         }
         speed.x = 0;
         speed.y = 0;
@@ -161,27 +167,27 @@ public class Slimebullet extends MapObject {
 
     public void update() {
         // server side update
+        setMapPosition();
+        animation.update();
         if(tileMap.isServerSide()){
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
-
             if((speed.x == 0 || speed.y == 0) && !hit) {
                 setHit();
             }
-
             if(hit) {
-                remove = true;
+                if (animation.hasPlayedOnce()){
+                    remove = true;
+                }
             }
         } else {
-            setMapPosition();
-            checkTileMapCollision();
-            setPosition(temp.x, temp.y);
-
+            if(!MultiplayerManager.multiplayer) {
+                checkTileMapCollision();
+                setPosition(temp.x, temp.y);
+            }
             if((speed.x == 0 || speed.y == 0) && !hit) {
                 setHit();
             }
-
-            animation.update();
             if(hit) {
                 if (animation.hasPlayedOnce()){
                     remove = true;
@@ -192,10 +198,10 @@ public class Slimebullet extends MapObject {
                 }
             }
         }
-
     }
 
     public void draw() {
+        if (animation.hasPlayedOnce() && hit) return;
         super.draw();
 
     }

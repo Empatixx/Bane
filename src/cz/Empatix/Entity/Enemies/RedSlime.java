@@ -1,11 +1,14 @@
 package cz.Empatix.Entity.Enemies;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemies.Projectiles.RedSlimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -220,33 +223,82 @@ public class RedSlime extends Enemy {
             disableDraw = true;
         }
         for(int i = 0;i<bullets.size();i++){
-            RedSlimebullet redslimebullet = bullets.get(i);
-            redslimebullet.update();
-            for(Player p : player){
-                if(p != null){
-                    if(redslimebullet.intersects(p) && !p.isFlinching() && !p.isDead()){
-                        redslimebullet.setHit();
-                        p.hit(1);
-                    }
+            RedSlimebullet redSlimebullet = bullets.get(i);
+            boolean preHit = redSlimebullet.isHit();
+            redSlimebullet.update();
+            // multiplayer - serverside
+            if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
+                // if bullet hitted wall
+                if(!preHit && redSlimebullet.isHit() && tileMap.isServerSide()){
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                    enemyProjectile.id = redSlimebullet.id;
+                    enemyProjectile.idEnemy = getId();
+                    server.sendToAllTCP(enemyProjectile);
                 }
-            }
-            for(RoomObject object: tileMap.getRoomMapObjects()){
-                if(object instanceof DestroyableObject) {
-                    if (redslimebullet.intersects(object) && !redslimebullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        redslimebullet.setHit();
-                        ((DestroyableObject) object).setHit(1);
-                    }
-                } else if(object.collision && redslimebullet.intersects(object)){
-                    redslimebullet.setHit();
+                if(redSlimebullet.isHit()) continue;
+                if(tileMap.isServerSide()){
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    Network.MoveEnemyProjectile moveEnemyProjectile = new Network.MoveEnemyProjectile();
+                    moveEnemyProjectile.idEnemy = id;
+                    moveEnemyProjectile.id = redSlimebullet.id;
+                    moveEnemyProjectile.x = redSlimebullet.getX();
+                    moveEnemyProjectile.y = redSlimebullet.getY();
+                    server.sendToAllTCP(moveEnemyProjectile);
                 }
-            }
 
-            if(redslimebullet.shouldRemove()) {
+                for(Player p : player){
+                    if(p != null){
+                        if(redSlimebullet.intersects(p) && !p.isFlinching() && !p.isDead()){
+                            redSlimebullet.setHit();
+                            p.hit(1);
+
+                            if(tileMap.isServerSide()){
+                                Server server = MultiplayerManager.getInstance().server.getServer();
+                                Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                                enemyProjectile.id = redSlimebullet.id;
+                                enemyProjectile.idEnemy = getId();
+                                server.sendToAllTCP(enemyProjectile);
+                            }
+                        }
+                    }
+                }
+                for(RoomObject object: tileMap.getRoomMapObjects()){
+                    if(object instanceof DestroyableObject) {
+                        if (redSlimebullet.intersects(object) && !((DestroyableObject) object).isDestroyed()) {
+                            redSlimebullet.setHit();
+                            ((DestroyableObject) object).setHit(1);
+
+                            if(tileMap.isServerSide()){
+                                Server server = MultiplayerManager.getInstance().server.getServer();
+                                Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                                enemyProjectile.id = redSlimebullet.id;
+                                enemyProjectile.idEnemy = getId();
+                                enemyProjectile.idHit = object.getId();
+                                server.sendToAllTCP(enemyProjectile);
+                            }
+                        }
+                    } else if(object.collision && redSlimebullet.intersects(object)){
+                        redSlimebullet.setHit();
+
+                        if(tileMap.isServerSide()) {
+                            Server server = MultiplayerManager.getInstance().server.getServer();
+                            Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                            enemyProjectile.id = redSlimebullet.id;
+                            enemyProjectile.idEnemy = getId();
+                            server.sendToAllTCP(enemyProjectile);
+                        }
+                    }
+                }
+                // singleplayer
+            }
+            if(redSlimebullet.shouldRemove()) {
                 bullets.remove(i);
                 i--;
             }
         }
-        if (!projectilesShooted && dead) {
+
+        if (!projectilesShooted && dead && (tileMap.isServerSide() || !MultiplayerManager.multiplayer)) {
             projectilesShooted = true;
 
             int index = theClosestPlayerIndex();
@@ -254,15 +306,47 @@ public class RedSlime extends Enemy {
                 RedSlimebullet redSlimebullet = new RedSlimebullet(tileMap, px[index] - position.x, py[index] - position.y, 1.3 * i);
                 redSlimebullet.setPosition(position.x, position.y);
                 bullets.add(redSlimebullet);
+
+                if(tileMap.isServerSide()){
+                    Network.AddEnemyProjectile addEnemyProjectile = new Network.AddEnemyProjectile();
+                    addEnemyProjectile.idEnemy = id;
+                    addEnemyProjectile.id = redSlimebullet.id;
+                    addEnemyProjectile.x = px[index] - position.x;
+                    addEnemyProjectile.y = py[index] - position.y;
+                    addEnemyProjectile.inaccuracy = 1.3f*i;
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    server.sendToAllTCP(addEnemyProjectile);
+                }
             }
         }
+
         if(dead) return;
 
         super.update();
         movePacket();
 
     }
+/*
+if (!projectilesShooted && dead) {
+            projectilesShooted = true;
 
+            int index = theClosestPlayerIndex();
+            for (int i = 0; i < projectiles; i++) {
+                RedSlimebullet redSlimebullet = new RedSlimebullet(tileMap, px[index] - position.x, py[index] - position.y, 1.3 * i);
+                redSlimebullet.setPosition(position.x, position.y);
+                bullets.add(redSlimebullet);
+
+                Network.AddEnemyProjectile addEnemyProjectile = new Network.AddEnemyProjectile();
+                addEnemyProjectile.idEnemy = id;
+                addEnemyProjectile.id = redSlimebullet.id;
+                addEnemyProjectile.x = px[index] - position.x;
+                addEnemyProjectile.y = py[index] - position.y;
+                addEnemyProjectile.inaccuracy = 1.3f*i;
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(addEnemyProjectile);
+            }
+        }
+ */
     public void draw() {
         for(RedSlimebullet bullet : bullets){
             bullet.draw();
@@ -351,6 +435,41 @@ public class RedSlime extends Enemy {
         }
 
         createShadow();
+    }
+    @Override
+    public void handleAddEnemyProjectile(Network.AddEnemyProjectile o) {
+        RedSlimebullet slimebullet = new RedSlimebullet(tileMap,o.x,o.y,o.inaccuracy);
+        slimebullet.setPosition(position.x,position.y);
+        slimebullet.setId(o.id);
+        bullets.add(slimebullet);
+    }
+
+    @Override
+    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o) {
+        for(RedSlimebullet bullet : bullets){
+            if(bullet.getId() == o.id){
+                bullet.setPosition(o.x,o.y);
+            }
+
+        }
+    }
+
+    @Override
+    public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
+        for(RedSlimebullet bullet : bullets){
+            if(bullet.getId() == hitPacket.id){
+                bullet.setHit();
+                // player was hitted
+                if (hitPacket.idHit != -1){
+                    for(RoomObject roomObject : tileMap.getRoomMapObjects()){
+                        if(roomObject.getId() == hitPacket.idHit){
+                            ((DestroyableObject)roomObject).setHit(1);
+                        }
+                    }
+                }
+            }
+
+        }
     }
 }
 

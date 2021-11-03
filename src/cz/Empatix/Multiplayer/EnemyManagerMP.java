@@ -120,10 +120,30 @@ public class EnemyManagerMP {
             KingSlime slime = new KingSlime(tileMap, player);
             slime.setPosition(x, y);
             enemies.add(slime);
+
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+            Network.AddEnemy addEnemy= new Network.AddEnemy();
+            addEnemy.type = "kingslime";
+            addEnemy.x = x;
+            addEnemy.y = y;
+            addEnemy.id = slime.id;
+
+            Server server = mpManager.server.getServer();
+            server.sendToAllTCP(addEnemy);
         } else {
             Golem golem = new Golem(tileMap, player);
             golem.setPosition(x, y);
             enemies.add(golem);
+
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+            Network.AddEnemy addEnemy= new Network.AddEnemy();
+            addEnemy.type = "golem";
+            addEnemy.x = x;
+            addEnemy.y = y;
+            addEnemy.id = golem.id;
+
+            Server server = mpManager.server.getServer();
+            server.sendToAllTCP(addEnemy);
         }
     }
 
@@ -226,7 +246,7 @@ public class EnemyManagerMP {
         addEnemy.type = enemy;
         addEnemy.x = x;
         addEnemy.y = y;
-        addEnemy.id = instance.idEnemy;
+        addEnemy.id = instance.id;
 
         Server server = mpManager.server.getServer();
         server.sendToAllTCP(addEnemy);

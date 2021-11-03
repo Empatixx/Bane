@@ -12,14 +12,13 @@ import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class GunsManager {
     public static void load(){
@@ -62,11 +61,6 @@ public class GunsManager {
 
     private Image weaponBorder_hud;
 
-    //multiplayer
-    private ArrayList<Network.AddBullet> queueBulletPackets;
-    private ArrayList<Network.HitBullet> queueHitBulletPackets;
-    private Lock lock;
-
     private Player[] players;
 
     public GunsManager(TileMap tileMap, Player p){
@@ -97,11 +91,6 @@ public class GunsManager {
         bulletShooted = 0;
         hitBullets = 0;
 
-        if(MultiplayerManager.multiplayer){
-            queueBulletPackets = new ArrayList<>();
-            queueHitBulletPackets = new ArrayList<>();
-            lock = new ReentrantLock();
-        }
     }
 
     public GunsManager(TileMap tileMap, PlayerMP[] p){
@@ -132,12 +121,6 @@ public class GunsManager {
         bulletShooted = 0;
         hitBullets = 0;
 
-        if(MultiplayerManager.multiplayer){
-            queueBulletPackets = new ArrayList<>();
-            queueHitBulletPackets = new ArrayList<>();
-            lock = new ReentrantLock();
-        }
-
         this.players = p;
     }
     public void loadSave(){
@@ -158,45 +141,47 @@ public class GunsManager {
     public void shoot(float x, float y, float px, float py, String username){
         if(current == null) return;
         current.shoot(x,y,px,py,username);
+
+        if(MultiplayerManager.multiplayer){
+            Client client = MultiplayerManager.getInstance().client.getClient();
+            Network.MouseCoords mouseCoords = new Network.MouseCoords();
+            mouseCoords.x = x;
+            mouseCoords.y = y;
+            mouseCoords.username = MultiplayerManager.getInstance().getUsername();
+            client.sendUDP(mouseCoords);
+        }
     }
     public void reload(){
         if(current == null)return;
         current.reload();
     }
     public void update(){
+        // multiplayer
+        if(MultiplayerManager.multiplayer) {
+            PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
+            int totalPlayers = 0;
+            for (Player player : players) {
+                if (player != null) totalPlayers++;
+            }
+            for (Object o : packetHolder.get(PacketHolder.ADDBULLET)) {
+                Network.AddBullet addBullet = (Network.AddBullet) o;
+                int index = addBullet.slot - (totalPlayers - 1);
+                if (index < 0) index = 0;
+                weapons.get(index).handleBulletPacket(addBullet);
+            }
+            for (Object o : packetHolder.get(PacketHolder.HITBULLET)) {
+                for (Weapon w : weapons) {
+                    w.handleHitBulletPacket((Network.HitBullet) o);
+                }
+            }
+        }
         for(Weapon weapon : weapons){
             weapon.updateAmmo();
         }
-
-        // multiplayer
-        if(MultiplayerManager.multiplayer){
-            try{
-                lock.lock();
-                for(Network.AddBullet addBullet : queueBulletPackets){
-                    int index = addBullet.slot-players.length;
-                    if(index < 0) index = 0;
-                    weapons.get(index).handleBulletPacket(addBullet);
-                }
-                for(Network.HitBullet hitBullet : queueHitBulletPackets){
-                    for(Weapon w : weapons){
-                        w.handleHitBulletPacket(hitBullet);
-                    }
-                }
-                if(!queueBulletPackets.isEmpty()) {
-                    queueBulletPackets.clear();
-                }
-
-                if(!queueHitBulletPackets.isEmpty()) {
-                    queueHitBulletPackets.clear();
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
-
         if(current == null) return;
         current.update();
     }
+
     public void draw(){
         for(Weapon weapon : weapons){
             weapon.drawAmmo();
@@ -282,10 +267,22 @@ public class GunsManager {
     public void stopShooting(){
         if(current == null) return;
         current.setShooting(false);
+        if(MultiplayerManager.multiplayer){
+            Network.StopShooting stopShooting = new Network.StopShooting();
+            stopShooting.username = ((PlayerMP)players[0]).getUsername();
+            Client client = MultiplayerManager.getInstance().client.getClient();
+            client.sendTCP(stopShooting);
+        }
     }
     public void startShooting(){
         if(current == null) return;
         current.setShooting(true);
+        if(MultiplayerManager.multiplayer){
+            Network.StartShooting startShooting = new Network.StartShooting();
+            startShooting.username = ((PlayerMP)players[0]).getUsername();
+            Client client = MultiplayerManager.getInstance().client.getClient();
+            client.sendTCP(startShooting);
+        }
     }
     public boolean addAmmo(int amountpercent, int type) {
         // first check main gun in hand
@@ -381,15 +378,11 @@ public class GunsManager {
     }
 
     public void handleAddBulletPacket(Network.AddBullet response){
-        try{
-            lock.lock();
-            queueBulletPackets.add(response);
-        } finally {
-            lock.unlock();
-        }
+        PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
+        packetHolder.add(response,PacketHolder.ADDBULLET);
         if(current != null){
             if(MultiplayerManager.getInstance().getUsername().equalsIgnoreCase(response.username)){
-                current.shootSound();
+                current.shootSound(response);
             }
         }
     }
@@ -400,14 +393,6 @@ public class GunsManager {
         }
     }
 
-    public void handleHitBulletPacket(Network.HitBullet hitBullet) {
-        try{
-            lock.lock();
-            queueHitBulletPackets.add(hitBullet);
-        } finally {
-            lock.unlock();
-        }
-    }
     public void handleWeaponInfoPacket(Network.WeaponInfo weaponInfo){
         String username = MultiplayerManager.getInstance().getUsername();
         if(username.equalsIgnoreCase(weaponInfo.username)){
@@ -439,11 +424,15 @@ public class GunsManager {
     }
 
     public void handleDropWeaponPacket(Network.DropWeapon dropWeapon) {
-        ItemManager itemManager = ItemManager.getInstance();
         // converting indexing from server to client ones
-        int index = dropWeapon.slot-players.length;
+        int totalPlayers = 0;
+        for(Player player : players){
+            if(player != null) totalPlayers++;
+        }
+        int index = dropWeapon.slot-(totalPlayers-1);
         if(index < 0) index = 0;
         dropWeapon.slot = index;
-        itemManager.handleWeaponDropPacket(dropWeapon);
+        PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
+        packetHolder.add(dropWeapon,PacketHolder.DROPWEAPON);
     }
 }

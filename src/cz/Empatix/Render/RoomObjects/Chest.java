@@ -1,5 +1,6 @@
 package cz.Empatix.Render.RoomObjects;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.MapObject;
@@ -7,6 +8,7 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.ItemManagerMP;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -240,7 +242,8 @@ public class Chest extends RoomObject {
                     itemManager.createDrop((int)position.x,(int)position.y,speed);
                 }
             }
-
+            stopping();
+            sendMovePacket();
         } else if (!MultiplayerManager.multiplayer){
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
@@ -266,10 +269,17 @@ public class Chest extends RoomObject {
                     itemManager.createDrop((int)position.x,(int)position.y,speed);
                 }
             }
-
+            stopping();
+        } else {
+            if(opened && animation.hasPlayedOnce()) {
+                remove = true;
+            }
         }
         animation.update();
 
+    }
+
+    public void stopping(){
         if (speed.x < 0){
             speed.x += stopSpeed;
             if (speed.x > 0) speed.x = 0;
@@ -300,6 +310,10 @@ public class Chest extends RoomObject {
         if(tileMap.isServerSide()){
             animation = new Animation(4);
             animation.setDelay(175);
+            Network.OpenChest openChest = new Network.OpenChest();
+            openChest.id = getId();
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(openChest);
         } else {
             animation.setFrames(spritesheet.getSprites(OPEN));
         }

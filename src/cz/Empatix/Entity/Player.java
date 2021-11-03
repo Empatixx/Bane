@@ -1,5 +1,6 @@
 package cz.Empatix.Entity;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
@@ -7,6 +8,8 @@ import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
+import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -30,163 +33,196 @@ public class Player extends MapObject {
         Loader.loadImage("Textures\\shadow.tga");
     }
     // roll
-    private long rollCooldown;
-    private boolean rolling;
+    protected long rollCooldown;
+    protected boolean rolling;
 
     private boolean dead;
     private long deathTime;
 
     // vignette ( player hurt - effect )
-    private Background[] hitVignette;
-    private long heartBeat;
-    private boolean lowHealth;
-    private DamageAbsorbedBy lastDamage;
+    protected Background[] hitVignette;
+    protected long heartBeat;
+    protected boolean lowHealth;
+    protected DamageAbsorbedBy lastDamage;
     // if damage was absorbed by health or armor
-    private enum DamageAbsorbedBy {
+    public enum DamageAbsorbedBy {
         ARMOR,
         HEALTH
     }
 
     // stuff
-    private int health;
-    private int maxHealth;
-    private int maxArmor;
-    private int armor;
+    protected int health;
+    protected int maxHealth;
+    protected int maxArmor;
+    protected int armor;
 
-    private int coins;
+    protected int coins;
 
     // animations
-    private static final int IDLE = 0;
-    private static final int SIDE = 1;
-    private static final int DOWN = 2;
-    private static final int UP = 3;
+    protected static final int IDLE = 0;
+    protected static final int SIDE = 1;
+    protected static final int DOWN = 2;
+    protected static final int UP = 3;
 
-    ArrayList<SprintParticle> sprintParticles;
-    private long lastTimeSprintParticle;
+    protected ArrayList<SprintParticle> sprintParticles;
+    protected long lastTimeSprintParticle;
 
     // audio
-    private int[] soundPlayerhurt;
-    private int soundPlayerdeath;
+    protected int[] soundPlayerhurt;
+    protected int soundPlayerdeath;
 
-    private Source sourcehealth;
-    private int soundLowHealth;
+    protected Source sourcehealth;
+    protected int soundLowHealth;
 
     public Player(TileMap tm) {
         super(tm);
-        //width = cwidth= 17;
-        //height = cheight = 24;
-        width = cwidth= 32;
-        height = cheight = 72;
-        // spritesheet
-        spriteSheetCols = 6;
-        spriteSheetRows = 4;
+        if(tm.isServerSide()){
+            //width = cwidth= 17;
+            //height = cheight = 24;
+            width = cwidth= 32;
+            height = cheight = 72;
 
-        // COLLISION WIDTH/HEIGHT
-        scale = 2;
+            // COLLISION WIDTH/HEIGHT
+            scale = 2;
 
-        moveSpeed = 0.8f;
-        maxSpeed = 11.84f;
-        stopSpeed = 3.25f;
+            moveSpeed = 0.8f;
+            maxSpeed = 11.84f;
+            stopSpeed = 3.25f;
 
-        health = maxHealth = 7;
-        coins = 0;
+            health = maxHealth = 7;
+            coins = 0;
 
-        armor = maxArmor = 3;
+            armor = maxArmor = 3;
 
-        dead = false;
-        flinching = false;
-        facingRight = true;
+            dead = false;
+            flinching = false;
+            facingRight = true;
 
-        final int[] numFrames = {
-                6, 6, 6, 6
-        };
+            currentAction = IDLE;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\player64.tga");
+            // because of scaling image by 5x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\player64.tga");
-            for(int i = 0; i < spriteSheetRows; i++) {
+            rolling = false;
+        } else {
+            //width = cwidth= 17;
+            //height = cheight = 24;
+            width = cwidth= 32;
+            height = cheight = 72;
+            // spritesheet
+            spriteSheetCols = 6;
+            spriteSheetRows = 4;
 
-                Sprite[] images = new Sprite[numFrames[i]];
+            // COLLISION WIDTH/HEIGHT
+            scale = 2;
 
-                for (int j = 0; j < numFrames[i]; j++) {
+            moveSpeed = 0.8f;
+            maxSpeed = 11.84f;
+            stopSpeed = 3.25f;
 
-                    float[] texCoords =
-                            {
-                                    (float) j / spriteSheetCols, (float) i / spriteSheetRows,
+            health = maxHealth = 7;
+            coins = 0;
 
-                                    (float) j / spriteSheetCols, (1.0f + i) / spriteSheetRows,
+            armor = maxArmor = 3;
 
-                                    (1.0f + j) / spriteSheetCols, (1.0f + i) / spriteSheetRows,
+            dead = false;
+            flinching = false;
+            facingRight = true;
 
-                                    (1.0f + j) / spriteSheetCols, (float) i / spriteSheetRows
-                            };
+            final int[] numFrames = {
+                    6, 6, 6, 6
+            };
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\player64.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\player64.tga");
+                for(int i = 0; i < spriteSheetRows; i++) {
+
+                    Sprite[] images = new Sprite[numFrames[i]];
+
+                    for (int j = 0; j < numFrames[i]; j++) {
+
+                        float[] texCoords =
+                                {
+                                        (float) j / spriteSheetCols, (float) i / spriteSheetRows,
+
+                                        (float) j / spriteSheetCols, (1.0f + i) / spriteSheetRows,
+
+                                        (1.0f + j) / spriteSheetCols, (1.0f + i) / spriteSheetRows,
+
+                                        (1.0f + j) / spriteSheetCols, (float) i / spriteSheetRows
+                                };
 
 
-                    Sprite sprite = new Sprite(texCoords);
+                        Sprite sprite = new Sprite(texCoords);
 
-                    images[j] = sprite;
+                        images[j] = sprite;
 
+                    }
+
+                    spritesheet.addSprites(images);
                 }
-
-                spritesheet.addSprites(images);
             }
+
+            currentAction = IDLE;
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(IDLE));
+            animation.setDelay(100);
+
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+
+            // because of scaling image by 5x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            //hit vignette
+            hitVignette = new Background[2];
+
+            hitVignette[0] = new Background("Textures\\vignette.tga");
+            hitVignette[0].setFadeEffect(true);
+
+            // hit armor vignette
+            hitVignette[1] = new Background("Textures\\armorvignette.tga");
+            hitVignette[1].setFadeEffect(true);
+
+
+            // audio
+            soundPlayerhurt = new int[2];
+            soundPlayerhurt[0] = AudioManager.loadSound("playerhurt_1.ogg");
+            soundPlayerhurt[1] = AudioManager.loadSound("playerhurt_2.ogg");
+            soundPlayerdeath = AudioManager.loadSound("playerdeath.ogg");
+
+
+            sourcehealth = AudioManager.createSource(Source.EFFECTS,1f);
+            source = AudioManager.createSource(Source.EFFECTS,0.35f);
+            soundLowHealth = AudioManager.loadSound("lowhealth.ogg");
+            sourcehealth.setLooping(true);
+
+            light = LightManager.createLight(new Vector3f(0.905f, 0.788f, 0.450f),new Vector2f(0,0),4f,this);
+
+            rolling = false;
+
+            sprintParticles = new ArrayList<>(3);
+
+            createShadow();
         }
-
-        currentAction = IDLE;
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(100);
-
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-
-        // because of scaling image by 5x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        //hit vignette
-        hitVignette = new Background[2];
-
-        hitVignette[0] = new Background("Textures\\vignette.tga");
-        hitVignette[0].setFadeEffect(true);
-
-        // hit armor vignette
-        hitVignette[1] = new Background("Textures\\armorvignette.tga");
-        hitVignette[1].setFadeEffect(true);
-
-
-        // audio
-        soundPlayerhurt = new int[2];
-        soundPlayerhurt[0] = AudioManager.loadSound("playerhurt_1.ogg");
-        soundPlayerhurt[1] = AudioManager.loadSound("playerhurt_2.ogg");
-        soundPlayerdeath = AudioManager.loadSound("playerdeath.ogg");
-
-
-        sourcehealth = AudioManager.createSource(Source.EFFECTS,1f);
-        source = AudioManager.createSource(Source.EFFECTS,0.35f);
-        soundLowHealth = AudioManager.loadSound("lowhealth.ogg");
-        sourcehealth.setLooping(true);
-
-        light = LightManager.createLight(new Vector3f(0.905f, 0.788f, 0.450f),new Vector2f(0,0),4f,this);
-
-        rolling = false;
-
-        sprintParticles = new ArrayList<>(3);
-
-        createShadow();
     }
     public void loadSave(){
         width = cwidth= 32;
@@ -313,7 +349,7 @@ public class Player extends MapObject {
                 hitVignette[0].updateFadeTime();
             }
         }
-        if((Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed) && !tileMap.isServerSide()){
+        if((Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed)){
             float value = Math.abs(speed.x);
             if(value < Math.abs(speed.y)) value = Math.abs(speed.y);
             if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 400-value*20){
@@ -344,11 +380,9 @@ public class Player extends MapObject {
             }
         }
         getMovementSpeed();
-        checkTileMapCollision();
         checkRoomObjectsCollision();
-
-        if(tileMap.isServerSide() || !MultiplayerManager.multiplayer)setPosition(temp.x, temp.y);
-
+        checkTileMapCollision();
+        setPosition(temp.x, temp.y);
         if (right || left) {
             if (currentAction != SIDE) {
                 currentAction = SIDE;
@@ -375,24 +409,25 @@ public class Player extends MapObject {
             }
         }
 
-        // next sprite of player
-        animation.update();
-
         // direction of player
         if (left) facingRight = false;
         if (right) facingRight = true;
 
-        //  NESMRTELNOST PO DOSTANI HITU
-        if (flinching){
-            if ((float)(System.currentTimeMillis() - flinchingTimer - InGame.deltaPauseTime())/ 1000 > 1.5) {
-                flinching = false;
-            }
-        }
         if(lastDamage == DamageAbsorbedBy.ARMOR){
             hitVignette[1].update();
         } else {
             hitVignette[0].update();
         }
+        //  IMMORTALITY AFTER GETTING HIT
+        if (flinching){
+            if ((float)(System.currentTimeMillis() - flinchingTimer - InGame.deltaPauseTime())/ 1000 > 1.5) {
+                flinching = false;
+            }
+        }
+
+        // next sprite of player
+        animation.update();
+
     }
     public void checkCollision(ArrayList<Enemy> enemies){
         for (Enemy currentEnemy:enemies){
@@ -403,7 +438,7 @@ public class Player extends MapObject {
         }
     }
 
-    private void getMovementSpeed() {
+    protected void getMovementSpeed() {
         // MAKING CHARACTER MOVE
         if (right){
             speed.x += moveSpeed;
@@ -502,6 +537,7 @@ public class Player extends MapObject {
     public void hit(int damage){
         if (flinching ||dead || rolling) return;
 
+
         int previousArmor = armor;
         int previousHealth = health;
 
@@ -521,17 +557,24 @@ public class Player extends MapObject {
 
         if(previousHealth != health) lastDamage = DamageAbsorbedBy.HEALTH;
         else if (previousArmor != armor) lastDamage = DamageAbsorbedBy.ARMOR;
-        if(lastDamage == DamageAbsorbedBy.ARMOR){
-            hitVignette[1].updateFadeTime();
+        // if it is not server sided
+        if(!tileMap.isServerSide()){
+            if(lastDamage == DamageAbsorbedBy.ARMOR){
+                hitVignette[1].updateFadeTime();
+            } else {
+                hitVignette[0].updateFadeTime();
+            }
+            source.play(soundPlayerhurt[Random.nextInt(2)]);
         } else {
-            hitVignette[0].updateFadeTime();
+            Network.PlayerHit playerHit = new Network.PlayerHit();
+            playerHit.type = lastDamage;
+            playerHit.username = ((PlayerMP)(this)).getUsername();
+
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(playerHit);
         }
-        source.play(soundPlayerhurt[Random.nextInt(2)]);
-
-        if(health <=0 ) setDead();
-
+        if(health <= 0) setDead();
     }
-
     public int getHealth() {
         return health;
     }
@@ -609,9 +652,9 @@ public class Player extends MapObject {
         }
         drawShadow(3f);
     }
-    private static class SprintParticle extends MapObject{
+    protected static class SprintParticle extends MapObject{
         // sprint particles
-        SprintParticle(TileMap tm){
+        public SprintParticle(TileMap tm){
             super(tm);
             // try to find spritesheet if it was created once
             spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\sprint_particle.tga");
@@ -697,5 +740,17 @@ public class Player extends MapObject {
                 animation.setFrames(spritesheet.getSprites(IDLE));
                 animation.setDelay(100);
         }
+    }
+
+    public void setMaxHealth(int maxHealth) {
+        this.maxHealth = maxHealth;
+    }
+
+    public void setArmor(int armor) {
+        this.armor = armor;
+    }
+
+    public void setMaxArmor(int maxArmor) {
+        this.maxArmor = maxArmor;
     }
 }

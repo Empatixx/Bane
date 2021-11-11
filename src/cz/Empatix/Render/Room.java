@@ -11,6 +11,7 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.Shopkeeper;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Main.ControlSettings;
+import cz.Empatix.Multiplayer.ArtefactManagerMP;
 import cz.Empatix.Multiplayer.EnemyManagerMP;
 import cz.Empatix.Multiplayer.ItemManagerMP;
 import cz.Empatix.Multiplayer.Network;
@@ -375,7 +376,7 @@ public class Room implements Serializable {
                 if (enemyManager.areEnemiesDead() && closed) {
                     lockRoom(false);
                     // adds 1 point to artifact for cleared room
-                    ArtefactManager am = ArtefactManager.getInstance();
+                    ArtefactManagerMP am = ArtefactManagerMP.getInstance();
                     am.charge();
                 }
             } else {

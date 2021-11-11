@@ -1,6 +1,11 @@
 package cz.Empatix.Entity.ItemDrops;
 
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
+import cz.Empatix.Entity.ItemDrops.Artefacts.Damage.RingOfFire;
+import cz.Empatix.Entity.ItemDrops.Artefacts.Special.LuckyCoin;
+import cz.Empatix.Entity.ItemDrops.Artefacts.Support.Ammobelt;
+import cz.Empatix.Entity.ItemDrops.Artefacts.Support.BerserkPot;
+import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Main.Game;
@@ -41,12 +46,17 @@ public class ArtefactDrop extends ItemDrop {
             canDespawn = false;
             liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
             pickedUp = false;
-
-            //TODO: server side fix
-            Image imageOfWeapon = artefact.getImageArtefact();
-
-            width=cwidth=imageOfWeapon.getWidth();
-            height=cheight=imageOfWeapon.getHeight();
+            if(artefact instanceof Ammobelt){
+                width = height = 32;
+            } else if(artefact instanceof BerserkPot){
+                width = height = 32;
+            } else if(artefact instanceof LuckyCoin){
+                width = height = 33;
+            } else if(artefact instanceof RingOfFire){
+                width = height = 25;
+            } else if(artefact instanceof TransportableArmorPot){
+                width = height = 32;
+            }
             scale = artefact.getScale();
             facingRight = true;
 

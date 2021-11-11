@@ -84,10 +84,10 @@ public class GameServer {
                 else if(object instanceof Network.ConfirmChangeGS){
                     changeGamestateConfirms++;
                     if(changeGamestateConfirms == connectedPlayers.size()){
-                        PlayerMP[] players = connectedPlayers.toArray(new PlayerMP[0]);
+                        PlayerMP[] players = connectedPlayers.toArray(new PlayerMP[connectedPlayers.size()]);
                         tileMap.setPlayers(players);
                         map = new MiniMap(true);
-                        artefactManager = new ArtefactManagerMP();
+                        artefactManager = new ArtefactManagerMP(tileMap,players);
                         gunsManager = new GunsManagerMP(tileMap,players);
                         itemManager = new ItemManagerMP(tileMap,gunsManager,artefactManager,players);
                         EnemyManagerMP.init(players,tileMap);
@@ -164,7 +164,7 @@ public class GameServer {
                                  for(Player player : connectedPlayers){
                                     player.checkCollision(enemies);
                                  }
-
+                                 artefactManager.update();
                              } else {
                                  for(Player player: connectedPlayers){
                                      player.update();

@@ -3,6 +3,7 @@ package cz.Empatix.Entity.ItemDrops.Artefacts.Support;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
@@ -33,7 +34,12 @@ public class TransportableArmorPot extends Artefact {
         rarity = 1;
 
     }
-
+    public TransportableArmorPot(TileMap tm, Player[] p){
+        super(tm,p);
+        maxCharge = 4;
+        charge = maxCharge;
+        rarity = 1;
+    }
     @Override
     public void loadSave() {
         imageArtefact = new Image("Textures\\artefacts\\tap.tga",new Vector3f(1403,975,0),
@@ -43,9 +49,11 @@ public class TransportableArmorPot extends Artefact {
     }
 
     @Override
-    protected void update(boolean pause) {
+    public void update(boolean pause) {
     }
-
+    @Override
+    public void update(String username) {
+    }
     @Override
     protected void draw() {
     }
@@ -86,14 +94,26 @@ public class TransportableArmorPot extends Artefact {
     }
 
     @Override
-    protected void activate() {
+    public void activate() {
         charge = 0;
         // refills player armor to full
-        p.addArmor(100);
+        p[0].addArmor(100);
     }
-
     @Override
-    protected void charge() {
+    public void activate(String username) {
+        charge = 0;
+        // refills player armor to full
+        for(Player player : p){
+            if(player != null){
+                if(((PlayerMP)player).getUsername().equalsIgnoreCase(username)){
+                    player.addArmor(100);
+                    break;
+                }
+            }
+        }
+    }
+    @Override
+    public void charge() {
         charge++;
         if(charge > maxCharge) charge = maxCharge;
     }

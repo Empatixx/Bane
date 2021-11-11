@@ -7,9 +7,7 @@ import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 
-import java.io.Serializable;
-
-public abstract class Artefact implements Serializable {
+public abstract class Artefact {
     protected int maxCharge;
     protected int charge;
 
@@ -17,20 +15,22 @@ public abstract class Artefact implements Serializable {
     protected int chargeAnimation;
     protected long chargeTime;
 
-    protected boolean dropped;
+    public boolean dropped;
     protected float scale;
 
     protected int rarity;
-    transient protected Image imageArtefact;
-    transient protected Image chargeBar;
-    transient protected Shader geometryShader;
-    transient protected int vboVertices;
+    protected Image imageArtefact;
+    protected Image chargeBar;
+    protected Shader geometryShader;
+    protected int vboVertices;
 
-    protected TileMap tm;
-    protected Player p;
-    protected Artefact(TileMap tm, Player p){
+    public TileMap tm;
+    public Player p[];
+    // singleplayer
+    public Artefact(TileMap tm, Player p){
         this.tm = tm;
-        this.p = p;
+        this.p = new Player[1];
+        this.p[0] = p;
 
         geometryShader = ShaderManager.getShader("shaders\\geometry");
         if (geometryShader == null){
@@ -43,12 +43,22 @@ public abstract class Artefact implements Serializable {
         }
         dropped = false;
     }
+    // multiplayer
+    public Artefact(TileMap tm, Player[] p){
+        this.tm = tm;
+        this.p = p;
+        dropped = false;
+    }
     protected abstract void draw();
-    protected abstract void charge();
-    protected abstract void activate();
-    protected abstract void update(boolean pause);
+    public abstract void charge();
+    // sp
+    public abstract void activate();
+    // mp
+    public abstract void activate(String username);
+    public abstract void update(boolean pause);
+    public abstract void update(String username);
     protected abstract void drawHud();
-    protected boolean canBeActivated(){return maxCharge == charge;}
+    public boolean canBeActivated(){return maxCharge == charge;}
 
     public void updateChargeAnimation(){
         if(System.currentTimeMillis()- chargeTime > 250){

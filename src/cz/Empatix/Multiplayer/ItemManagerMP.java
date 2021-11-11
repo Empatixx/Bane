@@ -318,15 +318,25 @@ public class ItemManagerMP {
         itemDrops.add(drop);
     }
     public void dropArtefact(int x, int y) {
-        //TODO:
-        //ArtefactDrop drop = new ArtefactDrop(tm, am.randomArtefact());
-        //drop.setPosition(x, y);
-        //itemDrops.add(drop);
+        Artefact artefact = am.randomArtefact();
+        ArtefactDrop drop = new ArtefactDrop(tm, artefact);
+        drop.setPosition(x, y);
+
+        Network.DropArtefact dropArtefact = new Network.DropArtefact();
+        dropArtefact.id = drop.getId();
+        dropArtefact.x = x;
+        dropArtefact.y = y;
+        dropArtefact.slot = am.getArtefactSlot(artefact);
+        Server server = MultiplayerManager.getInstance().server.getServer();
+        server.sendToAllTCP(dropArtefact);
+
+        itemDrops.add(drop);
     }
     public void dropPlayerArtefact(Artefact artefact, int x, int y, String username) {
         ArtefactDrop drop = new ArtefactDrop(tm, artefact,x,y);
         // todo: fix for mp
         drop.setPosition((int)player[0].getX(), (int)player[0].getY()+30);
+
         itemDrops.add(drop);
     }
     public void createDrop(float x, float y, Vector2f speed) {
@@ -485,7 +495,12 @@ public class ItemManagerMP {
                     Server server = MultiplayerManager.getInstance().server.getServer();
                     server.sendToAllTCP(pickup);
                 } else {
-                    //am.setCurrentArtefact(((ArtefactDrop) selectedDrop).getArtefact(),x,y);
+                    am.setCurrentArtefact(((ArtefactDrop) selectedDrop).getArtefact(),x,y, pickup.username);
+                    selectedDrop.pickedUp = true;
+                    pickup.sucessful = true;
+                    pickup.id = selectedDrop.getId();
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    server.sendToAllTCP(pickup);
                     selectedDrop.pickedUp = true;
                 }
             }

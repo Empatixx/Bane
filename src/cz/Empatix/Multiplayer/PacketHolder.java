@@ -28,9 +28,10 @@ public class PacketHolder {
     public final static int ALERT = 17;
     public final static int OPENCHEST = 18;
     public final static int PLAYERHIT = 19;
+    public final static int DROPARTEFACT = 20;
 
     public PacketHolder(){
-        final int size = 20;
+        final int size = 21;
 
         packetArrays = new ArrayList<>(size);
         for(int i = 0;i<size;i++){

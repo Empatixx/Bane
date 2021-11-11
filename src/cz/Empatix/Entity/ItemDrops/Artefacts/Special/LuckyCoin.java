@@ -5,6 +5,7 @@ import cz.Empatix.Entity.ItemDrops.Coin;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.ItemManagerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
@@ -40,7 +41,14 @@ public class LuckyCoin extends Artefact {
 
         textRender = new TextRender();
     }
+    public LuckyCoin(TileMap tm, Player[] p){
+        super(tm,p);
+        maxCharge = 4;
+        charge = maxCharge;
 
+        rarity = 1;
+        multiplier = 0;
+    }
     @Override
     public void loadSave() {
         imageArtefact = new Image("Textures\\artefacts\\luckycoin.tga",new Vector3f(1403,975,0),
@@ -50,7 +58,11 @@ public class LuckyCoin extends Artefact {
     }
 
     @Override
-    protected void update(boolean pause) {
+    public void update(boolean pause) {
+    }
+
+    @Override
+    public void update(String username) {
     }
 
     @Override
@@ -95,7 +107,7 @@ public class LuckyCoin extends Artefact {
     }
 
     @Override
-    protected void activate() {
+    public void activate() {
 
         charge = 0;
         ItemManager im = ItemManager.getInstance();
@@ -103,8 +115,8 @@ public class LuckyCoin extends Artefact {
         for(int i = 0;i<5 + multiplier;i++){
             int tileSize = tm.getTileSize();
 
-            int playerX = (int)p.getX();
-            int playerY = (int)p.getY();
+            int playerX = (int)p[0].getX();
+            int playerY = (int)p[0].getY();
 
             int xMinTile = playerX - 150;
             int yMinTile = playerY - 150;
@@ -130,9 +142,44 @@ public class LuckyCoin extends Artefact {
         }
         multiplier++;
     }
-
     @Override
-    protected void charge() {
+    public void activate(String username) {
+
+        charge = 0;
+        ItemManagerMP im = ItemManagerMP.getInstance();
+
+        for(int i = 0;i<5 + multiplier;i++){
+            int tileSize = tm.getTileSize();
+
+            int playerX = (int)p[0].getX();
+            int playerY = (int)p[0].getY();
+
+            int xMinTile = playerX - 150;
+            int yMinTile = playerY - 150;
+
+            int xMaxTile = playerX + 150;
+            int yMaxTile = playerY + 150;
+
+            int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+            int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+
+            while(tm.getType(y/tileSize,x/tileSize) == Tile.BLOCKED){
+                x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+            }
+            double atan = Math.atan2(y-playerY,x-playerX);
+            float dx = (float)(Math.cos(atan) * 10);
+            float dy = (float)(Math.sin(atan) * 10);
+
+            Coin coin = new Coin(tm);
+            coin.setPosition(x,y);
+            coin.setSpeed(dx,dy);
+            im.addItemDrop(coin);
+        }
+        multiplier++;
+    }
+    @Override
+    public void charge() {
         charge++;
         if(charge > maxCharge) charge = maxCharge;
     }

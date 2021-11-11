@@ -220,7 +220,10 @@ public class ItemManager {
                 createDrop((Network.DropItem) dropItem);
             }
             for(Object dropWeapon : packetHolder.get(PacketHolder.DROPWEAPON)){
-                dropPlayerWeapon((Network.DropWeapon) dropWeapon);
+                dropWeapon((Network.DropWeapon) dropWeapon);
+            }
+            for(Object dropArtefact : packetHolder.get(PacketHolder.DROPARTEFACT)){
+                dropArtefact((Network.DropArtefact) dropArtefact);
             }
             for(Object removeItem : packetHolder.get(PacketHolder.REMOVEITEM)){
                 for(ItemDrop drop:itemDrops){
@@ -240,11 +243,19 @@ public class ItemManager {
                 for(ItemDrop drop:itemDrops){
                     if(objectInteract.sucessful && drop.getId() == objectInteract.id){
                         // if player is the one that interacted with drop
-                        if(((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username) && drop instanceof WeaponDrop){
+                        if(((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username) && drop instanceof WeaponDrop) {
                             drop.pickedUp = true;
-                            Weapon weapon = ((WeaponDrop)drop).getWeapon();
+                            Weapon weapon = ((WeaponDrop) drop).getWeapon();
                             gm.changeGun(weapon);
-                            if(drop.isShop()){
+                            if (drop.isShop()) {
+                                drop.shopBuy();
+                                buysource.play(soundShopBuy);
+                            }
+                        } else if(((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username) && drop instanceof ArtefactDrop){
+                            drop.pickedUp = true;
+                            Artefact artefact = ((ArtefactDrop)drop).getArtefact();
+                            am.setCurrentArtefact(artefact);
+                            if(drop.isShop()) {
                                 drop.shopBuy();
                                 buysource.play(soundShopBuy);
                             }
@@ -331,6 +342,7 @@ public class ItemManager {
         }
     }
 
+
     public void draw() {
         for (ItemDrop drop : itemDrops) {
             drop.draw();
@@ -375,6 +387,12 @@ public class ItemManager {
     public void dropArtefact(int x, int y) {
         ArtefactDrop drop = new ArtefactDrop(tm, am.randomArtefact());
         drop.setPosition(x, y);
+        itemDrops.add(drop);
+    }
+    private void dropArtefact(Network.DropArtefact dropArtefact) {
+        ArtefactDrop drop = new ArtefactDrop(tm, am.getArtefact(dropArtefact.slot));
+        drop.setPosition(dropArtefact.x, dropArtefact.y);
+        drop.setId(dropArtefact.id);
         itemDrops.add(drop);
     }
     public void dropPlayerArtefact(Artefact artefact, int x, int y) {
@@ -437,12 +455,12 @@ public class ItemManager {
         }
     }
 
-    public void dropPlayerWeapon(Weapon weapon, int x, int y) {
+    public void dropWeapon(Weapon weapon, int x, int y) {
         WeaponDrop drop = new WeaponDrop(tm, weapon, x, y);
         drop.setPosition((int) player.getX(), (int) player.getY()+30);
         itemDrops.add(drop);
     }
-    public void dropPlayerWeapon(Network.DropWeapon dropWeapon) {
+    public void dropWeapon(Network.DropWeapon dropWeapon) {
         WeaponDrop drop = new WeaponDrop(tm, gm.getWeapon(dropWeapon.slot), 0, 0);
         drop.setPosition(dropWeapon.x, dropWeapon.y);
         drop.setId(dropWeapon.id);

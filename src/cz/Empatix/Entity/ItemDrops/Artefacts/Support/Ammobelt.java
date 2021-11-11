@@ -4,6 +4,7 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.GunsManagerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
@@ -32,7 +33,12 @@ public class Ammobelt extends Artefact {
                 2.6f);
         rarity = 1;
     }
-
+    public Ammobelt(TileMap tm, Player[] p){
+        super(tm,p);
+        maxCharge = 4;
+        charge = maxCharge;
+        rarity = 1;
+    }
     @Override
     public void loadSave() {
         imageArtefact = new Image("Textures\\artefacts\\ammobelt.tga",new Vector3f(1403,975,0),
@@ -42,7 +48,12 @@ public class Ammobelt extends Artefact {
     }
 
     @Override
-    protected void update(boolean pause) {
+    public void update(boolean pause) {
+    }
+
+    @Override
+    public void update(String username) {
+
     }
 
     @Override
@@ -84,7 +95,7 @@ public class Ammobelt extends Artefact {
     }
 
     @Override
-    protected void activate() {
+    public void activate() {
 
         charge = 0;
         // refills  players ammo by 20%
@@ -94,7 +105,15 @@ public class Ammobelt extends Artefact {
     }
 
     @Override
-    protected void charge() {
+    public void activate(String username) {
+        // refills  players ammo by 20%
+        GunsManagerMP gunsManager = GunsManagerMP.getInstance();
+        int type = gunsManager.getWeaponTypes(username)[gunsManager.getCurrentWeaponSlot(username)];
+        gunsManager.addAmmo(20,type,username);
+    }
+
+    @Override
+    public void charge() {
         charge++;
         if(charge > maxCharge) charge = maxCharge;
     }

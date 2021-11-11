@@ -102,7 +102,7 @@ public class ArtefactManager {
     }
     public Artefact randomArtefact(){
         Artefact artefact = artefacts.get(Random.nextInt(artefacts.size()));
-        while(currentArtefact == artefact || artefact.dropped){
+        while(artefact.dropped){
             artefact = artefacts.get(Random.nextInt(artefacts.size()));
         }
         artefact.dropped = true;
@@ -116,5 +116,12 @@ public class ArtefactManager {
         }
         this.currentArtefact = currentArtefact;
 
+    }
+    public void setCurrentArtefact(Artefact currentArtefact) {
+        this.currentArtefact = currentArtefact;
+
+    }
+    public Artefact getArtefact(int slot) {
+        return artefacts.get(slot);
     }
 }

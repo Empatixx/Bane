@@ -147,6 +147,16 @@ public class GunsManagerMP {
         }
     }
 
+    public int getCurrentWeaponSlot(String username){
+        for(PlayerWeapons playerWeapons : playerWeapons){
+            if(playerWeapons == null) continue;
+            if(playerWeapons.isThisPlayer(username)){
+                return playerWeapons.getCurrentslot();
+            }
+        }
+        return -1;
+    }
+
     private class PlayerWeapons{
         private float px,py;
         private float mouseX,mouseY;
@@ -242,10 +252,6 @@ public class GunsManagerMP {
             if(current == null) return;
             current.setShooting(false);
         }
-        private void startShooting(){
-            if(current == null) return;
-            current.setShooting(true);
-        }
         public boolean addAmmo(int amountpercent, int type, String username) {
             if(this.username.equalsIgnoreCase(username)){
                 // first check main gun in hand
@@ -334,6 +340,10 @@ public class GunsManagerMP {
                 Server server = MultiplayerManager.getInstance().server.getServer();
                 server.sendToAllTCP(dropWeapon);
             }
+        }
+
+        public int getCurrentslot() {
+            return currentslot;
         }
     }
     public void handleMouseCoords(Network.MouseCoords coords){

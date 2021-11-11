@@ -6,6 +6,7 @@ import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -62,8 +63,15 @@ public class BerserkPot extends Artefact {
         textRender = new TextRender();
 
     }
+    public BerserkPot(TileMap tm, Player[] p){
+        super(tm,p);
+        maxCharge = 4;
+        charge = maxCharge;
+        rarity = 1;
+        removedSpeed = true;
+    }
     @Override
-    protected void update(boolean pause) {
+    public void update(boolean pause) {
 
         if(!removedSpeed){
 
@@ -74,16 +82,16 @@ public class BerserkPot extends Artefact {
 
             if(System.currentTimeMillis() - time - InGame.deltaPauseTime() > 20000){
                 removedSpeed = true;
-                p.setMaxSpeed(p.getMaxSpeed()-bonusSpeed);
+                p[0].setMaxSpeed(p[0].getMaxSpeed()-bonusSpeed);
 
             }
-            Vector3f speed = p.getSpeed();float maxSpeed = p.getMaxSpeed();
+            Vector3f speed = p[0].getSpeed();float maxSpeed = p[0].getMaxSpeed();
 
             if(Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed){
 
-                Vector3f position = p.getPosition();
-                boolean up = p.isMovingUp(), down = p.isMovingDown(), left = p.isMovingLeft(), right = p.isMovingRight();
-                int height = p.getCheight();
+                Vector3f position = p[0].getPosition();
+                boolean up = p[0].isMovingUp(), down = p[0].isMovingDown(), left = p[0].isMovingLeft(), right = p[0].isMovingRight();
+                int height = p[0].getCheight();
 
                 float value = Math.abs(speed.x);
                 if(value < Math.abs(speed.y)) value = Math.abs(speed.y);
@@ -116,7 +124,66 @@ public class BerserkPot extends Artefact {
             }
         }
     }
+    @Override
+    public void update(String username) {
+        if(!removedSpeed){
+            for(Player player : p){
+                if(player != null) {
+                    if(((PlayerMP)player).getUsername().equalsIgnoreCase(username)) continue;
+                    timeLeft = (System.currentTimeMillis() - this.time )/ 1000f;
+                    timeLeft = 20 - timeLeft;
 
+                    if(System.currentTimeMillis() - time > 20000){
+                        removedSpeed = true;
+                        player.setMaxSpeed(player.getMaxSpeed()-bonusSpeed);
+
+                    }
+                    Vector3f speed = player.getSpeed();float maxSpeed = player.getMaxSpeed();
+
+                    if(Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed){
+
+                        Vector3f position = player.getPosition();
+                        boolean up = player.isMovingUp(), down = player.isMovingDown(), left = player.isMovingLeft(), right = player.isMovingRight();
+                        int height = player.getCheight();
+
+                        if(!tm.isServerSide()){
+                            float value = Math.abs(speed.x);
+                            if(value < Math.abs(speed.y)) value = Math.abs(speed.y);
+                            if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 500-value*20){
+                                lastTimeSprintParticle = System.currentTimeMillis()- InGame.deltaPauseTime();
+                                SprintParticle sprintParticle = new SprintParticle(tm);
+                                if((up || down) && !left && !right){
+                                    sprintParticle.setPosition(
+                                            position.x+16*(float)Math.sin(2*Math.PI*((System.currentTimeMillis()%1000)/1000d)),
+                                            position.y+height/2);
+                                } else if((right || left) && !up && !down){
+                                    sprintParticle.setPosition(
+                                            position.x+(right ? -25 : 0)+(left ? 25 : 0),
+                                            position.y+height/2+16*(float)Math.sin(Math.PI*(1+((System.currentTimeMillis()%1000)/1000d))));
+                                } else {
+                                    sprintParticle.setPosition(position.x,position.y+height/2);
+
+                                }
+                                sprintParticles.add(sprintParticle);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        if(!tm.isServerSide()){
+            for(int i = 0;i<sprintParticles.size();i++){
+                SprintParticle sprintParticle = sprintParticles.get(i);
+
+                sprintParticle.update();
+                if(sprintParticle.shouldRemove()){
+                    sprintParticles.remove(i);
+                    i--;
+                }
+            }
+        }
+    }
     @Override
     protected void draw() {
 
@@ -179,17 +246,31 @@ public class BerserkPot extends Artefact {
     }
 
     @Override
-    protected void activate() {
+    public void activate() {
         charge = 0;
         removedSpeed = false;
         // refills player armor to full
-        bonusSpeed = p.getMaxSpeed()*0.25f;
-        p.setMaxSpeed(p.getMaxSpeed()*1.25f);
+        bonusSpeed = p[0].getMaxSpeed()*0.25f;
+        p[0].setMaxSpeed(p[0].getMaxSpeed()*1.25f);
         time = System.currentTimeMillis() - InGame.deltaPauseTime();
     }
-
     @Override
-    protected void charge() {
+    public void activate(String username) {
+        charge = 0;
+        removedSpeed = false;
+        // refills player armor to full
+        for(Player player : p){
+            if(player == null) continue;
+            if(((PlayerMP)player).getUsername().equalsIgnoreCase(username)){
+                bonusSpeed = player.getMaxSpeed()*0.25f;
+                player.setMaxSpeed(player.getMaxSpeed()*1.25f);
+                time = System.currentTimeMillis() - InGame.deltaPauseTime();
+                break;
+            }
+        }
+    }
+    @Override
+    public void charge() {
         charge++;
         if(charge > maxCharge) charge = maxCharge;
     }

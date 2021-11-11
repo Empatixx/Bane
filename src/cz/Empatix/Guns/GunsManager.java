@@ -237,7 +237,7 @@ public class GunsManager {
                 if(current != null){
                     stopShooting();
                     ItemManager itemManager = ItemManager.getInstance();
-                    itemManager.dropPlayerWeapon(current, x,y);
+                    itemManager.dropWeapon(current, x,y);
                 }
                 current = null;
                 equipedweapons[currentslot] = null;
@@ -324,7 +324,7 @@ public class GunsManager {
         }
         // if player's slots are already filled
         ItemManager itemManager = ItemManager.getInstance();
-        itemManager.dropPlayerWeapon(current,x,y);
+        itemManager.dropWeapon(current,x,y);
         equipedweapons[currentslot] = weapon;
         current=weapon;
     }

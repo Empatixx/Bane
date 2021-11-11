@@ -189,6 +189,12 @@ public class GameClient{
                         ((InGameMP)gameState).gunsManager.handleDropWeaponPacket((Network.DropWeapon)object);
                     }
                 }
+                else if (object instanceof Network.DropArtefact){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        packetHolder.add(object,PacketHolder.DROPARTEFACT);
+                    }
+                }
                 else if (object instanceof Network.ObjectInteract){
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {

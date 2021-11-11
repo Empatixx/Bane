@@ -56,6 +56,7 @@ public class Network {
         kryo.register(OpenChest.class);
         kryo.register(Player.DamageAbsorbedBy.class);
         kryo.register(PlayerHit.class);
+        kryo.register(DropArtefact.class);
 
     }
     // MAIN
@@ -180,6 +181,11 @@ public class Network {
         public int x, y;
     }
     public static class DropWeapon{
+        public int x, y;
+        public int id;
+        public int slot;
+    }
+    public static class DropArtefact{
         public int x, y;
         public int id;
         public int slot;

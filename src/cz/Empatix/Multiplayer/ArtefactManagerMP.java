@@ -7,7 +7,6 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Special.LuckyCoin;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.Ammobelt;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.BerserkPot;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
-import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Alerts.AlertManager;
@@ -63,10 +62,10 @@ public class ArtefactManagerMP {
             boolean updateSuccessly = false;
             for(PlayerArtefacts playerArtefact : playerArtefacts){
                 if(playerArtefact != null){
-                    updateSuccessly = playerArtefact.update(artefact);
+                    updateSuccessly = playerArtefact.update(artefact); // updating players movement speed etc.
                 }
             }
-            if(!updateSuccessly) artefact.update(null);
+            if(!updateSuccessly) artefact.update(null); // updating like bullets etc. meanwhile players don't have artefact
         }
     }
     public Artefact randomArtefact(){
@@ -86,7 +85,7 @@ public class ArtefactManagerMP {
             playerArtefact.setCurrentArtefact(currentArtefact,x,y,username);
         }
     }
-    private static class PlayerArtefacts{
+    private class PlayerArtefacts{
         private String username;
         private Artefact currentArtefact;
         private boolean firstAlert;
@@ -116,7 +115,7 @@ public class ArtefactManagerMP {
             if(!this.username.equalsIgnoreCase(username)) return;
             if(currentArtefact != null){
                 if(currentArtefact.canBeActivated()){
-                    currentArtefact.activate();
+                    currentArtefact.activate(username);
                     firstAlert = false;
                 }
             }
@@ -131,8 +130,8 @@ public class ArtefactManagerMP {
         public void setCurrentArtefact(Artefact currentArtefact, int x, int y, String username) {
             if(!this.username.equalsIgnoreCase(username)) return;
             if(this.currentArtefact != null){
-                ItemManager itemManager = ItemManager.getInstance();
-                itemManager.dropPlayerArtefact(this.currentArtefact,x,y);
+                ItemManagerMP itemManager = ItemManagerMP.getInstance();
+                itemManager.dropPlayerArtefact(this.currentArtefact,x,y,username);
             }
             this.currentArtefact = currentArtefact;
 

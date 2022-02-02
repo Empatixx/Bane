@@ -285,15 +285,22 @@ public abstract class MapObject {
 		glBindTexture(GL_TEXTURE_2D,0);
 		if (Game.displayCollisions){
 			glColor3i(255,255,255);
-			glBegin(GL_LINE_LOOP);
+
+			glBegin(GL_QUADS);
+			glBindTexture(GL_TEXTURE_2D, tilesetId);
 			// BOTTOM LEFT
+			glTexCoord2f(0f,0f);
 			glVertex2f(position.x+xmap-cwidth/2,position.y+ymap-cheight/2);
 			// TOP LEFT
+			glTexCoord2f(0f,1f);
 			glVertex2f(position.x+xmap-cwidth/2, position.y+ymap+cheight/2);
 			// TOP RIGHT
+			glTexCoord2f(1f,1f);
 			glVertex2f(position.x+xmap+cwidth/2, position.y+ymap+cheight/2);
 			// BOTTOM RIGHT
+			glTexCoord2f(1f,0f);
 			glVertex2f(position.x+xmap+cwidth/2, position.y+ymap-cheight/2);
+			glBindTexture(GL_TEXTURE_2D, 0);
 			glEnd();
 
 			glPointSize(10);

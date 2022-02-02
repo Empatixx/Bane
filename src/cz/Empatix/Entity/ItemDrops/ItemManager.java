@@ -243,21 +243,25 @@ public class ItemManager {
                 for(ItemDrop drop:itemDrops){
                     if(objectInteract.sucessful && drop.getId() == objectInteract.id){
                         // if player is the one that interacted with drop
-                        if(((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username) && drop instanceof WeaponDrop) {
+                        if(drop instanceof WeaponDrop) {
                             drop.pickedUp = true;
-                            Weapon weapon = ((WeaponDrop) drop).getWeapon();
-                            gm.changeGun(weapon);
-                            if (drop.isShop()) {
-                                drop.shopBuy();
-                                buysource.play(soundShopBuy);
+                            if(((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username)){
+                                Weapon weapon = ((WeaponDrop) drop).getWeapon();
+                                gm.changeGun(weapon);
+                                if (drop.isShop()) {
+                                    drop.shopBuy();
+                                    buysource.play(soundShopBuy);
+                                }
                             }
-                        } else if(((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username) && drop instanceof ArtefactDrop){
+                        } else if(drop instanceof ArtefactDrop){
                             drop.pickedUp = true;
-                            Artefact artefact = ((ArtefactDrop)drop).getArtefact();
-                            am.setCurrentArtefact(artefact);
-                            if(drop.isShop()) {
-                                drop.shopBuy();
-                                buysource.play(soundShopBuy);
+                            if(((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username)){
+                                Artefact artefact = ((ArtefactDrop)drop).getArtefact();
+                                am.setCurrentArtefact(artefact);
+                                if(drop.isShop()) {
+                                    drop.shopBuy();
+                                    buysource.play(soundShopBuy);
+                                }
                             }
                         } else if (drop.isShop()) {
                             drop.shopBuy();
@@ -390,7 +394,13 @@ public class ItemManager {
         itemDrops.add(drop);
     }
     private void dropArtefact(Network.DropArtefact dropArtefact) {
-        ArtefactDrop drop = new ArtefactDrop(tm, am.getArtefact(dropArtefact.slot));
+        ArtefactDrop drop;
+        if(dropArtefact.username != null){
+            if(((PlayerMP)player).getUsername().equalsIgnoreCase(dropArtefact.username)) am.setCurrentArtefact(null);
+            drop = new ArtefactDrop(tm, am.getArtefact(dropArtefact.slot),dropArtefact.dx,dropArtefact.dy);
+        } else {
+            drop = new ArtefactDrop(tm, am.getArtefact(dropArtefact.slot));
+        }
         drop.setPosition(dropArtefact.x, dropArtefact.y);
         drop.setId(dropArtefact.id);
         itemDrops.add(drop);

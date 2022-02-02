@@ -31,8 +31,6 @@ public class GameStateManager {
     private static Database db;
     private MultiplayerManager mpManager;
 
-    private Thread mainThread;
-
     float mouseX,mouseY;
 
     public void pause(){
@@ -56,10 +54,7 @@ public class GameStateManager {
         gameStates.add(new ProgressRoomMP(this));
         gameStates.add(new InGameMP(this));
 
-
         screenshot = new Screanshot();
-
-        mainThread = Thread.currentThread();
     }
     public static void loadDatabase(){
         db = new Database();

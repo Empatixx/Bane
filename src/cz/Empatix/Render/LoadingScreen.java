@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 
-public class    LoadingScreen {
+public class LoadingScreen {
     private Shader shader;
     private final int idTexture;
     private int vboVertices;

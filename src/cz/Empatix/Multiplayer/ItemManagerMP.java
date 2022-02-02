@@ -317,6 +317,12 @@ public class ItemManagerMP {
         drop.setPosition(x, y);
         itemDrops.add(drop);
     }
+
+    /**
+     * Dropping artefact by chests etc.
+     * @param x - Y position of drop
+     * @param y - X position of drop
+     */
     public void dropArtefact(int x, int y) {
         Artefact artefact = am.randomArtefact();
         ArtefactDrop drop = new ArtefactDrop(tm, artefact);
@@ -332,12 +338,37 @@ public class ItemManagerMP {
 
         itemDrops.add(drop);
     }
-    public void dropPlayerArtefact(Artefact artefact, int x, int y, String username) {
-        ArtefactDrop drop = new ArtefactDrop(tm, artefact,x,y);
-        // todo: fix for mp
-        drop.setPosition((int)player[0].getX(), (int)player[0].getY()+30);
 
-        itemDrops.add(drop);
+    /**
+     * Dropping artefact by changing artefact of player
+     * @param artefact - artefact that we want to drop
+     * @param dx - X direction of drop
+     * @param dy - Y direction of drop
+     * @param username -
+     */
+    public void dropPlayerArtefact(Artefact artefact, int dx, int dy, String username) {
+        for(PlayerMP p : player){
+            if(p == null) continue;
+            if(p.getUsername().equalsIgnoreCase(username)){
+                ArtefactDrop drop = new ArtefactDrop(tm, artefact,dx,dy);
+                int x = (int)p.getX();
+                int y = (int)p.getY()+30;
+                drop.setPosition((int)p.getX(), (int)p.getY()+30);
+                Network.DropArtefact dropArtefact = new Network.DropArtefact();
+                dropArtefact.slot = am.getArtefactSlot(artefact);
+                dropArtefact.x = x;
+                dropArtefact.y = y;
+                dropArtefact.dx = dx;
+                dropArtefact.dy = dy;
+                dropArtefact.username = username;
+                dropArtefact.id = drop.getId();
+                itemDrops.add(drop);
+
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(dropArtefact);
+                break;
+            }
+        }
     }
     public void createDrop(float x, float y, Vector2f speed) {
         int drops = 3;

@@ -471,7 +471,7 @@ public abstract class MapObject {
 
 		if (Game.displayCollisions){
 			glColor3i(255,255,255);
-			glBegin(GL_LINE_LOOP);
+			glBegin(GL_LINE_STRIP);
 			// BOTTOM LEFT
 			glVertex2f(position.x+xmap-cwidth/2,position.y+ymap-cheight/2);
 			// TOP LEFT

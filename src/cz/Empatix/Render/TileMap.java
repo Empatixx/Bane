@@ -11,6 +11,7 @@ import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Java.RomanNumber;
+import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
@@ -29,7 +30,7 @@ import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
-import static org.lwjgl.opengl.GL43.*;
+import static org.lwjgl.opengl.GL45.*;
 
 public class TileMap {
 
@@ -105,7 +106,6 @@ public class TileMap {
 
 	// if tilemap is server-side
 	private boolean serverSide;
-
 	public TileMap(int tileSize, MiniMap miniMap) {
 		this.tileSize = tileSize;
 		this.miniMap = miniMap;
@@ -195,7 +195,6 @@ public class TileMap {
 		// starter's room loading text renders
 		roomArrayList[0].loadSave();
 	}
-
 	public void setPlayer(Player p){
 		this.player[0] = p;
 	}
@@ -210,7 +209,6 @@ public class TileMap {
 	public int getNumCols(){
 		return numCols;
 	}
-
 	public void loadTiles(String s) {
 		vboTexCoords = new int[]{glGenBuffers(),glGenBuffers()};
 		vboVertices = new int[]{glGenBuffers(),glGenBuffers()};
@@ -222,12 +220,17 @@ public class TileMap {
 
 		glBindTexture(GL_TEXTURE_2D, tilesetId);
 
-		glTexStorage2D(GL_TEXTURE_2D, 5, GL_RGBA8, decoder.getWidth(), decoder.getHeight());
-		glTexSubImage2D(GL_TEXTURE_2D,0,0,0,decoder.getWidth(),decoder.getHeight(),GL_RGBA,GL_UNSIGNED_BYTE,tileset);
-		glGenerateMipmap(GL_TEXTURE_2D);  //Generate num_mipmaps number of mipmaps here.
-
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, tileset);
-
+		// support for devices without GL4.2+
+		if(Game.GL_MAJOR_VERSION >= 4 && Game.GL_MINOR_VERSION >= 2){
+			glTexStorage2D(GL_TEXTURE_2D, 5, GL_RGBA8, decoder.getWidth(), decoder.getHeight());
+			glTexSubImage2D(GL_TEXTURE_2D,0,0,0,decoder.getWidth(),decoder.getHeight(),GL_RGBA,GL_UNSIGNED_BYTE,tileset);
+			glGenerateMipmap(GL_TEXTURE_2D);  //Generate num_mipmaps number of mipmaps here.
+		} else {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, tileset);
+			if(Game.GL_MAJOR_VERSION >= 3){
+				glGenerateMipmap(GL_TEXTURE_2D);  //Generate num_mipmaps number of mipmaps here.
+			}
+		}
 		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 
@@ -385,7 +388,6 @@ public class TileMap {
 		}
 		setPosition(Camera.getWIDTH() / 2f - playerStartX,Camera.getHEIGHT() / 2f - playerStartY);
 	}
-
 	public void loadMapViaPackets() {
 		// converting rooms into 1 big tile map
 		formatMap();
@@ -449,7 +451,6 @@ public class TileMap {
 		}
 		setPosition(Camera.getWIDTH() / 2f - playerStartX,Camera.getHEIGHT() / 2f - playerStartY);
 	}
-
 	public void updateCurrentRoom(int x, int y){
 		for (RoomPath room : currentRoom.getRoomPaths()){
 			if(room == null) continue;
@@ -652,9 +653,7 @@ public class TileMap {
 		}
 
 	}
-
 	public ArrayList<RoomObject> getRoomMapObjects(){return currentRoom.getMapObjects();}
-
 	private void generateRooms(){
 		// id generator
 		idGen = 0;
@@ -882,8 +881,6 @@ public class TileMap {
 			}
 		}
 	}
-
-
 	private void formatMap() {
 		// max collumns in collumn of room
 		int[] maxCols = new int[roomX];
@@ -1186,9 +1183,6 @@ public class TileMap {
 		}
 		return null;
 	}
-
-
-
 	private void decreaseSizeOfMap(){
 		int right = 0;
 		int left = 0;
@@ -1255,11 +1249,9 @@ public class TileMap {
 			server.sendToAllTCP(transferRoomMap);
 		}
 	}
-
 	public int getTileSize() { return tileSize; }
 	public float getX() { return position.x; }
 	public float getY() { return position.y; }
-
 	/**
 	 * rc = number of tile in tileset
 	 * r (row in tileset); first row is normal : second row is blocked (collision)
@@ -1275,9 +1267,7 @@ public class TileMap {
 		if (map[row][col] == -1) return Tile.NORMAL;
 		return tiles[r][c].getType();
 	}
-
 	public void setTween(double d) { tween = d; }
-	
 	public void setPosition(double x, double y) {
 		if(serverSide) return;
 
@@ -1293,14 +1283,12 @@ public class TileMap {
 
 
 	}
-	
 	private void fixBounds() {
 		if(position.x < xmin) position.x = xmin;
 		if(position.y < ymin) position.y = ymin;
 		if(position.x > xmax) position.x = xmax;
 		if(position.y > ymax) position.y = ymax;
 	}
-	
 	public void draw(int tileType) {
 		Matrix4f projection = camera.projection();
 		shader.bind();
@@ -1390,7 +1378,6 @@ public class TileMap {
 
 
 	}
-
 	public void drawObjects(){
         currentRoom.drawObjects(this);
 		for(Room r : sideRooms){
@@ -1400,7 +1387,6 @@ public class TileMap {
 		}
 
 	}
-
 	/**
 	 *
 	 * @param behindCollision - if pre-draw objects should be drawn behind collision tiles
@@ -1414,9 +1400,7 @@ public class TileMap {
 		}
 	}
 	public float getPlayerStartX() { return playerStartX; }
-
 	public float getPlayerStartY(){ return playerStartY; }
-
 	public void autoTile(){
 		byte[][] newMap = new byte[numRows][numCols];
 
@@ -1526,7 +1510,6 @@ public class TileMap {
 		}
 		this.map = newMap;
 	}
-
 	public void addObject(RoomObject obj){
 		currentRoom.addObject(obj);
 		if(serverSide){
@@ -1607,19 +1590,15 @@ public class TileMap {
 
 		}
 	}
-
 	public int getFloor() {
 		return floor;
 	}
-
 	public void fillMiniMap(){
 		currentRoom.showRoomOnMinimap();
 	}
-
 	public Room getCurrentRoom() {
 		return currentRoom;
 	}
-
 	public void keyPressed(int k, Player p){
 		currentRoom.keyPressed(k,p);
 	}
@@ -1667,13 +1646,9 @@ public class TileMap {
 		roomX = map.roomX;
 		roomY = map.roomY;
 	}
-
 	public boolean isServerSide() {
 		return serverSide;
 	}
-
-
-
 	public void lockRoom(){
 		currentRoom.lockRoom(true);
 	}
@@ -1730,6 +1705,7 @@ public class TileMap {
 					case ARROWTRAP:{
 						roomObject = new ArrowTrap(this,player);
 						((ArrowTrap)roomObject).setType(addRoomPacket.objectType);
+						System.out.println("SERVER: X: "+roomObject.getX()+" Y:"+roomObject.getY());
 						break;
 					}
 					case FLAMETHROWER:{
@@ -1748,7 +1724,6 @@ public class TileMap {
 			}
 		}
 	}
-
 	public void handleRoomMovePacket(Network.MoveRoomObject movePacket) {
 		ArrayList<RoomObject> roomObjects;
 		roomObjects = getRoomMapObjects();

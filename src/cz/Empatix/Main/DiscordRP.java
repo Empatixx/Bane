@@ -16,17 +16,16 @@ public class DiscordRP {
     }
 
     public void start(){
-        created = System.currentTimeMillis();
-
-        DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {
-            System.out.println("Discord found: " + user.username + "#" + user.discriminator);
-        }).build();
-
-        DiscordRPC.discordInitialize("805802430553653279", handlers, true);
-
         new Thread("Discord RPC Callback") {
             @Override
             public void run() {
+                created = System.currentTimeMillis();
+
+                DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {
+                    System.out.println("Discord found: " + user.username + "#" + user.discriminator);
+                }).build();
+
+                DiscordRPC.discordInitialize("805802430553653279", handlers, true);
                 while(running){
                     DiscordRPC.discordRunCallbacks();
                 }

@@ -262,6 +262,8 @@ public class Player extends MapObject {
             Bullets.get(i).draw(camera);
         }
         super.draw(camera);
+
+
     }
     public void keyPressed(int key) {
         if (key == 'W'){

@@ -57,6 +57,7 @@ public class Network {
         kryo.register(Player.DamageAbsorbedBy.class);
         kryo.register(PlayerHit.class);
         kryo.register(DropArtefact.class);
+        kryo.register(ArtefactActivate.class);
 
     }
     // MAIN
@@ -186,9 +187,11 @@ public class Network {
         public int slot;
     }
     public static class DropArtefact{
+        public int dx, dy;
         public int x, y;
         public int id;
         public int slot;
+        public String username;
     }
     public static class ObjectInteract {
         public String username;
@@ -258,5 +261,8 @@ public class Network {
     public static class PlayerHit {
         public String username;
         public Player.DamageAbsorbedBy type;
+    }
+    public static class ArtefactActivate{
+        public String username;
     }
 }

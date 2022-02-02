@@ -58,6 +58,8 @@ public class RingOfFire extends Artefact {
         rarity = 1;
         bullets = new ArrayList<>(50);
 
+        scale = 4f;
+
     }
     @Override
     public void loadSave() {
@@ -135,18 +137,18 @@ public class RingOfFire extends Artefact {
                 i--;
             }
         }
-        for(Player p : p){
-            if(p == null) continue;
-            ArrayList<RoomObject> objects = tm.getRoomMapObjects();
-            A: for(Bullet bullet:bullets){
-                EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
-                for(Enemy enemy: enemyManager.getEnemies()){
-                    if(bullet.intersects(enemy) && enemy.canReflect()){
-                        Vector3f speed = bullet.getSpeed();
-                        speed.x = -speed.x;
-                        speed.y = -speed.y;
-                        return;
-                    }
+        ArrayList<RoomObject> objects = tm.getRoomMapObjects();
+        A: for(Bullet bullet:bullets){
+            EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
+            for(Enemy enemy: enemyManager.getEnemies()){
+                if(bullet.intersects(enemy) && enemy.canReflect()){
+                    Vector3f speed = bullet.getSpeed();
+                    speed.x = -speed.x;
+                    speed.y = -speed.y;
+                    return;
+                }
+                for(Player p : p) {
+                    if (p == null) continue;
                     if(bullet.isFriendlyFire()){
                         if(bullet.intersects(p) && !bullet.isHit() && !p.isDead() && !p.isFlinching()){
                             p.hit(bullet.getDamage());
@@ -154,20 +156,20 @@ public class RingOfFire extends Artefact {
                             GunsManager.hitBullets++;
                         }
                     }
-                    else if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
-                        if(enemy instanceof KingSlime) bullet.setDamage(1);
-                        enemy.hit(bullet.getDamage());
-                        bullet.setHit(Bullet.TypeHit.ENEMY);
-                        continue A;
-                    }
                 }
-                for(RoomObject object: objects){
-                    if(object instanceof DestroyableObject) {
-                        if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                            bullet.setHit(Bullet.TypeHit.ROOMOBJECT);
-                            ((DestroyableObject) object).setHit(bullet.getDamage());
-                            continue A;
-                        }
+                if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
+                    if(enemy instanceof KingSlime) bullet.setDamage(1);
+                    enemy.hit(bullet.getDamage());
+                    bullet.setHit(Bullet.TypeHit.ENEMY);
+                    continue A;
+                }
+            }
+            for(RoomObject object: objects){
+                if(object instanceof DestroyableObject) {
+                    if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
+                        bullet.setHit(Bullet.TypeHit.ROOMOBJECT);
+                        ((DestroyableObject) object).setHit(bullet.getDamage());
+                        continue A;
                     }
                 }
             }

@@ -38,6 +38,8 @@ public class Ammobelt extends Artefact {
         maxCharge = 4;
         charge = maxCharge;
         rarity = 1;
+
+        scale = 4f;
     }
     @Override
     public void loadSave() {

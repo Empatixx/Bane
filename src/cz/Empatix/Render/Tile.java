@@ -1,9 +1,7 @@
 package cz.Empatix.Render;
 
 
-import java.io.Serializable;
-
-public class Tile implements Serializable {
+public class Tile {
 
 	private final int type;
 	private double[] texCoords;

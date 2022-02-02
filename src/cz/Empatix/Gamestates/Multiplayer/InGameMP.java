@@ -227,7 +227,10 @@ public class InGameMP extends GameState {
         }
 
         if(k == ControlSettings.getValue(ControlSettings.ARTEFACT_USE)){
-            artefactManager.activate();
+            Network.ArtefactActivate packetAActivate = new Network.ArtefactActivate();
+            packetAActivate.username = mpManager.getUsername();
+            mpManager.client.getClient().sendTCP(packetAActivate);
+
         }
 
     }

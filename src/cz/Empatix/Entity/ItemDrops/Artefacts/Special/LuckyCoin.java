@@ -48,6 +48,9 @@ public class LuckyCoin extends Artefact {
 
         rarity = 1;
         multiplier = 0;
+
+        scale = 2f;
+
     }
     @Override
     public void loadSave() {

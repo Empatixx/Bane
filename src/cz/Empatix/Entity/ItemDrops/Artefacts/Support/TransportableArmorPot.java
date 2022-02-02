@@ -39,6 +39,8 @@ public class TransportableArmorPot extends Artefact {
         maxCharge = 4;
         charge = maxCharge;
         rarity = 1;
+
+        scale = 3f;
     }
     @Override
     public void loadSave() {

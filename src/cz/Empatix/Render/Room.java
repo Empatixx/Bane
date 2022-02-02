@@ -24,11 +24,10 @@ import org.joml.Vector3f;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Room implements Serializable {
+public class Room {
     // if player has entered room yet
     private boolean entered;
     private boolean closed;
@@ -831,6 +830,7 @@ public class Room implements Serializable {
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
             Server server = MultiplayerManager.getInstance().server.getServer();
+            System.out.println("SERVER: X: "+object.getX()+" Y:"+object.getY());
             server.sendToAllTCP(roomObject);
         } else if (object instanceof Torch){
             Network.AddRoomObject roomObject = new Network.AddRoomObject();

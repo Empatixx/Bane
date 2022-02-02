@@ -173,7 +173,7 @@ public class GunsManagerMP {
             equipedweapons = new Weapon[2];
 
             equipedweapons[0] = weapons.get(index);
-            equipedweapons[0] = weapons.get(6);
+            //equipedweapons[0] = weapons.get(6);
 
             current = equipedweapons[FIRSTSLOT];
             currentslot = FIRSTSLOT;
@@ -336,6 +336,7 @@ public class GunsManagerMP {
                 }
                 current = null;
                 equipedweapons[currentslot] = null;
+                // sending back packet with the success
                 dropWeapon.sucessful = true;
                 Server server = MultiplayerManager.getInstance().server.getServer();
                 server.sendToAllTCP(dropWeapon);

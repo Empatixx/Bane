@@ -69,6 +69,8 @@ public class BerserkPot extends Artefact {
         charge = maxCharge;
         rarity = 1;
         removedSpeed = true;
+
+        scale = 2f;
     }
     @Override
     public void update(boolean pause) {

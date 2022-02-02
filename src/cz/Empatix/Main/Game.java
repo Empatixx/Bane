@@ -26,8 +26,10 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Game{
-    public static int ARROW = 0;
-    public static int CROSSHAIR = 1;
+    public static int GL_MAJOR_VERSION;
+    public static int GL_MINOR_VERSION;
+    public final static int ARROW = 0;
+    public final static int CROSSHAIR = 1;
     private static long[] cursors;
 
     public static boolean displayCollisions = false;
@@ -71,7 +73,7 @@ public class Game{
 
 
         // Create the window
-        window = glfwCreateWindow(Settings.WIDTH, Settings.HEIGHT, "Bane", /*glfwGetPrimaryMonitor()*/NULL, NULL);
+        window = glfwCreateWindow(Settings.WIDTH, Settings.HEIGHT, "Bane", NULL/*glfwGetPrimaryMonitor()*/, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -225,16 +227,19 @@ public class Game{
 
         // Without this won't opengl work
         GL.createCapabilities();
+        String[] splitVersion = glGetString(GL_VERSION).split("\\.");
+        GL_MAJOR_VERSION = Integer.parseInt(splitVersion[0]);
+        GL_MINOR_VERSION= Integer.parseInt(splitVersion[1]);
 
-        Loader.init();
-        LoadingScreen loadingScreen = new LoadingScreen();
 
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
         glEnable(GL_LINE_SMOOTH);
-
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glHint(GL_LINE_SMOOTH_HINT,GL_NICEST);
+
+        Loader.init();
+        LoadingScreen loadingScreen = new LoadingScreen();
 
         // Make the window visible
         glfwShowWindow(window);
@@ -294,7 +299,6 @@ public class Game{
                 timer += 1000;
                 System.out.print("UPS: "+updates+"   "+"FPS: "+frames+"\n");
                 FPS = frames;
-                // GARBAGE COLLECTOR
                 frames = 0;
                 updates = 0;
             }

@@ -1,6 +1,7 @@
 package cz.Empatix.Render.Graphics.Sprites;
 
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 
 import java.nio.ByteBuffer;
@@ -31,7 +32,9 @@ public class SpritesheetManager {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
-            glGenerateMipmap(GL_TEXTURE_2D);
+            if(Game.GL_MAJOR_VERSION >= 3){
+                glGenerateMipmap(GL_TEXTURE_2D);  //Generate num_mipmaps number of mipmaps here.
+            }
             glBindTexture(GL_TEXTURE_2D,0);
 
             Spritesheet spritesheet = new Spritesheet(idTexture);
@@ -50,7 +53,9 @@ public class SpritesheetManager {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, spritesheetImage);
-            glGenerateMipmap(GL_TEXTURE_2D);
+            if(Game.GL_MAJOR_VERSION >= 3){
+                glGenerateMipmap(GL_TEXTURE_2D);  //Generate num_mipmaps number of mipmaps here.
+            }
             glBindTexture(GL_TEXTURE_2D,0);
 
             Spritesheet spritesheet = new Spritesheet(idTexture);

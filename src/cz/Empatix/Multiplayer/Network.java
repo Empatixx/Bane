@@ -264,5 +264,6 @@ public class Network {
     }
     public static class ArtefactActivate{
         public String username;
+        public int slot;
     }
 }

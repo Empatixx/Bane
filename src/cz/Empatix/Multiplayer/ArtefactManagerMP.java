@@ -51,10 +51,10 @@ public class ArtefactManagerMP {
             playerArtefact.charge();
         }
     }
-    public void activate(String username){
+    public void activate(String username,Network.ArtefactActivate artefactActivate){
         for(PlayerArtefacts playerArtefact : playerArtefacts){
             if(playerArtefact == null) continue;
-            playerArtefact.activate(username);
+            playerArtefact.activate(username, artefactActivate);
         }
     }
     public void update(){
@@ -111,12 +111,16 @@ public class ArtefactManagerMP {
                 }
             }
         }
-        public void activate(String username){
+        public void activate(String username, Network.ArtefactActivate artefactActivate){
             if(!this.username.equalsIgnoreCase(username)) return;
             if(currentArtefact != null){
                 if(currentArtefact.canBeActivated()){
                     currentArtefact.activate(username);
                     firstAlert = false;
+                    // sending acknowledge of activating artefact
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    artefactActivate.slot = artefacts.indexOf(currentArtefact);
+                    server.sendToAllTCP(artefactActivate);
                 }
             }
         }

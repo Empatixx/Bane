@@ -255,6 +255,12 @@ public class GameClient{
                      */
                     packetHolder.add(object,PacketHolder.PLAYERINFO);
                 }
+                else if (object instanceof Network.ArtefactActivate){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        packetHolder.add(object,PacketHolder.ARTEFACTACTIVATED);
+                    }
+                }
             }
         });
 

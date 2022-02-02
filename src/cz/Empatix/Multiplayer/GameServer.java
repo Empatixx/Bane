@@ -123,7 +123,7 @@ public class GameServer {
                     gunsManager.startShooting(((Network.StartShooting) object).username);
                 }
                 else if (object instanceof Network.ArtefactActivate){
-                    artefactManager.activate((((Network.ArtefactActivate) object).username));
+                    artefactManager.activate((((Network.ArtefactActivate) object).username), (Network.ArtefactActivate) object);
                 }
             }
         });

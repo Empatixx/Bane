@@ -7,8 +7,11 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Support.BerserkPot;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
@@ -98,6 +101,16 @@ public class ArtefactManager {
         }
         if(currentArtefact != null){
             currentArtefact.updateChargeAnimation();
+        }
+        if(MultiplayerManager.multiplayer){
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+            Object[] packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTACTIVATED);
+            for(Object o : packets) {
+                Network.ArtefactActivate p = (Network.ArtefactActivate)o;
+                if(mpManager.getUsername().equalsIgnoreCase(p.username)){
+                    artefacts.get(p.slot).charge = 0;
+                }
+            }
         }
     }
     public Artefact randomArtefact(){

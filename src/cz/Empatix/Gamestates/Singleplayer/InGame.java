@@ -141,7 +141,7 @@ public class InGame extends GameState {
                         gunsManager.stopShooting();
                         setCursor(Game.CROSSHAIR);
                     } else{
-                        // TODO: predelat save game nebo smazat
+                        // TODO: stats menu
                         //DataManager.saveGame(this);
                         //gameTimeSave = System.currentTimeMillis();
                     }
@@ -228,102 +228,6 @@ public class InGame extends GameState {
             artefactManager.activate();
         }
 
-    }
-    public void loadGame(GameStateManager gsm){
-
-        pauseTimeEnded += System.currentTimeMillis() - gameTimeSave;
-        this.gsm = gsm;
-        textRender = new TextRender[17];
-        for(int i = 0;i<17;i++) textRender[i] = new TextRender();
-
-        AudioManager.cleanUpAllSources();
-
-        gameStart = System.currentTimeMillis();
-        pauseTimeEnded=0;
-        pauseTimeStarted=0;
-        pause = false;
-
-        endRewardEarned = false;
-
-        objectsFramebuffer = new Framebuffer();
-        pauseBlurFramebuffer = new Framebuffer();
-        fadeFramebuffer = new Framebuffer();
-        lightManager = new LightManager();
-        fade = new Fade("shaders\\fade");
-        gaussianBlur = new GaussianBlur("shaders\\blur");
-
-        setCursor(Game.CROSSHAIR);
-
-        // Tile map
-        tileMap.loadSave();
-
-        // player
-        // create player object
-        player.loadSave();
-
-        // weapons
-        // load gun manager with tilemap object
-        gunsManager.loadSave();
-
-        artefactManager.loadSave();
-        // items drops
-        // load item manager with instances of objects
-        itemManager.loadSave();
-        ItemManager.init(itemManager);
-
-        miniMap.loadSave();
-        //health bar
-        healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,45,3);
-        healthBar.initHealth(player.getHealth(),player.getMaxHealth());
-        //armor bar
-        armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3);
-        armorBar.initArmor(player.getArmor(),player.getMaxArmor());
-        //minimap
-        damageIndicator = new DamageIndicator();
-        // coin
-        coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
-
-        alertManager = new AlertManager();
-
-        //audio
-        AudioManager.playSoundtrack(Soundtrack.IDLE);
-
-        enemyManager.loadSave();
-        EnemyManager.init(enemyManager);
-
-
-        // pause menu
-        pauseBackground = new Background("Textures\\Menu\\pausemenu.tga");
-        pauseBackground.setDimensions(500,800);
-        pauseBars = new MenuBar[3];
-
-        String defaultBar = "Textures\\Menu\\menu_bar.tga";
-        MenuBar bar;
-        bar = new MenuBar(defaultBar,new Vector3f(960,455,0),1.70f,200,100,true);
-        bar.setType(PAUSERESUME);
-        pauseBars[0] = bar;
-
-        bar = new MenuBar(defaultBar,new Vector3f(960,645,0),1.70f,200,100,true);
-        bar.setType(PAUSESETTINGS);
-        pauseBars[1] = bar;
-
-        bar = new MenuBar(defaultBar,new Vector3f(960,835,0),1.70f,200,100,true);
-        bar.setType(PAUSEEXIT);
-        pauseBars[2] = bar;
-
-        source = new Source(Source.EFFECTS,0.35f);
-        soundMenuClick = AudioManager.loadSound("menuclick.ogg");
-
-        skullPlayerdead = new Image("Textures\\skull.tga",new Vector3f(960,540,0),15f);
-        logos = new Image[4];
-        logos[0] = new Image("Textures\\killslogo.tga", new Vector3f(500,576,0),1.5f);
-        logos[1] = new Image("Textures\\coinlogo.tga", new Vector3f(500,476,0),1.5f);
-        logos[2] = new Image("Textures\\accuracylogo.tga", new Vector3f(500,676,0),1.5f);
-        logos[3] = new Image("Textures\\timelogo.tga", new Vector3f(500,776,0),1.5f);
-
-        skullPlayerdead.setAlpha(0f);
-
-        console = new Console(gunsManager,player,itemManager,enemyManager);
     }
 
     @Override

@@ -207,7 +207,6 @@ public abstract class Weapon{
     }
 
     public void checkCollisionsBullets(ArrayList<Enemy> enemies, ArrayList<Bullet> bullets){
-        ArrayList<RoomObject> objects = tm.getRoomMapObjects();
         A: for(Bullet bullet:bullets){
             for(Enemy enemy:enemies){
                 if(bullet.intersects(enemy) && enemy.canReflect()){
@@ -234,12 +233,16 @@ public abstract class Weapon{
                     continue A;
                 }
             }
-            for(RoomObject object: objects){
-                if(object instanceof DestroyableObject) {
-                    if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        bullet.setHit(Bullet.TypeHit.ROOMOBJECT,object.getId());
-                        ((DestroyableObject) object).setHit(bullet.getDamage());
-                        continue A;
+            ArrayList<RoomObject>[] objectsArray = tm.getRoomMapObjects();
+            for(ArrayList<RoomObject> objects : objectsArray) {
+                if (objects == null) continue;
+                for(RoomObject object: objects){
+                    if(object instanceof DestroyableObject) {
+                        if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
+                            bullet.setHit(Bullet.TypeHit.ROOMOBJECT,object.getId());
+                            ((DestroyableObject) object).setHit(bullet.getDamage());
+                            continue A;
+                        }
                     }
                 }
             }

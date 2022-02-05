@@ -214,6 +214,7 @@ public class Slime extends Enemy {
         }
         for(int i = 0;i<bullets.size();i++){
             Slimebullet slimebullet = bullets.get(i);
+            // check if bullet was hitted or not before updating it
             boolean preHit = slimebullet.isHit();
             slimebullet.update();
             // multiplayer - serverside
@@ -236,7 +237,6 @@ public class Slime extends Enemy {
                     moveEnemyProjectile.y = slimebullet.getY();
                     server.sendToAllTCP(moveEnemyProjectile);
                 }
-
                 for(Player p : player){
                     if(p != null){
                         if(slimebullet.intersects(p) && !p.isFlinching() && !p.isDead()){
@@ -253,30 +253,34 @@ public class Slime extends Enemy {
                         }
                     }
                 }
-                for(RoomObject object: tileMap.getRoomMapObjects()){
-                    if(object instanceof DestroyableObject) {
-                        if (slimebullet.intersects(object) && !((DestroyableObject) object).isDestroyed()) {
-                            slimebullet.setHit();
-                            ((DestroyableObject) object).setHit(1);
+                ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+                for(ArrayList<RoomObject> objects : objectsArray) {
+                    if (objects == null) continue;
+                    for(RoomObject object : objects) {
+                        if (object instanceof DestroyableObject) {
+                            if (slimebullet.intersects(object) && !((DestroyableObject) object).isDestroyed()) {
+                                slimebullet.setHit();
+                                ((DestroyableObject) object).setHit(1);
 
-                            if(tileMap.isServerSide()){
+                                if (tileMap.isServerSide()) {
+                                    Server server = MultiplayerManager.getInstance().server.getServer();
+                                    Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                                    enemyProjectile.id = slimebullet.id;
+                                    enemyProjectile.idEnemy = getId();
+                                    enemyProjectile.idHit = object.getId();
+                                    server.sendToAllTCP(enemyProjectile);
+                                }
+                            }
+                        } else if (object.collision && slimebullet.intersects(object)) {
+                            slimebullet.setHit();
+
+                            if (tileMap.isServerSide()) {
                                 Server server = MultiplayerManager.getInstance().server.getServer();
                                 Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
                                 enemyProjectile.id = slimebullet.id;
                                 enemyProjectile.idEnemy = getId();
-                                enemyProjectile.idHit = object.getId();
                                 server.sendToAllTCP(enemyProjectile);
                             }
-                        }
-                    } else if(object.collision && slimebullet.intersects(object)){
-                        slimebullet.setHit();
-
-                        if(tileMap.isServerSide()) {
-                            Server server = MultiplayerManager.getInstance().server.getServer();
-                            Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
-                            enemyProjectile.id = slimebullet.id;
-                            enemyProjectile.idEnemy = getId();
-                            server.sendToAllTCP(enemyProjectile);
                         }
                     }
                 }
@@ -439,11 +443,15 @@ public class Slime extends Enemy {
         for(Slimebullet bullet : bullets){
             if(bullet.getId() == hitPacket.id){
                 bullet.setHit();
-                // player was hitted
+                // player was hitted on client side
                 if (hitPacket.idHit != -1){
-                    for(RoomObject roomObject : tileMap.getRoomMapObjects()){
-                        if(roomObject.getId() == hitPacket.idHit){
-                            ((DestroyableObject)roomObject).setHit(1);
+                    ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+                    for(ArrayList<RoomObject> objects : objectsArray) {
+                        if (objects == null) continue;
+                        for (RoomObject roomObject : objects) {
+                            if (roomObject.getId() == hitPacket.idHit) {
+                                ((DestroyableObject) roomObject).setHit(1);
+                            }
                         }
                     }
                 }

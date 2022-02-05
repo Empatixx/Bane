@@ -36,8 +36,8 @@ public class Player extends MapObject {
     protected long rollCooldown;
     protected boolean rolling;
 
-    private boolean dead;
-    private long deathTime;
+    protected boolean dead;
+    protected long deathTime;
 
     // vignette ( player hurt - effect )
     protected Background[] hitVignette;
@@ -631,6 +631,7 @@ public class Player extends MapObject {
         lowHealth = false;
         glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
         source.play(soundPlayerdeath);
+
     }
     public void removeCoins(int amount){
         coins-=amount;

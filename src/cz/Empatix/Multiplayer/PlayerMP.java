@@ -16,13 +16,15 @@ public class PlayerMP extends Player {
     private MultiplayerManager mpManager;
 
     private TextRender textRender;
+    private boolean ghost;
 
     public PlayerMP(TileMap tm, String username){
         super(tm);
         this.username = username;
         origin = false;
         mpManager = MultiplayerManager.getInstance();
-        setHealth(200);
+        ghost = false;
+        //setHealth(200);
     }
 
     public void setOrigin(boolean origin) {
@@ -59,22 +61,25 @@ public class PlayerMP extends Player {
             down=false;
             left=false;
         }
-        // check if player is not dead
-        if (health <= 0) {
-            speed.x = 0;
-            speed.y = 0;
-            right=false;
-            up=false;
-            down=false;
-            left=false;
-            flinching = false;
-        } else if (health < 3 && !lowHealth && !tileMap.isServerSide()){
-            lowHealth = true;
-            sourcehealth.play(soundLowHealth);
-        }
-        else if (health >= 3 && lowHealth && !tileMap.isServerSide()){
-            lowHealth = false;
-            sourcehealth.stop();
+        if(!ghost){
+            // check if player is not dead
+            if (health <= 0) {
+                speed.x = 0;
+                speed.y = 0;
+                right=false;
+                up=false;
+                down=false;
+                left=false;
+                flinching = false;
+                setDead();
+            } else if (health < 3 && !lowHealth && !tileMap.isServerSide()){
+                lowHealth = true;
+                sourcehealth.play(soundLowHealth);
+            }
+            else if (health >= 3 && lowHealth && !tileMap.isServerSide()){
+                lowHealth = false;
+                sourcehealth.stop();
+            }
         }
 
         if (lowHealth && (float)(System.currentTimeMillis()-heartBeat-InGame.deltaPauseTime())/1000 > 0.85f){
@@ -189,6 +194,27 @@ public class PlayerMP extends Player {
             hitVignette[0].updateFadeTime();
         }
         source.play(soundPlayerhurt[Random.nextInt(2)]);
+    }
+    @Override
+    public void setDead(){
+        deathTime = System.currentTimeMillis();
+        dead = true;
+        speed.x = 0;
+        speed.y = 0;
+        right=false;
+        up=false;
+        down=false;
+        left=false;
+        flinching = false;
+        if(!tileMap.isServerSide()){
+            if(sourcehealth.isPlaying()) sourcehealth.stop();
+            lowHealth = false;
+            source.play(soundPlayerdeath);
+        }
+        ghost = true;
+    }
 
+    public boolean isGhost() {
+        return ghost;
     }
 }

@@ -93,6 +93,8 @@ public class GameServer {
                         EnemyManagerMP.init(players,tileMap);
                         enemyManagerMP = EnemyManagerMP.getInstance();
                         tileMap.loadMap();
+                        itemManager.dropArtefact((int)tileMap.getPlayerStartX(),(int)tileMap.getPlayerStartY());
+                        itemManager.dropArtefact((int)tileMap.getPlayerStartX()+130,(int)tileMap.getPlayerStartY()+130);
                         for(Player p : connectedPlayers){
                             if(p != null) p.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
                         }
@@ -113,8 +115,11 @@ public class GameServer {
                 else if (object instanceof Network.Ready){
                     server.sendToAllTCP(object);
                 }
+                else if (object instanceof Network.DropInteract){
+                    itemManager.handleDrolpInteractPacket((Network.DropInteract)object);
+                }
                 else if (object instanceof Network.ObjectInteract){
-                    itemManager.handleObjectInteractPacket((Network.ObjectInteract)object);
+                    tileMap.handleObjectInteractPacket((Network.ObjectInteract)object);
                 }
                 else if (object instanceof Network.StopShooting){
                     gunsManager.stopShooting(((Network.StopShooting) object).username);
@@ -151,11 +156,13 @@ public class GameServer {
                     while (delta >= 1){
                              if(gameState == GameStateManager.INGAME){
                                  itemManager.update();
+                                 ItemManagerMP.InteractionAcknowledge[] interAck = itemManager.checkDropInteractions();
                                  for(Player player: connectedPlayers){
                                      player.update();
                                  }
                                  tileMap.updateObjects();
                                  tileMap.updateCurrentRoom();
+                                 tileMap.checkObjectsInteractions(interAck);
 
                                  gunsManager.updatePlayerLocations();
                                  gunsManager.shoot();
@@ -202,7 +209,7 @@ public class GameServer {
 
                     if (System.currentTimeMillis() - timer > 1000){
                         timer += 1000;
-                        System.out.print("UPS SERVER: "+updates+"\n");
+                        //System.out.print("UPS SERVER: "+updates+"\n");
                         updates = 0;
                     }
                 }

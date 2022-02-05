@@ -41,7 +41,7 @@ public class Network {
         kryo.register(SwitchWeaponSlot.class);
         kryo.register(PlayerDropWeapon.class);
         kryo.register(DropWeapon.class);
-        kryo.register(ObjectInteract.class);
+        kryo.register(DropInteract.class);
         kryo.register(MoveDropItem.class);
         kryo.register(TypeRoomObject.class);
         kryo.register(AddRoomObject.class);
@@ -58,6 +58,10 @@ public class Network {
         kryo.register(PlayerHit.class);
         kryo.register(DropArtefact.class);
         kryo.register(ArtefactActivate.class);
+        kryo.register(ArtefactAddBullet.class);
+        kryo.register(LockRoom.class);
+        kryo.register(NextFloor.class);
+        kryo.register(ObjectInteract.class);
 
     }
     // MAIN
@@ -108,7 +112,6 @@ public class Network {
     }
     public static class ConfirmChangeGS {
     }
-
     // GUNS
     public static class MouseCoords{
         public String username;
@@ -193,11 +196,15 @@ public class Network {
         public int slot;
         public String username;
     }
-    public static class ObjectInteract {
+    public static class DropInteract {
         public String username;
         public boolean sucessful;
         public int id;
         public int x, y;
+    }
+    public static class ObjectInteract {
+        public String username;
+        public int id;
     }
     public enum TypeRoomObject{
         CHEST,SPIKE,BONES,TORCH,BARREL,POT,SHOPKEEPER,SHOPTABLE,FLAMETHROWER,LADDER,
@@ -217,7 +224,7 @@ public class Network {
     public static class AddEnemyProjectile{
         public int id;
         public int idEnemy;
-        public float x, y;
+        public float x, y; // direction
         public float inaccuracy;
     }
     public static class MoveEnemyProjectile{
@@ -232,8 +239,8 @@ public class Network {
         public HitEnemyProjectile(){
             idHit= -1;
         }
-        // else idHit != -1=> hitted object is room object
-        // else it is wall hit
+        // idHit == -1  means that player was hitted or room object
+        // damage hit is done on serverside, only if it is room object damage is done on clientside
     }
 
     public static class ShopDropitem {
@@ -265,5 +272,20 @@ public class Network {
     public static class ArtefactActivate{
         public String username;
         public int slot;
+    }
+    public static class ArtefactAddBullet{
+        public String username;
+        public float x, y; // direction
+        public float px,py;
+        public int id;
+        public float inaccuracy;
+        public int slot;
+    }
+    public static class LockRoom{
+        public boolean lock;
+        public int idRoom;
+    }
+    public static class NextFloor{
+        public int floor;
     }
 }

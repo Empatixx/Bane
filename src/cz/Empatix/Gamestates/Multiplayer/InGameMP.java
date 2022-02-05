@@ -41,7 +41,7 @@ import org.lwjgl.glfw.GLFW;
 
 import static cz.Empatix.Main.Game.ARROW;
 import static cz.Empatix.Main.Game.setCursor;
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.opengl.GL11.*;
 
 
@@ -149,7 +149,7 @@ public class InGameMP extends GameState {
     @Override
     protected void mousePressed(int button) {
         if(button == ControlSettings.getValue(ControlSettings.SHOOT)){
-            if(!pause)gunsManager.startShooting();
+            if(!pause && !player[0].isDead())gunsManager.startShooting();
         }
     }
     @Override
@@ -158,17 +158,6 @@ public class InGameMP extends GameState {
     }
     @Override
     protected void keyReleased(int k) {
-        if(player[0].isDead()){
-            float time = (System.currentTimeMillis()-player[0].getDeathTime());
-            if(time > 5500){
-                transitionContinue = true;
-
-            }
-            return;
-        }
-        if(console.isEnabled()){
-            console.keyReleased(k);
-        }
         if (k == GLFW_KEY_ESCAPE){
             pause = !pause;
             if(pause){
@@ -178,7 +167,11 @@ public class InGameMP extends GameState {
             }
             gunsManager.stopShooting();
         }
-        player[0].keyReleased(k);
+        if(!player[0].isDead() || player[0].isGhost())player[0].keyReleased(k);
+        if(player[0].isDead()) return;
+        if(console.isEnabled()){
+            console.keyReleased(k);
+        }
         miniMap.keyReleased(k);
 
         if(pause) return;
@@ -194,6 +187,7 @@ public class InGameMP extends GameState {
 
     @Override
     protected void keyPressed(int k) {
+        if(!player[0].isDead() || player[0].isGhost())player[0].keyPressed(k);
         if(player[0].isDead()) return;
         if(pause) return;
 
@@ -212,18 +206,21 @@ public class InGameMP extends GameState {
         float my = tileMap.getY();
         gunsManager.keyPressed(k,(int)(mouseX-mx-px),(int)(mouseY-my-py));
 
-        player[0].keyPressed(k);
         miniMap.keyPressed(k);
 
         //if(!interract){
         //    tileMap.keyPressed(k,player[0]);
         if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT)) {
             Client client = MultiplayerManager.getInstance().client.getClient();
-            Network.ObjectInteract pickup = new Network.ObjectInteract();
+            Network.DropInteract pickup = new Network.DropInteract();
             pickup.username = player[0].getUsername();
             pickup.x = (int)(mouseX-mx-px);
             pickup.y = (int)(mouseY-my-py);
             client.sendTCP(pickup);
+
+            Network.ObjectInteract interact = new Network.ObjectInteract();
+            interact.username = player[0].getUsername();
+            client.sendTCP(interact);
         }
 
         if(k == ControlSettings.getValue(ControlSettings.ARTEFACT_USE)){
@@ -356,6 +353,8 @@ public class InGameMP extends GameState {
                 delay+=1000;
                 System.out.println("STILL NOT LOADED MAP");
             }
+            Object[] packets = mpManager.packetHolder.get(PacketHolder.MAPLOADED);
+            if(packets.length >= 1) mapLoaded = true;
         }
         tileMap.loadMapViaPackets();
         tileMap.fillMiniMap();
@@ -416,15 +415,10 @@ public class InGameMP extends GameState {
 
         objectsFramebuffer.unbindFBO();
 
-        if(player[0].isDead()){
-            fadeFramebuffer.bindFBO();
-            glClear(GL_COLOR_BUFFER_BIT);
-        }
         if(pause){
             pauseBlurFramebuffer.bindFBO();
             glClear(GL_COLOR_BUFFER_BIT);
         }
-
 
         lightManager.draw(objectsFramebuffer);
 
@@ -451,8 +445,8 @@ public class InGameMP extends GameState {
         alertManager.draw();
         textRender[2].draw(""+player[0].getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
 
-
-        if(player[0].isDead()){
+        // remake if all players are dead
+        if(player[0].isDead() && false){
             int totalReward = 0;
             int rewardAccuracy = 0;
             int rewardKilledEnemies = (int)Math.sqrt(EnemyManager.enemiesKilled)*(int)((tileMap.getFloor()+1)/1.25);
@@ -560,30 +554,33 @@ public class InGameMP extends GameState {
 
     @Override
     protected void update() {
+        // entering new floor
+        Object[] nextFloor = mpManager.packetHolder.get(PacketHolder.NEXTFLOOR);
+        if(nextFloor.length >= 1){
+            tileMap.handleNextFloorPacket((Network.NextFloor)nextFloor[0]);
+
+            mapLoaded = false;
+            long delay = System.currentTimeMillis();
+            while(!mapLoaded){
+                if(System.currentTimeMillis() > delay) {
+                    delay+=1000;
+                    System.out.println("STILL NOT LOADED MAP");
+                }
+                Object[] packets = mpManager.packetHolder.get(PacketHolder.MAPLOADED);
+                if(packets.length >= 1) mapLoaded = true;
+            }
+            tileMap.setTween(1);
+            tileMap.loadMapViaPackets();
+            tileMap.fillMiniMap();
+            // move player to starter room
+            mpManager.packetHolder.clear(PacketHolder.MOVEPLAYER);
+            player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
+            tileMap.setTween(0.10);
+        }
+
         AudioManager.update();
         if (player[0].isDead()) {
-            if (pause) pause = false;
-            enemyManager.updateOnlyAnimations();
-            fade.update(transitionContinue);
-            if (fade.isTransitionDone()) {
-                gsm.setState(GameStateManager.PROGRESSROOMMP);
-                glfwSetInputMode(Game.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-                return;
-            }
-            for (Player player : player) {
-                if (player != null) player.update();
-            }
-            alertManager.update();
-            healthBar.update(player[0].getHealth(), player[0].getMaxHealth());
-            float time = (System.currentTimeMillis() - player[0].getDeathTime());
-            if (time > 2000) {
-                Vector3f pos = skullPlayerdead.getPos();
-                float y = pos.y() + (140 - pos.y()) * time / 40000;
-                Vector3f newpos = new Vector3f(pos.x(), y, 0);
-                skullPlayerdead.setPosition(newpos);
-            }
-            skullPlayerdead.setAlpha(time / 4500f);
-            return;
+            // dead logic pls
         }
         // loc of mouse
         mouseX = gsm.getMouseX();
@@ -599,10 +596,7 @@ public class InGameMP extends GameState {
                 Camera.getWIDTH() / 2f - player[0].getX(),
                 Camera.getHEIGHT() / 2f - player[0].getY()
         );
-
-
-        artefactManager.update(pause);
-
+        tileMap.checkingRoomLocks();
         itemManager.update();
 
         if (pause) {
@@ -613,7 +607,7 @@ public class InGameMP extends GameState {
                 }
             }
         }
-        for (Player player : player) {
+        for (PlayerMP player : player) {
             if (player != null) player.update();
         }
         // movement of players
@@ -675,9 +669,14 @@ public class InGameMP extends GameState {
         if (!pause) {
             gunsManager.shoot(mouseX - mx - px, mouseY - my - py, px, py,player[0].getUsername());
         }
-        gunsManager.update();
         // updating if player shoots any enemies
         enemyManager.update();
+        artefactManager.update(pause);
+        gunsManager.update();
+
+        //TODO: do without clearing but just removing
+        mpManager.packetHolder.clear(PacketHolder.HITBULLET);
+
         damageIndicator.update();
         console.update();
 

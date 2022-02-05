@@ -47,15 +47,15 @@ public class ArtefactDrop extends ItemDrop {
             liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
             pickedUp = false;
             if(artefact instanceof Ammobelt){
-                width = height = 32;
+                cwidth = cheight = width = height = 32;
             } else if(artefact instanceof BerserkPot){
-                width = height = 32;
+                cwidth = cheight = width = height = 32;
             } else if(artefact instanceof LuckyCoin){
-                width = height = 33;
+                cwidth = cheight = width = height = 33;
             } else if(artefact instanceof RingOfFire){
-                width = height = 25;
+                cwidth = cheight = width = height = 25;
             } else if(artefact instanceof TransportableArmorPot){
-                width = height = 32;
+                cwidth = cheight = width = height = 32;
             }
             scale = artefact.getScale();
             facingRight = true;
@@ -105,44 +105,73 @@ public class ArtefactDrop extends ItemDrop {
     }
     public ArtefactDrop(TileMap tm, Artefact artefact, float x, float y){
         super(tm);
-        this.artefact = artefact;
-        type = ARTEFACT;
-        canDespawn = false;
-        liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
-        pickedUp = false;
+        if(tm.isServerSide()){
+            this.artefact = artefact;
+            type = ARTEFACT;
+            canDespawn = false;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
+            if(artefact instanceof Ammobelt){
+                cwidth = cheight = width = height = 32;
+            } else if(artefact instanceof BerserkPot){
+                cwidth = cheight = width = height = 32;
+            } else if(artefact instanceof LuckyCoin){
+                cwidth = cheight = width = height = 33;
+            } else if(artefact instanceof RingOfFire){
+                cwidth = cheight = width = height = 25;
+            } else if(artefact instanceof TransportableArmorPot){
+                cwidth = cheight = width = height = 32;
+            }
+            scale = artefact.getScale();
+            facingRight = true;
 
-        Image imageOfWeapon = artefact.getImageArtefact();
+            cwidth*=scale;
+            cheight*=scale;
 
-        width=cwidth=imageOfWeapon.getWidth();
-        height=cheight=imageOfWeapon.getHeight();
-        scale = artefact.getScale();
-        facingRight = true;
+            double atan = Math.atan2(y,x);
+            speed.x = (float)(Math.cos(atan) * 10);
+            speed.y = (float)(Math.sin(atan) * 10);
+            stopSpeed = 0.35f;
+        } else {
+            this.artefact = artefact;
+            type = ARTEFACT;
+            canDespawn = false;
+            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            pickedUp = false;
 
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        vboTexturesWeapon = imageOfWeapon.getVboTextures();
-        vboVerticesWeapon = imageOfWeapon.getVboVertices();
+            Image imageOfWeapon = artefact.getImageArtefact();
+
+            width=cwidth=imageOfWeapon.getWidth();
+            height=cheight=imageOfWeapon.getHeight();
+            scale = artefact.getScale();
+            facingRight = true;
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+            vboTexturesWeapon = imageOfWeapon.getVboTextures();
+            vboVerticesWeapon = imageOfWeapon.getVboVertices();
 
 
-        textureId = imageOfWeapon.getIdTexture();
-        textureWidth = width;
-        textureHeight = height;
+            textureId = imageOfWeapon.getIdTexture();
+            textureWidth = width;
+            textureHeight = height;
 
-        light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
+            light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
 
-        double atan = Math.atan2(y,x);
-        speed.x = (float)(Math.cos(atan) * 10);
-        speed.y = (float)(Math.sin(atan) * 10);
-        stopSpeed = 0.35f;
+            cwidth*=scale;
+            cheight*=scale;
 
-        cwidth*=scale;
-        cheight*=scale;
+            outlineShader = ShaderManager.getShader("shaders\\outline");
+            if (outlineShader == null){
+                outlineShader = ShaderManager.createShader("shaders\\outline");
+            }
 
-        outlineShader = ShaderManager.getShader("shaders\\outline");
-        if (outlineShader == null){
-            outlineShader = ShaderManager.createShader("shaders\\outline");
+            double atan = Math.atan2(y,x);
+            speed.x = (float)(Math.cos(atan) * 10);
+            speed.y = (float)(Math.sin(atan) * 10);
+            stopSpeed = 0.35f;
         }
     }
     @Override
@@ -301,8 +330,6 @@ public class ArtefactDrop extends ItemDrop {
     @Override
     public void update() {
         super.update();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
     }
 
     public void setCanPick(boolean canPick) {

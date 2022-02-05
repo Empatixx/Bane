@@ -24,7 +24,7 @@ public class ItemManagerMP {
     private int totalCoins;
 
     private ItemDrop[] shopItem;
-    private List<Network.ObjectInteract> objectInteractPackets;
+    private List<Network.DropInteract> dropInteractPackets;
 
     private long[] alertCooldown;
 
@@ -42,7 +42,7 @@ public class ItemManagerMP {
         itemDrops = new ArrayList<>();
         shopItem = new ItemDrop[player.length];
         alertCooldown = new long[player.length];
-        objectInteractPackets = Collections.synchronizedList(new ArrayList<>());
+        dropInteractPackets = Collections.synchronizedList(new ArrayList<>());
 
         totalCoins = 0;
 
@@ -286,10 +286,6 @@ public class ItemManagerMP {
                 }
             }
         }
-        for(Network.ObjectInteract objectInteract : objectInteractPackets){
-            pickup(objectInteract);
-        }
-        objectInteractPackets.clear();
     }
 
     public void dropWeapon(int x, int y, Vector2f speed) {
@@ -486,14 +482,22 @@ public class ItemManagerMP {
 
     public void addItemDrop(ItemDrop itemdrop){
         itemDrops.add(itemdrop);
+        Network.DropItem dropItem = new Network.DropItem();
+        dropItem.type = itemdrop.type;
+        dropItem.id = itemdrop.getId();
+        dropItem.x = (int)itemdrop.getX();
+        dropItem.y = (int)itemdrop.getY();
+        dropItem.amount = itemdrop.getAmount();
+        Server server = MultiplayerManager.getInstance().server.getServer();
+        server.sendToAllTCP(dropItem);
     }
 
-    public void pickup(Network.ObjectInteract pickup) {
+    public boolean pickup(Network.DropInteract pickup) {
         int x = pickup.x;
         int y = pickup.y;
         for(int i = 0;i< player.length;i++){
             PlayerMP player = this.player[i];
-            if(!pickup.username.equalsIgnoreCase(player.getUsername())) continue;
+            if(!pickup.username.equalsIgnoreCase(player.getUsername()) || !player.isDead()) continue;
             // picking gun from ground
             float distance = -1;
             ItemDrop selectedDrop = null;
@@ -534,6 +538,7 @@ public class ItemManagerMP {
                     server.sendToAllTCP(pickup);
                     selectedDrop.pickedUp = true;
                 }
+                return true;
             }
             if(shopItem[i] != null){
                 Server server = MultiplayerManager.getInstance().server.getServer();
@@ -576,8 +581,45 @@ public class ItemManagerMP {
                 }
             }
         }
+        return false;
     }
-    public void handleObjectInteractPacket(Network.ObjectInteract objectInteract){
-        objectInteractPackets.add(objectInteract);
+    public void handleDrolpInteractPacket(Network.DropInteract dropInteract){
+        dropInteractPackets.add(dropInteract);
+    }
+
+    public InteractionAcknowledge[] checkDropInteractions() {
+        InteractionAcknowledge[] interactionAcknowledges = new InteractionAcknowledge[player.length];
+        for(int i = 0;i< player.length;i++){
+            PlayerMP p = player[i];
+            if(p == null) interactionAcknowledges[i] = null;
+            else interactionAcknowledges[i] = new InteractionAcknowledge(p.getUsername());
+        }
+        for(Network.DropInteract dropInteract : dropInteractPackets){
+            boolean interact = pickup(dropInteract);
+            if(interact) for(InteractionAcknowledge acknowledge : interactionAcknowledges) acknowledge.pickup(dropInteract.username);
+        }
+        dropInteractPackets.clear();
+        return interactionAcknowledges;
+    }
+
+    public static class InteractionAcknowledge{
+        private final String username;
+        private boolean interact;
+        private InteractionAcknowledge(String username){
+            this.username = username;
+            this.interact = false;
+        }
+        private void pickup(String username){
+            if(this.username.equalsIgnoreCase(username)){
+                interact = true;
+            }
+        }
+        public boolean isThisAckOfPlayer(String username){
+            return this.username.equalsIgnoreCase(username);
+        }
+
+        public boolean didInteract() {
+            return interact;
+        }
     }
 }

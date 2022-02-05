@@ -1,31 +1,29 @@
 package cz.Empatix.Entity.ItemDrops.Artefacts.Damage;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Enemies.KingSlime;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Guns.Bullet;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
-import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.ArtefactManagerMP;
 import cz.Empatix.Multiplayer.EnemyManagerMP;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
 import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class RingOfFire extends Artefact {
@@ -61,16 +59,6 @@ public class RingOfFire extends Artefact {
         scale = 4f;
 
     }
-    @Override
-    public void loadSave() {
-        imageArtefact = new Image("Textures\\artefacts\\rof.tga",new Vector3f(1403,975,0),
-                scale);
-        chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
-                2.6f);
-        for(Bullet bullet : bullets){
-            bullet.loadSave();
-        }
-    }
 
     @Override
     public void update(boolean pause) {
@@ -82,46 +70,42 @@ public class RingOfFire extends Artefact {
                 i--;
             }
         }
-        ArrayList<RoomObject> objects = tm.getRoomMapObjects();
-        A: for(Bullet bullet:bullets){
-            EnemyManager enemyManager = EnemyManager.getInstance();
-            for(Enemy enemy: enemyManager.getEnemies()){
-                if(bullet.intersects(enemy) && enemy.canReflect()){
-                    Vector3f speed = bullet.getSpeed();
-                    speed.x = -speed.x;
-                    speed.y = -speed.y;
-                    return;
-                }
-                if(bullet.isFriendlyFire()){
-                    if(bullet.intersects(p[0]) && !bullet.isHit() && !p[0].isDead() && !p[0].isFlinching()){
-                        p[0].hit(bullet.getDamage());
-                        bullet.setHit(Bullet.TypeHit.PLAYER);
-                        GunsManager.hitBullets++;
+        if(!MultiplayerManager.multiplayer){
+            A: for(Bullet bullet:bullets){
+                EnemyManager enemyManager = EnemyManager.getInstance();
+                for(Enemy enemy: enemyManager.getEnemies()){
+                    if(bullet.intersects(enemy) && enemy.canReflect()){
+                        Vector3f speed = bullet.getSpeed();
+                        speed.x = -speed.x;
+                        speed.y = -speed.y;
+                        return;
                     }
-                }
-                else if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
-                    if(enemy instanceof KingSlime) bullet.setDamage(1);
-                    enemy.hit(bullet.getDamage());
-                    int cwidth = enemy.getCwidth();
-                    int cheight = enemy.getCheight();
-                    int x = -cwidth/4+ Random.nextInt(cwidth/2);
-                    if(bullet.isCritical()){
-                        DamageIndicator.addCriticalDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
-                                ,new Vector2f(-x/25f,-1f));
-                    } else {
-                        DamageIndicator.addDamageShow(bullet.getDamage(),(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
-                                ,new Vector2f(-x/25f,-1f));
+                    if(bullet.isFriendlyFire()){
+                        if(bullet.intersects(p[0]) && !bullet.isHit() && !p[0].isDead() && !p[0].isFlinching()){
+                            p[0].hit(bullet.getDamage());
+                            bullet.setHit(Bullet.TypeHit.PLAYER);
+                            GunsManager.hitBullets++;
+                        }
                     }
-                    bullet.setHit(Bullet.TypeHit.ENEMY);
-                    continue A;
-                }
-            }
-            for(RoomObject object: objects){
-                if(object instanceof DestroyableObject) {
-                    if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        bullet.setHit(Bullet.TypeHit.ROOMOBJECT);
-                        ((DestroyableObject) object).setHit(bullet.getDamage());
+                    else if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
+                        if(enemy instanceof KingSlime) bullet.setDamage(1);
+                        enemy.hit(bullet.getDamage());
+                        showDamageIndicator(bullet.getDamage(),bullet.isCritical(),enemy);
+                        bullet.setHit(Bullet.TypeHit.ENEMY);
                         continue A;
+                    }
+                }
+                ArrayList<RoomObject>[] objectsArray = tm.getRoomMapObjects();
+                for(ArrayList<RoomObject> objects : objectsArray) {
+                    if (objects == null) continue;
+                    for (RoomObject object : objects) {
+                        if (object instanceof DestroyableObject) {
+                            if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
+                                bullet.setHit(Bullet.TypeHit.ROOMOBJECT);
+                                ((DestroyableObject) object).setHit(bullet.getDamage());
+                                continue A;
+                            }
+                        }
                     }
                 }
             }
@@ -137,7 +121,6 @@ public class RingOfFire extends Artefact {
                 i--;
             }
         }
-        ArrayList<RoomObject> objects = tm.getRoomMapObjects();
         A: for(Bullet bullet:bullets){
             EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
             for(Enemy enemy: enemyManager.getEnemies()){
@@ -160,20 +143,33 @@ public class RingOfFire extends Artefact {
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     if(enemy instanceof KingSlime) bullet.setDamage(1);
                     enemy.hit(bullet.getDamage());
-                    bullet.setHit(Bullet.TypeHit.ENEMY);
+                    bullet.setHit(Bullet.TypeHit.ENEMY, enemy.getId());
                     continue A;
                 }
             }
-            for(RoomObject object: objects){
-                if(object instanceof DestroyableObject) {
-                    if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        bullet.setHit(Bullet.TypeHit.ROOMOBJECT);
-                        ((DestroyableObject) object).setHit(bullet.getDamage());
-                        continue A;
+            ArrayList<RoomObject>[] objectsArray = tm.getRoomMapObjects();
+            for(ArrayList<RoomObject> objects : objectsArray) {
+                if (objects == null) continue;
+                for (RoomObject object : objects) {
+                    if (object instanceof DestroyableObject) {
+                        if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
+                            bullet.setHit(Bullet.TypeHit.ROOMOBJECT, object.getId());
+                            ((DestroyableObject) object).setHit(bullet.getDamage());
+                            continue A;
+                        }
                     }
                 }
             }
         }
+    }
+
+    @Override
+    public void handleAddBulletPacket(Network.ArtefactAddBullet addBullet) {
+        Bullet bullet = new Bullet(tm, 0, 0, addBullet.inaccuracy,30);
+        bullet.setPosition(addBullet.px, addBullet.py);
+        bullet.setId(addBullet.id);
+        bullets.add(bullet);
+        bullet.setDamage(4);
     }
     @Override
     protected void draw() {
@@ -218,6 +214,41 @@ public class RingOfFire extends Artefact {
     }
 
     @Override
+    public void handleHitBulletPacket(Network.HitBullet hitBullet) {
+        for(Bullet b : bullets){
+            if(b.getId() == hitBullet.id){
+                b.setHit(hitBullet.type);
+                if(hitBullet.type == Bullet.TypeHit.ENEMY){
+                    EnemyManager em = EnemyManager.getInstance();
+                    Enemy e = em.handleHitEnemyPacket(hitBullet.idHit,b.getDamage());
+                    showDamageIndicator(b.getDamage(),b.isCritical(),e);
+                } else if (hitBullet.type == Bullet.TypeHit.ROOMOBJECT){
+                    ArrayList<RoomObject>[] objectsArray = tm.getRoomMapObjects();
+                    for(ArrayList<RoomObject> objects : objectsArray) {
+                        if (objects == null) continue;
+                        for(RoomObject obj : objects) {
+                            if (obj.getId() == hitBullet.idHit) {
+                                if (obj instanceof DestroyableObject) {
+                                    ((DestroyableObject) obj).setHit(b.getDamage());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
+        for(Bullet b : bullets){
+            if(b.id== moveBullet.id){
+                b.setPosition(moveBullet.x, moveBullet.y);
+            }
+        }
+    }
+
+    @Override
     public void activate() {
         charge = 0;
         for (int i = 1; i <= 50; ) {
@@ -238,6 +269,12 @@ public class RingOfFire extends Artefact {
         for(Player p : p){
             if(p == null) continue;
             if(((PlayerMP)p).getUsername().equalsIgnoreCase(username)){
+                Network.ArtefactAddBullet addBullet = new Network.ArtefactAddBullet();
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                ArtefactManagerMP artefactManager = ArtefactManagerMP.getInstance();
+                addBullet.slot = artefactManager.getArtefactSlot(this);
+                addBullet.px = p.getX();
+                addBullet.py = p.getY();
                 for (int i = 1; i <= 50; ) {
                     double inaccuracy = 0.155 * i;
                     Bullet bullet = new Bullet(tm, 0, 0, inaccuracy, 30);
@@ -247,6 +284,9 @@ public class RingOfFire extends Artefact {
                     if (i >= 0) i++;
                     else i--;
                     i = -i;
+                    addBullet.inaccuracy = (float)inaccuracy;
+                    addBullet.id = bullet.getId();
+                    server.sendToAllTCP(addBullet);
                 }
                 break;
             }
@@ -254,9 +294,22 @@ public class RingOfFire extends Artefact {
 
     }
     @Override
+    public void activateClientSide() {
+        charge = 0;
+    }
+    @Override
     public void charge() {
         charge++;
         if(charge > maxCharge) charge = maxCharge;
     }
 
+    public void clear() {
+        for(Bullet b : bullets){
+            b.delete();
+        }
+        bullets.clear();
+    }
+    public void clearMP() {
+        bullets.clear();
+    }
 }

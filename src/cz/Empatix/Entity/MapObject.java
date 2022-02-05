@@ -20,6 +20,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -65,7 +66,6 @@ public abstract class MapObject {
 	protected Animation animation;
 	protected int currentAction;
 
-
 	// movement
 	protected boolean left;
 	protected boolean right;
@@ -81,7 +81,7 @@ public abstract class MapObject {
 	//
 	protected boolean flinching;
 	protected long flinchingTimer;
-	// 3.0 modern opengl
+	// 2.0 modern opengl
 	protected int vboVertices;
 	protected Shader shader;
 	protected Spritesheet spritesheet;
@@ -234,132 +234,136 @@ public abstract class MapObject {
 	}
 
 	public void checkRoomObjectsCollision(){
-		for(RoomObject obj : tileMap.getRoomMapObjects()){
-			if(this instanceof RoomObject){
-				if(this == obj) continue;
-			}
-			if(!obj.collision) {
-				if (intersects(obj)){
-					if(this instanceof PlayerMP) {
-						if(((PlayerMP)(this)).isOrigin())obj.touchEvent(this);
-					} else if (this instanceof Player) {
-						obj.touchEvent(this);
-					}
+		ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+		for(ArrayList<RoomObject> objects : objectsArray) {
+			if (objects == null) continue;
+			for(RoomObject obj : objects) {
+				if (this instanceof RoomObject) {
+					if (this == obj) continue;
 				}
-			} else {
-				dest.x = position.x + speed.x;
-				dest.y = position.y + speed.y;
-
-				boolean x = obj.getX()-obj.getCwidth()/2  < dest.x + cwidth/2 - 1
-							&&
-							obj.getX()+obj.getCwidth()/2 > dest.x - cwidth/2 + 1;
-
-				boolean y = obj.getY()-obj.getCheight()/2 < position.y + cheight/2 - 1
-							&&
-							obj.getY()+obj.getCheight()/2 > position.y - cheight/2 + 1;
-
-
-				if(x && y){
-					if (speed.x > 0 && obj.collision) {
-						if(obj.moveable){
-							if(this instanceof Player || this instanceof Enemy){
-								int maxObjSpeed = (int)(obj.getMaxMovement()*maxSpeed);
-								if(speed.x > maxObjSpeed){
-									setSpeedX(maxObjSpeed);
-								}
-								temp.x = position.x + speed.x;
-
-							}
-							obj.setSpeedX(speed.x);
-							obj.checkTileMapCollision();
-							obj.checkRoomObjectsCollision();
-							if(obj.speed.x == 0){
-								speed.x = 0;
-								temp.x=obj.getX()-obj.cwidth/2-cwidth/2;
-							}
-						} else {
-							speed.x = 0;
-							temp.x = obj.getX() - obj.cwidth / 2 - cwidth / 2;
+				if (!obj.collision) {
+					if (intersects(obj)) {
+						if (this instanceof PlayerMP) {
+							if (((PlayerMP) (this)).isOrigin()) obj.touchEvent(this);
+						} else if (this instanceof Player) {
+							obj.touchEvent(this);
 						}
-					} else if (speed.x < 0 && obj.collision) {
-						if (obj.moveable) {
-							if(this instanceof Player || this instanceof Enemy){
-								int maxObjSpeed = (int)(obj.getMaxMovement()*maxSpeed);
-								if(speed.x < -maxObjSpeed){
-									setSpeedX(-maxObjSpeed);
+					}
+				} else {
+					dest.x = position.x + speed.x;
+					dest.y = position.y + speed.y;
+
+					boolean x = obj.getX() - obj.getCwidth() / 2 < dest.x + cwidth / 2 - 1
+							&&
+							obj.getX() + obj.getCwidth() / 2 > dest.x - cwidth / 2 + 1;
+
+					boolean y = obj.getY() - obj.getCheight() / 2 < position.y + cheight / 2 - 1
+							&&
+							obj.getY() + obj.getCheight() / 2 > position.y - cheight / 2 + 1;
+
+
+					if (x && y) {
+						if (speed.x > 0 && obj.collision) {
+							if (obj.moveable) {
+								if (this instanceof Player || this instanceof Enemy) {
+									int maxObjSpeed = (int) (obj.getMaxMovement() * maxSpeed);
+									if (speed.x > maxObjSpeed) {
+										setSpeedX(maxObjSpeed);
+									}
+									temp.x = position.x + speed.x;
+
 								}
-								temp.x = position.x + speed.x;
+								obj.setSpeedX(speed.x);
+								obj.checkTileMapCollision();
+								obj.checkRoomObjectsCollision();
+								if (obj.speed.x == 0) {
+									speed.x = 0;
+									temp.x = obj.getX() - obj.cwidth / 2 - cwidth / 2;
+								}
+							} else {
+								speed.x = 0;
+								temp.x = obj.getX() - obj.cwidth / 2 - cwidth / 2;
 							}
-							obj.setSpeedX(speed.x);
-							obj.checkTileMapCollision();
-							obj.checkRoomObjectsCollision();
-							if(obj.speed.x == 0){
+						} else if (speed.x < 0 && obj.collision) {
+							if (obj.moveable) {
+								if (this instanceof Player || this instanceof Enemy) {
+									int maxObjSpeed = (int) (obj.getMaxMovement() * maxSpeed);
+									if (speed.x < -maxObjSpeed) {
+										setSpeedX(-maxObjSpeed);
+									}
+									temp.x = position.x + speed.x;
+								}
+								obj.setSpeedX(speed.x);
+								obj.checkTileMapCollision();
+								obj.checkRoomObjectsCollision();
+								if (obj.speed.x == 0) {
+									speed.x = 0;
+									temp.x = obj.getX() + obj.cwidth / 2 + cwidth / 2;
+								}
+							} else {
 								speed.x = 0;
 								temp.x = obj.getX() + obj.cwidth / 2 + cwidth / 2;
 							}
-						} else {
-							speed.x = 0;
-							temp.x = obj.getX() + obj.cwidth / 2 + cwidth / 2;
 						}
+						obj.touchEvent(this);
 					}
-					obj.touchEvent(this);
-				}
 
-				x = obj.getX()-obj.getCwidth()/2 < position.x + cwidth/2 - 1
+					x = obj.getX() - obj.getCwidth() / 2 < position.x + cwidth / 2 - 1
 							&&
-							obj.getX()+obj.getCwidth()/2 > position.x - cwidth/2 + 1;
+							obj.getX() + obj.getCwidth() / 2 > position.x - cwidth / 2 + 1;
 
-				y = obj.getY()-obj.getCheight()/2  < dest.y + cheight/2 - 1
+					y = obj.getY() - obj.getCheight() / 2 < dest.y + cheight / 2 - 1
 							&&
-							obj.getY()+obj.getCheight()/2  > dest.y - cheight/2 +1;
+							obj.getY() + obj.getCheight() / 2 > dest.y - cheight / 2 + 1;
 
-				if(x && y){
-					if (speed.y > 0 && obj.collision) {
-						if(obj.moveable){
-							if(this instanceof Player || this instanceof Enemy){
-								int maxObjSpeed = (int)(obj.getMaxMovement()*maxSpeed);
-								if(speed.y > maxObjSpeed){
-									setSpeedY(maxObjSpeed);
+					if (x && y) {
+						if (speed.y > 0 && obj.collision) {
+							if (obj.moveable) {
+								if (this instanceof Player || this instanceof Enemy) {
+									int maxObjSpeed = (int) (obj.getMaxMovement() * maxSpeed);
+									if (speed.y > maxObjSpeed) {
+										setSpeedY(maxObjSpeed);
+									}
+									temp.y = position.y + speed.y;
 								}
-								temp.y = position.y + speed.y;
-							}
-							obj.setSpeedY(speed.y);
-							obj.checkTileMapCollision();
-							obj.checkRoomObjectsCollision();
-							if(obj.speed.y == 0){
-								speed.y=0;
-								temp.y=obj.getY()-obj.cheight/2-cheight/2;
-							}
-
-						} else {
-							speed.y = 0;
-							temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
-						}
-					} else if (speed.y < 0 && obj.collision) {
-						if (obj.moveable) {
-							if(this instanceof Player || this instanceof Enemy){
-								int maxObjSpeed = (int)(obj.getMaxMovement()*maxSpeed);
-								if(speed.y < -maxObjSpeed){
-									setSpeedY(-maxObjSpeed);
+								obj.setSpeedY(speed.y);
+								obj.checkTileMapCollision();
+								obj.checkRoomObjectsCollision();
+								if (obj.speed.y == 0) {
+									speed.y = 0;
+									temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
 								}
-								temp.y = position.y + speed.y;
 
+							} else {
+								speed.y = 0;
+								temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
 							}
-							obj.setSpeedY(speed.y);
-							obj.checkTileMapCollision();
-							obj.checkRoomObjectsCollision();
-							if(obj.speed.y == 0){
-								speed.y=0;
+						} else if (speed.y < 0 && obj.collision) {
+							if (obj.moveable) {
+								if (this instanceof Player || this instanceof Enemy) {
+									int maxObjSpeed = (int) (obj.getMaxMovement() * maxSpeed);
+									if (speed.y < -maxObjSpeed) {
+										setSpeedY(-maxObjSpeed);
+									}
+									temp.y = position.y + speed.y;
+
+								}
+								obj.setSpeedY(speed.y);
+								obj.checkTileMapCollision();
+								obj.checkRoomObjectsCollision();
+								if (obj.speed.y == 0) {
+									speed.y = 0;
+									temp.y = obj.getY() + obj.cheight / 2 + cheight / 2;
+								}
+							} else {
+								speed.y = 0;
 								temp.y = obj.getY() + obj.cheight / 2 + cheight / 2;
 							}
-						} else {
-							speed.y = 0;
-							temp.y = obj.getY() + obj.cheight / 2 + cheight / 2;
 						}
+						obj.touchEvent(this);
 					}
-					obj.touchEvent(this);
-				}
 
+				}
 			}
 		}
 	}

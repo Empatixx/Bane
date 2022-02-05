@@ -5,6 +5,7 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Multiplayer.GunsManagerMP;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
@@ -42,19 +43,16 @@ public class Ammobelt extends Artefact {
         scale = 4f;
     }
     @Override
-    public void loadSave() {
-        imageArtefact = new Image("Textures\\artefacts\\ammobelt.tga",new Vector3f(1403,975,0),
-                scale  );
-        chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
-                2.6f);
-    }
-
-    @Override
     public void update(boolean pause) {
     }
 
     @Override
     public void update(String username) {
+
+    }
+
+    @Override
+    public void handleAddBulletPacket(Network.ArtefactAddBullet addBullet) {
 
     }
 
@@ -108,12 +106,16 @@ public class Ammobelt extends Artefact {
 
     @Override
     public void activate(String username) {
+        charge = 0;
         // refills  players ammo by 20%
         GunsManagerMP gunsManager = GunsManagerMP.getInstance();
         int type = gunsManager.getWeaponTypes(username)[gunsManager.getCurrentWeaponSlot(username)];
         gunsManager.addAmmo(20,type,username);
     }
-
+    @Override
+    public void activateClientSide() {
+        charge = 0;
+    }
     @Override
     public void charge() {
         charge++;
@@ -123,6 +125,16 @@ public class Ammobelt extends Artefact {
     @Override
     public void despawn() {
         super.despawn();
+    }
+
+    @Override
+    public void handleHitBulletPacket(Network.HitBullet p) {
+
+    }
+
+    @Override
+    public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
+
     }
 }
 

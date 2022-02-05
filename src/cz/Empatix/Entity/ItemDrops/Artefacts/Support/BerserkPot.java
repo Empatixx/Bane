@@ -4,8 +4,10 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -44,6 +46,9 @@ public class BerserkPot extends Artefact {
     private TextRender textRender;
     private long flichingDelay;
 
+    // multiplayer only
+    private String playerWithBonus;
+
     public BerserkPot(TileMap tm, Player p){
         super(tm,p);
         maxCharge = 4;
@@ -77,7 +82,7 @@ public class BerserkPot extends Artefact {
 
         if(!removedSpeed){
 
-            if(!pause){
+            if(!pause || MultiplayerManager.multiplayer){
                 timeLeft = (System.currentTimeMillis() - this.time - InGame.deltaPauseTime() )/ 1000f;
                 timeLeft = 20 - timeLeft;
             }
@@ -131,15 +136,13 @@ public class BerserkPot extends Artefact {
         if(!removedSpeed){
             for(Player player : p){
                 if(player != null) {
-                    if(((PlayerMP)player).getUsername().equalsIgnoreCase(username)) continue;
-                    timeLeft = (System.currentTimeMillis() - this.time )/ 1000f;
-                    timeLeft = 20 - timeLeft;
-
-                    if(System.currentTimeMillis() - time > 20000){
+                    if(System.currentTimeMillis() - time > 20000 && playerWithBonus.equalsIgnoreCase(((PlayerMP)player).getUsername())){
                         removedSpeed = true;
                         player.setMaxSpeed(player.getMaxSpeed()-bonusSpeed);
-
                     }
+                    if(!((PlayerMP)player).getUsername().equalsIgnoreCase(username)) continue;
+                    timeLeft = (System.currentTimeMillis() - this.time )/ 1000f;
+                    timeLeft = 20 - timeLeft;
                     Vector3f speed = player.getSpeed();float maxSpeed = player.getMaxSpeed();
 
                     if(Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed){
@@ -186,6 +189,12 @@ public class BerserkPot extends Artefact {
             }
         }
     }
+
+    @Override
+    public void handleAddBulletPacket(Network.ArtefactAddBullet addBullet) {
+
+    }
+
     @Override
     protected void draw() {
 
@@ -248,6 +257,16 @@ public class BerserkPot extends Artefact {
     }
 
     @Override
+    public void handleHitBulletPacket(Network.HitBullet p) {
+
+    }
+
+    @Override
+    public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
+
+    }
+
+    @Override
     public void activate() {
         charge = 0;
         removedSpeed = false;
@@ -267,23 +286,24 @@ public class BerserkPot extends Artefact {
                 bonusSpeed = player.getMaxSpeed()*0.25f;
                 player.setMaxSpeed(player.getMaxSpeed()*1.25f);
                 time = System.currentTimeMillis() - InGame.deltaPauseTime();
+                playerWithBonus = ((PlayerMP) player).getUsername();
                 break;
             }
         }
     }
     @Override
+    public void activateClientSide() {
+        charge = 0;
+        removedSpeed = false;
+        // refills player armor to full
+        bonusSpeed = p[0].getMaxSpeed()*0.25f;
+        p[0].setMaxSpeed(p[0].getMaxSpeed()*1.25f);
+        time = System.currentTimeMillis() - InGame.deltaPauseTime();
+    }
+    @Override
     public void charge() {
         charge++;
         if(charge > maxCharge) charge = maxCharge;
-    }
-
-    @Override
-    public void loadSave() {
-        imageArtefact = new Image("Textures\\artefacts\\berserkpot.tga",new Vector3f(1401,975,0),
-                scale);
-        chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
-                2.6f);
-        sprintParticles = new ArrayList<>(5);
     }
 
     private static class SprintParticle extends MapObject implements Serializable {

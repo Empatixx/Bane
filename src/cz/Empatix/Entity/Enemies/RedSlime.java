@@ -263,30 +263,34 @@ public class RedSlime extends Enemy {
                         }
                     }
                 }
-                for(RoomObject object: tileMap.getRoomMapObjects()){
-                    if(object instanceof DestroyableObject) {
-                        if (redSlimebullet.intersects(object) && !((DestroyableObject) object).isDestroyed()) {
-                            redSlimebullet.setHit();
-                            ((DestroyableObject) object).setHit(1);
+                ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+                for(ArrayList<RoomObject> objects : objectsArray) {
+                    if (objects == null) continue;
+                    for (RoomObject object : objects) {
+                        if (object instanceof DestroyableObject) {
+                            if (redSlimebullet.intersects(object) && !((DestroyableObject) object).isDestroyed()) {
+                                redSlimebullet.setHit();
+                                ((DestroyableObject) object).setHit(1);
 
-                            if(tileMap.isServerSide()){
+                                if (tileMap.isServerSide()) {
+                                    Server server = MultiplayerManager.getInstance().server.getServer();
+                                    Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                                    enemyProjectile.id = redSlimebullet.id;
+                                    enemyProjectile.idEnemy = getId();
+                                    enemyProjectile.idHit = object.getId();
+                                    server.sendToAllTCP(enemyProjectile);
+                                }
+                            }
+                        } else if (object.collision && redSlimebullet.intersects(object)) {
+                            redSlimebullet.setHit();
+
+                            if (tileMap.isServerSide()) {
                                 Server server = MultiplayerManager.getInstance().server.getServer();
                                 Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
                                 enemyProjectile.id = redSlimebullet.id;
                                 enemyProjectile.idEnemy = getId();
-                                enemyProjectile.idHit = object.getId();
                                 server.sendToAllTCP(enemyProjectile);
                             }
-                        }
-                    } else if(object.collision && redSlimebullet.intersects(object)){
-                        redSlimebullet.setHit();
-
-                        if(tileMap.isServerSide()) {
-                            Server server = MultiplayerManager.getInstance().server.getServer();
-                            Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
-                            enemyProjectile.id = redSlimebullet.id;
-                            enemyProjectile.idEnemy = getId();
-                            server.sendToAllTCP(enemyProjectile);
                         }
                     }
                 }
@@ -460,10 +464,14 @@ if (!projectilesShooted && dead) {
             if(bullet.getId() == hitPacket.id){
                 bullet.setHit();
                 // player was hitted
-                if (hitPacket.idHit != -1){
-                    for(RoomObject roomObject : tileMap.getRoomMapObjects()){
-                        if(roomObject.getId() == hitPacket.idHit){
-                            ((DestroyableObject)roomObject).setHit(1);
+                if (hitPacket.idHit != -1) {
+                    ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+                    for (ArrayList<RoomObject> objects : objectsArray) {
+                        if (objects == null) continue;
+                        for (RoomObject roomObject : objects) {
+                            if (roomObject.getId() == hitPacket.idHit) {
+                                ((DestroyableObject) roomObject).setHit(1);
+                            }
                         }
                     }
                 }

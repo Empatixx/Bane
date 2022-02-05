@@ -286,7 +286,7 @@ public abstract class Enemy extends MapObject{
                 }
             }
             for (int k = 0; k < player.length; k++) {
-                if (player[k] != null) {
+                if (player[k] != null && !player[k].isDead()) {
 
                     int enemyTileX = (int) position.x / tileSize;
                     int enemyTileY = (int) position.y / tileSize;
@@ -474,6 +474,13 @@ public abstract class Enemy extends MapObject{
                 if(path[i] == null) break;
                 if(closestPathIndex == -1) closestPathIndex = i;
                 else if(path[closestPathIndex].returnSize() > path[i].returnSize()) closestPathIndex = i;
+            }
+            if(closestPathIndex == -1){
+                setDown(false);
+                setUp(false);
+                setLeft(false);
+                setRight(false);
+                return; // all players are dead
             }
             if (px[closestPathIndex] > position.x) facingRight = true;
             else if (px[closestPathIndex] < position.x) facingRight = false;

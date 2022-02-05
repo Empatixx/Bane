@@ -169,7 +169,7 @@ public class GunsManager {
                 if (index < 0) index = 0;
                 weapons.get(index).handleBulletPacket(addBullet);
             }
-            for (Object o : packetHolder.get(PacketHolder.HITBULLET)) {
+            for (Object o : packetHolder.getWithoutClear(PacketHolder.HITBULLET)) {
                 for (Weapon w : weapons) {
                     w.handleHitBulletPacket((Network.HitBullet) o);
                 }

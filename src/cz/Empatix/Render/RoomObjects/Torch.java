@@ -295,7 +295,7 @@ public class Torch extends RoomObject {
     @Override
     public void delete() {
         super.delete();
-        light.remove();
+        if(!tileMap.isServerSide())light.remove();
     }
 
     public int getType() {

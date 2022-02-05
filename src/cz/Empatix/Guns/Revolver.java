@@ -318,11 +318,14 @@ public class Revolver extends Weapon {
                     Enemy e = em.handleHitEnemyPacket(hitBullet.idHit,b.getDamage());
                     showDamageIndicator(b.getDamage(),b.isCritical(),e);
                 } else if (hitBullet.type == Bullet.TypeHit.ROOMOBJECT){
-                    ArrayList<RoomObject> roomObjects = tm.getRoomMapObjects();
-                    for(RoomObject obj : roomObjects){
-                        if(obj.getId() == hitBullet.idHit){
-                            if(obj instanceof DestroyableObject){
-                                ((DestroyableObject) obj).setHit(b.getDamage());
+                    ArrayList<RoomObject>[] objectsArray = tm.getRoomMapObjects();
+                    for(ArrayList<RoomObject> objects : objectsArray) {
+                        if (objects == null) continue;
+                        for(RoomObject obj : objects){
+                            if(obj.getId() == hitBullet.idHit) {
+                                if (obj instanceof DestroyableObject) {
+                                    ((DestroyableObject) obj).setHit(b.getDamage());
+                                }
                             }
                         }
                     }

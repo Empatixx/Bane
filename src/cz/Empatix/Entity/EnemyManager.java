@@ -97,9 +97,6 @@ public class EnemyManager {
 
             for(Object o : packetHolder.get(PacketHolder.ADDENEMY)){
                 Network.AddEnemy addEnemy = (Network.AddEnemy) o;
-                if(areEnemiesDead()){
-                    tileMap.getCurrentRoom().lockRoom(true);
-                }
                 addEnemy(addEnemy);
             }
             for(Object o : packetHolder.get(PacketHolder.ADD_ENEMYPROJECTION)){
@@ -467,10 +464,6 @@ public class EnemyManager {
                 e.hit(damage);
                 return e;
             }
-        }
-        System.out.println("LOOKING FOR "+id);
-        for(Enemy e : enemies){
-            System.out.println("FOUND "+e.getId());
         }
         return null;
     }

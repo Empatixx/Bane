@@ -186,7 +186,6 @@ public class Grenadelauncher extends Weapon {
 
     @Override
     public void checkCollisions(ArrayList<Enemy> enemies) {
-        ArrayList<RoomObject> objects = tm.getRoomMapObjects();
         A: for(Grenadebullet bullet:bullets){
             for(Enemy enemy:enemies){
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
@@ -196,12 +195,16 @@ public class Grenadelauncher extends Weapon {
                     continue A;
                 }
             }
-            for(RoomObject object: objects){
-                if(object instanceof DestroyableObject) {
-                    if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                        bullet.playEnemyHit();
-                        bullet.setHit();
-                        continue A;
+            ArrayList<RoomObject>[] objectsArray = tm.getRoomMapObjects();
+            for(ArrayList<RoomObject> objects : objectsArray){
+                if(objects == null) continue;
+                for(RoomObject object: objects){
+                    if(object instanceof DestroyableObject) {
+                        if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
+                            bullet.playEnemyHit();
+                            bullet.setHit();
+                            continue A;
+                        }
                     }
                 }
             }

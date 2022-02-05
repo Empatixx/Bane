@@ -3,6 +3,7 @@ package cz.Empatix.Entity.ItemDrops.Artefacts.Support;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
@@ -43,19 +44,17 @@ public class TransportableArmorPot extends Artefact {
         scale = 3f;
     }
     @Override
-    public void loadSave() {
-        imageArtefact = new Image("Textures\\artefacts\\tap.tga",new Vector3f(1403,975,0),
-                scale  );
-        chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
-                2.6f);
-    }
-
-    @Override
     public void update(boolean pause) {
     }
     @Override
     public void update(String username) {
     }
+
+    @Override
+    public void handleAddBulletPacket(Network.ArtefactAddBullet addBullet) {
+
+    }
+
     @Override
     protected void draw() {
     }
@@ -96,6 +95,16 @@ public class TransportableArmorPot extends Artefact {
     }
 
     @Override
+    public void handleHitBulletPacket(Network.HitBullet p) {
+
+    }
+
+    @Override
+    public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
+
+    }
+
+    @Override
     public void activate() {
         charge = 0;
         // refills player armor to full
@@ -113,6 +122,10 @@ public class TransportableArmorPot extends Artefact {
                 }
             }
         }
+    }
+    @Override
+    public void activateClientSide() {
+        charge = 0;
     }
     @Override
     public void charge() {

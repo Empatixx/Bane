@@ -6,6 +6,8 @@ import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Multiplayer.ItemManagerMP;
+import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
@@ -53,19 +55,16 @@ public class LuckyCoin extends Artefact {
 
     }
     @Override
-    public void loadSave() {
-        imageArtefact = new Image("Textures\\artefacts\\luckycoin.tga",new Vector3f(1403,975,0),
-                scale  );
-        chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
-                2.6f);
-    }
-
-    @Override
     public void update(boolean pause) {
     }
 
     @Override
     public void update(String username) {
+    }
+
+    @Override
+    public void handleAddBulletPacket(Network.ArtefactAddBullet addBullet) {
+
     }
 
     @Override
@@ -151,36 +150,48 @@ public class LuckyCoin extends Artefact {
         charge = 0;
         ItemManagerMP im = ItemManagerMP.getInstance();
 
-        for(int i = 0;i<5 + multiplier;i++){
-            int tileSize = tm.getTileSize();
+        for(Player p : p){
+            if(p == null) continue;
+            if(username.equalsIgnoreCase(((PlayerMP)p).getUsername())){
+                for(int i = 0;i<5 + multiplier;i++){
+                    int tileSize = tm.getTileSize();
 
-            int playerX = (int)p[0].getX();
-            int playerY = (int)p[0].getY();
+                    int playerX = (int)p.getX();
+                    int playerY = (int)p.getY();
 
-            int xMinTile = playerX - 150;
-            int yMinTile = playerY - 150;
+                    int xMinTile = playerX - 150;
+                    int yMinTile = playerY - 150;
 
-            int xMaxTile = playerX + 150;
-            int yMaxTile = playerY + 150;
+                    int xMaxTile = playerX + 150;
+                    int yMaxTile = playerY + 150;
 
-            int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-            int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                    int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                    int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
 
-            while(tm.getType(y/tileSize,x/tileSize) == Tile.BLOCKED){
-                x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                    while(tm.getType(y/tileSize,x/tileSize) == Tile.BLOCKED){
+                        x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                        y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                    }
+                    double atan = Math.atan2(y-playerY,x-playerX);
+                    float dx = (float)(Math.cos(atan) * 10);
+                    float dy = (float)(Math.sin(atan) * 10);
+
+                    Coin coin = new Coin(tm);
+                    coin.setPosition(x,y);
+                    coin.setSpeed(dx,dy);
+                    im.addItemDrop(coin);
+                }
+                multiplier++;
             }
-            double atan = Math.atan2(y-playerY,x-playerX);
-            float dx = (float)(Math.cos(atan) * 10);
-            float dy = (float)(Math.sin(atan) * 10);
-
-            Coin coin = new Coin(tm);
-            coin.setPosition(x,y);
-            coin.setSpeed(dx,dy);
-            im.addItemDrop(coin);
         }
+    }
+
+    @Override
+    public void activateClientSide() {
+        charge = 0;
         multiplier++;
     }
+
     @Override
     public void charge() {
         charge++;
@@ -191,6 +202,16 @@ public class LuckyCoin extends Artefact {
     public void despawn() {
         super.despawn();
         multiplier = 0;
+    }
+
+    @Override
+    public void handleHitBulletPacket(Network.HitBullet p) {
+
+    }
+
+    @Override
+    public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
+
     }
 }
 

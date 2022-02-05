@@ -22,6 +22,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
@@ -445,10 +447,14 @@ public class EyeBat extends Enemy {
             if (intersects(player[indexPlayer]) && canHit()){
                 player[indexPlayer].hit(0);
             }
-            for (RoomObject object : tileMap.getRoomMapObjects()) {
-                if (object instanceof DestroyableObject){
-                    if (intersects(object) && !((DestroyableObject) object).isDestroyed()){
-                        ((DestroyableObject) object).setHit(1);
+            ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+            for(ArrayList<RoomObject> objects : objectsArray) {
+                if (objects == null) continue;
+                for (RoomObject object : objects) {
+                    if (object instanceof DestroyableObject) {
+                        if (intersects(object) && !((DestroyableObject) object).isDestroyed()) {
+                            ((DestroyableObject) object).setHit(1);
+                        }
                     }
                 }
             }

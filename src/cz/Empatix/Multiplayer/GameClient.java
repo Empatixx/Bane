@@ -95,23 +95,21 @@ public class GameClient{
                     }
                 }
                 else if (object instanceof Network.TransferRoomMap){
-                    Network.TransferRoomMap map = (Network.TransferRoomMap) object;
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
-                        ((InGameMP)gameState).tileMap.handleRoomMapPacket(map);
+                        packetHolder.add(object,PacketHolder.TRANSFERROOMMAP);
                     }
                 }
                 else if (object instanceof Network.TransferRoom){
-                    Network.TransferRoom room = (Network.TransferRoom) object;
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
-                        ((InGameMP)gameState).tileMap.handleRoomPacket(room);
+                        packetHolder.add(object,PacketHolder.TRANSFERROOM);
                     }
                 }
                 else if(object instanceof Network.MapLoaded){
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
-                        ((InGameMP)gameState).mapLoaded = true;
+                        packetHolder.add(object,PacketHolder.MAPLOADED);
                     }
                 }
                 else if(object instanceof Network.AddBullet){
@@ -124,6 +122,12 @@ public class GameClient{
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
                         packetHolder.add(object,PacketHolder.HITBULLET);
+                    }
+                }
+                else if(object instanceof Network.ArtefactAddBullet){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        packetHolder.add(object,PacketHolder.ARTEFACTADDBULLET);
                     }
                 }
                 else if(object instanceof Network.WeaponInfo){
@@ -150,6 +154,12 @@ public class GameClient{
                         packetHolder.add(object,PacketHolder.REMOVEITEM);
                     }
                 }
+                else if(object instanceof Network.NextFloor){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        packetHolder.add(object,PacketHolder.NEXTFLOOR);
+                    }
+                }
                 else if (object instanceof Network.MoveBullet){
                     handleMove((Network.MoveBullet) object);
                 }
@@ -159,6 +169,14 @@ public class GameClient{
                         packetHolder.add(object,PacketHolder.ADDENEMY);
                     }
                 }
+                else if (object instanceof Network.LockRoom){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        packetHolder.add(object,PacketHolder.LOCKROOM);
+                    }
+                }
+
+
                 else if(object instanceof Network.PlayerHit){
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
@@ -195,7 +213,7 @@ public class GameClient{
                         packetHolder.add(object,PacketHolder.DROPARTEFACT);
                     }
                 }
-                else if (object instanceof Network.ObjectInteract){
+                else if (object instanceof Network.DropInteract){
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
                         packetHolder.add(object,PacketHolder.OBJECTINTERACT);
@@ -285,6 +303,8 @@ public class GameClient{
         GameState gameState = gsm.getCurrentGamestate();
         if (gameState instanceof InGameMP) {
             ((InGameMP) gameState).gunsManager.handleBulletMovePacket(movePacket);
+            ((InGameMP) gameState).artefactManager.handleBulletMovePacket(movePacket);
+
         }
     }
     public void handleMove(Network.MoveRoomObject movePacket) {

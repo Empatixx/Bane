@@ -239,13 +239,13 @@ public class ItemManager {
                 }
             }
             for(Object o : packetHolder.get(PacketHolder.OBJECTINTERACT)){
-                Network.ObjectInteract objectInteract = (Network.ObjectInteract) o;
+                Network.DropInteract dropInteract = (Network.DropInteract) o;
                 for(ItemDrop drop:itemDrops){
-                    if(objectInteract.sucessful && drop.getId() == objectInteract.id){
+                    if(dropInteract.sucessful && drop.getId() == dropInteract.id){
                         // if player is the one that interacted with drop
                         if(drop instanceof WeaponDrop) {
                             drop.pickedUp = true;
-                            if(((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username)){
+                            if(((PlayerMP)player).getUsername().equalsIgnoreCase(dropInteract.username)){
                                 Weapon weapon = ((WeaponDrop) drop).getWeapon();
                                 gm.changeGun(weapon);
                                 if (drop.isShop()) {
@@ -255,7 +255,7 @@ public class ItemManager {
                             }
                         } else if(drop instanceof ArtefactDrop){
                             drop.pickedUp = true;
-                            if(((PlayerMP)player).getUsername().equalsIgnoreCase(objectInteract.username)){
+                            if(((PlayerMP)player).getUsername().equalsIgnoreCase(dropInteract.username)){
                                 Artefact artefact = ((ArtefactDrop)drop).getArtefact();
                                 am.setCurrentArtefact(artefact);
                                 if(drop.isShop()) {

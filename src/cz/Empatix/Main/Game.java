@@ -297,7 +297,7 @@ public class Game{
 
             if (System.currentTimeMillis() - timer > 1000){
                 timer += 1000;
-                System.out.print("UPS: "+updates+"   "+"FPS: "+frames+"\n");
+                //System.out.print("UPS: "+updates+"   "+"FPS: "+frames+"\n");
                 FPS = frames;
                 frames = 0;
                 updates = 0;
@@ -349,7 +349,7 @@ public class Game{
 
             if (System.currentTimeMillis() - timer > 1000){
                 timer += 1000;
-                System.out.print("UPS: "+updates+"   "+"FPS: "+frames+"\n");
+                //System.out.print("UPS: "+updates+"   "+"FPS: "+frames+"\n");
                 FPS = frames;
                 // GARBAGE COLLECTOR
                 System.gc();

@@ -1,11 +1,16 @@
 package cz.Empatix.Entity.ItemDrops.Artefacts;
 
+import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector2f;
 
 public abstract class Artefact {
     protected int maxCharge;
@@ -25,7 +30,7 @@ public abstract class Artefact {
     protected int vboVertices;
 
     public TileMap tm;
-    public Player p[];
+    public Player[] p;
     // singleplayer
     public Artefact(TileMap tm, Player p){
         this.tm = tm;
@@ -53,10 +58,15 @@ public abstract class Artefact {
     public abstract void charge();
     // sp
     public abstract void activate();
-    // mp
+    // mp - serverside
     public abstract void activate(String username);
+    // mp - clientside
+    public abstract void activateClientSide();
     public abstract void update(boolean pause);
     public abstract void update(String username);
+    public abstract void handleAddBulletPacket(Network.ArtefactAddBullet addBullet);
+
+
     protected abstract void drawHud();
     public boolean canBeActivated(){return maxCharge == charge;}
 
@@ -78,6 +88,19 @@ public abstract class Artefact {
         dropped=false;
         charge = maxCharge;
     }
-    public abstract void loadSave();
+    public abstract void handleHitBulletPacket(Network.HitBullet p);
+    public abstract void handleMoveBulletPacket(Network.MoveBullet moveBullet);
+    public void showDamageIndicator(int damage, boolean critical, Enemy enemy){
+        int cwidth = enemy.getCwidth();
+        int cheight = enemy.getCheight();
+        int x = -cwidth/4+ Random.nextInt(cwidth/2);
+        if(critical){
+            DamageIndicator.addCriticalDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                    ,new Vector2f(-x/25f,-1f));
+        } else {
+            DamageIndicator.addDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+                    ,new Vector2f(-x/25f,-1f));
+        }
+    }
 }
 

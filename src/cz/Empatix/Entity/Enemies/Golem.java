@@ -24,6 +24,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
+
 import static org.lwjgl.opengl.GL20.*;
 
 public class Golem extends Enemy {
@@ -282,7 +284,7 @@ public class Golem extends Enemy {
                 Chest chest = new Chest(tileMap);
                 chest.setPosition(position.x,position.y);
                 chest.enableDropArtefact();
-                tileMap.addObject(chest);
+                tileMap.addObject(chest,tileMap.getRoomByCoords(position.x,position.y).getId());
 
                 tileMap.addLadder();
             }
@@ -542,10 +544,14 @@ public class Golem extends Enemy {
             if(intersects(player[playerrIndex]) && canHit()){
                 player[playerrIndex].hit(1);
             }
-            for(RoomObject object: tileMap.getRoomMapObjects()){
-                if(object instanceof DestroyableObject) {
-                    if (intersects(object) && !((DestroyableObject) object).isDestroyed()) {
-                        ((DestroyableObject) object).setHit(1);
+            ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+            for(ArrayList<RoomObject> objects : objectsArray) {
+                if (objects == null) continue;
+                for (RoomObject object : objects) {
+                    if (object instanceof DestroyableObject) {
+                        if (intersects(object) && !((DestroyableObject) object).isDestroyed()) {
+                            ((DestroyableObject) object).setHit(1);
+                        }
                     }
                 }
             }

@@ -22,6 +22,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 
 public class Grenadebullet extends MapObject implements Serializable {
@@ -248,11 +249,15 @@ public class Grenadebullet extends MapObject implements Serializable {
                 }
             }
         }
-        for(RoomObject roomObject : tileMap.getRoomMapObjects()){
-            if(roomObject instanceof DestroyableObject){
-                if(!((DestroyableObject) roomObject).isDestroyed()){
-                    if(Math.abs(position.x-roomObject.getX()) < 250 && Math.abs(position.y-roomObject.getY()) < 250){
-                        ((DestroyableObject) roomObject).setHit(getDamage());
+        ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+        for(ArrayList<RoomObject> objects : objectsArray) {
+            if (objects == null) continue;
+            for(RoomObject roomObject : objects){
+                if(roomObject instanceof DestroyableObject){
+                    if(!((DestroyableObject) roomObject).isDestroyed()){
+                        if(Math.abs(position.x-roomObject.getX()) < 250 && Math.abs(position.y-roomObject.getY()) < 250){
+                            ((DestroyableObject) roomObject).setHit(getDamage());
+                        }
                     }
                 }
             }

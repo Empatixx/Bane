@@ -220,44 +220,66 @@ public class Room {
 
     boolean hasEntered(){ return entered; }
 
+    /**
+     * entering room in singleplayer
+     * @param tileMap
+     */
     public void entered(TileMap tileMap){
         entered = true;
         if (type == Room.Classic){
-
             int maxMobs = cz.Empatix.Java.Random.nextInt(4) + 2+tileMap.getFloor();
-
-
+            int tileSize = tileMap.getTileSize();
             for (int i = 0; i < maxMobs;i++){
-                // multiplayer
-                if(tileMap.isServerSide()){
-                    EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
-                    enemyManager.addEnemy(xMin,xMax,yMin,yMax);
-                }
-                // singleplayer
-                else {
-                    EnemyManager enemyManager = EnemyManager.getInstance();
-                    enemyManager.addEnemy(xMin,xMax,yMin,yMax);
-                }
-            }{
-                if(!MultiplayerManager.multiplayer || tileMap.isServerSide())lockRoom(true);
+                EnemyManager enemyManager = EnemyManager.getInstance();
+                enemyManager.addEnemy(xMin+tileSize,xMax-tileSize,yMin+tileSize,yMax-tileSize);
             }
+            lockRoom(true);
         } else if (type == Room.Boss){
 
             int y=yMin + (yMax - yMin) / 2;
             int x=xMin + (xMax - xMin) / 2;
-            // multiplayer
-            if(tileMap.isServerSide()){
-                EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
-                enemyManager.spawnBoss(x,y);
-            }
-            // singleplayer
-            else {
-                EnemyManager enemyManager = EnemyManager.getInstance();
-                enemyManager.addEnemy(xMin,xMax,yMin,yMax);
-            }
+            EnemyManager enemyManager = EnemyManager.getInstance();
+            enemyManager.spawnBoss(x,y);
 
             AudioManager.playSoundtrack(Soundtrack.BOSS);
 
+            lockRoom(true);
+        }
+    }
+
+    /**
+     * entering room in multiplayer
+     * @param tileMap
+     * @param p - player that entered this room
+     */
+    public void entered(TileMap tileMap,Player p){
+        entered = true;
+        if (type == Room.Classic){
+            int maxMobs = cz.Empatix.Java.Random.nextInt(4) + 2+tileMap.getFloor();
+            for (int i = 0; i < maxMobs;i++){
+                EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
+                enemyManager.addEnemy(xMin,xMax,yMin,yMax);
+            }
+            Network.LockRoom enteringRoom = new Network.LockRoom();
+            enteringRoom.idRoom = id;
+            enteringRoom.lock = true;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(enteringRoom);
+            lockRoom(true);
+        } else if (type == Room.Boss){
+
+            int y=yMin + (yMax - yMin) / 2;
+            int x=xMin + (xMax - xMin) / 2;
+            EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
+            enemyManager.spawnBoss(x,y);
+
+            AudioManager.playSoundtrack(Soundtrack.BOSS);
+
+            Network.LockRoom enteringRoom = new Network.LockRoom();
+            enteringRoom.idRoom = id;
+            enteringRoom.lock = true;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            server.sendToAllTCP(enteringRoom);
             lockRoom(true);
         }
     }
@@ -370,21 +392,30 @@ public class Room {
             object.update();
         }
         if(type == Boss || type == Classic) {
+            // multiplayer - handling client/server side locking of rooms via packets
             if(tm.isServerSide()){
                 EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
-                if (enemyManager.areEnemiesDead() && closed) {
+                if (enemyManager.areEnemiesDeadInCoords(xMin,xMax,yMin,yMax) && closed) {
+                    Network.LockRoom lockRoom = new Network.LockRoom();
+                    lockRoom.idRoom = id;
+                    lockRoom.lock = false;
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    server.sendToAllTCP(lockRoom);
                     lockRoom(false);
                     // adds 1 point to artifact for cleared room
                     ArtefactManagerMP am = ArtefactManagerMP.getInstance();
                     am.charge();
                 }
             } else {
-                EnemyManager enemyManager = EnemyManager.getInstance();
-                if (enemyManager.areEnemiesDead() && closed) {
-                    lockRoom(false);
-                    // adds 1 point to artifact for cleared room
-                    ArtefactManager am = ArtefactManager.getInstance();
-                    am.charge();
+                // singleplayer
+                if(!MultiplayerManager.multiplayer){
+                    EnemyManager enemyManager = EnemyManager.getInstance();
+                    if (enemyManager.areEnemiesDead() && closed) {
+                        lockRoom(false);
+                        // adds 1 point to artifact for cleared room
+                        ArtefactManager am = ArtefactManager.getInstance();
+                        am.charge();
+                    }
                 }
             }
         }
@@ -846,7 +877,7 @@ public class Room {
             Network.AddRoomObject roomObject = new Network.AddRoomObject();
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
-            roomObject.type = Network.TypeRoomObject.ARROWTRAP;
+            roomObject.type = Network.TypeRoomObject.FLAMETHROWER;
             roomObject.objectType = ((Flamethrower) object).getType();
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;

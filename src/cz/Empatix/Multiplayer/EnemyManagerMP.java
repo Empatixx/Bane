@@ -9,6 +9,7 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
@@ -250,5 +251,14 @@ public class EnemyManagerMP {
 
         Server server = mpManager.server.getServer();
         server.sendToAllTCP(addEnemy);
+    }
+
+    public boolean areEnemiesDeadInCoords(int xMin, int xMax, int yMin, int yMax) {
+        for(Enemy e : enemies){
+            if(e.isDead()) continue;
+            Vector3f position = e.getPosition();
+            if(position.x > xMin && position.x < xMax && position.y > yMin && position.y < yMax) return false;
+        }
+        return true;
     }
 }

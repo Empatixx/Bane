@@ -1,8 +1,6 @@
 package cz.Empatix.Main;
 
-import net.arikia.dev.drpc.DiscordEventHandlers;
 import net.arikia.dev.drpc.DiscordRPC;
-import net.arikia.dev.drpc.DiscordRichPresence;
 
 public class DiscordRP {
 
@@ -16,6 +14,7 @@ public class DiscordRP {
     }
 
     public void start(){
+        /*
         new Thread("Discord RPC Callback") {
             @Override
             public void run() {
@@ -33,6 +32,8 @@ public class DiscordRP {
         }.start();
 
 
+         */
+
     }
     public void shutdown(){
         running = false;
@@ -40,7 +41,7 @@ public class DiscordRP {
 
     }
     public void update(String firstLine, String secondLine){
-
+/*
         DiscordRichPresence.Builder rich = new DiscordRichPresence.Builder(secondLine);
         rich.setDetails(firstLine);
         rich.setBigImage("newi","0.9.0");
@@ -48,6 +49,7 @@ public class DiscordRP {
 
         DiscordRPC.discordUpdatePresence(rich.build());
 
+ */
 
     }
 }

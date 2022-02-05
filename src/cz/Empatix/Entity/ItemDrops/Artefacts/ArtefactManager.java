@@ -59,12 +59,6 @@ public class ArtefactManager {
 
         firstAlert = false;
     }
-    public void loadSave(){
-        artefactHud = new Image("Textures\\Artefacts\\artefacthud.tga",new Vector3f(1400,975,0),2.6f);
-        for(Artefact artefact:artefacts){
-            artefact.loadSave();
-        }
-    }
 
 
     public void draw(){
@@ -96,21 +90,35 @@ public class ArtefactManager {
         }
     }
     public void update(boolean pause){
-        for(Artefact artefact:artefacts){
-            artefact.update(pause);
-        }
-        if(currentArtefact != null){
-            currentArtefact.updateChargeAnimation();
-        }
+        // receive packet, that player used artefact sucessfully
         if(MultiplayerManager.multiplayer){
             MultiplayerManager mpManager = MultiplayerManager.getInstance();
             Object[] packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTACTIVATED);
             for(Object o : packets) {
                 Network.ArtefactActivate p = (Network.ArtefactActivate)o;
                 if(mpManager.getUsername().equalsIgnoreCase(p.username)){
-                    artefacts.get(p.slot).charge = 0;
+                    artefacts.get(p.slot).activateClientSide();
                 }
             }
+            packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTADDBULLET);
+            for(Object o : packets) {
+                Network.ArtefactAddBullet p = (Network.ArtefactAddBullet)o;
+                artefacts.get(p.slot).handleAddBulletPacket(p);
+            }
+            packets = mpManager.packetHolder.getWithoutClear(PacketHolder.HITBULLET);
+            for (Object o : packets) {
+                Network.HitBullet p = (Network.HitBullet)o;
+                for (Artefact a : artefacts) {
+                    a.handleHitBulletPacket(p);
+                }
+            }
+
+        }
+        for(Artefact artefact:artefacts){
+            artefact.update(pause);
+        }
+        if(currentArtefact != null){
+            currentArtefact.updateChargeAnimation();
         }
     }
     public Artefact randomArtefact(){
@@ -136,5 +144,16 @@ public class ArtefactManager {
     }
     public Artefact getArtefact(int slot) {
         return artefacts.get(slot);
+    }
+
+    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
+        for(Artefact a : artefacts){
+            a.handleMoveBulletPacket(moveBullet);
+        }
+    }
+
+    public void clear(){
+        // clearing bullets
+        ((RingOfFire)artefacts.get(0)).clear();
     }
 }

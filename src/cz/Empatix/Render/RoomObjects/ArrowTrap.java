@@ -212,8 +212,6 @@ public class ArrowTrap extends RoomObject {
         setMapPosition();
         animation.update();
 
-        ArrayList<RoomObject> objects = tileMap.getRoomMapObjects();
-
         for(int i = 0;i<arrows.size();i++){
             Arrow arrow = arrows.get(i);
             arrow.update();
@@ -229,17 +227,21 @@ public class ArrowTrap extends RoomObject {
                     }
                 }
             }
-           for(RoomObject roomObject:objects){
-               if(roomObject.collision && roomObject != this && !arrow.isHit()){
-                   if (roomObject.intersects(arrow)){
-                       arrow.setHit();
-                       if (roomObject instanceof DestroyableObject){
-                           if (!((DestroyableObject) roomObject).isDestroyed()){
-                               ((DestroyableObject) roomObject).setHit(1);
-                           }
-                       }
-                   }
-               }
+            ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+            for(ArrayList<RoomObject> objects : objectsArray) {
+                if (objects == null) continue;
+                for(RoomObject roomObject : objects) {
+                    if (roomObject.collision && roomObject != this && !arrow.isHit()) {
+                        if (roomObject.intersects(arrow)) {
+                            arrow.setHit();
+                            if (roomObject instanceof DestroyableObject) {
+                                if (!((DestroyableObject) roomObject).isDestroyed()) {
+                                    ((DestroyableObject) roomObject).setHit(1);
+                                }
+                            }
+                        }
+                    }
+                }
            }
         }
         if(System.currentTimeMillis() - InGame.deltaPauseTime() - arrowShootCooldown > 4000 && animation.getIndexOfFrame() == 0){

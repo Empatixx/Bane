@@ -2,6 +2,7 @@ package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -297,8 +298,14 @@ public class Ladder extends RoomObject {
     }
     @Override
     public void keyPress() {
-        if(remove) return;
-        tileMap.newMap();
-        remove = true;
+        if(!MultiplayerManager.multiplayer){
+            if(remove) return;
+            tileMap.newMap();
+            remove = true;
+        } else if (tileMap.isServerSide()) {
+            if(remove) return;
+            tileMap.newMapMP();
+            remove = true;
+        }
     }
 }

@@ -9,7 +9,6 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Support.BerserkPot;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Random;
-import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.TileMap;
 
 import java.util.ArrayList;
@@ -100,7 +99,7 @@ public class ArtefactManagerMP {
         public void charge(){
             if(currentArtefact != null){
                 currentArtefact.charge();
-                if(currentArtefact.canBeActivated() && !firstAlert){
+                /*if(currentArtefact.canBeActivated() && !firstAlert){
                     Server server = MultiplayerManager.getInstance().server.getServer();
                     Network.Alert alert = new Network.Alert();
                     alert.text = "You've charged artefact";
@@ -108,7 +107,7 @@ public class ArtefactManagerMP {
                     alert.username = username;
                     server.sendToAllUDP(alert);
                     firstAlert = true;
-                }
+                }*/
             }
         }
         public void activate(String username, Network.ArtefactActivate artefactActivate){
@@ -140,5 +139,9 @@ public class ArtefactManagerMP {
             this.currentArtefact = currentArtefact;
 
         }
+    }
+    public void clear(){
+        // clearing bullets
+        ((RingOfFire)artefacts.get(0)).clearMP();
     }
 }

@@ -409,11 +409,14 @@ public class Bullet extends MapObject implements Serializable {
 
     public void update() {
         if(tileMap.isServerSide()){
-            ArrayList<RoomObject> roomObjects = tileMap.getRoomMapObjects();
-            for(RoomObject obj : roomObjects){
-                if(this.intersects(obj) && obj.collision){
-                    setHit(TypeHit.WALL);
-                    break;
+            ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+            for(ArrayList<RoomObject> objects : objectsArray) {
+                if (objects == null) continue;
+                for(RoomObject obj : objects){
+                    if(this.intersects(obj) && obj.collision){
+                        setHit(TypeHit.WALL);
+                        break;
+                    }
                 }
             }
             checkTileMapCollision();
@@ -437,11 +440,14 @@ public class Bullet extends MapObject implements Serializable {
         } else {
             setMapPosition();
             if(!MultiplayerManager.multiplayer){
-                ArrayList<RoomObject> roomObjects = tileMap.getRoomMapObjects();
-                for(RoomObject obj : roomObjects){
-                    if(this.intersects(obj) && obj.collision){
-                        setHit(TypeHit.WALL);
-                        break;
+                ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+                for(ArrayList<RoomObject> objects : objectsArray) {
+                    if (objects == null) continue;
+                    for(RoomObject obj : objects){
+                        if(this.intersects(obj) && obj.collision){
+                            setHit(TypeHit.WALL);
+                            break;
+                        }
                     }
                 }
                 checkTileMapCollision();
@@ -475,6 +481,9 @@ public class Bullet extends MapObject implements Serializable {
         (animation.hasPlayedOnce() && hit)) return;
         super.draw();
 
+    }
+    public void delete(){
+        light.remove();
     }
     public boolean isHit() {return hit;}
 

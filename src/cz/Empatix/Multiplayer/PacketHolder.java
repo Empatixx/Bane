@@ -30,9 +30,15 @@ public class PacketHolder {
     public final static int PLAYERHIT = 19;
     public final static int DROPARTEFACT = 20;
     public final static int ARTEFACTACTIVATED = 21;
+    public final static int ARTEFACTADDBULLET = 22;
+    public final static int LOCKROOM = 23;
+    public final static int NEXTFLOOR = 24;
+    public final static int TRANSFERROOM = 25;
+    public final static int TRANSFERROOMMAP = 26;
+    public final static int MAPLOADED = 27;
 
     public PacketHolder(){
-        final int size = 22;
+        final int size = 28;
 
         packetArrays = new ArrayList<>(size);
         for(int i = 0;i<size;i++){
@@ -92,6 +98,18 @@ public class PacketHolder {
                 packetArray.lock();
                 try {
                     packetArrays.get(id).packets.remove(o);
+                } finally {
+                    packetArray.unlock();
+                }
+            }
+        }
+    }
+    public void clear(int id) {
+        for (PacketArray packetArray : packetArrays) {
+            if (id == packetArray.id) {
+                packetArray.lock();
+                try {
+                    packetArrays.get(id).packets.clear();
                 } finally {
                     packetArray.unlock();
                 }

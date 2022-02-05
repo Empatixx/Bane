@@ -6,7 +6,6 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Gamestates.Singleplayer.ProgressRoom;
-import cz.Empatix.Main.DataManager;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Screanshot;
@@ -90,12 +89,6 @@ public class GameStateManager {
         } else {
             gameStates.get(currentState).init();
         }
-    }
-    public void LoadGame() {
-        gameStates.set(1, DataManager.load());
-        ((InGame) gameStates.get(1)).loadGame(this);
-        currentState = INGAME;
-
     }
     public void update() {
         gameStates.get(currentState).update();

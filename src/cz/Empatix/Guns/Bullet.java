@@ -7,6 +7,7 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.MPStatistics;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -43,6 +44,7 @@ public class Bullet extends MapObject implements Serializable {
     private boolean crit;
 
     private boolean friendlyFire;
+    private String owner;
 
     public enum TypeHit {
         WALL,
@@ -348,10 +350,15 @@ public class Bullet extends MapObject implements Serializable {
         this.damage = damage;
     }
 
+    /*
+    mostly singlerplayer method for setting bullet as hit, sending packet without any damage to object/enemy
+    or bullet hitted player(not sending any damage)
+     */
     public void setHit(TypeHit type) {
         if(hit) return;
         if(tileMap.isServerSide()){
-            Server server = MultiplayerManager.getInstance().server.getServer();
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+            Server server = mpManager.server.getServer();
             Network.HitBullet hitBullet = new Network.HitBullet();
             hitBullet.type = type;
             hitBullet.id = id;
@@ -371,15 +378,25 @@ public class Bullet extends MapObject implements Serializable {
         speed.x = 0;
         speed.y = 0;
     }
+    /*
+     setting bullet as hit, sending packet with damage to object/enemy
+     functionality as setHit(par1) but with damage packet to MapObject
+     */
     public void setHit(TypeHit type, int idHit) {
         if(hit) return;
         if(tileMap.isServerSide()){
-            Server server = MultiplayerManager.getInstance().server.getServer();
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+            Server server = mpManager.server.getServer();
             Network.HitBullet hitBullet = new Network.HitBullet();
             hitBullet.type = type;
             hitBullet.id = id;
             hitBullet.idHit = idHit;
             server.sendToAllTCP(hitBullet);
+            // increasing statistic of hit bullet so we can calculate accuracy
+            if(owner != null && type != TypeHit.WALL){
+                MPStatistics mpStatistics = mpManager.server.getMpStatistics();
+                mpStatistics.addBulletHit(owner);
+            }
         } else {
             if(type == TypeHit.WALL){
                 source.play(soundWallhit);
@@ -507,5 +524,13 @@ public class Bullet extends MapObject implements Serializable {
         }
         damage /= 2;
         if(damage < 1) damage = 1;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
+    public String getOwner() {
+        return owner;
     }
 }

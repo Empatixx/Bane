@@ -1,13 +1,31 @@
 package cz.Empatix.Multiplayer;
 
 import com.esotericsoftware.kryonet.Client;
+import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Main.Game;
+import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Graphics.Model.ModelManager;
+import cz.Empatix.Render.Graphics.Sprites.Sprite;
+import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
+import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.Room;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
+
+import java.util.ArrayList;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL20.*;
 
 public class PlayerMP extends Player {
     private String username;
@@ -18,6 +36,11 @@ public class PlayerMP extends Player {
     private TextRender textRender;
     private boolean ghost;
 
+    private Spritesheet ghostSpritesheet;
+    private int vboGhostVertices;
+
+    private Room deathRoom;
+
     public PlayerMP(TileMap tm, String username){
         super(tm);
         this.username = username;
@@ -25,6 +48,49 @@ public class PlayerMP extends Player {
         mpManager = MultiplayerManager.getInstance();
         ghost = false;
         //setHealth(200);
+        if(!tm.isServerSide()){
+            vboGhostVertices = ModelManager.getModel(32,32);
+            if (vboGhostVertices == -1){
+                vboGhostVertices = ModelManager.createModel(32,32);
+            }
+            spriteSheetCols = 3;
+            spriteSheetRows = 1;
+            final int[] numFrames = {
+                    3
+            };
+            ghostSpritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\p_ghost2.tga");
+
+            // creating a new spritesheet
+            if (ghostSpritesheet == null){
+                ghostSpritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\p_ghost2.tga");
+                for(int i = 0; i < spriteSheetRows; i++) {
+
+                    Sprite[] images = new Sprite[numFrames[i]];
+
+                    for (int j = 0; j < numFrames[i]; j++) {
+
+                        float[] texCoords =
+                                {
+                                        (float) j / spriteSheetCols, (float) i / spriteSheetRows,
+
+                                        (float) j / spriteSheetCols, (1.0f + i) / spriteSheetRows,
+
+                                        (1.0f + j) / spriteSheetCols, (1.0f + i) / spriteSheetRows,
+
+                                        (1.0f + j) / spriteSheetCols, (float) i / spriteSheetRows
+                                };
+
+
+                        Sprite sprite = new Sprite(texCoords);
+
+                        images[j] = sprite;
+
+                    }
+
+                    ghostSpritesheet.addSprites(images);
+                }
+            }
+        }
     }
 
     public void setOrigin(boolean origin) {
@@ -37,10 +103,99 @@ public class PlayerMP extends Player {
 
     @Override
     public void draw() {
-        super.draw();
+        if(ghost){
+        // pokud neni object na obrazovce - zrusit
+            if (isNotOnScrean()){
+                return;
+            }
+
+            // blikání - po hitu - hráč
+
+            if (flinching){
+                long elapsed = (System.nanoTime() - flinchingTimer) / 1000000;
+                if (elapsed / 100 % 2 == 0){
+                    shader.unbind();
+                    glBindTexture(GL_TEXTURE_2D,0);
+                    glActiveTexture(GL_TEXTURE0);
+
+                    return;
+                }
+            }
+
+            Matrix4f target;
+            if (facingRight) {
+                target = new Matrix4f().translate(position)
+                        .scale(scale);
+            } else {
+                target = new Matrix4f().translate(position)
+                        .rotateY((float) Math.PI)
+                        .scale(scale);
+
+            }
+            Camera.getInstance().projection().mul(target,target);
+
+            shader.bind();
+            shader.setUniformi("sampler",0);
+            glActiveTexture(GL_TEXTURE0);
+            shader.setUniformm4f("projection",target);
+
+            ghostSpritesheet.bindTexture();
+
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER, vboGhostVertices);
+            glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+
+            glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
+            glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
+
+            glDrawArrays(GL_QUADS, 0, 4);
+
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+            glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(1);
+
+            shader.unbind();
+            glBindTexture(GL_TEXTURE_2D,0);
+            glActiveTexture(GL_TEXTURE0);
+
+            if (Game.displayCollisions){
+                glColor3i(255,255,255);
+                glBegin(GL_LINE_STRIP);
+                // BOTTOM LEFT
+                glVertex2f(position.x+xmap-cwidth/2,position.y+ymap-cheight/2);
+                // TOP LEFT
+                glVertex2f(position.x+xmap-cwidth/2, position.y+ymap+cheight/2);
+                // TOP RIGHT
+                glVertex2f(position.x+xmap+cwidth/2, position.y+ymap+cheight/2);
+                // BOTTOM RIGHT
+                glVertex2f(position.x+xmap+cwidth/2, position.y+ymap-cheight/2);
+                glEnd();
+
+                glPointSize(10);
+                glColor3i(255,0,0);
+                glBegin(GL_POINTS);
+                glVertex2f(position.x+xmap,position.y+ymap);
+                glEnd();
+
+
+            }
+        } else {
+            super.draw();
+        }
         if(textRender == null) textRender = new TextRender();
         float centerX = TextRender.getHorizontalCenter((int)(position.x+xmap),(int)(position.x+xmap),username,2);
-        textRender.draw(username,new Vector3f(centerX,position.y+ymap-cheight/2-10,0),2,new Vector3f(0.874f,0.443f,0.149f));
+        Vector3f color = new Vector3f();
+        if(isGhost()){
+            color.set(0.760f);
+        } else {
+            color.set(0.874f,0.443f,0.149f);
+        }
+        textRender.draw(username,new Vector3f(centerX,position.y+ymap-cheight/2-10,0),2,color);
     }
 
     public String getUsername() {
@@ -91,7 +246,7 @@ public class PlayerMP extends Player {
             }
         }
         if(!tileMap.isServerSide()){
-            if((Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed)){
+            if(((Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed)) && !ghost){
                 float value = Math.abs(speed.x);
                 if(value < Math.abs(speed.y)) value = Math.abs(speed.y);
                 if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 400-value*20){
@@ -123,35 +278,38 @@ public class PlayerMP extends Player {
             }
         }
         getMovementSpeed();
-        checkRoomObjectsCollision();
+        if(!ghost)checkRoomObjectsCollision();
+        else checkGhostRestrictions();
         checkTileMapCollision();
         if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
             setPosition(temp.x, temp.y);
         }
         if(!tileMap.isServerSide()){
-            if (right || left) {
-                if (currentAction != SIDE) {
-                    currentAction = SIDE;
-                    animation.setFrames(spritesheet.getSprites(SIDE));
-                    animation.setDelay(75);
-                }
-            } else if (up) {
-                if (currentAction != UP) {
-                    currentAction = UP;
-                    animation.setFrames(spritesheet.getSprites(UP));
-                    animation.setDelay(50);
-                }
-            } else if (down) {
-                if (currentAction != DOWN) {
-                    currentAction = DOWN;
-                    animation.setFrames(spritesheet.getSprites(DOWN));
-                    animation.setDelay(75);
-                }
-            } else {
-                if (currentAction != IDLE) {
-                    currentAction = IDLE;
-                    animation.setFrames(spritesheet.getSprites(IDLE));
-                    animation.setDelay(100);
+            if(!ghost){
+                if (right || left) {
+                    if (currentAction != SIDE) {
+                        currentAction = SIDE;
+                        animation.setFrames(spritesheet.getSprites(SIDE));
+                        animation.setDelay(75);
+                    }
+                } else if (up) {
+                    if (currentAction != UP) {
+                        currentAction = UP;
+                        animation.setFrames(spritesheet.getSprites(UP));
+                        animation.setDelay(50);
+                    }
+                } else if (down) {
+                    if (currentAction != DOWN) {
+                        currentAction = DOWN;
+                        animation.setFrames(spritesheet.getSprites(DOWN));
+                        animation.setDelay(75);
+                    }
+                } else {
+                    if (currentAction != IDLE) {
+                        currentAction = IDLE;
+                        animation.setFrames(spritesheet.getSprites(IDLE));
+                        animation.setDelay(100);
+                    }
                 }
             }
 
@@ -210,11 +368,114 @@ public class PlayerMP extends Player {
             if(sourcehealth.isPlaying()) sourcehealth.stop();
             lowHealth = false;
             source.play(soundPlayerdeath);
+            animation.setFrames(ghostSpritesheet.getSprites(0));
+            animation.setDelay(100);
+
+            light.setIntensity(2f);
+        } else {
+            GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
+            ArtefactManagerMP artefactManagerMP = ArtefactManagerMP.getInstance();
+
+            MPStatistics mpStatistics = MultiplayerManager.getInstance().server.getMpStatistics();
+            mpStatistics.setTimeDeath(username,deathTime);
+
+            // random direction of drop
+            int x = -100 + Random.nextInt(201);
+            int y = -100 + Random.nextInt(201);
+            gunsManagerMP.dropPlayerWeapon(username,x,y);
+            x = -100 + Random.nextInt(201);
+            y = -100 + Random.nextInt(201);
+            artefactManagerMP.setCurrentArtefact(null,x,y,username);
         }
+        deathRoom = tileMap.getRoomByCoords(position.x,position.y);
+        cwidth = width = 32;
+        cheight = height = 32;
+        scale = 3;
+        cheight *= scale;
+        cwidth *= scale;
+        height *= scale;
+        width *= scale;
         ghost = true;
     }
 
     public boolean isGhost() {
         return ghost;
+    }
+    @Override
+    public void checkCollision(ArrayList<Enemy> enemies){
+        for (Enemy currentEnemy:enemies){
+            // check player X enemy collision
+            if (intersects(currentEnemy) && !currentEnemy.isDead() && !currentEnemy.isSpawning()){
+                hit(currentEnemy.getDamage());
+                if(isDead()){
+                    tileMap.clearEnemiesInPlayersRoom(this);
+                }
+            }
+        }
+    }
+
+    /**
+     * check if player as ghost can enter this location if it is not some new room, that other or him didn't discover
+     */
+    public void checkGhostRestrictions(){
+        dest.x = position.x + speed.x;
+        dest.y = position.y + speed.y;
+
+        Room room = tileMap.getRoomByCoords(dest.x,dest.y);
+        if(room != null){
+            if(!room.hasBeenEntered() && tileMap.isNotDeathRoomOfPlayers(room)){
+                int xMin = room.getxMin();
+                int xMax = room.getxMax();
+                int yMin = room.getyMin();
+                int yMax = room.getyMax();
+                if(position.y < yMax && position.y > yMin){
+                    if(dest.x > xMin && dest.x < xMax){
+                        speed.x = 0;
+                    }
+                }
+                if(position.x < xMax && position.x > xMin){
+                    if(dest.y > yMin && dest.y < yMax){
+                        speed.y = 0;
+                    }
+                }
+            }
+        }
+    }
+
+    public Room getDeathRoom() {
+        return deathRoom;
+    }
+
+    public void reset(){
+        width = cwidth= 32;
+        height = cheight = 72;
+
+        // COLLISION WIDTH/HEIGHT
+        scale = 2;
+
+        moveSpeed = 0.8f;
+        maxSpeed = 11.84f;
+        stopSpeed = 3.25f;
+
+        health = maxHealth = 7;
+        coins = 0;
+
+        armor = maxArmor = 3;
+
+        dead = false;
+        flinching = false;
+        facingRight = true;
+
+        currentAction = IDLE;
+
+        // because of scaling image by 5x
+        width *= scale;
+        height *= scale;
+        cwidth *= scale;
+        cheight *= scale;
+
+        rolling = false;
+
+        ghost = false;
     }
 }

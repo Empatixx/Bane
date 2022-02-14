@@ -171,6 +171,7 @@ public class Shotgun extends Weapon {
 
                             Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                             bullet.setPosition(px, py);
+                            bullet.setOwner(username);
                             bullets.add(bullet);
                             int damage;
                             if(i <= 1){
@@ -182,7 +183,6 @@ public class Shotgun extends Weapon {
                             if (i >= 0) i++;
                             else i--;
                             i = -i;
-                            GunsManager.bulletShooted++;
                             sendAddBulletPacket(bullet,x,y,px,py,username);
                         }
                         currentMagazineAmmo--;

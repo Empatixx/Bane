@@ -511,7 +511,7 @@ public class InGame extends GameState {
 
             textRender[13].draw("Pause",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Pause",7),300,0),7,new Vector3f(0.874f,0.443f,0.149f));
             textRender[14].draw("Resume",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Resume",4),465,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            textRender[15].draw("Save",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Save",4),655,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[15].draw("Stats",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Stats",4),655,0),4,new Vector3f(0.874f,0.443f,0.149f));
             textRender[16].draw("Exit",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Exit",4),845,0),4,new Vector3f(0.874f,0.443f,0.149f));
 
 

@@ -17,12 +17,12 @@ public class GameClient{
 
     private PacketHolder packetHolder;
     private MultiplayerManager mpManager;
-    private final GameStateManager gsm;
-    private final Client client;
+    private GameStateManager gsm;
+    private Client client;
 
     private int numPlayers;
 
-    public GameClient(GameStateManager gsm, String ipAdress){
+    public GameClient(GameStateManager gsm, String ipAddress){
         this.gsm = gsm;
         numPlayers = 1;
 
@@ -43,13 +43,14 @@ public class GameClient{
                     if (gameState instanceof ProgressRoomMP) {
                         PlayerMP playerMP = new PlayerMP(((ProgressRoomMP) gameState).tileMap, packetUsername);
                         ((ProgressRoomMP) gameState).player[numPlayers] = playerMP;
-                        ((ProgressRoomMP) gameState).playerReadies[numPlayers] = new ProgressRoomMP.PlayerReady(packetUsername);
+                        ((ProgressRoomMP) gameState).playerReadies[numPlayers] = new PlayerReady(packetUsername);
                         numPlayers++;
                         DiscordRP.getInstance().update("Multiplayer - In-Game","Lobby "+getTotalPlayers()+"/2");
                     }
                     else if (gameState instanceof InGameMP) {
                         PlayerMP playerMP = new PlayerMP(((InGameMP) gameState).tileMap, packetUsername);
                         ((InGameMP) gameState).player[numPlayers] = playerMP;
+                        ((InGameMP)  gameState).playerReadies[numPlayers] = new PlayerReady(packetUsername);
                         numPlayers++;
                     }
                 }
@@ -76,41 +77,42 @@ public class GameClient{
                 else if (object instanceof Network.MovePlayer){
                     packetHolder.add(object,PacketHolder.MOVEPLAYER);
                 }
+                else if (object instanceof Network.PstatsUpdate){
+                    packetHolder.add(object,PacketHolder.PLAYERSSTATS);
+                }
                 else if (object instanceof Network.Ready){
                     boolean state = ((Network.Ready) object).state;
 
                     GameState gameState = gsm.getCurrentGamestate();
                     String packetUsername = ((Network.Ready) object).username;
                     if(gameState instanceof ProgressRoomMP) {
-                        for(ProgressRoomMP.PlayerReady playerReady : ((ProgressRoomMP) gameState).playerReadies){
+                        for(PlayerReady playerReady : ((ProgressRoomMP) gameState).playerReadies){
+                            if(playerReady == null) continue;
+                            if(playerReady.getUsername().equalsIgnoreCase(packetUsername)){
+                                playerReady.setReady(state);
+                                String playerUsername = mpManager.getUsername();
+                                if(!packetUsername.equalsIgnoreCase(playerUsername)) AlertManager.add(AlertManager.INFORMATION,packetUsername+" is ready!");
+                            }
+                        }
+                    }
+                    if(gameState instanceof InGameMP) {
+                        for(PlayerReady playerReady : ((InGameMP) gameState).playerReadies){
                             if(playerReady == null) continue;
                             if(playerReady.getUsername().equalsIgnoreCase(packetUsername)){
                                 playerReady.setReady(state);
                             }
                         }
                     }
-                    if(state){
-                        String playerUsername = mpManager.getUsername();
-                        if(!packetUsername.equalsIgnoreCase(playerUsername)) AlertManager.add(AlertManager.INFORMATION,packetUsername+" is ready!");
-                    }
                 }
                 else if (object instanceof Network.TransferRoomMap){
-                    GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.TRANSFERROOMMAP);
-                    }
+                    packetHolder.add(object,PacketHolder.TRANSFERROOMMAP);
+
                 }
                 else if (object instanceof Network.TransferRoom){
-                    GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.TRANSFERROOM);
-                    }
+                    packetHolder.add(object,PacketHolder.TRANSFERROOM);
                 }
                 else if(object instanceof Network.MapLoaded){
-                    GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.MAPLOADED);
-                    }
+                    packetHolder.add(object,PacketHolder.MAPLOADED);
                 }
                 else if(object instanceof Network.AddBullet){
                     GameState gameState = gsm.getCurrentGamestate();
@@ -133,7 +135,7 @@ public class GameClient{
                 else if(object instanceof Network.WeaponInfo){
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
-                        ((InGameMP)gameState).gunsManager.handleWeaponInfoPacket((Network.WeaponInfo) object);
+                        if(((InGameMP)gameState).gunsManager != null)((InGameMP)gameState).gunsManager.handleWeaponInfoPacket((Network.WeaponInfo) object);
                     }
                 }
                 else if(object instanceof Network.DropItem){
@@ -145,7 +147,9 @@ public class GameClient{
                 else if(object instanceof Network.MoveDropItem){
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
-                        ((InGameMP)gameState).itemManager.handleMoveDropItemPacket((Network.MoveDropItem)object);
+                        if(((InGameMP)gameState).itemManager != null){
+                            ((InGameMP)gameState).itemManager.handleMoveDropItemPacket((Network.MoveDropItem)object);
+                        }
                     }
                 }
                 else if(object instanceof Network.RemoveItem){
@@ -187,7 +191,8 @@ public class GameClient{
                     packetHolder.add(object,PacketHolder.MOVEENEMY);
                 }
                 else if (object instanceof Network.MoveRoomObject){
-                    handleMove((Network.MoveRoomObject) object);
+                    //handleMove((Network.MoveRoomObject) object);
+                    packetHolder.add(object,PacketHolder.MOVEROOMOBJECT);
                 }
                 else if (object instanceof Network.SwitchWeaponSlot){
                     GameState gameState = gsm.getCurrentGamestate();
@@ -228,6 +233,12 @@ public class GameClient{
                         packetHolder.add(object,PacketHolder.ADD_ENEMYPROJECTION);
                     }
                 }
+                else if (object instanceof Network.RemoveEnemy){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        packetHolder.add(object,PacketHolder.REMOVEENEMY);
+                    }
+                }
                 else if (object instanceof Network.MoveEnemyProjectile){
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
@@ -245,6 +256,12 @@ public class GameClient{
                 }
                 else if (object instanceof Network.Alert){
                     packetHolder.add(object,PacketHolder.ALERT);
+                }
+                else if (object instanceof Network.AllPlayersDeath){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        packetHolder.add(object,PacketHolder.ALLPLAYERDEAD);
+                    }
                 }
                 else if (object instanceof Network.OpenChest){
                     GameState gameState = gsm.getCurrentGamestate();
@@ -290,6 +307,7 @@ public class GameClient{
             e.printStackTrace();
         }
 
+
     }
 
     public Client getClient() {
@@ -304,7 +322,6 @@ public class GameClient{
         if (gameState instanceof InGameMP) {
             ((InGameMP) gameState).gunsManager.handleBulletMovePacket(movePacket);
             ((InGameMP) gameState).artefactManager.handleBulletMovePacket(movePacket);
-
         }
     }
     public void handleMove(Network.MoveRoomObject movePacket) {

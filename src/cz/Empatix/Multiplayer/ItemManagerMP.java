@@ -138,7 +138,12 @@ public class ItemManagerMP {
                     numWeapons++;
                 }
             }
-            if(numWeapons == 1){
+            if(numWeapons <= 0){
+                drop = new Coin(tm);
+                drop.setPosition(x, y);
+                itemDrops.add(drop);
+            }
+            else if(numWeapons == 1){
                 for(int type : weaponTypes) {
                     if(type != -1){
                         if (type == ItemDrop.PISTOLAMMO) {
@@ -218,7 +223,7 @@ public class ItemManagerMP {
             PlayerMP player = this.player[i];
             for (ItemDrop drop : itemDrops) {
                 if (player != null) {
-                    if (drop.intersects(player)) {
+                    if (drop.intersects(player) && !player.isDead()) {
                         int type = drop.type;
                         if (drop.isShop()) {
                             if (drop.intersects(this.player[i])) {
@@ -497,7 +502,7 @@ public class ItemManagerMP {
         int y = pickup.y;
         for(int i = 0;i< player.length;i++){
             PlayerMP player = this.player[i];
-            if(!pickup.username.equalsIgnoreCase(player.getUsername()) || !player.isDead()) continue;
+            if(!pickup.username.equalsIgnoreCase(player.getUsername()) || player.isDead()) continue;
             // picking gun from ground
             float distance = -1;
             ItemDrop selectedDrop = null;

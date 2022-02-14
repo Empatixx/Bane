@@ -4,7 +4,6 @@ package cz.Empatix.Entity;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
-import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -243,9 +242,7 @@ public abstract class MapObject {
 				}
 				if (!obj.collision) {
 					if (intersects(obj)) {
-						if (this instanceof PlayerMP) {
-							if (((PlayerMP) (this)).isOrigin()) obj.touchEvent(this);
-						} else if (this instanceof Player) {
+						if (this instanceof Player) {
 							obj.touchEvent(this);
 						}
 					}

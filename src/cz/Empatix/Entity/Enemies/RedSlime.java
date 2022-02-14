@@ -6,7 +6,6 @@ import cz.Empatix.Entity.Enemies.Projectiles.RedSlimebullet;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
-import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -361,12 +360,9 @@ if (!projectilesShooted && dead) {
     }
     @Override
     public void hit(int damage) {
-        if(dead || isSpawning()) return;
-        lastTimeDamaged=System.currentTimeMillis()-InGame.deltaPauseTime();
-        health -= damage;
-        if(health < 0) health = 0;
+        super.hit(damage);
         projectiles++;
-        if(health == 0){
+        if(isDead()){
             if(tileMap.isServerSide()){
                 animation = new Animation(6);
                 animation.setDelay(65);
@@ -374,9 +370,6 @@ if (!projectilesShooted && dead) {
                 animation.setFrames(spritesheet.getSprites(DEAD));
                 animation.setDelay(65);
             }
-            speed.x = 0;
-            speed.y = 0;
-            dead = true;
         }
     }
     @Override

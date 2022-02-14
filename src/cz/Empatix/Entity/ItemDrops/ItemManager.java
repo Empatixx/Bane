@@ -571,7 +571,12 @@ public class ItemManager {
                     numWeapons++;
                 }
             }
-            if(numWeapons == 1){
+            if(numWeapons <= 0){
+                drop = new Coin(tm);
+                drop.setPosition(x, y);
+                itemDrops.add(drop);
+            }
+            else if(numWeapons == 1){
                 for(int type : weaponTypes) {
                     if(type != -1){
                         if (type == ItemDrop.PISTOLAMMO) {

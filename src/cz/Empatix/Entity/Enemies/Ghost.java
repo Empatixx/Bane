@@ -208,11 +208,8 @@ public class Ghost extends Enemy {
 
     @Override
     public void hit(int damage) {
-        if(dead || isSpawning()) return;
-        lastTimeDamaged=System.currentTimeMillis()-InGame.deltaPauseTime();
-        health -= damage;
-        if(health < 0) health = 0;
-        if(health == 0){
+        super.hit(damage);
+        if(isDead()){
             if(tileMap.isServerSide()){
                 animation = new Animation(5);
                 animation.setDelay(85);
@@ -220,10 +217,6 @@ public class Ghost extends Enemy {
                 animation.setFrames(spritesheet.getSprites(DEAD));
                 animation.setDelay(85);
             }
-            speed.x = 0;
-            speed.y = 0;
-            dead = true;
-
         }
     }
 

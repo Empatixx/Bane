@@ -203,9 +203,10 @@ public class Pistol extends Weapon {
                     }
                 }
                 bullet.setDamage(damage);
+                bullet.setOwner(username);
+
                 bullets.add(bullet);
                 currentMagazineAmmo--;
-                GunsManager.bulletShooted++;
                 secondShotReady=false;
                 sendAddBulletPacket(bullet,x,y,px,py,username);
             }
@@ -222,6 +223,8 @@ public class Pistol extends Weapon {
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                         Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                         bullet.setPosition(px, py);
+                        bullet.setOwner(username);
+
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                         if(criticalHits){
                             if(Math.random() > 0.9){
@@ -232,7 +235,6 @@ public class Pistol extends Weapon {
                         bullet.setDamage(damage);
                         bullets.add(bullet);
                         currentMagazineAmmo--;
-                        GunsManager.bulletShooted++;
 
                         sendAddBulletPacket(bullet,x,y,px,py,username);
 
@@ -313,6 +315,7 @@ public class Pistol extends Weapon {
     public void checkCollisions(ArrayList<Enemy> enemies) {
         checkCollisionsBullets(enemies,bullets);
     }
+
     @Override
     public boolean canSwap() {
         return !reloading && System.currentTimeMillis()  - InGame.deltaPauseTime()- delay > delayTime/2 && !secondShotReady;

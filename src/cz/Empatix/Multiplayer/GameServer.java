@@ -19,6 +19,7 @@ public class GameServer {
     private final Server server;
 
     private final List<PlayerMP> connectedPlayers;
+    private final List<PlayerReady> readyCheckPlayers;
     private GunsManagerMP gunsManager;
     private ItemManagerMP itemManager;
     private EnemyManagerMP enemyManagerMP;
@@ -28,16 +29,34 @@ public class GameServer {
 
     private int gameState;
 
-    int changeGamestateConfirms;
+    private static MPStatistics mpStatistics;
+
+    public MPStatistics getMpStatistics() {
+        return mpStatistics;
+    }
+
+
+    public static class PlayerReady{
+        private String username;
+        private boolean ready;
+        public boolean isThisPlayer(PlayerMP p){return username.equalsIgnoreCase(p.getUsername());}
+        public boolean isThisPlayer(String username){return username.equalsIgnoreCase(this.username);}
+        public boolean isReady(){return ready;};
+        public void setReady(boolean ready) {
+            this.ready = ready;
+        }
+        private PlayerReady(String username){
+            this.username = username;
+        }
+    }
 
     public GameServer() {
         connectedPlayers = Collections.synchronizedList(new ArrayList<>());
+        readyCheckPlayers = Collections.synchronizedList(new ArrayList<>());
         map = new MiniMap(true);
         tileMap = new TileMap(64,map,2);
         tileMap.loadTilesMP("Textures\\tileset64.tga");
         tileMap.loadProgressRoom();
-
-        changeGamestateConfirms = 0;
 
         server = new Server();
         server.start();
@@ -57,7 +76,7 @@ public class GameServer {
                     // player is already connected
                     for (PlayerMP player : connectedPlayers) {
                         if (player.getUsername().equalsIgnoreCase(packetUsername)) {
-                            close();
+                            //close();
                             return;
                         }
                     }
@@ -80,26 +99,6 @@ public class GameServer {
                 }
                 else if (object instanceof Network.MovePlayerInput) {
                     handleMove((Network.MovePlayerInput) object);
-                }
-                else if(object instanceof Network.ConfirmChangeGS){
-                    changeGamestateConfirms++;
-                    if(changeGamestateConfirms == connectedPlayers.size()){
-                        PlayerMP[] players = connectedPlayers.toArray(new PlayerMP[connectedPlayers.size()]);
-                        tileMap.setPlayers(players);
-                        map = new MiniMap(true);
-                        artefactManager = new ArtefactManagerMP(tileMap,players);
-                        gunsManager = new GunsManagerMP(tileMap,players);
-                        itemManager = new ItemManagerMP(tileMap,gunsManager,artefactManager,players);
-                        EnemyManagerMP.init(players,tileMap);
-                        enemyManagerMP = EnemyManagerMP.getInstance();
-                        tileMap.loadMap();
-                        itemManager.dropArtefact((int)tileMap.getPlayerStartX(),(int)tileMap.getPlayerStartY());
-                        itemManager.dropArtefact((int)tileMap.getPlayerStartX()+130,(int)tileMap.getPlayerStartY()+130);
-                        for(Player p : connectedPlayers){
-                            if(p != null) p.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
-                        }
-                        gameState = GameStateManager.INGAME;
-                    }
                 } else if(object instanceof Network.MouseCoords){
                     gunsManager.handleMouseCoords((Network.MouseCoords) object);
                 }
@@ -114,6 +113,10 @@ public class GameServer {
                 }
                 else if (object instanceof Network.Ready){
                     server.sendToAllTCP(object);
+                    for(PlayerReady pready : readyCheckPlayers){
+                        Network.Ready ready = (Network.Ready) object;
+                        if(pready.isThisPlayer(ready.username)) pready.setReady(ready.state);
+                    }
                 }
                 else if (object instanceof Network.DropInteract){
                     itemManager.handleDrolpInteractPacket((Network.DropInteract)object);
@@ -148,16 +151,19 @@ public class GameServer {
                 // UPS  counter
                 int updates = 0;
 
+                gameState = GameStateManager.PROGRESSROOM;
+
                 while (MultiplayerManager.multiplayer) {
                     long now = System.nanoTime();
                     delta += (now-lastTime) / ns;
                     lastTime = now;
 
+                    boolean apdPacket = false; // all players dead
                     while (delta >= 1){
                              if(gameState == GameStateManager.INGAME){
                                  itemManager.update();
                                  ItemManagerMP.InteractionAcknowledge[] interAck = itemManager.checkDropInteractions();
-                                 for(Player player: connectedPlayers){
+                                 for(PlayerMP player: connectedPlayers){
                                      player.update();
                                  }
                                  tileMap.updateObjects();
@@ -171,13 +177,87 @@ public class GameServer {
                                  enemyManagerMP.update();
                                  ArrayList<Enemy> enemies = EnemyManagerMP.getInstance().getEnemies();
                                  gunsManager.checkCollisions(enemies);
-                                 for(Player player : connectedPlayers){
+                                 for(PlayerMP player : connectedPlayers){
                                     player.checkCollision(enemies);
                                  }
                                  artefactManager.update();
+                                 mpStatistics.sentPackets();
+                                 boolean allDead = true;
+                                 for(Player player: connectedPlayers){
+                                     if (!player.isDead()) {
+                                         allDead = false;
+                                         break;
+                                     }
+                                 }
+                                 if(allDead && !apdPacket){
+                                     Network.AllPlayersDeath allPlayersDeath = new Network.AllPlayersDeath();
+                                     Server server = MultiplayerManager.getInstance().server.getServer();
+                                     server.sendToAllTCP(allPlayersDeath);
+
+                                     apdPacket = true;
+                                 }
+                                 if(apdPacket){
+                                     boolean allReady = true;
+                                     for(PlayerReady ready : readyCheckPlayers){
+                                         if(!ready.isReady()){
+                                             allReady = false;
+                                         }
+                                     }
+                                     if(allReady){
+                                         tileMap.loadProgressRoom();
+                                         for(PlayerMP p : connectedPlayers){
+                                             p.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
+                                             p.reset(); // reseting collisions
+                                         }
+                                         artefactManager = null;
+                                         gunsManager = null;
+                                         itemManager = null;
+                                         enemyManagerMP = null;
+                                         gameState = GameStateManager.PROGRESSROOM;
+                                         for(PlayerReady ready : readyCheckPlayers){
+                                             ready.setReady(false);
+                                         }
+                                         apdPacket = false;
+                                     }
+                                 }
                              } else {
                                  for(Player player: connectedPlayers){
                                      player.update();
+
+                                 }
+                                 boolean allReady = true;
+                                 for(PlayerReady ready : readyCheckPlayers){
+                                     if(!ready.isReady()){
+                                         allReady = false;
+                                     }
+                                 }
+                                 if(connectedPlayers.size() == 0) allReady = false;
+                                 if(allReady){
+                                     // reseting health/armor, speed movement etc.
+                                     PlayerMP[] players = new PlayerMP[connectedPlayers.size()];
+                                     for(int i = 0;i < players.length;i++){
+                                         players[i] = connectedPlayers.get(i);
+                                         players[i].reset();
+                                         connectedPlayers.set(i,players[i]);
+                                     }
+                                     tileMap.setPlayers(players);
+                                     artefactManager = new ArtefactManagerMP(tileMap,players);
+                                     gunsManager = new GunsManagerMP(tileMap,players);
+                                     itemManager = new ItemManagerMP(tileMap,gunsManager,artefactManager,players);
+                                     EnemyManagerMP.init(players,tileMap);
+                                     enemyManagerMP = EnemyManagerMP.getInstance();
+                                     tileMap.loadMap();
+                                     mpStatistics = new MPStatistics();
+                                     for(PlayerMP p : connectedPlayers){
+                                         if(p != null){
+                                             p.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
+                                             mpStatistics.addPlayer(p.getUsername());
+                                         }
+                                     }
+                                     gameState = GameStateManager.INGAME;
+                                     for(PlayerReady ready : readyCheckPlayers){
+                                         ready.setReady(false);
+                                     }
                                  }
                              }
                              updates++;
@@ -225,6 +305,13 @@ public class GameServer {
             PlayerMP player = connectedPlayers.get(i);
             if (player.getUsername().equalsIgnoreCase(packetUsername)) {
                 connectedPlayers.remove(i);
+                for(int j = 0;j<readyCheckPlayers.size();j++){
+                    PlayerReady playerReady = readyCheckPlayers.get(j);
+                    if(playerReady.isThisPlayer(player)){
+                        readyCheckPlayers.remove(i);
+                        break;
+                    }
+                }
                 i--;
             }
         }
@@ -251,6 +338,7 @@ public class GameServer {
 
         if(join.host){
             connectedPlayers.add(playerMP);
+            readyCheckPlayers.add(new PlayerReady(playerMP.getUsername()));
         } else {
             for (PlayerMP otherPlayer : connectedPlayers) {
                 Network.AddPlayer addPlayer = new Network.AddPlayer();
@@ -259,6 +347,7 @@ public class GameServer {
                 connection.sendTCP(addPlayer);
             }
             connectedPlayers.add(playerMP);
+            readyCheckPlayers.add(new PlayerReady(playerMP.getUsername()));
             Network.AddPlayer addPlayer = new Network.AddPlayer();
             addPlayer.username = join.username;
             // send new player to others players

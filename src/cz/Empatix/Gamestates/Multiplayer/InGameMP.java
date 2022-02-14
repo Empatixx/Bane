@@ -16,9 +16,7 @@ import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
-import cz.Empatix.Multiplayer.Network;
-import cz.Empatix.Multiplayer.PacketHolder;
-import cz.Empatix.Multiplayer.PlayerMP;
+import cz.Empatix.Multiplayer.*;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
@@ -46,6 +44,8 @@ import static org.lwjgl.opengl.GL11.*;
 
 
 public class InGameMP extends GameState {
+    private long deathTime;
+
     public static void load(){
         Loader.loadImage("Textures\\Menu\\pausemenu.tga");
         Loader.loadImage("Textures\\Menu\\bg.png");
@@ -70,6 +70,7 @@ public class InGameMP extends GameState {
     private Image[] logos;
 
     public PlayerMP[] player;
+    public PlayerReady[] playerReadies;
 
     public TileMap tileMap;
 
@@ -117,7 +118,14 @@ public class InGameMP extends GameState {
     private TextRender[] textRender;
 
     private MultiplayerManager mpManager;
-    public volatile boolean mapLoaded;
+    private MPStatistics mpStatistics;
+
+    public boolean mapLoaded;
+    public boolean postDeath;
+    public int totalRoomsSynch;
+
+    private int readyNumPlayers;
+    private boolean ready;
 
     public InGameMP(GameStateManager gsm){
         this.gsm = gsm;
@@ -167,12 +175,14 @@ public class InGameMP extends GameState {
             }
             gunsManager.stopShooting();
         }
-        if(!player[0].isDead() || player[0].isGhost())player[0].keyReleased(k);
+        if(!player[0].isDead() || player[0].isGhost()){
+            player[0].keyReleased(k);
+            miniMap.keyReleased(k);
+        }
         if(player[0].isDead()) return;
         if(console.isEnabled()){
             console.keyReleased(k);
         }
-        miniMap.keyReleased(k);
 
         if(pause) return;
 
@@ -187,7 +197,20 @@ public class InGameMP extends GameState {
 
     @Override
     protected void keyPressed(int k) {
-        if(!player[0].isDead() || player[0].isGhost())player[0].keyPressed(k);
+        if(!player[0].isDead() || player[0].isGhost()){
+            player[0].keyPressed(k);
+            miniMap.keyPressed(k);
+        }
+        if(postDeath){
+            if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT) && !ready && System.currentTimeMillis() - deathTime > 3000){
+                Network.Ready ready = new Network.Ready();
+                ready.username = player[0].getUsername();
+                ready.state = true;
+                Client client = mpManager.client.getClient();
+                client.sendTCP(ready);
+                this.ready = true;
+            }
+        }
         if(player[0].isDead()) return;
         if(pause) return;
 
@@ -205,8 +228,6 @@ public class InGameMP extends GameState {
         float mx = tileMap.getX();
         float my = tileMap.getY();
         gunsManager.keyPressed(k,(int)(mouseX-mx-px),(int)(mouseY-my-py));
-
-        miniMap.keyPressed(k);
 
         //if(!interract){
         //    tileMap.keyPressed(k,player[0]);
@@ -240,7 +261,9 @@ public class InGameMP extends GameState {
         for(int i = 0;i<17;i++) textRender[i] = new TextRender();
 
         mpManager = MultiplayerManager.getInstance();
+        mpStatistics = new MPStatistics();
         mapLoaded = false;
+        postDeath = false;
 
         AudioManager.cleanUpAllSources();
 
@@ -270,10 +293,13 @@ public class InGameMP extends GameState {
         // player
         // create player object
         player = new PlayerMP[2];
+        playerReadies = new PlayerReady[player.length];
 
         String username = mpManager.getUsername();
         player[0] = new PlayerMP(tileMap,username);
         player[0].setOrigin(true);
+        playerReadies[0] = new PlayerReady(username);
+        mpStatistics.addPlayer(username);
 
         tileMap.setPlayer(player[0]);
 
@@ -342,19 +368,24 @@ public class InGameMP extends GameState {
 
         console = new Console(gunsManager,player[0],itemManager,enemyManager);
 
-        Client client = MultiplayerManager.getInstance().client.getClient();
-
-        Network.ConfirmChangeGS changeGamestate = new Network.ConfirmChangeGS();
-        client.sendTCP(changeGamestate);
-
         long delay = System.currentTimeMillis();
-        while(!mapLoaded){
+        int currentUnloadedRooms = 0;
+        boolean mroomPacket = false;
+        while(!mapLoaded || totalRoomsSynch != currentUnloadedRooms || !mroomPacket){
             if(System.currentTimeMillis() > delay) {
                 delay+=1000;
-                System.out.println("STILL NOT LOADED MAP");
             }
             Object[] packets = mpManager.packetHolder.get(PacketHolder.MAPLOADED);
-            if(packets.length >= 1) mapLoaded = true;
+            Object[] roomPackets = mpManager.packetHolder.getWithoutClear(PacketHolder.TRANSFERROOM);
+            mroomPacket = mpManager.packetHolder.getWithoutClear(PacketHolder.TRANSFERROOMMAP).length == 1;
+
+            if(packets.length >= 1){
+                mapLoaded = true;
+                totalRoomsSynch = ((Network.MapLoaded)packets[0]).totalRooms;
+            }
+
+            currentUnloadedRooms = roomPackets.length;
+
         }
         tileMap.loadMapViaPackets();
         tileMap.fillMiniMap();
@@ -363,10 +394,11 @@ public class InGameMP extends GameState {
 
         // make camera move smoothly
         tileMap.setTween(0.10);
-        Network.RequestForPlayers request = new Network.RequestForPlayers();
-        request.exceptUsername = mpManager.getUsername();
 
-        client.sendTCP(request);
+        totalRoomsSynch = 999;
+        ready = false;
+
+        mpManager.packetHolder.clearIngamePackets();
     }
 
     @Override
@@ -427,7 +459,7 @@ public class InGameMP extends GameState {
             textRender[1].draw("Y: "+(int)player[0].getY(),new Vector3f(200,600,0),3,new Vector3f(1.0f,1.0f,1.0f));
         }
 
-        gunsManager.drawHud();
+        if(!postDeath)gunsManager.drawHud();
         artefactManager.drawHud();
         enemyManager.drawHud();
 
@@ -446,13 +478,14 @@ public class InGameMP extends GameState {
         textRender[2].draw(""+player[0].getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
 
         // remake if all players are dead
-        if(player[0].isDead() && false){
+        if(postDeath){
+            MPStatistics.PStats pStats = mpStatistics.getPlayerStats(player[0].getUsername());
             int totalReward = 0;
             int rewardAccuracy = 0;
-            int rewardKilledEnemies = (int)Math.sqrt(EnemyManager.enemiesKilled)*(int)((tileMap.getFloor()+1)/1.25);
+            int rewardKilledEnemies = (int)Math.sqrt(pStats.getEnemiesKilled())*(int)((tileMap.getFloor()+1)/1.25);
             int rewardFloor = (int)Math.pow(tileMap.getFloor(),1.5);
-            if(GunsManager.bulletShooted != 0){
-                int accuracy = (int)((float)GunsManager.hitBullets/GunsManager.bulletShooted*100);
+            if(pStats.getBulletShooted() != 0){
+                int accuracy = (int)(pStats.getAccuracy()*100);
                 if(accuracy > 90){
                     rewardAccuracy= (int)(rewardKilledEnemies*0.8);
                 } else if (accuracy > 75){
@@ -468,46 +501,45 @@ public class InGameMP extends GameState {
                 int storedMoney = db.getValue("money","general");
                 db.setValue("money",totalReward+storedMoney);
             }
-            fadeFramebuffer.unbindFBO();
-            fade.draw(fadeFramebuffer);
             if(transitionContinue) return;
             if(player[0].isDead()){
                 skullPlayerdead.draw();
             }
-            float time = (System.currentTimeMillis()-player[0].getDeathTime());
-            if(time > 3500){
+            float time = System.currentTimeMillis()-deathTime;
+            if(time > 1000){
                 char[] gameOverTitle = "GAME OVER".toCharArray();
                 StringBuilder stringBuilder = new StringBuilder();
-                for(int i = 0;time > 3500+i*95 && i < gameOverTitle.length;i++){
+                for(int i = 0;time > 1000+i*95 && i < gameOverTitle.length;i++){
                     stringBuilder.append(gameOverTitle[i]);
                 }
                 textRender[3].draw(stringBuilder.toString(),new Vector3f( TextRender.getHorizontalCenter(0,1920,stringBuilder.toString(),5),340,0),5,new Vector3f(1f,0.25f,0f));
                 glColor4f(1f,1f,1f,1f);
                 glLineWidth(3f);
                 glBegin(GL_LINES);
-                float first = 960-(time-3500)/2.5f;
-                float secondary = 960+(time-3500)/2.5f;
+                float first = 960-(time-1000)/2.5f;
+                float secondary = 960+(time-1000)/2.5f;
                 if(first<480) first=480;
                 if(secondary>1440) secondary=1440;
                 glVertex2f(secondary, 380);
                 glVertex2f(first, 380);
                 glEnd();
             }
-            if(time > 5000){
+            if(time > 2350){
                 for(Image img : logos){
                     img.draw();
                 }
                 textRender[4].draw("Floor: "+(tileMap.getFloor()+1),new Vector3f(600,500,0),3,new Vector3f(1f,1f,1f));
-                textRender[5].draw("Enemies killed: "+EnemyManager.enemiesKilled,new Vector3f(600,600,0),3,new Vector3f(1f,1f,1f));
-                if(GunsManager.bulletShooted == 0){
+                textRender[5].draw("Enemies killed: "+pStats.getEnemiesKilled(),new Vector3f(600,600,0),3,new Vector3f(1f,1f,1f));
+                if(pStats.getBulletShooted() == 0){
                     textRender[6].draw("Accuracy: 0%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
 
                 } else {
-                    textRender[7].draw("Accuracy: "+(int)((float)GunsManager.hitBullets/GunsManager.bulletShooted*100)+"%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
+                    textRender[7].draw("Accuracy: "+(int)(pStats.getAccuracy()*100)+"%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
                 }
-                long sec = (player[0].getDeathTime()-gameStart)/1000%60;
-                long min = ((player[0].getDeathTime()-gameStart)/1000/60)%60;
-                long hours = (player[0].getDeathTime()-gameStart)/1000/3600;
+                long deathTime = pStats.getDeathTime();
+                long sec = (deathTime-gameStart)/1000%60;
+                long min = ((deathTime-gameStart)/1000/60)%60;
+                long hours = (deathTime-gameStart)/1000/3600;
 
                 String livetime = "Live time: ";
                 if(hours>=1){
@@ -524,10 +556,24 @@ public class InGameMP extends GameState {
                 textRender[11].draw("+ "+rewardAccuracy,new Vector3f(1300,700,0),3,new Vector3f(0.831f, 0.658f, 0.031f));
 
             }
-            if(time > 5500){
+            int totalPlayers = 0;
+            for(PlayerReady ready : playerReadies){
+                if(ready != null) totalPlayers++;
+            }
+            if(time > 3000){
                 if(System.currentTimeMillis() / 500 % 2 == 0) {
-                    textRender[12].draw("Press anything to continue...",new Vector3f(1500,1000,0),2,new Vector3f(1f,1f,1f));
-
+                    if(!ready){
+                        String string = "Press "+ControlSettings.keyToChar(ControlSettings.getValue(ControlSettings.OBJECT_INTERACT))+" to continue...";
+                        float xloc = TextRender.getHorizontalCenter(1400,1900,string,2);
+                        textRender[12].draw(string,
+                                new Vector3f(xloc,1000,0),2,new Vector3f(1f,1f,1f));
+                    }
+                    else{
+                        String string = "Waiting for "+readyNumPlayers+"/"+totalPlayers+" players";
+                        float xloc = TextRender.getHorizontalCenter(1400,1900,string,2);
+                        textRender[12].draw(string,
+                                new Vector3f(xloc,1000,0),2,new Vector3f(1f,1f,1f));
+                    }
                 }
             }
 
@@ -544,7 +590,7 @@ public class InGameMP extends GameState {
 
             textRender[13].draw("Pause",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Pause",7),300,0),7,new Vector3f(0.874f,0.443f,0.149f));
             textRender[14].draw("Resume",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Resume",4),465,0),4,new Vector3f(0.874f,0.443f,0.149f));
-            textRender[15].draw("Save",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Save",4),655,0),4,new Vector3f(0.874f,0.443f,0.149f));
+            textRender[15].draw("Stats",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Stats",4),655,0),4,new Vector3f(0.874f,0.443f,0.149f));
             textRender[16].draw("Exit",new Vector3f(TextRender.getHorizontalCenter(795,1125,"Exit",4),845,0),4,new Vector3f(0.874f,0.443f,0.149f));
 
 
@@ -577,11 +623,36 @@ public class InGameMP extends GameState {
             player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
             tileMap.setTween(0.10);
         }
-
-        AudioManager.update();
-        if (player[0].isDead()) {
-            // dead logic pls
+        Object[] allPlayersDead = mpManager.packetHolder.get(PacketHolder.ALLPLAYERDEAD);
+        if(allPlayersDead.length >= 1 && !postDeath){
+            postDeath = true;
+            deathTime = System.currentTimeMillis();
         }
+        readyNumPlayers = 0;
+        int totalConPlayers = 0;
+        for(PlayerReady playerReady : playerReadies){
+            if(playerReady != null){
+                if(playerReady.isReady()) readyNumPlayers++;
+                totalConPlayers++;
+            }
+        }
+        // all players are ready => enter game
+        if(totalConPlayers == readyNumPlayers){
+            mpManager.client.setNumPlayers(1);
+
+            gsm.setState(GameStateManager.PROGRESSROOMMP);
+
+            mpManager.packetHolder.get(PacketHolder.MOVEPLAYER); // CLEARING ARRAY
+
+
+            Client client = mpManager.client.getClient();
+            Network.RequestForPlayers request = new Network.RequestForPlayers();
+            request.exceptUsername = mpManager.getUsername();
+            client.sendTCP(request);
+            return;
+
+        }
+        AudioManager.update();
         // loc of mouse
         mouseX = gsm.getMouseX();
         mouseY = gsm.getMouseY();
@@ -648,6 +719,8 @@ public class InGameMP extends GameState {
                 }
             }
         }
+
+
         tileMap.createRoomObjectsViaPackets();
         tileMap.updateObjects();
 
@@ -710,6 +783,8 @@ public class InGameMP extends GameState {
 
         gaussianBlur.update(pause);
         lightManager.update();
+
+        mpStatistics.reveicePackets();
 
     }
     public void pause(){

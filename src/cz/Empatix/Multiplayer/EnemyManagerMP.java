@@ -7,6 +7,7 @@ import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Render.Room;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
@@ -260,5 +261,25 @@ public class EnemyManagerMP {
             if(position.x > xMin && position.x < xMax && position.y > yMin && position.y < yMax) return false;
         }
         return true;
+    }
+
+    public void clearEnemiesInRoom(Room room) {
+        int xMax,xMin,yMax,yMin;
+        xMax = room.getxMax();
+        xMin = room.getxMin();
+        yMax = room.getyMax();
+        yMin = room.getyMin();
+        for(Enemy e : enemies){
+            if(e.isDead()) continue;
+            Vector3f position = e.getPosition();
+            if(position.x > xMin && position.x < xMax && position.y > yMin && position.y < yMax){
+                e.setDead();
+                Network.RemoveEnemy rEnemy = new Network.RemoveEnemy();
+                rEnemy.id = e.id;
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(rEnemy);
+            }
+        }
+
     }
 }

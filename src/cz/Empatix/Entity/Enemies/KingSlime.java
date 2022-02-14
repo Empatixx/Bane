@@ -249,7 +249,9 @@ public class KingSlime extends Enemy {
         animation.update();
 
         // creating of chest+ladder after death
-        if(isDead() && animation.hasPlayedOnce()){
+        // checking !itemDropped if boss wasn't killed by setDead();
+        // this function is used when player dies so we want to not create ladder
+        if(isDead() && animation.hasPlayedOnce() && !itemDropped){
             disableDraw = true;
             if(!chestCreated && (tileMap.isServerSide() || !MultiplayerManager.multiplayer)){
                 chestCreated=true;
@@ -480,24 +482,16 @@ public class KingSlime extends Enemy {
     }
     @Override
     public void hit(int damage) {
-        if(dead || isSpawning()) return;
-        lastTimeDamaged=System.currentTimeMillis()- InGame.deltaPauseTime();
-        health -= damage;
-        if(health < 0) health = 0;
-        if(health == 0){
+        super.hit(damage);
+        if(isDead()){
             if(tileMap.isServerSide()){
                 animation = new Animation(6);
                 animation.setDelay(85);
             } else {
                 animation.setFrames(spritesheet.getSprites(DEAD));
                 animation.setDelay(85);
+                AudioManager.playSoundtrack(Soundtrack.IDLE);
             }
-            speed.x = 0;
-            speed.y = 0;
-            dead = true;
-
-            AudioManager.playSoundtrack(Soundtrack.IDLE);
-
             // deleting all projectiles after death
             for(KingSlimebullet slimebullet : bullets){
                 slimebullet.setHit();

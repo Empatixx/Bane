@@ -260,6 +260,11 @@ public class TileMap {
 		return idGen;
 	}
 	public void loadProgressRoom(){
+		sideRoom = null;
+
+		tween = 1;
+		floor = 0;
+
 		// id generator
 		idGen = 0;
 
@@ -323,6 +328,7 @@ public class TileMap {
 		if(serverSide){
 			Server server = MultiplayerManager.getInstance().server.getServer();
 			Network.MapLoaded mapLoaded = new Network.MapLoaded();
+			mapLoaded.totalRooms = roomArrayList.length;
 			server.sendToAllTCP(mapLoaded);
 		}
 
@@ -497,8 +503,8 @@ public class TileMap {
 						if(!MultiplayerManager.multiplayer){
 							// event trigger on entering a new room
 							room.entered(this);
+							room.showRoomOnMinimap();
 						}
-						room.showRoomOnMinimap();
 					}
 					if(currentRoom[0] != room){
 						currentRoom[0] = room;
@@ -537,19 +543,20 @@ public class TileMap {
 	 */
 	public void updateCurrentRoom() {
 		for (Room room : roomArrayList) {
-			// getting X max/min of room
-			int xMax = room.getxMax();
-			int xMin = room.getxMin();
-
-			// getting Y max/min of room
-			int yMax = room.getyMax();
-			int yMin = room.getyMin();
 
 			for (int k = 0;k<player.length;k++) {
 				Player player = this.player[k];
 				if (player != null) {
 					int x = (int)player.getX();
 					int y = (int)player.getY();
+
+					// getting X max/min of room
+					int xMax = room.getxMax();
+					int xMin = room.getxMin();
+
+					// getting Y max/min of room
+					int yMax = room.getyMax();
+					int yMin = room.getyMin();
 
 					if (x > xMin && x < xMax) {
 						if (y > yMin && y < yMax) {
@@ -559,7 +566,7 @@ public class TileMap {
 							yMax -= tileSize * 2;
 							yMin += tileSize * 2;
 
-							if (!room.hasEntered() && y > yMin && y < yMax && x > xMin && x < xMax) {
+							if (!room.hasEntered() && y > yMin && y < yMax && x > xMin && x < xMax && !player.isDead()) {
 								// event trigger on entering a new room
 								room.entered(this, player);
 							}
@@ -651,7 +658,6 @@ public class TileMap {
 								currentRoom[k] = null;
 								for(int s = 0;s<4;s++) sideRooms[k*4+s] = null;
 							}
-							break;
 						}
 					}
 				}
@@ -693,6 +699,11 @@ public class TileMap {
 				}
 			}
 			if(!serverSide && MultiplayerManager.multiplayer){
+				Object[] movePackets = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.MOVEROOMOBJECT);
+				for(Object move : movePackets){
+					Network.MoveRoomObject moveRoomObject = (Network.MoveRoomObject) move;
+					handleRoomMovePacket(moveRoomObject);
+				}
 				Object[] packets = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.OPENCHEST);
 				for(Object o : packets){
 					Network.OpenChest openChest = (Network.OpenChest) o;
@@ -1641,7 +1652,6 @@ public class TileMap {
 
 		DiscordRP.getInstance().update("In-Game","Floor "+RomanNumber.toRoman(floor+1));
 	}
-	//TODO: multiplayer newMap
 	public void newMapMP(){
 		floor++;
 		Server server = MultiplayerManager.getInstance().server.getServer();
@@ -1890,7 +1900,7 @@ public class TileMap {
 			for(Player p : player){
 				if(p == null) continue;
 				String pname = ((PlayerMP)p).getUsername();
-				if(pname.equalsIgnoreCase(objectInteract.username) && !p.isDead()){
+				if(pname.equalsIgnoreCase(objectInteract.username) || !p.isDead()){
 					for(ItemManagerMP.InteractionAcknowledge ack : acknowledges){
 						if(ack.isThisAckOfPlayer(pname)){
 							if (ack.didInteract()) continue A;
@@ -1907,5 +1917,30 @@ public class TileMap {
 			}
 		}
 		objectInteractPackets.clear();
+	}
+
+	// only for multiplayer purpose - after dying - clearing all mobs
+	// we won't clear enemies if there is some another alive player
+	public void clearEnemiesInPlayersRoom(PlayerMP playerMP) {
+		Room room = getRoomByCoords(playerMP.getX(),playerMP.getY());
+		for(Player p : player){
+			if(p == null) continue;
+			if(p.isDead()) continue;
+			Room checkRoom = getRoomByCoords(p.getX(),p.getY());
+			if(checkRoom == room) return;
+		}
+		room.resetEntering();
+		EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
+		enemyManager.clearEnemiesInRoom(room);
+	}
+
+	public boolean isNotDeathRoomOfPlayers(Room room) {
+		for(Player player : player){
+			if(player != null){
+				PlayerMP mpP = (PlayerMP) player;
+				if(mpP.getDeathRoom() == room) return false;
+			}
+		}
+		return true;
 	}
 }

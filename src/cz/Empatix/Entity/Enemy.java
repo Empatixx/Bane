@@ -5,11 +5,9 @@ import cz.Empatix.Entity.AI.Path;
 import cz.Empatix.Entity.AI.PathNode;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Damageindicator.DamageIndicator;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Tile;
@@ -57,6 +55,9 @@ public abstract class Enemy extends MapObject{
     protected long spawnTime;
 
     protected boolean reflectBullets;
+
+    // username of killer
+    private String killer;
 
     public Enemy(TileMap tm, Player player) {
         super(tm);
@@ -252,21 +253,24 @@ public abstract class Enemy extends MapObject{
 
     public boolean isDead() { return dead; }
 
-    int getDamage() { return damage; }
+    public int getDamage() { return damage; }
 
     public void hit(int damage) {
         if(dead) return;
+        lastTimeDamaged=System.currentTimeMillis()-InGame.deltaPauseTime();
         health -= damage;
         if(health < 0) health = 0;
         if(health == 0){
             dead = true;
         }
+    }
 
-        //flinching = true;
-        //flinchTimer = System.nanoTime();
-        int x = -cwidth/4+ Random.nextInt(cwidth/2);
-        DamageIndicator.addDamageShow(damage,(int)position.x-x,(int)position.y-cheight/2
-                ,new Vector2f(-x/25f,-1.5f));
+    /**
+     * instant death of enemy without drop
+     */
+    public void setDead(){
+        dead = true;
+        itemDropped = true;
     }
     protected void EnemyAI() {
 
@@ -471,7 +475,7 @@ public abstract class Enemy extends MapObject{
             }
             int closestPathIndex = -1;
             for(int i = 0;i<path.length;i++){
-                if(path[i] == null) break;
+                if(path[i] == null) continue;
                 if(closestPathIndex == -1) closestPathIndex = i;
                 else if(path[closestPathIndex].returnSize() > path[i].returnSize()) closestPathIndex = i;
             }
@@ -844,4 +848,8 @@ public abstract class Enemy extends MapObject{
     public abstract void handleAddEnemyProjectile(Network.AddEnemyProjectile o);
     public abstract void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o);
     public abstract void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket);
+
+    public String getKiller() {
+        return killer;
+    }
 }

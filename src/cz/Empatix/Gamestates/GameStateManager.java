@@ -74,12 +74,12 @@ public class GameStateManager {
      * @param state - gamestate
      * @param host - if user is host or not
      */
-    public void setStateMP(int state, boolean host, String username) {
+    public void setStateInitMP(int state, boolean host, String username, String ip) {
         int previousState = currentState;
         currentState = state;
         if (currentState == PROGRESSROOMMP) {
 
-            mpManager = new MultiplayerManager(host,this);
+            mpManager = new MultiplayerManager(host,this,ip);
             mpManager.setUsername(username);
 
             gameStates.get(currentState).init();

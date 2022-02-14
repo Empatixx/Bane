@@ -185,8 +185,8 @@ public class M4 extends Weapon {
                 bullet.setPosition(px, py);
                 int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                 bullet.setDamage(damage);
+                bullet.setOwner(username);
                 bullets.add(bullet);
-                GunsManager.bulletShooted++;
                 bonusShots--;
                 currentMagazineAmmo--;
                 sendAddBulletPacket(bullet,x,y,px,py,username);
@@ -206,9 +206,9 @@ public class M4 extends Weapon {
                         bullet.setPosition(px, py);
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                         bullet.setDamage(damage);
+                        bullet.setOwner(username);
                         bullets.add(bullet);
                         currentMagazineAmmo--;
-                        GunsManager.bulletShooted++;
                         sendAddBulletPacket(bullet,x,y,px,py,username);
                         for(int i = 0;i<3 && currentMagazineAmmo-i != 0;i++){
                             bonusShots++;

@@ -3,6 +3,7 @@ package cz.Empatix.Render.RoomObjects;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
@@ -183,14 +184,16 @@ public class Spike extends RoomObject {
 
     @Override
     public void touchEvent(MapObject o) {
-        if(damageAnimation){
-            if(o instanceof Player) ((Player) o).hit(1);
-            if(o instanceof DestroyableObject && !damageDone){
-                damageDone = true;
-                ((DestroyableObject) o).setHit(1);
+        if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
+            if(damageAnimation){
+                if(o instanceof Player) ((Player) o).hit(1);
+                if(o instanceof DestroyableObject && !damageDone){
+                    damageDone = true;
+                    ((DestroyableObject) o).setHit(1);
+                }
+            } else {
+                damageDone = false;
             }
-        } else {
-            damageDone = false;
         }
     }
 

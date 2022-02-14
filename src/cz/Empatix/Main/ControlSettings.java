@@ -208,7 +208,7 @@ public class ControlSettings {
         if(choosingValue) controls[choosingValueIndex].value = previousValue;
         choosingValue = false;
     }
-    public String keyToChar(int k) {
+    public static String keyToChar(int k) {
         if (k < 256) {
             return String.valueOf((char) k);
         } else if (k == GLFW.GLFW_KEY_ESCAPE) {

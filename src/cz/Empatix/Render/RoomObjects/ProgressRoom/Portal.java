@@ -195,7 +195,6 @@ public class Portal extends RoomObject {
                     ready.state = true;
                     client.sendTCP(ready);
                     packetChangeSent = true;
-
                 }
 
             }

@@ -552,7 +552,7 @@ public class MenuState extends GameState{
                         source.play(soundMenuClick);
                         if(bar.getType() == CONFIRMMP) {
                             if(!mpJoinInputHuds[0].isEmpty()){
-                                gsm.setStateMP(GameStateManager.PROGRESSROOMMP,false,mpJoinInputHuds[0].getValue());
+                                gsm.setStateInitMP(GameStateManager.PROGRESSROOMMP,false,mpJoinInputHuds[0].getValue(),mpJoinInputHuds[1].getValue());
                                 mpSelectedMenu = -1;
                                 playMenu = false;
                             }
@@ -579,7 +579,7 @@ public class MenuState extends GameState{
                         if(bar.getType() == CONFIRMMP) {
                             if(!mpHostInputHud.isEmpty()){
                                 mpSelectedMenu = -1;
-                                gsm.setStateMP(GameStateManager.PROGRESSROOMMP,true,mpHostInputHud.getValue());
+                                gsm.setStateInitMP(GameStateManager.PROGRESSROOMMP,true,mpHostInputHud.getValue(),"localhost");
                                 playMenu = false;
                             }
                         } else if (bar.getType() == EXIT){

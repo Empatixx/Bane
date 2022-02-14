@@ -99,6 +99,15 @@ public class EnemyManager {
                 Network.AddEnemy addEnemy = (Network.AddEnemy) o;
                 addEnemy(addEnemy);
             }
+            for(Object o : packetHolder.get(PacketHolder.REMOVEENEMY)){
+                Network.RemoveEnemy removeEnemy = (Network.RemoveEnemy) o;
+                for(int i = 0;i<enemies.size();i++){
+                    Enemy e = enemies.get(i);
+                    if(e.getId() == removeEnemy.id){
+                        e.hit(1000);
+                    }
+                }
+            }
             for(Object o : packetHolder.get(PacketHolder.ADD_ENEMYPROJECTION)){
                 Network.AddEnemyProjectile addEnemyProjectile = (Network.AddEnemyProjectile) o;
                 for(Enemy e : enemies){

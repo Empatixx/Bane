@@ -183,6 +183,8 @@ public class Thompson extends Weapon{
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                         Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                         bullet.setPosition(px, py);
+                        bullet.setOwner(username);
+
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                         if(criticalHits){
                             if(Math.random() > 0.9){
@@ -195,7 +197,6 @@ public class Thompson extends Weapon{
 
                         currentMagazineAmmo--;
                         sendAddBulletPacket(bullet,x,y,px,py,username);
-                        GunsManager.bulletShooted++;
                         if(boostFirerate){
                             delayTime -= 5;
                             if(delayTime < 130) delayTime = 130;

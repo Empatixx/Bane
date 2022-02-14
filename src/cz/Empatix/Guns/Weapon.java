@@ -9,6 +9,7 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.GunsManagerMP;
+import cz.Empatix.Multiplayer.MPStatistics;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Damageindicator.DamageIndicator;
@@ -225,6 +226,13 @@ public abstract class Weapon{
                 }
                 else if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
                     enemy.hit(bullet.getDamage());
+                    if(enemy.isDead() && tm.isServerSide()){
+                        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+                        // increasing statistic of killed enemies by player
+                        MPStatistics mpStatistics = mpManager.server.getMpStatistics();
+                        String owner = bullet.getOwner();
+                        if(owner != null) mpStatistics.addEnemiesKill(bullet.getOwner());
+                    }
                     if(!tm.isServerSide()){
                         showDamageIndicator(bullet.getDamage(),bullet.isCritical(),enemy);
                     }
@@ -251,6 +259,11 @@ public abstract class Weapon{
     public abstract void shootSound(Network.AddBullet response);
 
     public void sendAddBulletPacket(Bullet bullet, float x, float y, float px, float py, String username){
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+        // increasing statistic of shooted bullets so we can calculate accuracy
+        MPStatistics mpStatistics = mpManager.server.getMpStatistics();
+        mpStatistics.addBulletShoot(username);
+        // sending new bullet as packet
         Network.AddBullet response = new Network.AddBullet();
         response.x = x;
         response.y = y;
@@ -262,7 +275,7 @@ public abstract class Weapon{
         response.id = bullet.getId();
         response.username = username;
         response.slot = GunsManagerMP.getInstance().getWeaponSlot(this);
-        Server server = MultiplayerManager.getInstance().server.getServer();
+        Server server = mpManager.server.getServer();
         server.sendToAllTCP(response);
     }
 }

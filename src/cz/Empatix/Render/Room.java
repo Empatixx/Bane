@@ -800,7 +800,7 @@ public class Room {
             }
         }
     }
-    public boolean intersectsObjects(RoomObject object){
+    private boolean intersectsObjects(RoomObject object){
         for(RoomObject roomObject: mapObjects){
             if(roomObject.intersects(object)){
                 return true;
@@ -921,4 +921,9 @@ public class Room {
             server.sendToAllTCP(roomObject);
         }
     }
+
+    public void resetEntering() {
+        entered = false;
+    }
+    public boolean hasBeenEntered(){return entered;}
 }

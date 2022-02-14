@@ -12,6 +12,7 @@ import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Multiplayer.PlayerMP;
+import cz.Empatix.Multiplayer.PlayerReady;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Framebuffer;
@@ -60,11 +61,14 @@ public class ProgressRoomMP extends GameState {
 
     private MultiplayerManager mpManager;
 
+    public static boolean lobbyCreation;
+
     public ProgressRoomMP(GameStateManager gsm){
         this.gsm = gsm;
 
         textRender = new TextRender();
 
+        lobbyCreation = false;
     }
     public void transition(){
         fade.setReverse();
@@ -100,16 +104,20 @@ public class ProgressRoomMP extends GameState {
         player[0].setOrigin(true);
         playerReadies[0] = new PlayerReady(username);
 
-        Client client = mpManager.client.getClient();
-        Network.Join join = new Network.Join();
-        join.username = username;
-        join.host = mpManager.isHost();
-        client.sendTCP(join);
+        if(!lobbyCreation){
+            Client client = mpManager.client.getClient();
+            Network.Join join = new Network.Join();
+            join.username = username;
+            join.host = mpManager.isHost();
+            client.sendTCP(join);
+        }
+        lobbyCreation = true;
 
         player[0].setCoins(GameStateManager.getDb().getValue("money","general"));
 
         // generate map + create objects which needs item manager & gun manager created
         tileMap.loadProgressRoom();
+
         // move player to starter room
         player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
         tileMap.setPosition(
@@ -132,6 +140,7 @@ public class ProgressRoomMP extends GameState {
         AlertManager.add(AlertManager.INFORMATION,"Go to the portal");
 
         DiscordRP.getInstance().update("Multiplayer - In-Game","Lobby "+mpManager.client.getTotalPlayers()+"/2");
+
     }
 
     @Override
@@ -231,21 +240,26 @@ public class ProgressRoomMP extends GameState {
 
 
         readyNumPlayers = 0;
-        for(PlayerReady playerReady : playerReadies){
-            if(playerReady != null){
-                if(playerReady.ready) readyNumPlayers++;
-            }
-        }
-        // total connected players to the host
         int totalConPlayers = 0;
         for(PlayerReady playerReady : playerReadies){
-            if(playerReady != null) totalConPlayers++;
+            if(playerReady != null){
+                if(playerReady.isReady()) readyNumPlayers++;
+                totalConPlayers++;
+
+            }
         }
         // all players are ready => enter game
         if(totalConPlayers == readyNumPlayers){
             mpManager.client.setNumPlayers(1);
             gsm.setState(GameStateManager.INGAMEMP);
             mpManager.packetHolder.get(PacketHolder.MOVEPLAYER); // CLEARING ARRAY
+
+            Client client = mpManager.client.getClient();
+            Network.RequestForPlayers request = new Network.RequestForPlayers();
+            request.exceptUsername = mpManager.getUsername();
+
+            client.sendTCP(request);
+            return;
 
         }
 
@@ -323,24 +337,6 @@ public class ProgressRoomMP extends GameState {
     @Override
     protected void mouseScroll(double x, double y) {
         progressNPC.mouseScroll(x,y);
-    }
-
-    public static class PlayerReady{
-        private final String username;
-        private boolean ready;
-        public PlayerReady(String username){
-            this.ready = false;
-            this.username = username;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public void setReady(boolean ready) {
-            this.ready = ready;
-        }
-
     }
 
 }

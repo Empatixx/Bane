@@ -36,9 +36,12 @@ public class PacketHolder {
     public final static int TRANSFERROOM = 25;
     public final static int TRANSFERROOMMAP = 26;
     public final static int MAPLOADED = 27;
+    public final static int REMOVEENEMY = 28;
+    public final static int ALLPLAYERDEAD = 29;
+    public final static int PLAYERSSTATS = 30;
 
     public PacketHolder(){
-        final int size = 28;
+        final int size = 31;
 
         packetArrays = new ArrayList<>(size);
         for(int i = 0;i<size;i++){
@@ -110,6 +113,18 @@ public class PacketHolder {
                 packetArray.lock();
                 try {
                     packetArrays.get(id).packets.clear();
+                } finally {
+                    packetArray.unlock();
+                }
+            }
+        }
+    }
+    public void clearIngamePackets() {
+        for (PacketArray packetArray : packetArrays) {
+            if (packetArray.id != 17) {
+                packetArray.lock();
+                try {
+                    packetArrays.get(packetArray.id).packets.clear();
                 } finally {
                     packetArray.unlock();
                 }

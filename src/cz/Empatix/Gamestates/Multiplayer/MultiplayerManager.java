@@ -20,7 +20,7 @@ public class MultiplayerManager {
     public static boolean multiplayer = false;
 
     public static MultiplayerManager getInstance(){ return multiplayerManager;}
-    public MultiplayerManager(boolean host, GameStateManager gsm) {
+    public MultiplayerManager(boolean host, GameStateManager gsm, String ip) {
         multiplayerManager = this;
         multiplayer = true;
         packetHolder = new PacketHolder();
@@ -29,7 +29,7 @@ public class MultiplayerManager {
             server = new GameServer();
         }
 
-        client = new GameClient(gsm,"localhost");
+        client = new GameClient(gsm,ip);
 
     }
 
@@ -61,6 +61,8 @@ public class MultiplayerManager {
         client.close();
         client = null;
         packetHolder = null;
+
+        ProgressRoomMP.lobbyCreation = false;
     }
 
 }

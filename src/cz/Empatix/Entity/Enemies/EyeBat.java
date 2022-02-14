@@ -260,18 +260,7 @@ public class EyeBat extends Enemy {
 
     @Override
     public void hit(int damage) {
-        if(dead || isSpawning()) return;
-        lastTimeDamaged=System.currentTimeMillis()-InGame.deltaPauseTime();
-        health -= damage;
-        if(health < 0) health = 0;
-        if(health == 0){
-            //animation.setDelay(100);
-            //animation.setFrames(spritesheet.getSprites(DEAD));
-            speed.x = 0;
-            speed.y = 0;
-            dead = true;
-
-        }
+        super.hit(damage);
     }
 
     @Override

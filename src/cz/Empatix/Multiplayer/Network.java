@@ -31,9 +31,9 @@ public class Network {
         kryo.register(Reload.class);
         kryo.register(AddBullet.class);
         kryo.register(AddEnemy.class);
+        kryo.register(RemoveEnemy.class);
         kryo.register(MoveEnemy.class);
         kryo.register(MoveBullet.class);
-        kryo.register(ConfirmChangeGS.class);
         kryo.register(HitBullet.class);
         kryo.register(Bullet.TypeHit.class);
         kryo.register(DropItem.class);
@@ -62,12 +62,16 @@ public class Network {
         kryo.register(LockRoom.class);
         kryo.register(NextFloor.class);
         kryo.register(ObjectInteract.class);
+        kryo.register(AllPlayersDeath.class);
+        kryo.register(PstatsUpdate.class);
 
     }
     // MAIN
     public static class Join {
         public String username;
         public boolean host;
+    }
+    public static class AllPlayersDeath {
     }
     public static class AddPlayer {
         public String username;
@@ -86,7 +90,7 @@ public class Network {
         public String username;
         public boolean up,down,left,right;
     }
-    // PROGRESS ROOM + MAP GENERATION
+    // PROGRESS ROOM + MAP GENERATION, POST DEATH
     public static class Ready {
         public String username;
         public boolean state;
@@ -103,14 +107,14 @@ public class Network {
         public int previousIndex; // index of old mm room, that we will add new one
         public boolean top, bottom, left, right;
     }
-    public static class MapLoaded {}
+    public static class MapLoaded {
+        public int totalRooms;
+    }
     public static class RequestForPlayers {
         public String exceptUsername; // except origin player
     }
     public static class ChangeGamestate{
         public int gamestate;
-    }
-    public static class ConfirmChangeGS {
     }
     // GUNS
     public static class MouseCoords{
@@ -167,6 +171,9 @@ public class Network {
     public static class AddEnemy {
         public float x,y;
         public String type;
+        public int id;
+    }
+    public static class RemoveEnemy {
         public int id;
     }
     public static class WeaponInfo {
@@ -287,5 +294,12 @@ public class Network {
     }
     public static class NextFloor{
         public int floor;
+    }
+    public static class PstatsUpdate {
+        public String username;
+        public int shootShooted;
+        public int enemiesKilled;
+        public int bulletsHit;
+        public long deathTime;
     }
 }

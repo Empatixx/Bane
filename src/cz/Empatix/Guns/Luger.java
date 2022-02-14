@@ -207,8 +207,8 @@ public class Luger extends Weapon {
                         bullet.setPosition(px, py);
                         bullet.setDamage(lastDamage);
                         bullet.setCritical(lastDamageCrit);
+                        bullet.setOwner(username);
                         bullets.add(bullet);
-                        GunsManager.bulletShooted++;
                         bonusShots--;
                         sendAddBulletPacket(bullet,x,y,px,py,username);
                     }
@@ -231,9 +231,9 @@ public class Luger extends Weapon {
                         }
                         lastDamage = damage;
                         bullet.setDamage(damage);
+                        bullet.setOwner(username);
                         bullets.add(bullet);
                         currentMagazineAmmo--;
-                        GunsManager.bulletShooted++;
                         sendAddBulletPacket(bullet,x,y,px,py,username);
                         while(Math.random() > 1-chanceBonusShots && currentMagazineAmmo != 0 && bonusShots < 9){
                             bonusShots++;
@@ -312,7 +312,6 @@ public class Luger extends Weapon {
     public void checkCollisions(ArrayList<Enemy> enemies) {
         checkCollisionsBullets(enemies,bullets);
     }
-
     @Override
     public boolean canSwap() {
         return !reloading && System.currentTimeMillis() - InGame.deltaPauseTime() - delay > delayTime/2 && bonusShots <= 0;

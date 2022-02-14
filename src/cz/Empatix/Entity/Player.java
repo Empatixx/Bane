@@ -31,6 +31,7 @@ public class Player extends MapObject {
         Loader.loadImage("Textures\\armorvignette.tga");
         Loader.loadImage("Textures\\Sprites\\Player\\sprint_particle.tga");
         Loader.loadImage("Textures\\shadow.tga");
+        Loader.loadImage("Textures\\Sprites\\Player\\p_ghost2.tga");
     }
     // roll
     protected long rollCooldown;

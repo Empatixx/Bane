@@ -3,7 +3,6 @@ package cz.Empatix.Entity.Enemies;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -196,22 +195,15 @@ public class Bat extends Enemy {
 
     @Override
     public void hit(int damage) {
-        if(dead || isSpawning()) return;
-        lastTimeDamaged=System.currentTimeMillis()-InGame.deltaPauseTime();
-        health -= damage;
-        if(health < 0) health = 0;
-        if(health == 0){
+        super.hit(damage);
+        if(isDead()){
             if(tileMap.isServerSide()){
                 animation = new Animation(4);
                 animation.setDelay(100);
             } else {
-                animation.setFrames(spritesheet.getSprites(DEAD));
                 animation.setDelay(100);
+                animation.setFrames(spritesheet.getSprites(DEAD));
             }
-            speed.x = 0;
-            speed.y = 0;
-            dead = true;
-
         }
     }
 

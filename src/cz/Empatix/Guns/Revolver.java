@@ -182,6 +182,7 @@ public class Revolver extends Weapon {
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                         Bullet bullet = new Bullet(tm, x, y, inaccuracy,40);
                         bullet.setPosition(px, py);
+                        bullet.setOwner(username);
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                         if(criticalHits){
                             if(Math.random() > 0.9-nextCritChance){
@@ -195,7 +196,6 @@ public class Revolver extends Weapon {
                         bullet.setDamage(damage);
                         bullets.add(bullet);
                         currentMagazineAmmo--;
-                        GunsManager.bulletShooted++;
                         sendAddBulletPacket(bullet,x,y,px,py,username);
 
                         double atan = Math.atan2(y, x);

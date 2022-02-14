@@ -146,7 +146,12 @@ public class GunsManagerMP {
             playerWeapons.dropPlayerWeapon(dropWeapon);
         }
     }
-
+    public void dropPlayerWeapon(String username,int x, int y) {
+        for(PlayerWeapons playerWeapons : playerWeapons){
+            if(playerWeapons == null) continue;
+            playerWeapons.dropPlayerWeapon(username,x,y);
+        }
+    }
     public int getCurrentWeaponSlot(String username){
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
@@ -342,7 +347,24 @@ public class GunsManagerMP {
                 server.sendToAllTCP(dropWeapon);
             }
         }
+        public void dropPlayerWeapon(String username, int x, int y) {
+            if(this.username.equalsIgnoreCase(username)){
+                if(current != null){
+                    stopShooting();
+                    ItemManagerMP itemManagerMP = ItemManagerMP.getInstance();
+                    itemManagerMP.dropPlayerWeapon(current, x, y,weapons.indexOf(current),username);
+                }
+                current = null;
+                equipedweapons[currentslot] = null;
 
+                // sending back packet so it will remove weapon in hud from client side
+                Network.PlayerDropWeapon dropWeapon = new Network.PlayerDropWeapon();
+                dropWeapon.sucessful = true;
+                dropWeapon.username = username;
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(dropWeapon);
+            }
+        }
         public int getCurrentslot() {
             return currentslot;
         }

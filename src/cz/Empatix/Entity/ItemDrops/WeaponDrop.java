@@ -121,38 +121,6 @@ public class WeaponDrop extends ItemDrop {
         }
     }
 
-    @Override
-    public void loadSave() {
-        Image imageOfWeapon = weapon.getWeaponHud();
-
-        width=cwidth=imageOfWeapon.getWidth();
-        height=cheight=imageOfWeapon.getHeight();
-        scale = 1.5f;
-        facingRight = true;
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        vboTexturesWeapon = imageOfWeapon.getVboTextures();
-        vboVerticesWeapon = imageOfWeapon.getVboVertices();
-
-
-        textureId = imageOfWeapon.getIdTexture();
-        textureWidth = width;
-        textureHeight = height;
-
-        light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
-
-        cwidth*=scale;
-        cheight*=scale;
-
-        outlineShader = ShaderManager.getShader("shaders\\outline");
-        if (outlineShader == null){
-            outlineShader = ShaderManager.createShader("shaders\\outline");
-        }
-    }
-
     public WeaponDrop(TileMap tm, Weapon weapon){
         super(tm);
         if(tm.isServerSide()){

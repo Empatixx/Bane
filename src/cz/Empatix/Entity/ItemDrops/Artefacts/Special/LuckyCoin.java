@@ -188,6 +188,7 @@ public class LuckyCoin extends Artefact {
 
     @Override
     public void activateClientSide() {
+        super.activateClientSide();
         charge = 0;
         multiplier++;
     }

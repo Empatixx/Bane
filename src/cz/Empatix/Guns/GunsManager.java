@@ -155,21 +155,30 @@ public class GunsManager {
         if(current == null)return;
         current.reload();
     }
+    // singleplayer
     public void update(){
-        // multiplayer
+        for(Weapon weapon : weapons){
+            weapon.updateAmmo();
+        }
+        if(current == null) return;
+        current.update();
+    }
+    // multiplayer)
+    public void update(Object[] hitPackets){
         if(MultiplayerManager.multiplayer) {
             PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
             int totalPlayers = 0;
             for (Player player : players) {
                 if (player != null) totalPlayers++;
             }
-            for (Object o : packetHolder.get(PacketHolder.ADDBULLET)) {
+            Object[] addPackets = packetHolder.get(PacketHolder.ADDBULLET);
+            for (Object o : addPackets) {
                 Network.AddBullet addBullet = (Network.AddBullet) o;
                 int index = addBullet.slot - (totalPlayers - 1);
                 if (index < 0) index = 0;
                 weapons.get(index).handleBulletPacket(addBullet);
             }
-            for (Object o : packetHolder.getWithoutClear(PacketHolder.HITBULLET)) {
+            for (Object o : hitPackets) {
                 for (Weapon w : weapons) {
                     w.handleHitBulletPacket((Network.HitBullet) o);
                 }
@@ -288,9 +297,10 @@ public class GunsManager {
         // first check main gun in hand
         if(current != null){
             if(current.getType() == type){
-                if(current.isFullAmmo()) return false;
-                current.addAmmo(amountpercent);
-                return true;
+                if(!current.isFullAmmo()){
+                    current.addAmmo(amountpercent);
+                    return true;
+                }
             }
         }
         // check all guns in inventory
@@ -298,9 +308,10 @@ public class GunsManager {
             Weapon weapon = equipedweapons[i];
             if (weapon == null) continue;
             if (weapon.getType() == type) {
-                if(weapon.isFullAmmo()) return false;
-                weapon.addAmmo(amountpercent);
-                return true;
+                if(!weapon.isFullAmmo()){
+                    weapon.addAmmo(amountpercent);
+                    return true;
+                }
             }
         }
         return false;
@@ -363,6 +374,13 @@ public class GunsManager {
         slot++;
         if(slot > 1) slot = 0;
         setCurrentWeapon(equipedweapons[slot],slot);
+        if(MultiplayerManager.multiplayer){
+            Client client = MultiplayerManager.getInstance().client.getClient();
+            Network.SwitchWeaponSlot switchWeaponSlot = new Network.SwitchWeaponSlot();
+            switchWeaponSlot.username = MultiplayerManager.getInstance().getUsername();
+            switchWeaponSlot.slot = (byte)slot;
+            client.sendTCP(switchWeaponSlot);
+        }
     }
     public int[] getWeaponTypes(){
         int[] types = new int[2];
@@ -413,12 +431,14 @@ public class GunsManager {
     public void handleDropPlayerWeaponPacket(Network.PlayerDropWeapon playerDropWeapon) {
         if(playerDropWeapon.sucessful){
             if(MultiplayerManager.getInstance().getUsername().equalsIgnoreCase(playerDropWeapon.username)){
-                if(current != null){
+                if(equipedweapons[playerDropWeapon.playerSlot] != null){
                     stopShooting();
                     source.play(soundSwitchingGun);
                 }
-                current = null;
-                equipedweapons[currentslot] = null;
+                if(current == equipedweapons[playerDropWeapon.playerSlot]){
+                    current = null;
+                }
+                equipedweapons[playerDropWeapon.playerSlot] = null;
             }
         }
     }
@@ -431,7 +451,7 @@ public class GunsManager {
         }
         int index = dropWeapon.slot-(totalPlayers-1);
         if(index < 0) index = 0;
-        dropWeapon.slot = index;
+        dropWeapon.slot = (byte)index;
         PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
         packetHolder.add(dropWeapon,PacketHolder.DROPWEAPON);
     }

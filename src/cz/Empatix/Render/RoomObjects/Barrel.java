@@ -22,110 +22,146 @@ public class Barrel extends DestroyableObject {
 
     public Barrel(TileMap tm){
         super(tm);
-        width = 64;
-        height = 64;
-        cwidth = 18;
-        cheight = 20;
-        scale = 6;
+        if(tm.isServerSide()){
+            width = 64;
+            height = 64;
+            cwidth = 18;
+            cheight = 20;
+            scale = 6;
 
-        facingRight = true;
-        flinching=false;
+            facingRight = true;
+            flinching=false;
 
-        spriteSheetCols = 4;
-        spriteSheetRows = 2;
+            spriteSheetCols = 4;
+            spriteSheetRows = 2;
 
-        collision = true;
-        moveable=true;
-        preDraw = true;
-        behindCollision = true;
+            collision = true;
+            moveable=true;
+            preDraw = true;
+            behindCollision = true;
+
+            itemDrop = true;
+
+            maxHealth = health = 4;
+
+            animation = new Animation(1);
+            currentAnimation = NORMAL;
+            animation.setDelay(-1);
+
+            // because of scaling image by 8x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            stopSpeed = 0.55f;
+            maxMovement = 0.5f;
+        } else {
+            width = 64;
+            height = 64;
+            cwidth = 18;
+            cheight = 20;
+            scale = 6;
+
+            facingRight = true;
+            flinching=false;
+
+            spriteSheetCols = 4;
+            spriteSheetRows = 2;
+
+            collision = true;
+            moveable=true;
+            preDraw = true;
+            behindCollision = true;
 
 
-        itemDrop = true;
+            itemDrop = true;
 
-        maxHealth = health = 4;
+            maxHealth = health = 4;
 
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\barrel.tga");
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\barrel.tga");
 
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\barrel.tga");
-            Sprite[] sprites = new Sprite[1];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float) i/spriteSheetCols,0,
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\barrel.tga");
+                Sprite[] sprites = new Sprite[1];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float) i/spriteSheetCols,0,
 
-                                (float)i/spriteSheetCols,0.5f,
+                                    (float)i/spriteSheetCols,0.5f,
 
-                                (1.0f+i)/spriteSheetCols,0.5f,
+                                    (1.0f+i)/spriteSheetCols,0.5f,
 
-                                (1.0f+i)/spriteSheetCols,0
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
+                                    (1.0f+i)/spriteSheetCols,0
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
 
+                }
+                spritesheet.addSprites(sprites);
+
+                sprites = new Sprite[3];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float)i/spriteSheetCols,0,
+
+                                    (float)i/spriteSheetCols,0.5f,
+
+                                    (1.0f+i)/spriteSheetCols,0.5f,
+
+                                    (1.0f+i)/spriteSheetCols,0
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
+
+                sprites = new Sprite[4];
+                for(int i = 0; i < sprites.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float) i/spriteSheetCols,0.5f,
+
+                                    (float) i/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,1,
+
+                                    (1.0f+i)/spriteSheetCols,0.5f
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+                    sprites[i] = sprite;
+
+                }
+                spritesheet.addSprites(sprites);
             }
-            spritesheet.addSprites(sprites);
-
-            sprites = new Sprite[3];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float)i/spriteSheetCols,0,
-
-                                (float)i/spriteSheetCols,0.5f,
-
-                                (1.0f+i)/spriteSheetCols,0.5f,
-
-                                (1.0f+i)/spriteSheetCols,0
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
-
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
             }
-            spritesheet.addSprites(sprites);
 
-            sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float) i/spriteSheetCols,0.5f,
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(NORMAL));
+            currentAnimation = NORMAL;
+            animation.setDelay(-1);
 
-                                (float) i/spriteSheetCols,1,
-
-                                (1.0f+i)/spriteSheetCols,1,
-
-                                (1.0f+i)/spriteSheetCols,0.5f
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
-
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
             }
-            spritesheet.addSprites(sprites);
-        }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
+            // because of scaling image by 8x
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
 
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(NORMAL));
-        currentAnimation = NORMAL;
-        animation.setDelay(-1);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
+            stopSpeed = 0.55f;
+            maxMovement = 0.5f;
         }
-        // because of scaling image by 8x
-        width *= scale;
-        height *= scale;
-        cwidth *= scale;
-        cheight *= scale;
-
-        stopSpeed = 0.55f;
-        maxMovement = 0.5f;
     }
     @Override
     public void loadSave() {
@@ -271,16 +307,20 @@ public class Barrel extends DestroyableObject {
         boolean preDestroyed = isDestroyed();
         super.setHit(damage);
         if(destroyed && !preDestroyed){
-            animation.setFrames(spritesheet.getSprites(DESTROY));
-            animation.setDelay(100);
+            if(!tileMap.isServerSide()){
+                animation.setFrames(spritesheet.getSprites(DESTROY));
+                animation.setDelay(100);
+            }
             collision = false;
             moveable = false;
             preDraw=true;
             behindCollision=true;
             currentAnimation = DESTROY;
         } else if(currentAnimation == NORMAL) {
-            animation.setFrames(spritesheet.getSprites(HIT));
-            animation.setDelay(100);
+            if(!tileMap.isServerSide()){
+                animation.setFrames(spritesheet.getSprites(HIT));
+                animation.setDelay(100);
+            }
             currentAnimation = HIT;
         }
 

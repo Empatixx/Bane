@@ -1,11 +1,13 @@
 package cz.Empatix.Render.RoomObjects;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -179,6 +181,14 @@ public class Spike extends RoomObject {
             damageAnimation = false;
         } else {
             damageAnimation = true;
+        }
+        if(tileMap.isServerSide()){
+             Server server = MultiplayerManager.getInstance().server.getServer();
+             Network.RoomObjectAnimationSync roomObjectAnimationSync = new Network.RoomObjectAnimationSync();
+             roomObjectAnimationSync.id = id;
+             roomObjectAnimationSync.sprite = (byte)animation.getIndexOfFrame();
+             roomObjectAnimationSync.time = animation.getTime();
+             server.sendToAllUDP(roomObjectAnimationSync);
         }
     }
 

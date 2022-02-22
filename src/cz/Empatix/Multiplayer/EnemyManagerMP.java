@@ -3,11 +3,12 @@ package cz.Empatix.Multiplayer;
 import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Enemies.*;
 import cz.Empatix.Entity.Enemy;
-import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Room;
+import cz.Empatix.Render.RoomObjects.PathWall;
+import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
@@ -16,10 +17,6 @@ import java.util.ArrayList;
 
 public class EnemyManagerMP {
     private static EnemyManagerMP enemyManager;
-
-    public static void init(Player[] p, TileMap tm) {
-        EnemyManagerMP.enemyManager = new EnemyManagerMP(p, tm);
-    }
 
     public static EnemyManagerMP getInstance() {
         return enemyManager;
@@ -36,6 +33,8 @@ public class EnemyManagerMP {
     private TileMap tileMap;
 
     public EnemyManagerMP(Player[] p, TileMap tm) {
+        EnemyManagerMP.enemyManager = this;
+
         player = p;
         tileMap = tm;
 
@@ -85,13 +84,8 @@ public class EnemyManagerMP {
                 enemy.setItemDropped();
                 int chance = Random.nextInt(5);
                 if (chanceDrop + chance > 3) {
-                    if(tileMap.isServerSide()){ // MULTIPLAYER - SERVER SIDE
-                        ItemManagerMP itemManager = ItemManagerMP.getInstance();
-                        itemManager.createDrop(enemy.getX(), enemy.getY());
-                    } else if(!MultiplayerManager.multiplayer) { // SINGLEPLAYER
-                        ItemManager itemManager = ItemManager.getInstance();
-                        itemManager.createDrop(enemy.getX(), enemy.getY());
-                    }
+                    ItemManagerMP itemManager = ItemManagerMP.getInstance();
+                    itemManager.createDrop(enemy.getX(), enemy.getY());
                     chanceDrop = 0;
                 }
             }
@@ -221,6 +215,8 @@ public class EnemyManagerMP {
         int br;
 
         boolean loop;
+        boolean ROCollision;
+        ArrayList<RoomObject> roomObjs = tileMap.getRoomByCoords(xMin+(xMax-xMin)/2,yMin+(yMax-yMin)/2).getMapObjects();
         do {
             x = getRandom(xMin, xMax);
             y = getRandom(yMin, yMax);
@@ -238,7 +234,15 @@ public class EnemyManagerMP {
             br = tileMap.getType(bottomTile, rightTile);
 
             loop = (tl == Tile.BLOCKED || tr == Tile.BLOCKED || bl == Tile.BLOCKED || br == Tile.BLOCKED);
-        } while (loop);
+            instance.setPosition(x, y);
+
+            ROCollision = false;
+            for(RoomObject object : roomObjs){
+                if(object.intersects(instance)){
+                    if( object.collision || object instanceof PathWall) ROCollision  = true;
+                }
+            }
+        } while (loop || ROCollision);
 
         instance.setPosition(x, y);
         enemies.add(instance);

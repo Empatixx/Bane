@@ -17,6 +17,7 @@ public class M4Upgrade extends UpgradeBar {
         info.name = "M4";
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("m4","upgrades");
+        this.numUpgrades = numUpgrades;
 
 
         UpgradeSideBar bar = new UpgradeSideBar(sideBars.size(),"m4");
@@ -94,5 +95,7 @@ public class M4Upgrade extends UpgradeBar {
             info.maxDamage++;
             info.minDamage++;
         }
+        this.numUpgrades = numUpgrades;
+
     }
 }

@@ -8,6 +8,7 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -204,7 +205,11 @@ public class Portal extends RoomObject {
 
     @Override
     public void touchEvent(MapObject o) {
-        message = true;
+        if(o instanceof PlayerMP){
+            if(((PlayerMP) o).isOrigin()) message = true;
+        } else {
+            message = true;
+        }
 
     }
 

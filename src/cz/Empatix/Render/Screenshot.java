@@ -15,17 +15,17 @@ import java.time.LocalDate;
 
 import static org.lwjgl.opengl.GL11.glReadBuffer;
 
-public class Screanshot extends Thread{
-    private boolean screaning;
+public class Screenshot extends Thread{
+    private boolean screening;
     private CopyImagetoClipBoard copyImagetoClipBoard;
 
-    public Screanshot(){
+    public Screenshot(){
         copyImagetoClipBoard = new CopyImagetoClipBoard();
     }
 
     public void keyPressed() {
-        if(screaning) return;
-        screaning = true;
+        if(screening) return;
+        screening = true;
         glReadBuffer(GL11.GL_FRONT);
         int width = Settings.WIDTH;
         int height = Settings.HEIGHT;
@@ -34,7 +34,7 @@ public class Screanshot extends Thread{
 
         ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * bpp);
         GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer );
-        Thread t = new Thread(() -> {
+        Thread t = new Thread(()-> {
             int screanNum = 0;
             File screensFolder = new File("Screenshots");
             if(!screensFolder.exists()){
@@ -66,8 +66,8 @@ public class Screanshot extends Thread{
             copyImagetoClipBoard.copyImage(image);
 
 
-            screaning=false;
-        });
+            screening =false;
+        },"Screenshot");
         t.start();
     }
 }

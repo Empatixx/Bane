@@ -20,6 +20,7 @@ import org.joml.Vector3f;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -96,7 +97,7 @@ public abstract class MapObject {
 	public int shadowVboVertices;
     public boolean shadow;
 
-    private volatile static int idGen = 0;
+    private static final AtomicInteger atomicInteger = new AtomicInteger();
 	public int id;
 
 	// constructor
@@ -108,10 +109,8 @@ public abstract class MapObject {
 		dest = new Vector2f(0,0);
 		speed = new Vector3f(0,0,0);
 		position = new Vector3f(0,0,0);
-		synchronized (this){
-			if(tm.isServerSide()) {
-				id = idGen++;
-			}
+		if(tileMap.isServerSide()){
+			id = atomicInteger.incrementAndGet();
 		}
 	}
 	

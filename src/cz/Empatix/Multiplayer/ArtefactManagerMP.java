@@ -4,6 +4,7 @@ import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Damage.RingOfFire;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Special.LuckyCoin;
+import cz.Empatix.Entity.ItemDrops.Artefacts.Special.ReviveBook;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.Ammobelt;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.BerserkPot;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
@@ -41,6 +42,8 @@ public class ArtefactManagerMP {
         artefacts.add(new BerserkPot(tm,player));
         artefacts.add(new LuckyCoin(tm,player));
         artefacts.add(new Ammobelt(tm,player));
+        artefacts.add(new ReviveBook(tm,player));
+
         init(this);
     }
 
@@ -68,8 +71,32 @@ public class ArtefactManagerMP {
         }
     }
     public Artefact randomArtefact(){
+        boolean possible = false;
+        for(Artefact artefact : artefacts){
+            if (!artefact.dropped && artefact.isObtainable()) {
+                possible = true;
+                break;
+            }
+        }
+        if(!possible) return null;
         Artefact artefact = artefacts.get(Random.nextInt(artefacts.size()));
-        while(artefact.dropped){
+        while(artefact.dropped || !artefact.isObtainable()){
+            artefact = artefacts.get(Random.nextInt(artefacts.size()));
+        }
+        artefact.dropped = true;
+        return artefact;
+    }
+    public Artefact randomShopArtefact(){
+        boolean possible = false;
+        for(Artefact artefact : artefacts){
+            if(!artefact.dropped && artefact.isObtainable() && artefact.canBeShopItem()){
+                possible = true;
+                break;
+            }
+        }
+        if(!possible) return null;
+        Artefact artefact = artefacts.get(Random.nextInt(artefacts.size()));
+        while(artefact.dropped || !artefact.isObtainable() || !artefact.canBeShopItem()){
             artefact = artefacts.get(Random.nextInt(artefacts.size()));
         }
         artefact.dropped = true;
@@ -118,8 +145,11 @@ public class ArtefactManagerMP {
                     firstAlert = false;
                     // sending acknowledge of activating artefact
                     Server server = MultiplayerManager.getInstance().server.getServer();
-                    artefactActivate.slot = artefacts.indexOf(currentArtefact);
+                    artefactActivate.slot = (byte)artefacts.indexOf(currentArtefact);
                     server.sendToAllTCP(artefactActivate);
+                    if(currentArtefact.isOneUse()){
+                        currentArtefact = null;
+                    }
                 }
             }
         }

@@ -271,11 +271,13 @@ public abstract class Weapon{
         response.py = py;
         response.critical = bullet.isCritical();
         response.speed = 30;
-        response.damage = bullet.getDamage();
+        response.damage = (byte)bullet.getDamage();
         response.id = bullet.getId();
         response.username = username;
-        response.slot = GunsManagerMP.getInstance().getWeaponSlot(this);
+        response.slot = (byte)GunsManagerMP.getInstance().getWeaponSlot(this);
         Server server = mpManager.server.getServer();
         server.sendToAllTCP(response);
     }
+
+    public abstract void restat(String username);
 }

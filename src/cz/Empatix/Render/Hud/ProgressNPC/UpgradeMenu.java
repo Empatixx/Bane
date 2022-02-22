@@ -1,7 +1,10 @@
 package cz.Empatix.Render.Hud.ProgressNPC;
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades.*;
 import cz.Empatix.Render.Hud.SliderBar;
@@ -38,6 +41,7 @@ public class UpgradeMenu {
         bars.add(new GrenadelauncherUpgrade(5));
         bars.add(new RevolverUpgrade(6));
         bars.add(new ThompsonUpgrade(7));
+        sendAllNumUpgradesPacket(); // sends packet if player is in mp
 
         weaponSlider = new SliderBar(new Vector3f(842f,540,0),3f);
         weaponSlider.setLength(730);
@@ -128,5 +132,21 @@ public class UpgradeMenu {
             c+=bars.get(i).getAvailableUpgrades(p);
         }
         return c;
+    }
+    public int[] getAllNumUpgrades(){
+        int[] numUpgrades = new int[bars.size()];
+        for(int i = 0;i<bars.size();i++){
+            numUpgrades[i] = bars.get(i).getNumUpgrades();
+        }
+        return numUpgrades;
+    }
+    public void sendAllNumUpgradesPacket(){
+        if(MultiplayerManager.multiplayer){
+            Client c = MultiplayerManager.getInstance().client.getClient();
+            Network.NumUpgrades numUpgradesP = new Network.NumUpgrades();
+            numUpgradesP.username = MultiplayerManager.getInstance().getUsername();
+            numUpgradesP.numUpgrades = getAllNumUpgrades();
+            c.sendTCP(numUpgradesP);
+        }
     }
 }

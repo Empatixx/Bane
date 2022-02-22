@@ -312,6 +312,7 @@ public class Chest extends RoomObject {
             animation.setDelay(175);
             Network.OpenChest openChest = new Network.OpenChest();
             openChest.id = getId();
+            openChest.idRoom = (byte)tileMap.getRoomByCoords(position.x,position.y).getId();
             Server server = MultiplayerManager.getInstance().server.getServer();
             server.sendToAllTCP(openChest);
         } else {

@@ -16,6 +16,7 @@ public class ThompsonUpgrade extends UpgradeBar {
         info.firerate = 1f/0.200f;
         info.name = "Thompson";
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("thompson","upgrades");
+        this.numUpgrades = numUpgrades;
 
         UpgradeSideBar bar = new UpgradeSideBar(sideBars.size(),"thompson");
         String[] text = new String[]{"Increase minimum damage by 1"};
@@ -79,6 +80,8 @@ public class ThompsonUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("thompson","upgrades");
+        this.numUpgrades = numUpgrades;
+
         if(numUpgrades == 1){
             info.minDamage+=1;
         }

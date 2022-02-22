@@ -35,9 +35,11 @@ public abstract class DestroyableObject extends RoomObject {
         itemDrop = true;
         itemAlreadyDropped = false;
 
-        outlineShader = ShaderManager.getShader("shaders\\outline");
-        if (outlineShader == null){
-            outlineShader = ShaderManager.createShader("shaders\\outline");
+        if(!tm.isServerSide()){
+            outlineShader = ShaderManager.getShader("shaders\\outline");
+            if (outlineShader == null){
+                outlineShader = ShaderManager.createShader("shaders\\outline");
+            }
         }
     }
 

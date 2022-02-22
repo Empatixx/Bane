@@ -7,6 +7,7 @@ import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.GunsManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
@@ -81,6 +82,32 @@ public class Grenadelauncher extends Weapon {
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         bullets = new ArrayList<>();
+    }
+    // resetting stats of gun of new owner of gun
+    @Override
+    public void restat(String username) {
+        mindamage = 4;
+        maxdamage = 7;
+        inaccuracy = 0.7f;
+        maxAmmo = 24;
+        maxMagazineAmmo = 6;
+        GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
+        int numUpgrades = gunsManagerMP.getNumUpgrades(username, "Grenade Launcher");
+        if(numUpgrades >= 1){
+            maxAmmo+=4;
+        }
+        if(numUpgrades >= 2){
+            maxMagazineAmmo+=3;
+        }
+        if(numUpgrades >= 3){
+            maxdamage+=2;
+            mindamage+=2;
+        }
+        if(numUpgrades >= 4){
+            criticalHits=true;
+        }
+        if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
+        if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
     }
     @Override
     public void reload() {

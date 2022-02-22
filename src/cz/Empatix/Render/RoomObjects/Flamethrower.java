@@ -1,25 +1,18 @@
 package cz.Empatix.Render.RoomObjects;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
-import cz.Empatix.Main.Game;
-import cz.Empatix.Render.Camera;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
-import org.joml.Matrix4f;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL20.*;
 
 public class Flamethrower extends RoomObject {
     public static void load(){
@@ -208,6 +201,15 @@ public class Flamethrower extends RoomObject {
         if(ready || currentFrame >= 1){
             animation.update();
         }
+        if(tileMap.isServerSide()){
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            Network.RoomObjectAnimationSync roomObjectAnimationSync = new Network.RoomObjectAnimationSync();
+            roomObjectAnimationSync.id = id;
+            roomObjectAnimationSync.sprite = (byte)animation.getIndexOfFrame();
+            roomObjectAnimationSync.time = animation.getTime();
+            roomObjectAnimationSync.cooldown = cooldownTime;
+            server.sendToAllUDP(roomObjectAnimationSync);
+        }
         if(System.currentTimeMillis() - cooldownTime - InGame.deltaPauseTime() > 1500){
             ready = true;
             cooldownTime = System.currentTimeMillis() - InGame.deltaPauseTime();
@@ -246,71 +248,7 @@ public class Flamethrower extends RoomObject {
 
     @Override
     public void draw() {
-        // pokud neni object na obrazovce - zrusit
-        if (isNotOnScrean()){
-            return;
-        }
-
-        Matrix4f target;
-        if (facingRight) {
-            target = new Matrix4f().translate(position)
-                    .scale(scale);
-        } else {
-            target = new Matrix4f().translate(position)
-                    .scale(scale)
-                    .rotateY(3.14f);
-
-        }
-        Camera.getInstance().projection().mul(target,target);
-
-        shader.bind();
-        shader.setUniformi("sampler",0);
-        shader.setUniformm4f("projection",target);
-        glActiveTexture(GL_TEXTURE0);
-        spritesheet.bindTexture();
-
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-
-
-        glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
-        glVertexAttribPointer(0,2,GL_INT,false,0,0);
-
-
-        glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
-        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
-
-        glDrawArrays(GL_QUADS, 0, 4);
-
-        glBindBuffer(GL_ARRAY_BUFFER,0);
-
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-
-        shader.unbind();
-        glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(0);
-        if (Game.displayCollisions){
-            glColor3i(255,255,255);
-            glBegin(GL_LINE_LOOP);
-            // BOTTOM LEFT
-            glVertex2f(position.x+xmap-cwidth/2,position.y+ymap-cheight/2);
-            // TOP LEFT
-            glVertex2f(position.x+xmap-cwidth/2, position.y+ymap+cheight/2);
-            // TOP RIGHT
-            glVertex2f(position.x+xmap+cwidth/2, position.y+ymap+cheight/2);
-            // BOTTOM RIGHT
-            glVertex2f(position.x+xmap+cwidth/2, position.y+ymap-cheight/2);
-            glEnd();
-
-            glPointSize(10);
-            glColor3i(255,0,0);
-            glBegin(GL_POINTS);
-            glVertex2f(position.x+xmap,position.y+ymap);
-            glEnd();
-
-
-        }
+        super.draw();
     }
     public boolean shouldRemove(){
         return remove;
@@ -352,5 +290,11 @@ public class Flamethrower extends RoomObject {
 
     public int getType() {
         return type;
+    }
+    @Override
+    public void animationSync(Network.RoomObjectAnimationSync packet) {
+        animation.setTime(packet.time);
+        animation.setFrame(packet.sprite);
+        cooldownTime = packet.cooldown;
     }
 }

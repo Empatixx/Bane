@@ -1,46 +1,48 @@
-package cz.Empatix.Entity.ItemDrops.Artefacts.Support;
+package cz.Empatix.Entity.ItemDrops.Artefacts.Special;
 
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
-import cz.Empatix.Multiplayer.GunsManagerMP;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
-public class Ammobelt extends Artefact {
+public class ReviveBook extends Artefact {
     public static void load(){
-        Loader.loadImage("Textures\\artefacts\\ammobelt.tga");
+        Loader.loadImage("Textures\\artefacts\\revivebook.tga");
     }
-    public Ammobelt(TileMap tm, Player p){
+    public ReviveBook(TileMap tm, Player p){
         super(tm,p);
-        maxCharge = 4;
+        maxCharge = 1;
         charge = maxCharge;
 
-        scale = 4f;
+        scale = 3f;
 
-        imageArtefact = new Image("Textures\\artefacts\\ammobelt.tga",new Vector3f(1403,975,0),
+        imageArtefact = new Image("Textures\\artefacts\\revivebook.tga",new Vector3f(1403,975,0),
                 scale  );
-        chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
+        chargeBar = new Image("Textures\\artefacts\\artifactcharge1.tga",new Vector3f(1400,1055,0),
                 2.6f);
         rarity = 1;
+        obtainable = false;
+        oneUse = true;
+
     }
-    public Ammobelt(TileMap tm, Player[] p){
+    public ReviveBook(TileMap tm, Player[] p){
         super(tm,p);
-        maxCharge = 4;
+        maxCharge = 1;
         charge = maxCharge;
+
         rarity = 1;
 
-        scale = 4f;
+        scale = 3f;
+        oneUse = true;
+        canShopItem = true;
     }
     @Override
     public void update(boolean pause) {
@@ -48,7 +50,6 @@ public class Ammobelt extends Artefact {
 
     @Override
     public void update(String username) {
-
     }
 
     @Override
@@ -67,15 +68,18 @@ public class Ammobelt extends Artefact {
 
         geometryShader.bind();
 
+        geometryShader.bind();
+
         for(int i = 0;i<charge;i++){
-            if(chargeAnimation == i && charge == maxCharge){
+            long elapsed = System.nanoTime() / 1000000;
+            if (elapsed / 750 % 2 == 0){
                 geometryShader.setUniform3f("color", new Vector3f(0.141f, 0.980f, 0));
             } else {
                 geometryShader.setUniform3f("color", new Vector3f(0.109f, 0.552f, 0.203f));
             }
 
             matrixPos = new Matrix4f()
-                    .translate(new Vector3f( 1376+16*i,1055,0));
+                    .translate(new Vector3f( 1376+25,1055,0));
             Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
             geometryShader.setUniformm4f("projection", matrixPos);
             glEnableVertexAttribArray(0);
@@ -92,31 +96,40 @@ public class Ammobelt extends Artefact {
         geometryShader.unbind();
 
         chargeBar.draw();
+
     }
 
     @Override
     public void activate() {
-
         charge = 0;
-        // refills  players ammo by 20%
-        GunsManager gunsManager = GunsManager.getInstance();
-        int type = gunsManager.getWeaponTypes()[gunsManager.getCurrentslot()];
-        gunsManager.addAmmo(20,type);
+        // it is only multiplayer item
     }
-
     @Override
     public void activate(String username) {
-        super.activateClientSide();
-        charge = 0;
-        // refills  players ammo by 20%
-        GunsManagerMP gunsManager = GunsManagerMP.getInstance();
-        int type = gunsManager.getWeaponTypes(username)[gunsManager.getCurrentWeaponSlot(username)];
-        gunsManager.addAmmo(20,type,username);
+        for(Player player : p){
+            if(player != null){
+                if(player.isDead()){
+                    ((PlayerMP)player).reset();
+                    for(Player user : p){
+                        if(user != null){
+                            if(((PlayerMP)user).getUsername().equalsIgnoreCase(username)){
+                                player.setPosition(user.getX(),user.getY());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
+
     @Override
     public void activateClientSide() {
+        super.activateClientSide();
         charge = 0;
+
     }
+
     @Override
     public void charge() {
         charge++;

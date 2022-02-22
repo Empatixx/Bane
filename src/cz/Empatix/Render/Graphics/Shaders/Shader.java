@@ -1,6 +1,7 @@
 package cz.Empatix.Render.Graphics.Shaders;
 
 import cz.Empatix.Render.Postprocessing.Lightning.LightPoint;
+import org.joml.Matrix3x2f;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -103,6 +104,21 @@ public class Shader{
         }
     }
     public void setUniformm4f(String name, Matrix4f value){
+        int location;
+        if (locations.get(name) == null){
+            location = glGetUniformLocation(program,name);
+            locations.put(name,location);
+        } else {
+            location = locations.get(name);
+        }
+
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+        value.get(buffer);
+        if (location != -1){
+            glUniformMatrix4fv(location,false,buffer);
+        }
+    }
+    public void setUniformm3fx2f(String name, Matrix3x2f value){
         int location;
         if (locations.get(name) == null){
             location = glGetUniformLocation(program,name);

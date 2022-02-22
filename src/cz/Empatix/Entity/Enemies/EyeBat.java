@@ -1,13 +1,16 @@
 package cz.Empatix.Entity.Enemies;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -143,7 +146,11 @@ public class EyeBat extends Enemy {
 
             currentAction = IDLE;
 
+            animation = new Animation(5);
+            animation.setDelay(125);
+
             laserBeam = new LaserBeam(tm,this.player);
+            laserBeam.setId(id); // setting id so id will be same as enemy
             beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
         } else {
             moveSpeed = 2f;
@@ -209,7 +216,11 @@ public class EyeBat extends Enemy {
             beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
         }
     }
-
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        laserBeam.setId(id);
+    }
     @Override
     public void update() {
         setMapPosition();
@@ -222,38 +233,57 @@ public class EyeBat extends Enemy {
         // ENEMY AI
         EnemyAI();
 
-        int indexPlayer = theClosestPlayerIndex();
-        if(currentAction == IDLE && System.currentTimeMillis() - InGame.deltaPauseTime() - beamCooldown > 5000 && position.distance(player[indexPlayer].getPosition()) > 550
-                && position.distance(player[indexPlayer].getPosition()) < 1500
-            && canShot()){
-            currentAction = BEAM;
-            if(facingRight){
-                laserBeam.setPosition(position.x,position.y);
-            } else {
-                laserBeam.setPosition(position.x,position.y+20);
+        int indexPlayer = theFarthestPlayerIndex();
+        if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
+            if(currentAction == IDLE && System.currentTimeMillis() - InGame.deltaPauseTime() - beamCooldown > 5000 && position.distance(player[indexPlayer].getPosition()) > 550
+                    && position.distance(player[indexPlayer].getPosition()) < 1500
+                    && canShot()){
+                currentAction = BEAM;
+                if(facingRight){
+                    laserBeam.setPosition(position.x,position.y);
+                } else {
+                    laserBeam.setPosition(position.x,position.y+20);
+                }
+                laserBeam.resetAnimation();
+                beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+            } else if (currentAction == BEAM && (laserBeam.hasEnded() || !canShot())){
+                currentAction = IDLE;
             }
-            laserBeam.resetAnimation();
-            beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
-        } else if (currentAction == BEAM && (laserBeam.hasEnded() || !canShot())){
-            currentAction = IDLE;
-        }
-        if(facingRight != laserBeam.isFacingRight()){
-            laserBeam.setPosition(position.x,position.y);
-            laserBeam.setFacingRight(facingRight);
-        }
+            if(facingRight != laserBeam.isFacingRight()){
+                laserBeam.setPosition(position.x,position.y);
+                laserBeam.setFacingRight(facingRight);
+            }
+            if(tileMap.isServerSide()){
+                Network.EnemySync golemAnimSync = new Network.EnemySync();
+                golemAnimSync.id = id;
+                golemAnimSync.currAction = (byte)currentAction;
+                golemAnimSync.sprite =  (byte)animation.getIndexOfFrame();
+                golemAnimSync.time = animation.getTime();
 
-        if(currentAction == BEAM){
-            right = false;
-            left = false;
-            up = false;
-            down = false;
-            laserBeam.update();
-        }
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(golemAnimSync);
+            }
+            if(currentAction == BEAM){
+                right = false;
+                left = false;
+                up = false;
+                down = false;
+                laserBeam.update();
+            }
 
-        // update position
-        getNextPosition();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
+            // update position
+            getNextPosition();
+            checkTileMapCollision();
+            setPosition(temp.x, temp.y);
+        } else if (MultiplayerManager.multiplayer){
+            if(currentAction == BEAM){
+                right = false;
+                left = false;
+                up = false;
+                down = false;
+                laserBeam.update();
+            }
+        }
         movePacket();
 
     }
@@ -323,66 +353,92 @@ public class EyeBat extends Enemy {
 
         LaserBeam(TileMap tm, Player[] p) {
             super(tm);
-            this.player = p;
-            width = 810;
-            height = 45;
-            cwidth = 810;
-            cheight = 20;
-            scale = 3;
-            facingRight = true;
+            if(tm.isServerSide()){
+                this.player = p;
+                width = 810;
+                height = 45;
+                cwidth = 810;
+                cheight = 20;
+                scale = 3;
+                facingRight = true;
 
-            spriteSheetCols = 1;
-            spriteSheetRows = 14;
+                spriteSheetCols = 1;
+                spriteSheetRows = 14;
 
-            // try to find spritesheet if it was created once
-            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\laserbeam-eyebat.tga");
+                animation = new Animation(14);
+                animation.setDelay(95);
 
-            // creating a new spritesheet
-            if (spritesheet == null){
-                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\laserbeam-eyebat.tga");
-                Sprite[] sprites = new Sprite[spriteSheetRows];
-                for (int j = 0; j < spriteSheetRows; j++) {
-                    Sprite sprite = new Sprite(new float[]
-                            {
-                                    0f, (float) j / spriteSheetRows,
+                // because of scaling image by 2x
+                width *= scale;
+                height *= scale;
+                cwidth *= scale;
+                cheight *= scale;
+            } else {
+                this.player = p;
+                width = 810;
+                height = 45;
+                cwidth = 810;
+                cheight = 20;
+                scale = 3;
+                facingRight = true;
 
-                                    0f, (1.0f + j) / spriteSheetRows,
+                spriteSheetCols = 1;
+                spriteSheetRows = 14;
 
-                                    1f, (1.0f + j) / spriteSheetRows,
+                // try to find spritesheet if it was created once
+                spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\laserbeam-eyebat.tga");
 
-                                    1f, (float) j / spriteSheetRows
-                            }
-                    );
-                    sprites[j] = sprite;
+                // creating a new spritesheet
+                if (spritesheet == null){
+                    spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\laserbeam-eyebat.tga");
+                    Sprite[] sprites = new Sprite[spriteSheetRows];
+                    for (int j = 0; j < spriteSheetRows; j++) {
+                        Sprite sprite = new Sprite(new float[]
+                                {
+                                        0f, (float) j / spriteSheetRows,
 
+                                        0f, (1.0f + j) / spriteSheetRows,
+
+                                        1f, (1.0f + j) / spriteSheetRows,
+
+                                        1f, (float) j / spriteSheetRows
+                                }
+                        );
+                        sprites[j] = sprite;
+
+                    }
+                    spritesheet.addSprites(sprites);
                 }
-                spritesheet.addSprites(sprites);
-            }
-            vboVertices = ModelManager.getModel(width, height);
-            if (vboVertices == -1){
-                vboVertices = ModelManager.createModel(width, height);
-            }
+                vboVertices = ModelManager.getModel(width, height);
+                if (vboVertices == -1){
+                    vboVertices = ModelManager.createModel(width, height);
+                }
 
-            animation = new Animation();
-            animation.setFrames(spritesheet.getSprites(0));
-            animation.setDelay(95);
+                animation = new Animation();
+                animation.setFrames(spritesheet.getSprites(0));
+                animation.setDelay(95);
 
-            shader = ShaderManager.getShader("shaders\\rotation");
-            if (shader == null){
-                shader = ShaderManager.createShader("shaders\\rotation");
+                shader = ShaderManager.getShader("shaders\\rotation");
+                if (shader == null){
+                    shader = ShaderManager.createShader("shaders\\rotation");
+                }
+                // because of scaling image by 2x
+                width *= scale;
+                height *= scale;
+                cwidth *= scale;
+                cheight *= scale;
             }
-            // because of scaling image by 2x
-            width *= scale;
-            height *= scale;
-            cwidth *= scale;
-            cheight *= scale;
         }
 
         boolean hasEnded(){return animation.hasPlayedOnce();}
 
         void resetAnimation(){
-            animation.setFrames(spritesheet.getSprites(0));
-
+            if(!tileMap.isServerSide()) {
+                animation.setFrames(spritesheet.getSprites(0));
+            } else {
+                animation = new Animation(14);
+                animation.setDelay(125);
+            }
             int indexPlayer = theClosestPlayerIndex();
 
             float y = originalPos.y - player[indexPlayer].getY();
@@ -398,58 +454,87 @@ public class EyeBat extends Enemy {
         public void update() {
             animation.update();
             setMapPosition();
-
-            int indexPlayer = theClosestPlayerIndex();
-
-            float y = originalPos.y - player[indexPlayer].getY();
-            float x = originalPos.x - player[indexPlayer].getX();
-            float angle = (float) Math.atan(y / x);
-            if (!facingRight){
-                angle += Math.PI;
-            }
-            boolean reverseDir = false;
-            if (Math.PI * 2 - Math.abs(this.angle - angle) < Math.abs(this.angle - angle)){
-                reverseDir = true;
-            }
-            if (!reverseDir){
-                this.angle += (angle - this.angle) * .07;
-            } else {
-                if (this.angle >= 0){
-                    this.angle += ((Math.PI * 3 / 2. - this.angle) + (Math.PI / 2. + angle)) * .035;
-                    if (this.angle >= Math.PI * 3 / 2.){
-                        this.angle -= Math.PI * 3 / 2.;
-                        this.angle = -Math.PI / 2. - this.angle;
-                    }
-                } else {
-                    this.angle -= ((Math.PI * 3 / 2. - angle) + (Math.PI / 2. + this.angle)) * .035;
-                    if (this.angle <= -Math.PI / 2.){
-                        this.angle += Math.PI / 2;
-                        this.angle = Math.PI * 3 / 2. - this.angle;
-                    }
+            int playerrIndex = theClosestPlayerIndex();
+            if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
+                float y = originalPos.y- player[playerrIndex].getY();
+                float x = originalPos.x- player[playerrIndex].getX();
+                float angle = (float)Math.atan(y/x);
+                if(!facingRight){
+                    angle+=Math.PI;
                 }
-
-            }
-
-            position.x = originalPos.x + (width / 2 - 50) * (float) Math.cos(this.angle);
-            position.y = originalPos.y + (width / 2 - 50) * (float) Math.sin(this.angle);
-
-            if (intersects(player[indexPlayer]) && canHit()){
-                player[indexPlayer].hit(0);
-            }
-            ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
-            for(ArrayList<RoomObject> objects : objectsArray) {
-                if (objects == null) continue;
-                for (RoomObject object : objects) {
-                    if (object instanceof DestroyableObject) {
-                        if (intersects(object) && !((DestroyableObject) object).isDestroyed()) {
-                            ((DestroyableObject) object).setHit(1);
+                boolean reverseDir = false;
+                if(Math.PI*2-Math.abs(this.angle - angle) < Math.abs(this.angle - angle)){
+                    reverseDir = true;
+                }
+                if(!reverseDir){
+                    this.angle += (angle - this.angle) * .07;
+                } else {
+                    if(this.angle >= 0){
+                        this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * .035;
+                        if(this.angle >= Math.PI*3/2.){
+                            this.angle-=Math.PI*3/2.;
+                            this.angle=-Math.PI/2. - this.angle;
+                        }
+                    } else {
+                        this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * .035;
+                        if(this.angle <= -Math.PI/2.){
+                            this.angle+=Math.PI/2;
+                            this.angle=Math.PI*3/2.-this.angle;
                         }
                     }
+
+                }
+
+                position.x = originalPos.x + (width/2-65) * (float)Math.cos(this.angle);
+                position.y = originalPos.y + (width/2-65) * (float)Math.sin(this.angle);
+
+                if(intersects(player[playerrIndex]) && canHit()){
+                    player[playerrIndex].hit(1);
+                }
+                ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+                for(ArrayList<RoomObject> objects : objectsArray) {
+                    if (objects == null) continue;
+                    for (RoomObject object : objects) {
+                        if (object instanceof DestroyableObject) {
+                            if (intersects(object) && !((DestroyableObject) object).isDestroyed()) {
+                                ((DestroyableObject) object).setHit(1);
+                                Network.LaserBeamHit laserBeamHit = new Network.LaserBeamHit();
+                                laserBeamHit.idHit = object.id;
+                                Server server = MultiplayerManager.getInstance().server.getServer();
+                                server.sendToAllTCP(laserBeamHit);
+                            }
+                        }
+                    }
+                }
+                if(tileMap.isServerSide()){
+                    Network.LaserBeamSync LBSync = new Network.LaserBeamSync();
+                    LBSync.angle = this.angle;
+                    LBSync.id = id;
+                    LBSync.sprite =  (byte)animation.getIndexOfFrame();
+                    LBSync.x = position.x;
+                    LBSync.y = position.y;
+                    LBSync.time = animation.getTime();
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    server.sendToAllUDP(LBSync);
+                }
+            } else {
+                Object[] objects = MultiplayerManager.getInstance().packetHolder.getWithoutClear(PacketHolder.LASERBEAMSYNC);
+                for(Object o : objects){
+                    handleSync((Network.LaserBeamSync) o);
                 }
             }
 
         }
-
+        public void handleSync(Network.LaserBeamSync sync){
+            if(sync.id == id){
+                angle = sync.angle;
+                animation.setFrame(sync.sprite);
+                animation.setTime(sync.time);
+                position.x = sync.x;
+                position.y = sync.y;
+                MultiplayerManager.getInstance().packetHolder.remove(PacketHolder.LASERBEAMSYNC,sync);
+            }
+        }
         @Override
         public void draw() {
             // blikání - po hitu - hráč
@@ -758,5 +843,11 @@ public class EyeBat extends Enemy {
     @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
 
+    }
+    @Override
+    public void handleSync(Network.EnemySync sync){
+        animation.setTime(sync.time);
+        currentAction = sync.currAction;
+        animation.setFrame(sync.sprite);
     }
 }

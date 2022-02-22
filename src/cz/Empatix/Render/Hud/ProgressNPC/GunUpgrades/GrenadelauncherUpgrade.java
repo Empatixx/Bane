@@ -17,6 +17,7 @@ public class GrenadelauncherUpgrade extends UpgradeBar {
         info.name = "Grenade Launcher";
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("grenadelauncher","upgrades");
+        this.numUpgrades = numUpgrades;
 
 
         UpgradeSideBar bar = new UpgradeSideBar(sideBars.size(),"grenadelauncher");
@@ -84,6 +85,8 @@ public class GrenadelauncherUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("grenadelauncher","upgrades");
+        this.numUpgrades = numUpgrades;
+
         if(numUpgrades == 1){
             info.maxAmmo+=4;
         }

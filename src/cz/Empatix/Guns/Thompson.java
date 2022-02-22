@@ -9,6 +9,7 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.GunsManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
@@ -90,6 +91,32 @@ public class Thompson extends Weapon{
         currentMagazineAmmo = maxMagazineAmmo;
         type = 1;
         bullets = new ArrayList<>();
+    }
+    // resetting stats of gun of new owner of gun
+    @Override
+    public void restat(String username) {
+        mindamage = 1;
+        maxdamage = 3;
+        inaccuracy = 0.5f;
+        maxAmmo = 300;
+        maxMagazineAmmo = 50;
+        delayTime = 200;
+        GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
+        int numUpgrades = gunsManagerMP.getNumUpgrades(username, "Thompson");
+        if(numUpgrades >= 1){
+            mindamage+=1;
+        }
+        if(numUpgrades >= 2){
+            maxMagazineAmmo+=10;
+        }
+        if(numUpgrades >= 3){
+            maxAmmo+=100;
+        }
+        if(numUpgrades >= 4){
+            boostFirerate = true;
+        }
+        if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
+        if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
     }
     @Override
     public void reload() {
@@ -323,14 +350,11 @@ public class Thompson extends Weapon{
                     Enemy e = em.handleHitEnemyPacket(hitBullet.idHit,b.getDamage());
                     showDamageIndicator(b.getDamage(),b.isCritical(),e);
                 } else if (hitBullet.type == Bullet.TypeHit.ROOMOBJECT){
-                    ArrayList<RoomObject>[] objectsArray = tm.getRoomMapObjects();
-                    for(ArrayList<RoomObject> objects : objectsArray) {
-                        if (objects == null) continue;
-                        for(RoomObject obj : objects){
-                            if(obj.getId() == hitBullet.idHit) {
-                                if (obj instanceof DestroyableObject) {
-                                    ((DestroyableObject) obj).setHit(b.getDamage());
-                                }
+                    ArrayList<RoomObject> objects = tm.getRoomByCoords(b.getX(),b.getY()).getMapObjects();
+                    for(RoomObject obj : objects){
+                        if(obj.getId() == hitBullet.idHit) {
+                            if (obj instanceof DestroyableObject) {
+                                ((DestroyableObject) obj).setHit(b.getDamage());
                             }
                         }
                     }

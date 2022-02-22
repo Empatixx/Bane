@@ -61,10 +61,10 @@ public class MPStatistics {
         Server server = MultiplayerManager.getInstance().server.getServer();
         for(PStats stats : playersStats){
             Network.PstatsUpdate pu = new Network.PstatsUpdate();
-            pu.bulletsHit = stats.bulletsHit;
-            pu.shootShooted = stats.bulletShooted;
+            pu.bulletsHit = (short)stats.bulletsHit;
+            pu.shootShooted = (short)stats.bulletShooted;
             pu.deathTime = stats.deathTime;
-            pu.enemiesKilled = stats.enemiesKilled;
+            pu.enemiesKilled = (short)stats.enemiesKilled;
             pu.username = stats.username;
             server.sendToAllUDP(pu);
         }

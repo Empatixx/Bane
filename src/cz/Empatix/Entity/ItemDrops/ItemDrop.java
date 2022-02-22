@@ -21,6 +21,7 @@ public abstract class ItemDrop extends MapObject implements Serializable {
     public static final int ARMOR = 7;
     public static final int GUN = 6;
     public static final int COIN = 5;
+    public static final int AMMOBOX = 9;
 
     public int type;
     public boolean pickedUp;
@@ -52,6 +53,7 @@ public abstract class ItemDrop extends MapObject implements Serializable {
     }
     public void update() {
         if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
+            checkRoomObjectsCollision();
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
             getMovementSpeed();
@@ -108,8 +110,6 @@ public abstract class ItemDrop extends MapObject implements Serializable {
     public boolean isShop() {
         return shop;
     }
-
-    public abstract void loadSave();
 
     public void preventDespawn(){
         canDespawn = false;

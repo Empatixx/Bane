@@ -63,4 +63,8 @@ public abstract class RoomObject extends MapObject{
     }
 
 
+    public void animationSync(Network.RoomObjectAnimationSync packet) {
+        animation.setTime(packet.time);
+        animation.setFrame(packet.sprite);
+    }
 }

@@ -38,6 +38,7 @@ public class ItemManager {
         HealingPot.load();
         ShotgunAmmo.load();
         PistolAmmo.load();
+        AmmoBox.load();
     }
     private ArrayList<ItemDrop> itemDrops;
     private TileMap tm;
@@ -84,22 +85,6 @@ public class ItemManager {
         for(int i=0;i<2;i++) textRender[i] = new TextRender();
 
     }
-    public void loadSave(){
-        pickupSound = AudioManager.loadSound("pickup.ogg");
-        pickupCoinSound = AudioManager.loadSound("coin.ogg");
-
-        source = AudioManager.createSource(Source.EFFECTS, 0.35f);
-        buysource = AudioManager.createSource(Source.EFFECTS, 0.35f);
-
-        shopHud = new Image("Textures\\shophud.tga", new Vector3f(0, 0, 0), 3.5f);
-        soundShopBuy = AudioManager.loadSound("buy.ogg");
-
-        textRender = new TextRender[2];
-        for(int i=0;i<2;i++) textRender[i] = new TextRender();
-        for(ItemDrop drop:itemDrops){
-            drop.loadSave();
-        }
-    }
 
     public void clear() {
         for (ItemDrop i : itemDrops) {
@@ -114,24 +99,23 @@ public class ItemManager {
         itemDrops.clear();
     }
 
+    // singeplayer shop item
     public void createShopDrop(float x, float y) {
-        int drops = 6;
+        int drops = 4;
         int random = cz.Empatix.Java.Random.nextInt(drops);
 
         ItemDrop drop;
         if (random == 0) {
-            drop = new PistolAmmo(tm);
+            drop = new AmmoBox(tm);
             drop.setAmount(60);
-        } else if (random == 3) {
-            drop = new ShotgunAmmo(tm);
-            drop.setAmount(60);
-        } else if (random == 4) {
+            drop.setPosition(x, y-30);
+            drop.setShop(Random.nextInt(3+tm.getFloor()) + 2+tm.getFloor()*2);
+            itemDrops.add(drop);
+            return;
+        } else if (random == 1) {
             drop = new ArmorPot(tm);
         } else if (random == 2) {
             drop = new HealingPot(tm);
-        } else if (random == 5) {
-            drop = new ExplosiveAmmo(tm);
-            drop.setPosition(x, y);
         } else {
             Weapon weapon = gm.randomGun();
             weapon.drop();
@@ -149,9 +133,6 @@ public class ItemManager {
     }
 
     public ItemDrop createDrop(float x, float y) {
-        if(MultiplayerManager.multiplayer){
-            return null;
-        }
         int drops = 3;
         if (player.getHealth() == player.getMaxHealth()) {
             drops--;
@@ -297,19 +278,34 @@ public class ItemManager {
                     shopHud.setPosition(new Vector3f(drop.getX() + tm.getX(), drop.getY() + tm.getY() - 125, 0));
                     shopItem = drop;
                 } else {
-                    if ((type == ItemDrop.PISTOLAMMO || type == ItemDrop.SHOTGUNAMMO || type == ItemDrop.EXPLOSIVEAMMO) && !MultiplayerManager.multiplayer) {
+                    if(MultiplayerManager.multiplayer){
+                        if(type == ItemDrop.PISTOLAMMO || type == ItemDrop.SHOTGUNAMMO || type == ItemDrop.EXPLOSIVEAMMO || type == ItemDrop.COIN ||
+                        type == ItemDrop.ARMOR) continue;
+                    }
+                    if (type == ItemDrop.PISTOLAMMO || type == ItemDrop.SHOTGUNAMMO || type == ItemDrop.EXPLOSIVEAMMO) {
                         boolean done = gm.addAmmo(drop.getAmount(), type);
                         if (done) {
                             drop.pickedUp = true;
                             source.play(pickupSound);
                         }
+                    } else if (type == ItemDrop.AMMOBOX) {
+                        int[] ammotypes = new int[]{1,3,4};
+                        for(int atype : ammotypes){
+                            boolean done = gm.addAmmo(drop.getAmount(), atype);
+                            if (done) {
+                                drop.pickedUp = true;
+                                source.play(pickupSound);
+                                break;
+                            }
+                        }
+
                     } else if (type == ItemDrop.HP && !MultiplayerManager.multiplayer) {
                         if (player.getHealth() != player.getMaxHealth()) {
                             player.addHealth(2);
                             drop.pickedUp = true;
                             source.play(pickupSound);
                         }
-                    } else if (type == ItemDrop.COIN && !MultiplayerManager.multiplayer) {
+                    } else if (type == ItemDrop.COIN) {
                         player.addCoins(drop.getAmount());
                         totalCoins+=drop.getAmount();
                         drop.pickedUp = true;
@@ -326,7 +322,7 @@ public class ItemManager {
                             distance = newDist;
                             selectedDrop = drop;
                         }
-                    } else if (type == ItemDrop.ARMOR && !MultiplayerManager.multiplayer) {
+                    } else if (type == ItemDrop.ARMOR) {
                         if (player.getArmor() != player.getMaxArmor()) {
                             player.addArmor(2);
                             drop.pickedUp = true;
@@ -627,33 +623,35 @@ public class ItemManager {
         }
     }
 
+    // multiplayer shop item
     public void createShopDrop(Network.ShopDropitem packet, float x, float y) {
         int random = packet.type;
 
         ItemDrop drop;
         if (random == 0) {
-            drop = new PistolAmmo(tm);
+            drop = new AmmoBox(tm);
+            drop.setAmount(60);
             drop.setPosition(x, y);
-        } else if (random == 3) {
-            drop = new ShotgunAmmo(tm);
-            drop.setPosition(x, y);
-        } else if (random == 4) {
+        } else if (random == 1) {
             drop = new ArmorPot(tm);
             drop.setPosition(x, y);
         } else if (random == 2) {
             drop = new HealingPot(tm);
             drop.setPosition(x, y);
-        } else if (random == 5) {
-            drop = new ExplosiveAmmo(tm);
+        } else if (random == 3) {
+            // converting indexing from server to client ones
+            Artefact artefact = am.getArtefact(packet.objectSlot);
+            artefact.dropped = true;
+            drop = new ArtefactDrop(tm, artefact);
             drop.setPosition(x, y);
         } else {
             // converting indexing from server to client ones
             int totalPlayers = MultiplayerManager.getInstance().client.getTotalPlayers();
-            int index = packet.weaponSlot-(totalPlayers-1);
+            int index = packet.objectSlot -(totalPlayers-1);
             if(index < 0) index = 0;
-            packet.weaponSlot = index;
+            packet.objectSlot = (byte)index;
 
-            Weapon weapon = gm.getWeapon(packet.weaponSlot);
+            Weapon weapon = gm.getWeapon(packet.objectSlot);
             weapon.drop();
             drop = new WeaponDrop(tm, weapon);
             drop.setPosition(x, y);

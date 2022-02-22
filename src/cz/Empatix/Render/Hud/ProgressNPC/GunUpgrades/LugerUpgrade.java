@@ -18,6 +18,7 @@ public class LugerUpgrade extends UpgradeBar {
         info.name = "Luger";
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("luger","upgrades");
+        this.numUpgrades = numUpgrades;
 
 
         UpgradeSideBar bar = new UpgradeSideBar(sideBars.size(),"luger");
@@ -84,6 +85,8 @@ public class LugerUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("luger","upgrades");
+        this.numUpgrades = numUpgrades;
+
         if(numUpgrades == 1){
             info.maxDamage++;
             info.minDamage++;

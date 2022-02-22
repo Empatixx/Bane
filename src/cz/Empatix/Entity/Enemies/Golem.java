@@ -1,15 +1,18 @@
 package cz.Empatix.Entity.Enemies;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -137,8 +140,8 @@ public class Golem extends Enemy {
         createShadow();
 
         speedBuff = false;
-        speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
-        shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+        speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime() - 3000;
+        shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime() - 3000;
         beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
         lastRegen = System.currentTimeMillis() - InGame.deltaPauseTime();
         laserBeam = new LaserBeam(tm,this.player);
@@ -169,6 +172,9 @@ public class Golem extends Enemy {
 
             currentAction = IDLE;
 
+            animation = new Animation(4);
+            animation.setDelay(145);
+
             // because of scaling image by 2x
             width *= scale;
             height *= scale;
@@ -178,12 +184,13 @@ public class Golem extends Enemy {
             chestCreated=false;
 
             speedBuff = false;
-            speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
-            shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+            speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime() - 3000;
+            shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime() - 3000;
             beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
             lastRegen = System.currentTimeMillis() - InGame.deltaPauseTime();
             // MULTIPLAYER SUPPORT
             laserBeam = new LaserBeam(tm,player);
+            laserBeam.setId(id); // setting id so id will be same as enemy
 
             shieldStacks = 0;
         } else {
@@ -260,8 +267,8 @@ public class Golem extends Enemy {
             createShadow();
 
             speedBuff = false;
-            speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
-            shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+            speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime() - 3000;
+            shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime() - 3000;
             beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
             lastRegen = System.currentTimeMillis() - InGame.deltaPauseTime();
             laserBeam = new LaserBeam(tm,this.player);
@@ -270,15 +277,22 @@ public class Golem extends Enemy {
         }
 
     }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        laserBeam.setId(id);
+    }
+
     @Override
     public void update() {
         setMapPosition();
-        healthBar.update(health,maxHealth);
+        if(!tileMap.isServerSide())healthBar.update(health,maxHealth);
         if(isSpawning()) return;
         // update animation
         animation.update();
         if(isDead() && animation.isPlayingLastFrame() && !itemDropped){
-            if(!chestCreated){
+            if(!chestCreated && (tileMap.isServerSide() || !MultiplayerManager.multiplayer)){
                 chestCreated=true;
 
                 Chest chest = new Chest(tileMap);
@@ -294,103 +308,160 @@ public class Golem extends Enemy {
         // ENEMY AI
         EnemyAI();
 
-        int indexPlayer = theClosestPlayerIndex();
-
-        // TODO: multiplayer do beams on the furthest player
-        if(     Math.abs(position.x - player[indexPlayer].getX()) < 255
-                && position.y - player[indexPlayer].getY() < 10 && position.y - player[indexPlayer].getY() > -230
-                && currentAction == IDLE && !speedBuff && !player[indexPlayer].isDead()){
-            currentAction = ATTACK;
-            animation.setFrames(spritesheet.getSprites(ATTACK));
-            animation.setDelay(130);
-        } else if(System.currentTimeMillis() - beamCooldown - InGame.deltaPauseTime() > 6500 && position.distance(player[indexPlayer].getPosition()) > 550 && currentAction == IDLE){
-            currentAction = EYE_BEAM;
-            beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
-            animation.setFrames(spritesheet.getSprites(EYE_BEAM));
-            animation.setDelay(185);
-            laserBeam.setPosition(position.x,position.y-height/scale-5);
-        } else if (System.currentTimeMillis() - speedCooldown - InGame.deltaPauseTime() > 8000 && currentAction == IDLE){
-            speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
-            speedBuff = true;
-            maxSpeed = 15f;
-            currentAction = ENERGY;
-            animation.setFrames(spritesheet.getSprites(ENERGY));
-            animation.setDelay(85);
-        } else if (System.currentTimeMillis() - shieldCooldown - InGame.deltaPauseTime() > 7000 && currentAction == IDLE){
-            shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
-            currentAction = BARRIER;
-            animation.setFrames(spritesheet.getSprites(BARRIER));
-            animation.setDelay(125);
-            shieldStacks++;
-        } else if (shieldStacks >= 3 && currentAction == IDLE){
-            shieldStacks = 0;
-            armoringTime = System.currentTimeMillis() - InGame.deltaPauseTime();
-            currentAction = ARMORING;
-            reflectBullets = true;
-            animation.setFrames(spritesheet.getSprites(ARMORING));
-            animation.setDelay(125);
-        } else if(currentAction != IDLE && animation.hasPlayedOnce()){
-            if(currentAction == ENERGY){
+        int indexPlayer = theFarthestPlayerIndex();
+        if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
+            if(     Math.abs(position.x - player[indexPlayer].getX()) < 255
+                    && position.y - player[indexPlayer].getY() < 10 && position.y - player[indexPlayer].getY() > -230
+                    && currentAction == IDLE && !speedBuff && !player[indexPlayer].isDead()){
                 currentAction = ATTACK;
-                animation.setFrames(spritesheet.getSprites(ATTACK));
-                animation.setDelay(90);
-            } else {
-                currentAction = IDLE;
-                animation.setFrames(spritesheet.getSprites(IDLE));
-                animation.setDelay(225);
-            }
-        }
-        if(facingRight != laserBeam.isFacingRight()){
-            laserBeam.setPosition(position.x,position.y-height/scale-5);
-            laserBeam.setFacingRight(facingRight);
-        }
-
-        if(currentAction == ATTACK){
-            right = false;
-            left = false;
-            up = false;
-            down = false;
-            for(Player p : player){
-                if(p != null){
-                    if (Math.abs(position.x - p.getX()) < 275
-                            && position.y - p.getY() < 20 && position.y - p.getY() > -250
-                            && animation.isPlayingLastFrame()){
-                        p.hit(4);
+                if(!MultiplayerManager.multiplayer){
+                    animation.setFrames(spritesheet.getSprites(ATTACK));
+                    animation.setDelay(130);
+                } else if (tileMap.isServerSide()){
+                    animation = new Animation(7);
+                    animation.setDelay(130);
+                }
+            } else if(System.currentTimeMillis() - beamCooldown - InGame.deltaPauseTime() > 6500 && position.distance(player[indexPlayer].getPosition()) > 550 && currentAction == IDLE){
+                currentAction = EYE_BEAM;
+                beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+                if(!MultiplayerManager.multiplayer){
+                    animation.setFrames(spritesheet.getSprites(EYE_BEAM));
+                    animation.setDelay(185);
+                } else if (tileMap.isServerSide()){
+                    animation = new Animation(7);
+                    animation.setDelay(185);
+                }
+                laserBeam.setPosition(position.x,position.y-height/scale-5);
+            } else if (System.currentTimeMillis() - speedCooldown - InGame.deltaPauseTime() > 8000 && currentAction == IDLE){
+                speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+                speedBuff = true;
+                maxSpeed = 15f;
+                currentAction = ENERGY;
+                if(!MultiplayerManager.multiplayer){
+                    animation.setFrames(spritesheet.getSprites(ENERGY));
+                    animation.setDelay(85);
+                } else if (tileMap.isServerSide()){
+                    animation = new Animation(8);
+                    animation.setDelay(85);
+                }
+            } else if (System.currentTimeMillis() - shieldCooldown - InGame.deltaPauseTime() > 7000 && currentAction == IDLE){
+                shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+                currentAction = BARRIER;
+                if(!MultiplayerManager.multiplayer){
+                    animation.setFrames(spritesheet.getSprites(BARRIER));
+                    animation.setDelay(125);
+                } else if (tileMap.isServerSide()){
+                    animation = new Animation(10);
+                    animation.setDelay(125);
+                }
+                shieldStacks++;
+            } else if (shieldStacks >= 3 && currentAction == IDLE){
+                shieldStacks = 0;
+                armoringTime = System.currentTimeMillis() - InGame.deltaPauseTime();
+                currentAction = ARMORING;
+                reflectBullets = true;
+                if(!MultiplayerManager.multiplayer){
+                    animation.setFrames(spritesheet.getSprites(ARMORING));
+                    animation.setDelay(125);
+                } else if (tileMap.isServerSide()){
+                    animation = new Animation(8);
+                    animation.setDelay(85);
+                }
+            } else if(currentAction != IDLE && animation.hasPlayedOnce()){
+                if(currentAction == ENERGY){
+                    currentAction = ATTACK;
+                    if(!MultiplayerManager.multiplayer){
+                        animation.setFrames(spritesheet.getSprites(ATTACK));
+                        animation.setDelay(90);
+                    } else if (tileMap.isServerSide()){
+                        animation = new Animation(7);
+                        animation.setDelay(85);
+                    }
+                } else {
+                    currentAction = IDLE;
+                    if(!MultiplayerManager.multiplayer){
+                        animation.setFrames(spritesheet.getSprites(IDLE));
+                        animation.setDelay(225);
+                    } else if (tileMap.isServerSide()){
+                        animation = new Animation(4);
+                        animation.setDelay(225);
                     }
                 }
             }
-        } else if(currentAction == EYE_BEAM){
-            right = false;
-            left = false;
-            up = false;
-            down = false;
-            laserBeam.update();
-        } else if(currentAction == ARMORING){
-            if(System.currentTimeMillis() - lastRegen - InGame.deltaPauseTime() > 600){
-                lastRegen = System.currentTimeMillis()- InGame.deltaPauseTime();
-                int regen = (int)Math.ceil(maxHealth * 0.01 *(1-(float)health/maxHealth));
-                health+=regen;
-                if(health > maxHealth) health = maxHealth;
+            if(facingRight != laserBeam.isFacingRight()){
+                laserBeam.setPosition(position.x,position.y-height/scale-5);
+                laserBeam.setFacingRight(facingRight);
             }
-            right = false;
-            left = false;
-            up = false;
-            down = false;
-            if(animation.isPlayingLastFrame()){
-                animation.setDelay(-1);
-                if(System.currentTimeMillis() - armoringTime - InGame.deltaPauseTime() > 8000){
-                    animation.setDelay(225);
-                    reflectBullets = false;
+            if(tileMap.isServerSide()){
+                Network.EnemySync golemAnimSync = new Network.EnemySync();
+                golemAnimSync.id = id;
+                golemAnimSync.currAction = (byte)currentAction;
+                golemAnimSync.sprite = (byte)animation.getIndexOfFrame();
+                golemAnimSync.time = animation.getTime();
+
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(golemAnimSync);
+            }
+            if(currentAction == ATTACK){
+                right = false;
+                left = false;
+                up = false;
+                down = false;
+                for(Player p : player){
+                    if(p != null){
+                        if (Math.abs(position.x - p.getX()) < 275
+                                && position.y - p.getY() < 20 && position.y - p.getY() > -250
+                                && animation.isPlayingLastFrame()){
+                            p.hit(4);
+                        }
+                    }
                 }
+            } else if(currentAction == EYE_BEAM){
+                right = false;
+                left = false;
+                up = false;
+                down = false;
+                laserBeam.update();
+            } else if(currentAction == ARMORING){
+                if(System.currentTimeMillis() - lastRegen - InGame.deltaPauseTime() > 600){
+                    lastRegen = System.currentTimeMillis()- InGame.deltaPauseTime();
+                    int regen = (int)Math.ceil(maxHealth * 0.01 *(1-(float)health/maxHealth));
+                    if(tileMap.isServerSide()){
+                        Network.EnemyHealthHeal healPacket = new Network.EnemyHealthHeal();
+                        healPacket.id = id;
+                        healPacket.amount = (short) regen;
+                        Server server = MultiplayerManager.getInstance().server.getServer();
+                        server.sendToAllTCP(healPacket);
+                    }
+                    heal(regen);
+                }
+                right = false;
+                left = false;
+                up = false;
+                down = false;
+                if(animation.isPlayingLastFrame()){
+                    animation.setDelay(-1);
+                    if(System.currentTimeMillis() - armoringTime - InGame.deltaPauseTime() > 8000){
+                        animation.setDelay(225);
+                        reflectBullets = false;
+                    }
+                }
+            } else if(speedBuff && System.currentTimeMillis() - speedCooldown - InGame.deltaPauseTime() > 1000){
+                speedBuff = false;
+                maxSpeed = 5.2f;
             }
-        } else if(speedBuff && System.currentTimeMillis() - speedCooldown - InGame.deltaPauseTime() > 1000){
-            speedBuff = false;
-            maxSpeed = 5.2f;
+            getNextPosition();
+            checkTileMapCollision();
+            setPosition(temp.x, temp.y);
+        } else {
+            if(currentAction == EYE_BEAM) {
+                right = false;
+                left = false;
+                up = false;
+                down = false;
+                laserBeam.update();
+            }
         }
-        // update position
-        getNextPosition();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
         movePacket();
     }
 
@@ -433,6 +504,7 @@ public class Golem extends Enemy {
         if(!disableDraw) drawShadow(11f,65);
     }
 
+
     private static class LaserBeam extends MapObject {
         private Vector3f originalPos;
         double angle;
@@ -440,59 +512,81 @@ public class Golem extends Enemy {
 
         LaserBeam(TileMap tm, Player[] p){
             super(tm);
-            this.player = p;
-            width = 810;
-            height = 45;
-            cwidth = 810;
-            cheight = 20;
-            scale = 4;
-            facingRight = true;
+            if(tm.isServerSide()){
+                this.player = p;
+                width = 810;
+                height = 45;
+                cwidth = 810;
+                cheight = 20;
+                scale = 4;
+                facingRight = true;
 
-            spriteSheetCols = 1;
-            spriteSheetRows = 14;
+                spriteSheetCols = 1;
+                spriteSheetRows = 14;
+                // creating a new spritesheet
+                animation = new Animation(14);
+                animation.setDelay(95);
 
-            // try to find spritesheet if it was created once
-            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\laserbeam.tga");
+                // because of scaling image by 2x
+                width *= scale;
+                height *= scale;
+                cwidth *= scale;
+                cheight *= scale;
+            } else {
+                this.player = p;
+                width = 810;
+                height = 45;
+                cwidth = 810;
+                cheight = 20;
+                scale = 4;
+                facingRight = true;
 
-            // creating a new spritesheet
-            if (spritesheet == null){
-                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\laserbeam.tga");
-                Sprite[] sprites = new Sprite[spriteSheetRows];
-                for (int j = 0; j < spriteSheetRows; j++) {
-                    Sprite sprite = new Sprite(new float[]
-                            {
-                                    0f, (float)j/spriteSheetRows,
+                spriteSheetCols = 1;
+                spriteSheetRows = 14;
 
-                                    0f, (1.0f+j) / spriteSheetRows,
+                // try to find spritesheet if it was created once
+                spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\laserbeam.tga");
 
-                                    1f, (1.0f+j) / spriteSheetRows,
+                // creating a new spritesheet
+                if (spritesheet == null){
+                    spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\laserbeam.tga");
+                    Sprite[] sprites = new Sprite[spriteSheetRows];
+                    for (int j = 0; j < spriteSheetRows; j++) {
+                        Sprite sprite = new Sprite(new float[]
+                                {
+                                        0f, (float)j/spriteSheetRows,
 
-                                    1f, (float)j/spriteSheetRows
-                            }
-                                    );
-                    sprites[j] = sprite;
+                                        0f, (1.0f+j) / spriteSheetRows,
 
+                                        1f, (1.0f+j) / spriteSheetRows,
+
+                                        1f, (float)j/spriteSheetRows
+                                }
+                        );
+                        sprites[j] = sprite;
+
+                    }
+                    spritesheet.addSprites(sprites);
                 }
-                spritesheet.addSprites(sprites);
-            }
-            vboVertices = ModelManager.getModel(width,height);
-            if (vboVertices == -1){
-                vboVertices = ModelManager.createModel(width,height);
-            }
+                vboVertices = ModelManager.getModel(width,height);
+                if (vboVertices == -1){
+                    vboVertices = ModelManager.createModel(width,height);
+                }
 
-            animation = new Animation();
-            animation.setFrames(spritesheet.getSprites(0));
-            animation.setDelay(95);
+                animation = new Animation();
+                animation.setFrames(spritesheet.getSprites(0));
+                animation.setDelay(95);
 
-            shader = ShaderManager.getShader("shaders\\rotation");
-            if (shader == null){
-                shader = ShaderManager.createShader("shaders\\rotation");
+                shader = ShaderManager.getShader("shaders\\rotation");
+                if (shader == null){
+                    shader = ShaderManager.createShader("shaders\\rotation");
+                }
+                // because of scaling image by 2x
+                width *= scale;
+                height *= scale;
+                cwidth *= scale;
+                cheight *= scale;
             }
-            // because of scaling image by 2x
-            width *= scale;
-            height *= scale;
-            cwidth *= scale;
-            cheight *= scale;
         }
         public void setFacingRight(boolean b){
             facingRight = b;
@@ -502,56 +596,85 @@ public class Golem extends Enemy {
             animation.update();
             setMapPosition();
             int playerrIndex = theClosestPlayerIndex();
-
-            float y = originalPos.y- player[playerrIndex].getY();
-            float x = originalPos.x- player[playerrIndex].getX();
-            float angle = (float)Math.atan(y/x);
-            if(!facingRight){
-                angle+=Math.PI;
-            }
-            boolean reverseDir = false;
-            if(Math.PI*2-Math.abs(this.angle - angle) < Math.abs(this.angle - angle)){
-                reverseDir = true;
-            }
-            if(!reverseDir){
-                this.angle += (angle - this.angle) * .07;
-            } else {
-                if(this.angle >= 0){
-                    this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * .035;
-                    if(this.angle >= Math.PI*3/2.){
-                        this.angle-=Math.PI*3/2.;
-                        this.angle=-Math.PI/2. - this.angle;
-                    }
+            if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
+                float y = originalPos.y- player[playerrIndex].getY();
+                float x = originalPos.x- player[playerrIndex].getX();
+                float angle = (float)Math.atan(y/x);
+                if(!facingRight){
+                    angle+=Math.PI;
+                }
+                boolean reverseDir = false;
+                if(Math.PI*2-Math.abs(this.angle - angle) < Math.abs(this.angle - angle)){
+                    reverseDir = true;
+                }
+                if(!reverseDir){
+                    this.angle += (angle - this.angle) * .07;
                 } else {
-                    this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * .035;
-                    if(this.angle <= -Math.PI/2.){
-                        this.angle+=Math.PI/2;
-                        this.angle=Math.PI*3/2.-this.angle;
+                    if(this.angle >= 0){
+                        this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * .035;
+                        if(this.angle >= Math.PI*3/2.){
+                            this.angle-=Math.PI*3/2.;
+                            this.angle=-Math.PI/2. - this.angle;
+                        }
+                    } else {
+                        this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * .035;
+                        if(this.angle <= -Math.PI/2.){
+                            this.angle+=Math.PI/2;
+                            this.angle=Math.PI*3/2.-this.angle;
+                        }
                     }
+
                 }
 
-            }
+                position.x = originalPos.x + (width/2-65) * (float)Math.cos(this.angle);
+                position.y = originalPos.y + (width/2-65) * (float)Math.sin(this.angle);
 
-            position.x = originalPos.x + (width/2-65) * (float)Math.cos(this.angle);
-            position.y = originalPos.y + (width/2-65) * (float)Math.sin(this.angle);
-
-            if(intersects(player[playerrIndex]) && canHit()){
-                player[playerrIndex].hit(1);
-            }
-            ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
-            for(ArrayList<RoomObject> objects : objectsArray) {
-                if (objects == null) continue;
-                for (RoomObject object : objects) {
-                    if (object instanceof DestroyableObject) {
-                        if (intersects(object) && !((DestroyableObject) object).isDestroyed()) {
-                            ((DestroyableObject) object).setHit(1);
+                if(intersects(player[playerrIndex]) && canHit()){
+                    player[playerrIndex].hit(1);
+                }
+                ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+                for(ArrayList<RoomObject> objects : objectsArray) {
+                    if (objects == null) continue;
+                    for (RoomObject object : objects) {
+                        if (object instanceof DestroyableObject) {
+                            if (intersects(object) && !((DestroyableObject) object).isDestroyed()) {
+                                ((DestroyableObject) object).setHit(1);
+                                Network.LaserBeamHit laserBeamHit = new Network.LaserBeamHit();
+                                laserBeamHit.idHit = object.id;
+                                Server server = MultiplayerManager.getInstance().server.getServer();
+                                server.sendToAllTCP(laserBeamHit);
+                            }
                         }
                     }
                 }
+                if(tileMap.isServerSide()){
+                    Network.LaserBeamSync LBSync = new Network.LaserBeamSync();
+                    LBSync.angle = this.angle;
+                    LBSync.id = id;
+                    LBSync.sprite = (byte)animation.getIndexOfFrame();
+                    LBSync.x = position.x;
+                    LBSync.y = position.y;
+                    LBSync.time = animation.getTime();
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    server.sendToAllUDP(LBSync);
+                }
+            } else {
+                Object[] objects = MultiplayerManager.getInstance().packetHolder.getWithoutClear(PacketHolder.LASERBEAMSYNC);
+                for(Object o : objects){
+                    handleSync((Network.LaserBeamSync) o);
+                }
             }
-
         }
-
+        public void handleSync(Network.LaserBeamSync sync){
+            if(sync.id == id){
+                angle = sync.angle;
+                animation.setFrame(sync.sprite);
+                animation.setTime(sync.time);
+                position.x = sync.x;
+                position.y = sync.y;
+                MultiplayerManager.getInstance().packetHolder.remove(PacketHolder.LASERBEAMSYNC,sync);
+            }
+        }
         @Override
         public void draw() {
             // blikání - po hitu - hráč

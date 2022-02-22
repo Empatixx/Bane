@@ -1,5 +1,6 @@
 package cz.Empatix.Gamestates;
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Database.Database;
 import cz.Empatix.Gamestates.Multiplayer.InGameMP;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
@@ -8,7 +9,9 @@ import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Gamestates.Singleplayer.ProgressRoom;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
-import cz.Empatix.Render.Screanshot;
+import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PacketHolder;
+import cz.Empatix.Render.Screenshot;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -26,9 +29,11 @@ public class GameStateManager {
     public static final int INGAMEMP = 4;
 
 
-    private Screanshot screenshot;
+    private Screenshot screenshot;
     private static Database db;
     private MultiplayerManager mpManager;
+
+    public static long timeUpdate;
 
     float mouseX,mouseY;
 
@@ -53,7 +58,7 @@ public class GameStateManager {
         gameStates.add(new ProgressRoomMP(this));
         gameStates.add(new InGameMP(this));
 
-        screenshot = new Screanshot();
+        screenshot = new Screenshot();
     }
     public static void loadDatabase(){
         db = new Database();
@@ -80,6 +85,31 @@ public class GameStateManager {
         if (currentState == PROGRESSROOMMP) {
 
             mpManager = new MultiplayerManager(host,this,ip);
+
+            Client client = mpManager.client.getClient();
+            Network.Join join = new Network.Join();
+            join.username = username;
+            join.host = mpManager.isHost();
+            client.sendTCP(join);
+
+            while(client.isConnected()){
+                Object[] objects = mpManager.packetHolder.get(PacketHolder.CANJOIN);
+                if(objects.length >= 1){
+                    Network.CanJoin canJoin = (Network.CanJoin) objects[0];
+                    if(canJoin.can) break;
+                    else{
+                        currentState = previousState;
+                        mpManager.close();
+                        return;
+                    }
+                }
+            }
+            // if packet never arrived and client was closed
+            if(mpManager.isNotConnected()){
+                currentState = previousState;
+                mpManager.close();
+                return;
+            }
             mpManager.setUsername(username);
 
             gameStates.get(currentState).init();
@@ -91,6 +121,7 @@ public class GameStateManager {
         }
     }
     public void update() {
+        timeUpdate = System.currentTimeMillis();
         gameStates.get(currentState).update();
     }
 

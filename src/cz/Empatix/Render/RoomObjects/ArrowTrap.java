@@ -1,17 +1,19 @@
 package cz.Empatix.Render.RoomObjects;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ArrowTrap extends RoomObject {
@@ -219,50 +221,75 @@ public class ArrowTrap extends RoomObject {
                 arrows.remove(arrow);
                 i--;
             }
-            for(int j = 0;j<player.length;j++){
-                if(player[j] != null){
-                    if(arrow.intersects(player[j]) && !player[j].isFlinching() && !player[j].isDead() && !arrow.isHit()){
-                        player[j].hit(1);
-                        arrow.setHit();
+            if(!MultiplayerManager.multiplayer || tileMap.isServerSide()) {
+                for (int j = 0; j < player.length; j++) {
+                    if (player[j] != null) {
+                        if (arrow.intersects(player[j]) && !player[j].isFlinching() && !player[j].isDead() && !arrow.isHit()) {
+                            player[j].hit(1);
+                            arrow.setHit();
+                        }
                     }
                 }
-            }
-            ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
-            for(ArrayList<RoomObject> objects : objectsArray) {
-                if (objects == null) continue;
-                for(RoomObject roomObject : objects) {
-                    if (roomObject.collision && roomObject != this && !arrow.isHit()) {
-                        if (roomObject.intersects(arrow)) {
-                            arrow.setHit();
-                            if (roomObject instanceof DestroyableObject) {
-                                if (!((DestroyableObject) roomObject).isDestroyed()) {
-                                    ((DestroyableObject) roomObject).setHit(1);
+                ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+                for(ArrayList<RoomObject> objects : objectsArray) {
+                    if (objects == null) continue;
+                    for(RoomObject roomObject : objects) {
+                        if (roomObject.collision && roomObject != this && !arrow.isHit()) {
+                            if (roomObject.intersects(arrow)) {
+                                arrow.setHit();
+                                if (roomObject instanceof DestroyableObject) {
+                                    if (!((DestroyableObject) roomObject).isDestroyed()) {
+                                        ((DestroyableObject) roomObject).setHit(1);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-           }
+            }
+
         }
-        if(System.currentTimeMillis() - InGame.deltaPauseTime() - arrowShootCooldown > 4000 && animation.getIndexOfFrame() == 0){
+        if(System.currentTimeMillis() - InGame.deltaPauseTime() - arrowShootCooldown > 4000 && animation.getIndexOfFrame() == 0 && (!MultiplayerManager.multiplayer || tileMap.isServerSide())){
+            Arrow arrow;
             if(type == TOP){
-                Arrow arrow = new Arrow(tileMap,false);
+                arrow = new Arrow(tileMap,false);
                 arrow.setPosition(position.x + 3,position.y + 10);
                 arrow.setSpeed(0,15);
                 arrows.add(arrow);
             } else if(type == RIGHT){
-                Arrow arrow = new Arrow(tileMap,true);
+                arrow = new Arrow(tileMap,true);
                 arrow.setFacingRight(false);
                 arrow.setPosition(position.x - 2,position.y);
                 arrow.setSpeed(-15,0);
                 arrows.add(arrow);
-            } else if(type == LEFT){
-                Arrow arrow = new Arrow(tileMap,true);
+            } else { // LEFT
+                arrow = new Arrow(tileMap,true);
                 arrow.setPosition(position.x + 2,position.y);
                 arrow.setSpeed(15,0);
                 arrows.add(arrow);
             }
+            if(tileMap.isServerSide()){
+                Network.TrapArrowAdd arrowCreate = new Network.TrapArrowAdd();
+                arrowCreate.idTrap = id;
+                arrowCreate.id = arrow.id;
+                arrowCreate.x = position.x;
+                arrowCreate.y = position.y;
+                arrowCreate.facingRight = arrow.isFacingRight();
+                arrowCreate.horizontal = arrow.horizontal;
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(arrowCreate);
+            }
+
             arrowShootCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+        }
+        if(tileMap.isServerSide()){
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            Network.RoomObjectAnimationSync roomObjectAnimationSync = new Network.RoomObjectAnimationSync();
+            roomObjectAnimationSync.id = id;
+            roomObjectAnimationSync.sprite = (byte)animation.getIndexOfFrame();
+            roomObjectAnimationSync.time = animation.getTime();
+            roomObjectAnimationSync.cooldown = arrowShootCooldown;
+            server.sendToAllUDP(roomObjectAnimationSync);
         }
     }
 
@@ -284,7 +311,32 @@ public class ArrowTrap extends RoomObject {
     public void keyPress() {
 
     }
-    public static class Arrow extends MapObject implements Serializable {
+
+    public void handleTrapArrowAddPacket(Network.TrapArrowAdd packet) {
+        Arrow arrow = new Arrow(tileMap,packet.horizontal);
+        arrow.setPosition(packet.x, packet.y);
+        arrow.id = packet.id;
+        arrow.setFacingRight(packet.facingRight);
+        arrows.add(arrow);
+    }
+
+    public void handleTrapArrowMovePacket(Network.TrapArrowMove packet) {
+        for(Arrow a : arrows){
+            if(packet.id == a.id){
+                a.setPosition(packet.x, packet.y);
+            }
+        }
+    }
+
+    public void handleTrapArrowHitPacket(Network.TrapArrowHit packet) {
+        for(Arrow a : arrows){
+            if(packet.id == a.id){
+                a.setHit();
+            }
+        }
+    }
+
+    public static class Arrow extends MapObject{
         // SPRITE VARS
         private final static int verticalSprites = 0;
         private final static int verticalHitSprites = 1;
@@ -294,8 +346,8 @@ public class ArrowTrap extends RoomObject {
         private boolean hit;
         private boolean remove;
 
-        private long collisionBypass;
-        private boolean horizontal;
+        private final long collisionBypass;
+        private final boolean horizontal;
 
         public Arrow(TileMap tm, boolean horizontal) {
             super(tm);
@@ -619,25 +671,40 @@ public class ArrowTrap extends RoomObject {
             animation.setDelay(90);
             speed.x = 0;
             speed.y = 0;
+            if(tileMap.isServerSide()){
+                Network.TrapArrowHit arrowHit = new Network.TrapArrowHit();
+                arrowHit.id = id;
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(arrowHit);
+            }
         }
 
         public boolean shouldRemove() { return remove; }
 
         public void update() {
             setMapPosition();
-            if(System.currentTimeMillis() - collisionBypass - InGame.deltaPauseTime() < 200){
-                temp.x = position.x + speed.x;
-                temp.y = position.y + speed.y;
+            if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
+                if(System.currentTimeMillis() - collisionBypass - InGame.deltaPauseTime() < 200){
+                    temp.x = position.x + speed.x;
+                    temp.y = position.y + speed.y;
+                    setPosition(temp.x, temp.y);
+                } else {
+                    checkTileMapCollision();
+                }
                 setPosition(temp.x, temp.y);
-            } else {
-                checkTileMapCollision();
-            }
-            setPosition(temp.x, temp.y);
 
-            if(speed.y == 0 && speed.x == 0 && !hit) {
-                setHit();
+                if(speed.y == 0 && speed.x == 0 && !hit) {
+                    setHit();
+                }
+                if(tileMap.isServerSide()){
+                    Network.TrapArrowMove arrowMove = new Network.TrapArrowMove();
+                    arrowMove.id = id;
+                    arrowMove.x = position.x;
+                    arrowMove.y = position.y;
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    server.sendToAllUDP(arrowMove);
+                }
             }
-
             animation.update();
             if(hit) {
                 if (animation.hasPlayedOnce()){
@@ -654,6 +721,7 @@ public class ArrowTrap extends RoomObject {
         public void setFacingRight(boolean facingRight){
             this.facingRight = facingRight;
         }
+        public boolean isFacingRight(){return facingRight;}
     }
     public void setType(int type){
         this.type = type;
@@ -665,5 +733,11 @@ public class ArrowTrap extends RoomObject {
 
     public int getType() {
         return type;
+    }
+    @Override
+    public void animationSync(Network.RoomObjectAnimationSync packet) {
+        animation.setTime(packet.time);
+        animation.setFrame(packet.sprite);
+        arrowShootCooldown = packet.cooldown;
     }
 }

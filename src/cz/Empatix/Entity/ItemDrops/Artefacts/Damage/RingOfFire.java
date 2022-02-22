@@ -272,7 +272,7 @@ public class RingOfFire extends Artefact {
                 Network.ArtefactAddBullet addBullet = new Network.ArtefactAddBullet();
                 Server server = MultiplayerManager.getInstance().server.getServer();
                 ArtefactManagerMP artefactManager = ArtefactManagerMP.getInstance();
-                addBullet.slot = artefactManager.getArtefactSlot(this);
+                addBullet.slot = (byte)artefactManager.getArtefactSlot(this);
                 addBullet.px = p.getX();
                 addBullet.py = p.getY();
                 for (int i = 1; i <= 50; ) {
@@ -295,6 +295,7 @@ public class RingOfFire extends Artefact {
     }
     @Override
     public void activateClientSide() {
+        super.activateClientSide();
         charge = 0;
     }
     @Override

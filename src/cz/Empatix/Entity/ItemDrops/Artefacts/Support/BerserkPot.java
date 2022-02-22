@@ -293,6 +293,7 @@ public class BerserkPot extends Artefact {
     }
     @Override
     public void activateClientSide() {
+        super.activateClientSide();
         charge = 0;
         removedSpeed = false;
         // refills player armor to full

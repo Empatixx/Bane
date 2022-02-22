@@ -83,4 +83,9 @@ public class Animation{
         return currentFrame;
     }
     public boolean isPlayingLastFrame(){return currentFrame == frames.length-1;}
+
+    public long getTime() {
+        return startTime;
+    }
+    public void setTime(long time){startTime = time;}
 }

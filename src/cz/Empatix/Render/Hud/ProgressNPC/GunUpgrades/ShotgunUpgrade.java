@@ -18,6 +18,7 @@ public class ShotgunUpgrade extends UpgradeBar {
         info.name = "Shotgun";
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("shotgun","upgrades");
+        this.numUpgrades = numUpgrades;
 
         UpgradeSideBar bar = new UpgradeSideBar(sideBars.size(),"shotgun");
         String[] text = new String[]{"Increase maximum capacity of ammo by 6"};
@@ -83,6 +84,8 @@ public class ShotgunUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("shotgun","upgrades");
+        this.numUpgrades = numUpgrades;
+
         if(numUpgrades == 1){
             info.maxAmmo += 6;
         }

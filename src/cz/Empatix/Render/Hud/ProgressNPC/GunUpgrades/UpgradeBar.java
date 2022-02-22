@@ -1,8 +1,11 @@
 package cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades;
 
+import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -58,6 +61,8 @@ public abstract class UpgradeBar {
     TextRender[] textRender;
 
     WeaponInfo info;
+    int numUpgrades;
+
 
     public UpgradeBar(String filepath, float weaponscale, int row){
         Vector3f pos = new Vector3f(680,240+row*120,0);
@@ -185,7 +190,10 @@ public abstract class UpgradeBar {
             if(!sideBar.isBought()){
                 sideBar.mouseClick(x,y, p);
                 // if player bought upgrade, update stats
-                if(sideBar.isBought()) updateStats();
+                if(sideBar.isBought()){
+                    updateStats();
+                    sendNumUpgradesChangePacket(); // sends packet if player is in mp
+                }
                 break;
             }
         }
@@ -236,5 +244,20 @@ public abstract class UpgradeBar {
         }
 
         return c;
+    }
+
+    public int getNumUpgrades() {
+        return numUpgrades;
+    }
+    public void sendNumUpgradesChangePacket(){
+        if(MultiplayerManager.multiplayer){
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+            Network.NumUpgradesUpdate update = new Network.NumUpgradesUpdate();
+            update.username = mpManager.getUsername();
+            update.gunName = info.name;
+            update.numUpgrades = (byte)getNumUpgrades();
+            Client client = mpManager.client.getClient();
+            client.sendTCP(update);
+        }
     }
 }

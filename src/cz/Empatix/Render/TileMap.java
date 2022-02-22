@@ -136,7 +136,6 @@ public class TileMap {
 		}
 		player = new Player[1];
 		currentRoom = new Room[1];
-		sideRooms = new Room[4];
 	}
 	public TileMap(int tileSize) {
 		this.tileSize = tileSize;
@@ -328,7 +327,7 @@ public class TileMap {
 		if(serverSide){
 			Server server = MultiplayerManager.getInstance().server.getServer();
 			Network.MapLoaded mapLoaded = new Network.MapLoaded();
-			mapLoaded.totalRooms = roomArrayList.length;
+			mapLoaded.totalRooms = (byte)roomArrayList.length;
 			server.sendToAllTCP(mapLoaded);
 		}
 
@@ -483,9 +482,15 @@ public class TileMap {
 
 			if (x > xMin && x < xMax) {
 				if (y > yMin && y < yMax) {
-
+					// enter shop/loot room without any limits by 1 tilesize as classic/boss for better workings
+					if (!room.hasEntered() && (room.getType() == Room.Loot ||room.getType() == Room.Shop)) {
+						if(!MultiplayerManager.multiplayer){
+							// event trigger on entering a new room
+							room.entered(this);
+							room.showRoomOnMinimap();
+						}
+					}
 					// CORNERS OF MAP ( ROOM ) + tween to make it more sync (plus max = min; min = max) bcs of x / y of tilemap is negative
-
 					xmin += (Camera.getWIDTH() - xMax - xmin) * tween;
 					xmax += (-xMin - xmax) * tween;
 
@@ -542,9 +547,8 @@ public class TileMap {
 	 * Method for multiplayer, checking if players entered some new rooms, only works in multiplayer!
 	 */
 	public void updateCurrentRoom() {
-		for (Room room : roomArrayList) {
-
-			for (int k = 0;k<player.length;k++) {
+		for (int k = 0;k<player.length;k++) {
+			for (Room room : roomArrayList) {
 				Player player = this.player[k];
 				if (player != null) {
 					int x = (int)player.getX();
@@ -568,11 +572,24 @@ public class TileMap {
 
 							if (!room.hasEntered() && y > yMin && y < yMax && x > xMin && x < xMax && !player.isDead()) {
 								// event trigger on entering a new room
-								room.entered(this, player);
+								room.enteredMP(this);
+								int rType = room.getType();
+								// preventing players to be stuck in PathWalla
+								if(rType == Room.Classic || rType == Room.Boss){
+									for(RoomObject obj : room.getMapObjects()){
+										for(Player otherp : this.player){
+											if(otherp == player) continue;
+											if(otherp == null) continue;
+											if(obj.intersects(otherp) && obj instanceof PathWall){
+												otherp.setPosition(player.getX(),player.getY());
+											}
+										}
+									}
+								}
 							}
 							boolean duplicate = false;
 							for(int c = 0;c<currentRoom.length;c++){
-								if(c == k) continue;
+								if(k == c) continue;
 								if (currentRoom[c] == room) {
 									duplicate = true;
 									break;
@@ -588,7 +605,7 @@ public class TileMap {
 												Room sideRoom = getRoom(roomMap[i+1][j]);
 												for(int c = 0;c<currentRoom.length;c++){
 													if(c == k) continue;
-													if (sideRooms[c*4] == sideRoom || sideRoom == currentRoom[k]) {
+													if (sideRooms[c*4] == sideRoom || sideRoom == currentRoom[c]) {
 														duplicate = true;
 														break;
 													}
@@ -605,7 +622,7 @@ public class TileMap {
 												Room sideRoom = getRoom(roomMap[i-1][j]);
 												for(int c = 0;c<currentRoom.length;c++){
 													if(c == k) continue;
-													if (sideRooms[c*4+1] == sideRoom || sideRoom == currentRoom[k]) {
+													if (sideRooms[c*4+1] == sideRoom || sideRoom == currentRoom[c]) {
 														duplicate = true;
 														break;
 													}
@@ -622,7 +639,7 @@ public class TileMap {
 												sideRoom = getRoom(roomMap[i][j+1]);
 												for(int c = 0;c<currentRoom.length;c++){
 													if(c == k) continue;
-													if (sideRooms[c*4+2] == sideRoom || sideRoom == currentRoom[k]) {
+													if (sideRooms[c*4+2] == sideRoom || sideRoom == currentRoom[c]) {
 														duplicate = true;
 														break;
 													}
@@ -638,7 +655,7 @@ public class TileMap {
 												sideRoom = getRoom(roomMap[i][j-1]);
 												for(int c = 0;c<currentRoom.length;c++){
 													if(c == k) continue;
-													if (sideRooms[c*4+3] == sideRoom || sideRoom == currentRoom[k]) {
+													if (sideRooms[c*4+3] == sideRoom || sideRoom == currentRoom[c]) {
 														duplicate = true;
 														break;
 													}
@@ -658,6 +675,7 @@ public class TileMap {
 								currentRoom[k] = null;
 								for(int s = 0;s<4;s++) sideRooms[k*4+s] = null;
 							}
+							break;
 						}
 					}
 				}
@@ -698,25 +716,127 @@ public class TileMap {
 					}
 				}
 			}
-			if(!serverSide && MultiplayerManager.multiplayer){
-				Object[] movePackets = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.MOVEROOMOBJECT);
-				for(Object move : movePackets){
-					Network.MoveRoomObject moveRoomObject = (Network.MoveRoomObject) move;
-					handleRoomMovePacket(moveRoomObject);
-				}
-				Object[] packets = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.OPENCHEST);
-				for(Object o : packets){
-					Network.OpenChest openChest = (Network.OpenChest) o;
-					for (RoomObject object : objects) {
-						if (object.getId() == openChest.id) {
-							((Chest) object).open();
-						}
+		}
+		if(!serverSide && MultiplayerManager.multiplayer){
+			//
+			Object[] movePackets = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.MOVEROOMOBJECT);
+			for(Object move : movePackets){
+				Network.MoveRoomObject moveRoomObject = (Network.MoveRoomObject) move;
+				handleRoomMovePacket(moveRoomObject);
+			}
+			// sync room object animations with server logic
+			Object[] syncAnimPackets = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.ROANIMSYNC);
+			for(Object o : syncAnimPackets){
+				Network.RoomObjectAnimationSync packet = (Network.RoomObjectAnimationSync) o;
+				handleRoAnimSynchronization(packet);
+			}
+
+			// arrow trap packets
+			Object[] createTrapArrows = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.TRAPARROWADD);
+			for(Object o : createTrapArrows){
+				Network.TrapArrowAdd packet = (Network.TrapArrowAdd) o;
+				handleTrapArrowPacket(packet);
+			}
+			Object[] moveTrapArrows = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.TRAPARROWMOVE);
+			for(Object o : moveTrapArrows){
+				Network.TrapArrowMove packet = (Network.TrapArrowMove) o;
+				handleTrapArrowPacket(packet);
+			}
+			Object[] hitTrapArrows = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.TRAPARROWHIT);
+			for(Object o : hitTrapArrows){
+				Network.TrapArrowHit packet = (Network.TrapArrowHit) o;
+				handleTrapArrowPacket(packet);
+			}
+
+			// opening chest packet
+			Object[] packets = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.OPENCHEST);
+			for(Object o : packets){
+				Network.OpenChest openChest = (Network.OpenChest) o;
+				ArrayList<RoomObject> objects = getRoom(openChest.idRoom).getMapObjects();
+				for (RoomObject object : objects) {
+					if (object.getId() == openChest.id) {
+						((Chest) object).open();
 					}
 				}
 			}
 		}
 
 	}
+	// add
+	private void handleTrapArrowPacket(Network.TrapArrowAdd packet) {
+		ArrayList<RoomObject>[] objects = getRoomMapObjects();
+		for(ArrayList<RoomObject> roomObjects : objects){
+			for(RoomObject roomObject : roomObjects){
+				if(roomObject.getId() == packet.idTrap){
+					((ArrowTrap)roomObject).handleTrapArrowAddPacket(packet);
+					return;
+				}
+			}
+		}
+		for(Room sideRoom : sideRooms) {
+			if (sideRoom == null) continue;
+			ArrayList<RoomObject> roomObjects = sideRoom.getMapObjects();
+			for (RoomObject roomObject : roomObjects) {
+				if (roomObject.getId() == packet.idTrap) {
+					((ArrowTrap)roomObject).handleTrapArrowAddPacket(packet);
+					return;
+				}
+			}
+		}
+	}
+	// move
+	private void handleTrapArrowPacket(Network.TrapArrowMove packet) {
+		ArrayList<RoomObject>[] objects = getRoomMapObjects();
+		for(ArrayList<RoomObject> roomObjects : objects){
+			for(RoomObject roomObject : roomObjects){
+				if(roomObject instanceof ArrowTrap){
+					((ArrowTrap)roomObject).handleTrapArrowMovePacket(packet);
+				}
+			}
+		}
+		for(Room sideRoom : sideRooms) {
+			if (sideRoom == null) continue;
+			ArrayList<RoomObject> roomObjects = sideRoom.getMapObjects();
+			for (RoomObject roomObject : roomObjects) {
+				if(roomObject instanceof ArrowTrap){
+					((ArrowTrap)roomObject).handleTrapArrowMovePacket(packet);
+				}
+			}
+		}
+	}
+	// hit
+	private void handleTrapArrowPacket(Network.TrapArrowHit packet) {
+		for(Room room : roomArrayList){
+			ArrayList<RoomObject> roomObjects = room.getMapObjects();
+			for(RoomObject roomObject : roomObjects){
+				if(roomObject instanceof ArrowTrap){
+					((ArrowTrap)roomObject).handleTrapArrowHitPacket(packet);
+				}
+			}
+		}
+	}
+	private void handleRoAnimSynchronization(Network.RoomObjectAnimationSync packet) {
+		ArrayList<RoomObject>[] objects = getRoomMapObjects();
+		for(ArrayList<RoomObject> roomObjects : objects){
+			for(RoomObject roomObject : roomObjects){
+				if(roomObject.getId() == packet.id){
+					roomObject.animationSync(packet);
+					return;
+				}
+			}
+		}
+		for(Room sideRoom : sideRooms) {
+			if (sideRoom == null) continue;
+			ArrayList<RoomObject> roomObjects = sideRoom.getMapObjects();
+			for (RoomObject roomObject : roomObjects) {
+				if (roomObject.getId() == packet.id) {
+					roomObject.animationSync(packet);
+					return;
+				}
+			}
+		}
+	}
+
 	public ArrayList<RoomObject>[] getRoomMapObjects(){
 		@SuppressWarnings("unchecked")
 		ArrayList<RoomObject>[] arrayLists = new ArrayList[currentRoom.length];
@@ -729,6 +849,8 @@ public class TileMap {
 	private void generateRooms(){
 		// id generator
 		idGen = 0;
+		Arrays.fill(currentRoom, null);
+		Arrays.fill(sideRooms, null);
 
 		int maxRooms = 9;
 		int currentRooms = 0;
@@ -761,7 +883,7 @@ public class TileMap {
 				int y = roomY/2;
 
 				Room room = new Room(Room.Starter,id,x,y);
-				Arrays.fill(currentRoom,room);
+				currentRoom[0] = room;
 				MMRoom mmRoom = new MMRoom(room.getType(),room.getX()-10,room.getY()-10);
 				room.setMinimapRoom(mmRoom);
 				miniMap.addRoom(mmRoom,currentRooms);
@@ -773,10 +895,10 @@ public class TileMap {
 					Network.TransferRoom transferRoom = new Network.TransferRoom();
 					transferRoom.type = Room.Starter;
 					transferRoom.mapFilepath = room.getMapFilepath();
-					transferRoom.id = id;
-					transferRoom.x = x;
-					transferRoom.y = y;
-					transferRoom.index = currentRooms;
+					transferRoom.id = (byte)id;
+					transferRoom.x = (byte)x;
+					transferRoom.y = (byte)y;
+					transferRoom.index = (byte)currentRooms;
 
 					Server server = MultiplayerManager.getInstance().server.getServer();
 					server.sendToAllTCP(transferRoom);
@@ -915,13 +1037,13 @@ public class TileMap {
 						// multiplayer support - sending new rooms
 						if(mpManager != null){
 							Network.TransferRoom transferRoom = new Network.TransferRoom();
-							transferRoom.type = type;
+							transferRoom.type = (byte)type;
 							transferRoom.mapFilepath = room.getMapFilepath();
-							transferRoom.id = id;
-							transferRoom.x = room.getX();
-							transferRoom.y = room.getY();
-							transferRoom.index = currentRooms+newRooms;
-							transferRoom.previousIndex = i;
+							transferRoom.id = (byte)id;
+							transferRoom.x = (byte)room.getX();
+							transferRoom.y = (byte)room.getY();
+							transferRoom.index = (byte)(currentRooms+newRooms);
+							transferRoom.previousIndex = (byte)i;
 							transferRoom.top = rndDirection == 1;
 							transferRoom.bottom = rndDirection == 0;
 							transferRoom.left = rndDirection == 3;
@@ -1314,8 +1436,8 @@ public class TileMap {
 		if(mpManager != null){
 			Network.TransferRoomMap transferRoomMap = new Network.TransferRoomMap();
 			transferRoomMap.roomMap = roomMap;
-			transferRoomMap.roomX = roomX;
-			transferRoomMap.roomY = roomY;
+			transferRoomMap.roomX = (byte)roomX;
+			transferRoomMap.roomY = (byte)roomY;
 
 			Server server = mpManager.server.getServer();
 			server.sendToAllTCP(transferRoomMap);
@@ -1656,7 +1778,7 @@ public class TileMap {
 		floor++;
 		Server server = MultiplayerManager.getInstance().server.getServer();
 		Network.NextFloor nextFloor = new Network.NextFloor();
-		nextFloor.floor = floor;
+		nextFloor.floor = (byte)floor;
 		server.sendToAllTCP(nextFloor);
 
 		ItemManagerMP itemManager = ItemManagerMP.getInstance();
@@ -1923,6 +2045,7 @@ public class TileMap {
 	// we won't clear enemies if there is some another alive player
 	public void clearEnemiesInPlayersRoom(PlayerMP playerMP) {
 		Room room = getRoomByCoords(playerMP.getX(),playerMP.getY());
+		if(room == null) return; // player died in room path
 		for(Player p : player){
 			if(p == null) continue;
 			if(p.isDead()) continue;
@@ -1942,5 +2065,9 @@ public class TileMap {
 			}
 		}
 		return true;
+	}
+
+	public void setFloor(int floor) {
+		this.floor = floor;
 	}
 }

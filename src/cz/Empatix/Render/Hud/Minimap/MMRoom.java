@@ -1,12 +1,11 @@
 package cz.Empatix.Render.Hud.Minimap;
 
-import java.io.Serializable;
-
-public class MMRoom implements Serializable {
+public class MMRoom {
     private int type;
     private int x;
     private int y;
     public boolean discovered;
+    private boolean entered;
 
     private boolean right;
     private boolean left;
@@ -28,6 +27,14 @@ public class MMRoom implements Serializable {
      */
     public void addSideRoom(MMRoom room,int index){
         sideRooms[index] = room;
+    }
+
+    public void entered() {
+        this.entered = true;
+    }
+
+    public boolean isEntered() {
+        return entered;
     }
 
     int getType() {

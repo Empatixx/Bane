@@ -6,6 +6,9 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PacketHolder;
+import cz.Empatix.Render.RoomObjects.DestroyableObject;
+import cz.Empatix.Render.RoomObjects.PathWall;
+import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 
@@ -99,12 +102,30 @@ public class EnemyManager {
                 Network.AddEnemy addEnemy = (Network.AddEnemy) o;
                 addEnemy(addEnemy);
             }
-            for(Object o : packetHolder.get(PacketHolder.REMOVEENEMY)){
+            Object[] killEnemyPackets = packetHolder.get(PacketHolder.REMOVEENEMY);
+            for(Object o : killEnemyPackets){
                 Network.RemoveEnemy removeEnemy = (Network.RemoveEnemy) o;
-                for(int i = 0;i<enemies.size();i++){
-                    Enemy e = enemies.get(i);
-                    if(e.getId() == removeEnemy.id){
+                for (Enemy e : enemies) {
+                    if (e.getId() == removeEnemy.id) {
                         e.hit(1000);
+                    }
+                }
+            }
+            Object[] enemyHeals = packetHolder.get(PacketHolder.ENEMYHEAL);
+            for(Object o : enemyHeals){
+                Network.EnemyHealthHeal heal = (Network.EnemyHealthHeal) o;
+                for (Enemy e : enemies) {
+                    if (e.getId() == heal.id) {
+                        e.heal(heal.amount);
+                    }
+                }
+            }
+            Object[] playerHitPackets = packetHolder.get(PacketHolder.ENEMYSYNC);
+            for(Enemy e : enemies) {
+                for(Object o : playerHitPackets){
+                    Network.EnemySync sync = (Network.EnemySync) o;
+                    if(e.id == sync.id) {
+                        e.handleSync(sync);
                     }
                 }
             }
@@ -147,13 +168,27 @@ public class EnemyManager {
                     }
                 }
             }
+            ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+            for(Object o : packetHolder.get(PacketHolder.LASERBEAMHIT)){
+                Network.LaserBeamHit lh = (Network.LaserBeamHit) o;
+                for(ArrayList<RoomObject> objects : objectsArray) {
+                    if (objects == null) continue;
+                    for (RoomObject object : objects) {
+                        if (object instanceof DestroyableObject) {
+                            if (object.id == lh.idHit) {
+                                ((DestroyableObject) object).setHit(1);
+                            }
+                        }
+                    }
+                }
+            }
         }
         // updating enemies
         for(int i = 0;i < enemies.size();i++){
             Enemy enemy = enemies.get(i);
             enemy.update();
             // checking if enemy is dead && should drop item
-            if(enemy.canDropItem()){
+            if(enemy.canDropItem() && !MultiplayerManager.multiplayer){
                 chanceDrop++;
                 enemy.setItemDropped();
                 int chance = Random.nextInt(5);
@@ -171,6 +206,7 @@ public class EnemyManager {
             }
         }
     }
+
 
     public void updateOnlyAnimations(){
         for(int i = 0;i < enemies.size();i++) {
@@ -227,11 +263,11 @@ public class EnemyManager {
         }
         int typeboss = Random.nextInt(randombosses);
         if(typeboss == 0){
-            KingSlime slime = new KingSlime(tileMap,player);
+            KingSlime slime = new KingSlime(tileMap,player[0]);
             slime.setPosition(x,y);
             enemies.add(slime);
         } else {
-            Golem golem = new Golem(tileMap,player);
+            Golem golem = new Golem(tileMap,player[0]);
             golem.setPosition(x,y);
             enemies.add(golem);
         }
@@ -343,6 +379,8 @@ public class EnemyManager {
         int br;
 
         boolean loop;
+        boolean ROCollision;
+        ArrayList<RoomObject> roomObjs = tileMap.getRoomByCoords(xMin+(xMax-xMin)/2,yMin+(yMax-yMin)/2).getMapObjects();
         do
         {
             x = getRandom(xMin,xMax);
@@ -361,7 +399,13 @@ public class EnemyManager {
             br = tileMap.getType(bottomTile, rightTile);
 
             loop = (tl == Tile.BLOCKED || tr == Tile.BLOCKED || bl == Tile.BLOCKED || br == Tile.BLOCKED);
-        }while(loop);
+            ROCollision = false;
+            for(RoomObject object : roomObjs){
+                if(object.intersects(instance)){
+                    if( object.collision || object instanceof PathWall) ROCollision  = true;
+                }
+            }
+        } while (loop || ROCollision);
 
         instance.setPosition(x,y);
         enemies.add(instance);
@@ -464,7 +508,7 @@ public class EnemyManager {
             }
         }
         instance.setPosition(addEnemy.x, addEnemy.y);
-        instance.id = addEnemy.id;
+        instance.setId(addEnemy.id);
         enemies.add(instance);
     }
     public Enemy handleHitEnemyPacket(int id, int damage) {

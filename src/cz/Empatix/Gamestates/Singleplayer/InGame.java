@@ -344,6 +344,10 @@ public class InGame extends GameState {
 
         console = new Console(gunsManager,player,itemManager,enemyManager);
 
+        itemManager.dropArtefact((int)player.getX(),(int)player.getY());
+        itemManager.dropArtefact((int)player.getX(),(int)player.getY());
+        itemManager.dropArtefact((int)player.getX(),(int)player.getY());
+
     }
 
     @Override

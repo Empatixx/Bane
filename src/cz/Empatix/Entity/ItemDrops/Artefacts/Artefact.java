@@ -29,6 +29,10 @@ public abstract class Artefact {
     protected Shader geometryShader;
     protected int vboVertices;
 
+    protected boolean obtainable; // if it can be dropped by chest
+    protected boolean oneUse;
+    protected boolean canShopItem;
+
     public TileMap tm;
     public Player[] p;
     // singleplayer
@@ -47,12 +51,16 @@ public abstract class Artefact {
             vboVertices = ModelManager.createModel(12,6);
         }
         dropped = false;
+        obtainable = true;
     }
     // multiplayer
     public Artefact(TileMap tm, Player[] p){
         this.tm = tm;
         this.p = p;
         dropped = false;
+        obtainable = true;
+        oneUse = false;
+        canShopItem = false;
     }
     protected abstract void draw();
     public abstract void charge();
@@ -61,7 +69,13 @@ public abstract class Artefact {
     // mp - serverside
     public abstract void activate(String username);
     // mp - clientside
-    public abstract void activateClientSide();
+    public void activateClientSide(){
+        if(oneUse){
+            ArtefactManager artefactManager = ArtefactManager.getInstance();
+            artefactManager.setCurrentArtefact(null); // reseting artefact
+            dropped = false;
+        }
+    }
     public abstract void update(boolean pause);
     public abstract void update(String username);
     public abstract void handleAddBulletPacket(Network.ArtefactAddBullet addBullet);
@@ -101,6 +115,18 @@ public abstract class Artefact {
             DamageIndicator.addDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
                     ,new Vector2f(-x/25f,-1f));
         }
+    }
+
+    public boolean isOneUse() {
+        return oneUse;
+    }
+
+    public boolean isObtainable() {
+        return obtainable;
+    }
+
+    public boolean canBeShopItem() {
+        return canShopItem;
     }
 }
 

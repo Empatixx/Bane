@@ -125,6 +125,7 @@ public class TransportableArmorPot extends Artefact {
     }
     @Override
     public void activateClientSide() {
+        super.activateClientSide();
         charge = 0;
     }
     @Override

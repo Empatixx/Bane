@@ -45,24 +45,24 @@ public class MultiplayerManager {
         this.username = username;
     }
 
+    public boolean isNotConnected(){
+        return !client.getClient().isConnected();
+    }
+
     public void close(){
         if(!multiplayer) return;
-
-        Network.Disconnect disconnect = new Network.Disconnect();
-        disconnect.username = getUsername();
-        client.getClient().sendTCP(disconnect);
-
-        multiplayer = false;
-
         if(isHost()) {
             server.close();
             server = null;
+        } else {
+            Network.Disconnect disconnect = new Network.Disconnect();
+            disconnect.username = getUsername();
+            client.getClient().sendTCP(disconnect);
         }
+        multiplayer = false;
         client.close();
         client = null;
         packetHolder = null;
-
-        ProgressRoomMP.lobbyCreation = false;
     }
 
 }

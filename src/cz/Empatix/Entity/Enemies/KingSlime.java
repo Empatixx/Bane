@@ -286,7 +286,7 @@ public class KingSlime extends Enemy {
                     moveEnemyProjectile.id = slimebullet.id;
                     moveEnemyProjectile.x = slimebullet.getX();
                     moveEnemyProjectile.y = slimebullet.getY();
-                    server.sendToAllTCP(moveEnemyProjectile);
+                    server.sendToAllUDP(moveEnemyProjectile);
                 }
                 for(Player p : player){
                     if(p != null){
@@ -478,6 +478,7 @@ public class KingSlime extends Enemy {
 
     }
     public void drawHud(){
+        if(isDead()) return;
         healthBar.draw();
     }
     @Override

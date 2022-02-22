@@ -55,20 +55,26 @@ public class ProgressRoomMP extends GameState {
 
     private ProgressNPC progressNPC;
 
-    private TextRender textRender;
+    private TextRender textRender[];
 
     private AlertManager alertManager;
 
     private MultiplayerManager mpManager;
 
-    public static boolean lobbyCreation;
+    private long connectionAlert;
+
+    private int ping;
+    private long pingTimer;
+
+    private long lastMoveTime;
 
     public ProgressRoomMP(GameStateManager gsm){
         this.gsm = gsm;
+        textRender = new TextRender[2];
+        for(int i = 0;i<textRender.length;i++){
+            textRender[i] = new TextRender();
+        }
 
-        textRender = new TextRender();
-
-        lobbyCreation = false;
     }
     public void transition(){
         fade.setReverse();
@@ -104,15 +110,6 @@ public class ProgressRoomMP extends GameState {
         player[0].setOrigin(true);
         playerReadies[0] = new PlayerReady(username);
 
-        if(!lobbyCreation){
-            Client client = mpManager.client.getClient();
-            Network.Join join = new Network.Join();
-            join.username = username;
-            join.host = mpManager.isHost();
-            client.sendTCP(join);
-        }
-        lobbyCreation = true;
-
         player[0].setCoins(GameStateManager.getDb().getValue("money","general"));
 
         // generate map + create objects which needs item manager & gun manager created
@@ -141,6 +138,20 @@ public class ProgressRoomMP extends GameState {
 
         DiscordRP.getInstance().update("Multiplayer - In-Game","Lobby "+mpManager.client.getTotalPlayers()+"/2");
 
+        Object[] joinPackets = mpManager.packetHolder.get(PacketHolder.JOINPLAYER);
+        int index = mpManager.client.getTotalPlayers();
+        for(Object object : joinPackets) {
+            Network.AddPlayer player = (Network.AddPlayer) object;
+            String packetUsername = player.username;
+            PlayerMP playerMP = new PlayerMP(tileMap, packetUsername);
+            playerMP.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
+            this.player[index] = playerMP;
+            playerReadies[index] = new PlayerReady(packetUsername);
+            index++;
+            DiscordRP.getInstance().update("Multiplayer - In-Game", "Lobby " + index + "/2");
+        }
+        mpManager.client.setNumPlayers(index);
+        pingTimer = System.currentTimeMillis();
     }
 
     @Override
@@ -208,8 +219,8 @@ public class ProgressRoomMP extends GameState {
         progressNPC.drawHud();
 
         coin.draw();
-        textRender.draw(""+ player[0].getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
-
+        textRender[0].draw(""+ player[0].getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
+        if(Game.displayCollisions) textRender[1].draw("Ping: "+ping+" ms",new Vector3f(200, 450,0),2,new Vector3f(1.0f,1.0f,1.0f));
         alertManager.draw();
 
         if(transition){
@@ -219,6 +230,49 @@ public class ProgressRoomMP extends GameState {
     }
     @Override
     protected void update() {
+        if(mpManager.isNotConnected()) {
+            if (System.currentTimeMillis() - connectionAlert > 5000) {
+                connectionAlert = System.currentTimeMillis();
+                AlertManager.add(AlertManager.WARNING, "No connection!");
+                MultiplayerManager.getInstance().client.tryReconnect();
+            }
+            for(Player p : player){
+                if(p != null){
+                    p.update();
+                }
+            }
+            // loc of mouse
+            mouseX = gsm.getMouseX();
+            mouseY = gsm.getMouseY();
+
+            // mouse location-moving direction of mouse of tilemap
+            tileMap.setPosition(
+                    tileMap.getX()-(mouseX-960)/30,
+                    tileMap.getY()-(mouseY- 540)/30);
+
+
+
+            // updating player
+            // updating tilemap by player position
+            tileMap.setPosition(
+                    1920 / 2f - player[0].getX(),
+                    1080 / 2f - player[0].getY()
+            );
+            progressNPC.update(mouseX,mouseY);
+            progressNPC.touching(player[0]);
+            Object[] AlertPackets = mpManager.packetHolder.get(PacketHolder.ALERT);
+            for(Object o : AlertPackets){
+                Network.Alert alert = (Network.Alert) o;
+                if(mpManager.getUsername().equalsIgnoreCase(alert.username)){
+                    AlertManager.add(alert.warning ? AlertManager.WARNING : AlertManager.INFORMATION,alert.text);
+                }
+            }
+            alertManager.update();
+
+            lightManager.update();
+            AudioManager.update();
+            return;
+        }
         // loc of mouse
         mouseX = gsm.getMouseX();
         mouseY = gsm.getMouseY();
@@ -264,41 +318,74 @@ public class ProgressRoomMP extends GameState {
         }
 
         tileMap.updateObjects();
-
+/*
+        Object[] objects = mpManager.packetHolder.getWithoutClear(PacketHolder.MOVEPLAYER);
+        for(PlayerMP p : player) {
+            if(p == null) continue;
+            Network.MovePlayer recent=null;
+            for (Object o : objects) {
+                Network.MovePlayer move = (Network.MovePlayer) o;
+                if (p.getUsername().equalsIgnoreCase(move.username)) {
+                    if (recent == null) recent = move;
+                    if (recent.time > move.time) recent = move;
+                }
+            }
+            if(recent != null){
+                //if(lastMoveTime > recent.time) continue;
+                lastMoveTime = recent.time;
+                p.setPosition(recent);
+                if(!p.isOrigin()){
+                    p.setUp(recent.up);
+                    p.setDown(recent.down);
+                    p.setRight(recent.right);
+                    p.setLeft(recent.left);
+                }
+                mpManager.packetHolder.remove(PacketHolder.MOVEPLAYER,recent);
+            } else {
+                p.updateLostPacket();
+            }
+        }*/
+        Object[] objects = mpManager.packetHolder.get(PacketHolder.MOVEPLAYER);
+        for(PlayerMP p : player) {
+            int totalMoves = 0;
+            if(p == null) continue;
+            Network.MovePlayer recent=null;
+            for (Object o : objects) {
+                Network.MovePlayer move = (Network.MovePlayer) o;
+                if (p.getUsername().equalsIgnoreCase(move.username)) {
+                    if (recent == null) recent = move;
+                    if (recent.time < move.time) recent = move;
+                    totalMoves++;
+                }
+            }
+            if(recent != null){
+                //if(lastMoveTime > recent.time) continue;
+                lastMoveTime = recent.time;
+                p.setTotalMoves(totalMoves);
+                p.setPosition(recent);
+                if(!p.isOrigin()){
+                    p.setUp(recent.up);
+                    p.setDown(recent.down);
+                    p.setRight(recent.right);
+                    p.setLeft(recent.left);
+                }
+                //mpManager.packetHolder.remove(PacketHolder.MOVEPLAYER,recent);
+            } else {
+                //p.updateLostPacket();
+            }
+        }
         for(Player p : player){
             if(p != null)p.update();
         }
-        // movement of players
-        Object[] objects = mpManager.packetHolder.getWithoutClear(PacketHolder.MOVEPLAYER);
-        for(PlayerMP p : player){
-            if(p != null){
-                Network.MovePlayer recentPacket = null;
-                for(Object o : objects){
-                    Network.MovePlayer movePlayerPacket = (Network.MovePlayer) o;
-
-                    if (p.getUsername().equalsIgnoreCase(movePlayerPacket.username)) {
-                        recentPacket = movePlayerPacket;
-                        break;
-                    }
-                }
-                if(recentPacket != null){
-                    p.setPosition(recentPacket.x, recentPacket.y);
-                    if(!p.isOrigin()){
-                        p.setDown(recentPacket.down);
-                        p.setUp(recentPacket.up);
-                        p.setRight(recentPacket.right);
-                        p.setLeft(recentPacket.left);
-                    }
-                    mpManager.packetHolder.remove(PacketHolder.MOVEPLAYER,recentPacket);
-                } else {
-                    p.setPosition(p.getTempX(), p.getTempY());
-                }
-            }
-        }
-
         progressNPC.update(mouseX,mouseY);
         progressNPC.touching(player[0]);
-
+        Object[] AlertPackets = mpManager.packetHolder.get(PacketHolder.ALERT);
+        for(Object o : AlertPackets){
+            Network.Alert alert = (Network.Alert) o;
+            if(mpManager.getUsername().equalsIgnoreCase(alert.username)){
+                AlertManager.add(alert.warning ? AlertManager.WARNING : AlertManager.INFORMATION,alert.text);
+            }
+        }
         alertManager.update();
 
         lightManager.update();
@@ -306,6 +393,45 @@ public class ProgressRoomMP extends GameState {
         if(transition){
             fade.update(transition);
             if(fade.isTransitionDone()) transition = false;
+        }
+        Object[] joinPackets = mpManager.packetHolder.get(PacketHolder.JOINPLAYER);
+        int index = mpManager.client.getTotalPlayers();
+        for(Object object : joinPackets) {
+            Network.AddPlayer player = (Network.AddPlayer) object;
+            String packetUsername = player.username;
+            PlayerMP playerMP = new PlayerMP(tileMap, packetUsername);
+            this.player[index] = playerMP;
+            playerReadies[index] = new PlayerReady(packetUsername);
+            index++;
+            DiscordRP.getInstance().update("Multiplayer - In-Game", "Lobby " + index + "/2");
+        }
+        mpManager.client.setNumPlayers(index);
+
+        Object[] disconnectPackets = mpManager.packetHolder.get(PacketHolder.DISCONNECTPLAYER);
+        index = mpManager.client.getTotalPlayers();
+        for(Object object : disconnectPackets){
+            index--;
+            Network.Disconnect packet = (Network.Disconnect) object;
+            String packetUsername = packet.username;
+            String playerUsername = mpManager.getUsername();
+            player[index].remove();
+            player[index] = null;
+            playerReadies[index] = null;
+            if(!packetUsername.equalsIgnoreCase(playerUsername)){
+                AlertManager.add(AlertManager.WARNING,packetUsername+" has left the lobby!");
+            }
+            DiscordRP.getInstance().update("Multiplayer - In-Game","Lobby "+index+"/2");
+            for(PlayerReady pready : playerReadies){
+                if(pready != null) pready.setReady(false);
+            }
+        }
+        mpManager.client.setNumPlayers(index);
+
+        if(System.currentTimeMillis() - pingTimer > 1000){
+            pingTimer+=1000;
+            Client client = MultiplayerManager.getInstance().client.getClient();
+            client.sendUDP(new Network.Ping());
+            ping = client.getReturnTripTime();
         }
     }
     @Override

@@ -9,6 +9,7 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.GunsManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
@@ -45,7 +46,7 @@ public class Pistol extends Weapon {
     Pistol(TileMap tm, Player player, GunsManager gunsManager){
         super(tm,player,gunsManager);
         mindamage = 1;
-        maxdamage = 3;
+        maxdamage = Byte.MAX_VALUE;
         inaccuracy = 0.8f;
         maxAmmo = 120;
         maxMagazineAmmo = 7;
@@ -83,8 +84,8 @@ public class Pistol extends Weapon {
     }
     public Pistol(TileMap tm, Player player){
         super(tm,player);
-        mindamage = 111;
-        maxdamage = 311;
+        mindamage = 1;
+        maxdamage = Byte.MAX_VALUE;
         inaccuracy = 0.8f;
         maxAmmo = 120;
         maxMagazineAmmo = 7;
@@ -93,6 +94,34 @@ public class Pistol extends Weapon {
         currentMagazineAmmo = maxMagazineAmmo;
         type = 1;
         bullets = new ArrayList<>();
+    }
+
+    // resetting stats of gun of new owner of gun
+    @Override
+    public void restat(String username) {
+        mindamage = 1;
+        maxdamage = Byte.MAX_VALUE;
+        inaccuracy = 0.8f;
+        maxAmmo = 120;
+        maxMagazineAmmo = 7;
+        delayTime = 250;
+
+        GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
+        int numUpgrades = gunsManagerMP.getNumUpgrades(username, "Pistol");
+        if(numUpgrades >= 1){
+            maxMagazineAmmo+=2;
+        }
+        if(numUpgrades >= 2){
+            criticalHits = true;
+        }
+        if(numUpgrades >= 3){
+            mindamage++;
+        }
+        if(numUpgrades >= 4){
+            doubleShots = true;
+        }
+        if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
+        if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
     }
 
     @Override
@@ -226,6 +255,7 @@ public class Pistol extends Weapon {
                         bullet.setOwner(username);
 
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+
                         if(criticalHits){
                             if(Math.random() > 0.9){
                                 damage*=2;
@@ -359,21 +389,18 @@ public class Pistol extends Weapon {
     @Override
     public void handleHitBulletPacket(Network.HitBullet hitBullet) {
         for(Bullet b : bullets){
-            if(b.id == hitBullet.id){
+            if(b.id == hitBullet.id && !b.isHit()){
                 b.setHit(hitBullet.type);
                 if(hitBullet.type == Bullet.TypeHit.ENEMY){
                     EnemyManager em = EnemyManager.getInstance();
                     Enemy e = em.handleHitEnemyPacket(hitBullet.idHit,b.getDamage());
                     showDamageIndicator(b.getDamage(),b.isCritical(),e);
                 } else if (hitBullet.type == Bullet.TypeHit.ROOMOBJECT){
-                    ArrayList<RoomObject>[] objectsArray = tm.getRoomMapObjects();
-                    for(ArrayList<RoomObject> objects : objectsArray) {
-                        if (objects == null) continue;
-                        for(RoomObject obj : objects){
-                            if(obj.getId() == hitBullet.idHit) {
-                                if (obj instanceof DestroyableObject) {
-                                    ((DestroyableObject) obj).setHit(b.getDamage());
-                                }
+                    ArrayList<RoomObject> objects = tm.getRoomByCoords(b.getX(),b.getY()).getMapObjects();
+                    for(RoomObject obj : objects){
+                        if(obj.getId() == hitBullet.idHit) {
+                            if (obj instanceof DestroyableObject) {
+                                ((DestroyableObject) obj).setHit(b.getDamage());
                             }
                         }
                     }

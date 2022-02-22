@@ -39,9 +39,20 @@ public class PacketHolder {
     public final static int REMOVEENEMY = 28;
     public final static int ALLPLAYERDEAD = 29;
     public final static int PLAYERSSTATS = 30;
+    public final static int ROANIMSYNC = 31; // room object animation sync with server
+    public final static int TRAPARROWHIT = 32;
+    public final static int TRAPARROWMOVE = 33;
+    public final static int TRAPARROWADD = 34;
+    public static final int CANJOIN = 35;
+    public static final int DISCONNECTPLAYER = 36;
+    public static final int JOINPLAYER = 37;
+    public static final int ENEMYSYNC = 38;
+    public static final int LASERBEAMSYNC = 39;
+    public static final int LASERBEAMHIT = 40;
+    public static final int ENEMYHEAL = 41; // INCREASE IN HEALTH
 
     public PacketHolder(){
-        final int size = 31;
+        final int size = 42;
 
         packetArrays = new ArrayList<>(size);
         for(int i = 0;i<size;i++){

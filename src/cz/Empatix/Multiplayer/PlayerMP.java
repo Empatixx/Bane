@@ -3,6 +3,7 @@ package cz.Empatix.Multiplayer;
 import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Random;
@@ -39,7 +40,12 @@ public class PlayerMP extends Player {
     private Spritesheet ghostSpritesheet;
     private int vboGhostVertices;
 
+    private long lastTimeMove;
+    private Network.MovePlayer currentMove;
+    private Network.MovePlayer previousMove;
+
     private Room deathRoom;
+    private int totalMoves;
 
     public PlayerMP(TileMap tm, String username){
         super(tm);
@@ -47,7 +53,6 @@ public class PlayerMP extends Player {
         origin = false;
         mpManager = MultiplayerManager.getInstance();
         ghost = false;
-        //setHealth(200);
         if(!tm.isServerSide()){
             vboGhostVertices = ModelManager.getModel(32,32);
             if (vboGhostVertices == -1){
@@ -58,11 +63,11 @@ public class PlayerMP extends Player {
             final int[] numFrames = {
                     3
             };
-            ghostSpritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\p_ghost2.tga");
+            ghostSpritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\p_ghost.tga");
 
             // creating a new spritesheet
             if (ghostSpritesheet == null){
-                ghostSpritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\p_ghost2.tga");
+                ghostSpritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\p_ghost.tga");
                 for(int i = 0; i < spriteSheetRows; i++) {
 
                     Sprite[] images = new Sprite[numFrames[i]];
@@ -227,13 +232,18 @@ public class PlayerMP extends Player {
                 left=false;
                 flinching = false;
                 setDead();
-            } else if (health < 3 && !lowHealth && !tileMap.isServerSide()){
+            } else if (health < 3 && !lowHealth && !tileMap.isServerSide() && isOrigin()){
                 lowHealth = true;
                 sourcehealth.play(soundLowHealth);
             }
-            else if (health >= 3 && lowHealth && !tileMap.isServerSide()){
+            else if (health >= 3 && lowHealth && !tileMap.isServerSide() && isOrigin()){
                 lowHealth = false;
                 sourcehealth.stop();
+            }
+        } else {
+            // player was revived
+            if(health > 0){
+                reset(); // restat
             }
         }
 
@@ -278,11 +288,33 @@ public class PlayerMP extends Player {
             }
         }
         getMovementSpeed();
-        if(!ghost)checkRoomObjectsCollision();
+        if(!ghost) checkRoomObjectsCollision();
         else checkGhostRestrictions();
         checkTileMapCollision();
-        if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
-            setPosition(temp.x, temp.y);
+        if(tileMap.isServerSide())setPosition(temp.x, temp.y);
+        else if(currentMove != null){
+            float timeSinceLastInput = (System.currentTimeMillis() - mpManager.client.getClient().getReturnTripTime() - lastTimeMove)/1000f;
+            //System.out.println("SEC: "+timeSinceLastInput);
+            final double ns = 1 / 60.0;
+            float t = (float) (timeSinceLastInput/totalMoves / (ns));
+            /*System.out.println("=======");
+            System.out.println("position X: "+position.x+" position y: "+position.y);
+            System.out.println("T: "+t);*/
+            if(t < 0) t = 0;
+            Vector3f finalPos = new Vector3f();
+            if(previousMove != null){
+                finalPos.x = previousMove.x;
+                finalPos.y = previousMove.y;
+                finalPos.lerp(new Vector3f(currentMove.x,currentMove.y,0),t);
+            }
+            else {
+                finalPos.x = currentMove.x;
+                finalPos.y = currentMove.y;
+            }
+            //System.out.println("dif X: "+(finalPos.x-position.x)+" dif y: "+(finalPos.y-position.y));
+            setPosition(finalPos.x,finalPos.y);
+            //System.out.println("=======");
+
         }
         if(!tileMap.isServerSide()){
             if(!ghost){
@@ -343,9 +375,18 @@ public class PlayerMP extends Player {
             client.sendUDP(movePlayer);
         }
     }
+    public void updateLostPacket(){
+        getMovementSpeed();
+        if(!ghost) checkRoomObjectsCollision();
+        else checkGhostRestrictions();
+        checkTileMapCollision();
+        setPosition(temp.x, temp.y);
+    }
+
     public void fakeHit(Network.PlayerHit playerHit){
         lastDamage = playerHit.type;
-
+        flinching = true;
+        flinchingTimer = System.currentTimeMillis();
         if(lastDamage == DamageAbsorbedBy.ARMOR){
             hitVignette[1].updateFadeTime();
         } else {
@@ -382,7 +423,10 @@ public class PlayerMP extends Player {
             // random direction of drop
             int x = -100 + Random.nextInt(201);
             int y = -100 + Random.nextInt(201);
-            gunsManagerMP.dropPlayerWeapon(username,x,y);
+            gunsManagerMP.dropPlayerWeapon(username,x,y,0);
+            x = -100 + Random.nextInt(201);
+            y = -100 + Random.nextInt(201);
+            gunsManagerMP.dropPlayerWeapon(username,x,y,1);
             x = -100 + Random.nextInt(201);
             y = -100 + Random.nextInt(201);
             artefactManagerMP.setCurrentArtefact(null,x,y,username);
@@ -477,5 +521,33 @@ public class PlayerMP extends Player {
         rolling = false;
 
         ghost = false;
+        if(!tileMap.isServerSide()){
+            animation.setFrames(spritesheet.getSprites(IDLE));
+            animation.setDelay(100);
+            light.setIntensity(4f);
+        }
+    }
+
+    public void setPosition(Network.MovePlayer move)
+    {
+        RefreshToPosition(move, currentMove);
+    }
+
+    private void RefreshToPosition(Network.MovePlayer move, Network.MovePlayer prevData)
+    {
+        previousMove = prevData;
+        this.currentMove = move;
+        lastTimeMove = GameStateManager.timeUpdate;
+        //if(prevData != null) System.out.println("CHANGE X: "+(move.x-prevData.x));
+    }
+    private Vector3f lerp(Vector3f pos, Vector3f dest, float t){
+        Vector3f finalPos = new Vector3f();
+        finalPos.x=pos.x+(dest.x-pos.x)*t;
+        finalPos.y=pos.y+(dest.y-pos.y)*t;
+        return finalPos;
+    }
+
+    public void setTotalMoves(int totalMoves) {
+        this.totalMoves = totalMoves;
     }
 }

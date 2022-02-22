@@ -64,12 +64,27 @@ public class Network {
         kryo.register(ObjectInteract.class);
         kryo.register(AllPlayersDeath.class);
         kryo.register(PstatsUpdate.class);
+        kryo.register(RoomObjectAnimationSync.class);
+        kryo.register(TrapArrowAdd.class);
+        kryo.register(TrapArrowHit.class);
+        kryo.register(TrapArrowMove.class);
+        kryo.register(CanJoin.class);
+        kryo.register(EnemySync.class);
+        kryo.register(LaserBeamSync.class);
+        kryo.register(LaserBeamHit.class);
+        kryo.register(Ping.class);
+        kryo.register(NumUpgradesUpdate.class);
+        kryo.register(NumUpgrades.class);
+        kryo.register(EnemyHealthHeal.class);
 
     }
     // MAIN
     public static class Join {
         public String username;
         public boolean host;
+    }
+    public static class CanJoin {
+        public boolean can;
     }
     public static class AllPlayersDeath {
     }
@@ -97,18 +112,18 @@ public class Network {
     }
     public static class TransferRoomMap {
         public int[][] roomMap;
-        public int roomX,roomY;
+        public byte roomX,roomY;
     }
     public static class TransferRoom {
-        public int id, x, y;
+        public byte id, x, y;
         public String mapFilepath;
-        public int type;
-        public int index; // index in roomArrayList
-        public int previousIndex; // index of old mm room, that we will add new one
+        public byte type;
+        public byte index; // index in roomArrayList
+        public byte previousIndex; // index of old mm room, that we will add new one
         public boolean top, bottom, left, right;
     }
     public static class MapLoaded {
-        public int totalRooms;
+        public byte totalRooms;
     }
     public static class RequestForPlayers {
         public String exceptUsername; // except origin player
@@ -127,6 +142,8 @@ public class Network {
     public static class StopShooting {
         public String username;
     }
+    public static class Ping{
+    }
     public static class Reload {
         public String username;
     }
@@ -134,11 +151,11 @@ public class Network {
         public String username;
         public float x,y;
         public float px,py;
-        public int damage;
+        public byte damage;
         public boolean critical;
-        public int speed;
+        public byte speed;
         public float inaccuracy;
-        public int slot;
+        public byte slot;
         public int id;
     }
     public static class MoveBullet{
@@ -151,10 +168,10 @@ public class Network {
         public int idHit;
     }
     public static class DropItem{
-        public int type;
+        public byte type;
         public int id;
         public int x, y;
-        public int amount;
+        public byte amount;
     }
     public static class MoveDropItem{
         public float x,y;
@@ -178,29 +195,30 @@ public class Network {
     }
     public static class WeaponInfo {
         public String username;
-        public int currentAmmo;
-        public int currentMagazineAmmo;
+        public short currentAmmo;
+        public short currentMagazineAmmo;
     }
     public static class SwitchWeaponSlot{
         public String username;
-        public int slot;
+        public byte slot;
         public boolean sucessful;
     }
     public static class PlayerDropWeapon{
         public String username;
         public boolean sucessful;
         public int x, y;
+        public byte playerSlot;
     }
     public static class DropWeapon{
         public int x, y;
         public int id;
-        public int slot;
+        public byte slot;
     }
     public static class DropArtefact{
-        public int dx, dy;
+        public short dx, dy;
         public int x, y;
         public int id;
-        public int slot;
+        public byte slot;
         public String username;
     }
     public static class DropInteract {
@@ -222,7 +240,7 @@ public class Network {
         public int idRoom;
         public int x, y;
         public TypeRoomObject type;
-        public int objectType; // type as TOP/LEFT/RIGHT torch, or TOP/SIDE arrowtrap
+        public byte objectType; // type as TOP/LEFT/RIGHT torch, or TOP/SIDE arrowtrap
     }
     public static class MoveRoomObject{
         public int id;
@@ -253,24 +271,25 @@ public class Network {
     public static class ShopDropitem {
         public int id;
         public int idObject;
-        public int type;
-        public int price;
-        public int amount;
-        public int weaponSlot;
+        public byte type;
+        public short price;
+        public byte amount;
+        public byte objectSlot;
     }
     public static class PlayerInfo {
         public String username;
-        public int health, maxHealth;
-        public int coins;
-        public int armor, maxArmor;
+        public byte health, maxHealth;
+        public short coins;
+        public byte armor, maxArmor;
     }
     public static class Alert {
         public String username;
         public String text;
-        public int type;
+        public boolean warning;
     }
     public static class OpenChest {
         public int id;
+        public byte idRoom;
     }
     public static class PlayerHit {
         public String username;
@@ -278,7 +297,7 @@ public class Network {
     }
     public static class ArtefactActivate{
         public String username;
-        public int slot;
+        public byte slot;
     }
     public static class ArtefactAddBullet{
         public String username;
@@ -286,20 +305,69 @@ public class Network {
         public float px,py;
         public int id;
         public float inaccuracy;
-        public int slot;
+        public byte slot;
     }
     public static class LockRoom{
         public boolean lock;
-        public int idRoom;
+        public byte idRoom;
     }
     public static class NextFloor{
-        public int floor;
+        public byte floor;
     }
     public static class PstatsUpdate {
         public String username;
-        public int shootShooted;
-        public int enemiesKilled;
-        public int bulletsHit;
+        public short shootShooted;
+        public short enemiesKilled;
+        public short bulletsHit;
         public long deathTime;
+    }
+    public static class RoomObjectAnimationSync{ // made so animations of trap are same as server logic
+        public int id;
+        public byte sprite;
+        public long time;
+        public long cooldown; // like in flamethrower, arrowtrap
+    }
+    public static class TrapArrowMove{
+        public int id;
+        public float x,y;
+    }
+    public static class TrapArrowAdd {
+        public int id;
+        public int idTrap;
+        public float x,y;
+        public boolean horizontal;
+        public boolean facingRight;
+    }
+    public static class TrapArrowHit{
+        public int id;
+    }
+    public static class EnemySync {
+        public int id;
+        public byte currAction;
+        public byte sprite;
+        public long time;
+    }
+    public static class LaserBeamSync {
+        public int id;
+        public byte sprite;
+        public float x,y;
+        public long time;
+        public double angle;
+    }
+    public static class LaserBeamHit {
+        public int idHit;
+    }
+    public static class NumUpgrades {
+        public String username;
+        public int[] numUpgrades;
+    }
+    public static class NumUpgradesUpdate {
+        public String username;
+        public String gunName;
+        public byte numUpgrades;
+    }
+    public static class EnemyHealthHeal {
+        public int id;
+        public short amount;
     }
 }

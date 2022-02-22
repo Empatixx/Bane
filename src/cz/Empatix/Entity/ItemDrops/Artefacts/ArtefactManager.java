@@ -2,6 +2,7 @@ package cz.Empatix.Entity.ItemDrops.Artefacts;
 
 import cz.Empatix.Entity.ItemDrops.Artefacts.Damage.RingOfFire;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Special.LuckyCoin;
+import cz.Empatix.Entity.ItemDrops.Artefacts.Special.ReviveBook;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.Ammobelt;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.BerserkPot;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
@@ -22,11 +23,13 @@ import java.util.ArrayList;
 public class ArtefactManager {
     public static void load(){
         Loader.loadImage("Textures\\Artefacts\\artefacthud.tga");
+        Loader.loadImage("Textures\\artefacts\\artifactcharge1.tga");
         RingOfFire.load();
         BerserkPot.load();
         TransportableArmorPot.load();
         LuckyCoin.load();
         Ammobelt.load();
+        ReviveBook.load();
     }
     private ArrayList<Artefact> artefacts;
 
@@ -54,6 +57,7 @@ public class ArtefactManager {
         artefacts.add(new BerserkPot(tm,player));
         artefacts.add(new LuckyCoin(tm,player));
         artefacts.add(new Ammobelt(tm,player));
+        artefacts.add(new ReviveBook(tm,player));
 
         artefactHud = new Image("Textures\\Artefacts\\artefacthud.tga",new Vector3f(1400,975,0),2.6f);
 
@@ -89,31 +93,38 @@ public class ArtefactManager {
             }
         }
     }
-    public void update(boolean pause){
-        // receive packet, that player used artefact sucessfully
-        if(MultiplayerManager.multiplayer){
-            MultiplayerManager mpManager = MultiplayerManager.getInstance();
-            Object[] packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTACTIVATED);
-            for(Object o : packets) {
-                Network.ArtefactActivate p = (Network.ArtefactActivate)o;
-                if(mpManager.getUsername().equalsIgnoreCase(p.username)){
-                    artefacts.get(p.slot).activateClientSide();
-                }
-            }
-            packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTADDBULLET);
-            for(Object o : packets) {
-                Network.ArtefactAddBullet p = (Network.ArtefactAddBullet)o;
-                artefacts.get(p.slot).handleAddBulletPacket(p);
-            }
-            packets = mpManager.packetHolder.getWithoutClear(PacketHolder.HITBULLET);
-            for (Object o : packets) {
-                Network.HitBullet p = (Network.HitBullet)o;
-                for (Artefact a : artefacts) {
-                    a.handleHitBulletPacket(p);
-                }
-            }
-
+    // singleplayer
+    public void  update(boolean pause){
+        for(Artefact artefact:artefacts){
+            artefact.update(pause);
         }
+        if(currentArtefact != null){
+            currentArtefact.updateChargeAnimation();
+        }
+    }
+    // multiplayer
+    public void  update(boolean pause,Object[] hitBullets){
+        // receive packet, that player used artefact sucessfully
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+        Object[] packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTACTIVATED);
+        for(Object o : packets) {
+            Network.ArtefactActivate p = (Network.ArtefactActivate)o;
+            if(mpManager.getUsername().equalsIgnoreCase(p.username)){
+                artefacts.get(p.slot).activateClientSide();
+            }
+        }
+        packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTADDBULLET);
+        for(Object o : packets) {
+            Network.ArtefactAddBullet p = (Network.ArtefactAddBullet)o;
+            artefacts.get(p.slot).handleAddBulletPacket(p);
+        }
+        for (Object o : hitBullets) {
+            Network.HitBullet p = (Network.HitBullet)o;
+            for (Artefact a : artefacts) {
+                a.handleHitBulletPacket(p);
+            }
+        }
+
         for(Artefact artefact:artefacts){
             artefact.update(pause);
         }
@@ -123,7 +134,7 @@ public class ArtefactManager {
     }
     public Artefact randomArtefact(){
         Artefact artefact = artefacts.get(Random.nextInt(artefacts.size()));
-        while(artefact.dropped){
+        while(artefact.dropped || !artefact.obtainable){
             artefact = artefacts.get(Random.nextInt(artefacts.size()));
         }
         artefact.dropped = true;

@@ -2,6 +2,7 @@ package cz.Empatix.Render.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -247,7 +248,7 @@ public class Pot extends DestroyableObject {
         // set location by player collisions
         setMapPosition();
 
-        if(tileMap.isServerSide()){
+        if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
             stopping();

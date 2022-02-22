@@ -9,13 +9,12 @@ import cz.Empatix.Java.Random;
 import cz.Empatix.Render.TileMap;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class GunsManagerMP {
 
     private static GunsManagerMP instance;
-
-    public static int bulletShooted;
-    public static int hitBullets;
 
     private ArrayList<Weapon> weapons;
 
@@ -25,8 +24,12 @@ public class GunsManagerMP {
     private PlayerWeapons[] playerWeapons;
 
     private PlayerMP[] players;
+    private GunUpgradesCache gunUpgrades;
 
-    public GunsManagerMP(TileMap tileMap, PlayerMP[] p){
+    public GunsManagerMP(TileMap tileMap, PlayerMP[] p, GunUpgradesCache upgrades){
+        instance = this;
+        this.gunUpgrades = upgrades;
+
         weapons = new ArrayList<>();
         for(int i = 0;i < p.length;i++){
             weapons.add(new Pistol(tileMap,p[0]));
@@ -48,12 +51,7 @@ public class GunsManagerMP {
             }
         }
 
-        bulletShooted = 0;
-        hitBullets = 0;
-
         players = p;
-
-        instance = this;
     }
     public static GunsManagerMP getInstance(){return instance;}
 
@@ -129,7 +127,7 @@ public class GunsManagerMP {
     public boolean addAmmo(int amountpercent, int type, String username) {
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            if(playerWeapons.isThisPlayer(username)) return playerWeapons.addAmmo(amountpercent,type,username);
+            if(playerWeapons.isThisPlayer(username)) return playerWeapons.addAmmo(amountpercent,type);
         }
         return false;
     }
@@ -146,10 +144,10 @@ public class GunsManagerMP {
             playerWeapons.dropPlayerWeapon(dropWeapon);
         }
     }
-    public void dropPlayerWeapon(String username,int x, int y) {
+    public void dropPlayerWeapon(String username,int x, int y, int slot) {
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            playerWeapons.dropPlayerWeapon(username,x,y);
+            playerWeapons.dropPlayerWeapon(username,x,y,slot);
         }
     }
     public int getCurrentWeaponSlot(String username){
@@ -178,13 +176,10 @@ public class GunsManagerMP {
             equipedweapons = new Weapon[2];
 
             equipedweapons[0] = weapons.get(index);
-            //equipedweapons[0] = weapons.get(6);
+            equipedweapons[0].restat(p.getUsername());
 
             current = equipedweapons[FIRSTSLOT];
             currentslot = FIRSTSLOT;
-
-            bulletShooted = 0;
-            hitBullets = 0;
 
             username = p.getUsername();
         }
@@ -212,8 +207,8 @@ public class GunsManagerMP {
 
             Server server = MultiplayerManager.getInstance().server.getServer();
             Network.WeaponInfo weaponInfo = new Network.WeaponInfo();
-            weaponInfo.currentAmmo = current.getCurrentAmmo();
-            weaponInfo.currentMagazineAmmo = current.getCurrentMagazineAmmo();
+            weaponInfo.currentAmmo = (short)current.getCurrentAmmo();
+            weaponInfo.currentMagazineAmmo = (short)current.getCurrentMagazineAmmo();
             weaponInfo.username = username;
 
             server.sendToAllUDP(weaponInfo);
@@ -257,27 +252,28 @@ public class GunsManagerMP {
             if(current == null) return;
             current.setShooting(false);
         }
-        public boolean addAmmo(int amountpercent, int type, String username) {
-            if(this.username.equalsIgnoreCase(username)){
-                // first check main gun in hand
-                if(current != null){
-                    if(current.getType() == type){
-                        if(current.isFullAmmo()) return false;
+        public boolean addAmmo(int amountpercent, int type) {
+            // first check main gun in hand
+            if(current != null){
+                if(current.getType() == type){
+                    if(!current.isFullAmmo()){
                         current.addAmmo(amountpercent);
                         return true;
                     }
                 }
-                // check all guns in inventory
-                for (int i = 0; i < 2; i++) {
-                    Weapon weapon = equipedweapons[i];
-                    if (weapon == null) continue;
-                    if (weapon.getType() == type) {
-                        if(weapon.isFullAmmo()) return false;
+            }
+            // check all guns in inventory
+            for (int i = 0; i < 2; i++) {
+                Weapon weapon = equipedweapons[i];
+                if (weapon == null) continue;
+                if (weapon.getType() == type) {
+                    if(!weapon.isFullAmmo()){
                         weapon.addAmmo(amountpercent);
                         return true;
                     }
                 }
             }
+
             return false;
         }
         public void changeGun(int x, int y, Weapon weapon, String username){
@@ -287,6 +283,7 @@ public class GunsManagerMP {
                 if(equipedweapons[currentslot] == null){
                     equipedweapons[currentslot] = weapon;
                     current = weapon;
+                    current.restat(username);
                     return;
                 }
                 // check player's all slots
@@ -294,6 +291,7 @@ public class GunsManagerMP {
                     if(equipedweapons[i] == null){
                         if(i==currentslot) current = weapon;
                         equipedweapons[i] = weapon;
+                        weapon.restat(username);
                         return;
                     }
                 }
@@ -343,30 +341,32 @@ public class GunsManagerMP {
                 equipedweapons[currentslot] = null;
                 // sending back packet with the success
                 dropWeapon.sucessful = true;
-                Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(dropWeapon);
-            }
-        }
-        public void dropPlayerWeapon(String username, int x, int y) {
-            if(this.username.equalsIgnoreCase(username)){
-                if(current != null){
-                    stopShooting();
-                    ItemManagerMP itemManagerMP = ItemManagerMP.getInstance();
-                    itemManagerMP.dropPlayerWeapon(current, x, y,weapons.indexOf(current),username);
-                }
-                current = null;
-                equipedweapons[currentslot] = null;
-
-                // sending back packet so it will remove weapon in hud from client side
-                Network.PlayerDropWeapon dropWeapon = new Network.PlayerDropWeapon();
-                dropWeapon.sucessful = true;
-                dropWeapon.username = username;
+                dropWeapon.playerSlot = (byte)currentslot;
                 Server server = MultiplayerManager.getInstance().server.getServer();
                 server.sendToAllTCP(dropWeapon);
             }
         }
         public int getCurrentslot() {
             return currentslot;
+        }
+
+        public void dropPlayerWeapon(String username, int x, int y, int slot) {
+            if(this.username.equalsIgnoreCase(username)){
+                stopShooting();
+                current = null;
+                // sending back packet so it will remove weapon in hud from client side
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                Network.PlayerDropWeapon dropWeapon = new Network.PlayerDropWeapon();
+                if(equipedweapons[slot] != null){
+                    ItemManagerMP itemManagerMP = ItemManagerMP.getInstance();
+                    itemManagerMP.dropPlayerWeapon(equipedweapons[slot], x, y,weapons.indexOf(equipedweapons[slot]),username);
+                    equipedweapons[slot] = null;
+                    dropWeapon.sucessful = true;
+                    dropWeapon.username = username;
+                    dropWeapon.playerSlot = (byte)slot;
+                    server.sendToAllTCP(dropWeapon);
+                }
+            }
         }
     }
     public void handleMouseCoords(Network.MouseCoords coords){
@@ -388,5 +388,130 @@ public class GunsManagerMP {
                 }
             }
         }
+    }
+    public int getNumWeapons(){return weapons.size();}
+
+    public void setGunUpgrades(GunUpgradesCache gunUpgrades) {
+        this.gunUpgrades = gunUpgrades;
+    }
+
+    public static class GunUpgradesCache {
+        private final List<PlayerData> playersData;
+        public GunUpgradesCache(){
+            playersData = Collections.synchronizedList(new ArrayList<>());
+        }
+        public void addPlayer(String username){
+            PlayerData data = new PlayerData(username);
+            playersData.add(data);
+        }
+        public void removePlayer(String username){
+            synchronized (playersData){
+                for(int i = 0;i<playersData.size();i++){
+                    if(playersData.get(i).username.equalsIgnoreCase(username)){
+                        playersData.remove(i);
+                        i--;
+                    }
+                }
+            }
+        }
+        private static class PlayerData{
+            private String username;
+            private int[] numUpgrades;
+            private static final int MAX_WEAPONS = 9;
+            public PlayerData(String username){
+                this.username = username;
+                numUpgrades = new int[MAX_WEAPONS];
+            }
+            // all upgrades
+            public void handleNumUpgradesPacket(Network.NumUpgrades packet){
+                if(packet.username.equalsIgnoreCase(this.username)){
+                    numUpgrades = packet.numUpgrades;
+                }
+
+            }
+            // only one upgrade
+            public void handleNumUpgradesPacket(Network.NumUpgradesUpdate packet){
+                if(packet.username.equalsIgnoreCase(this.username)){
+                    numUpgrades[nameToIndex(packet.gunName)] = packet.numUpgrades;
+                }
+            }
+            public int getNumUpgrades(String username, String gunName){
+                if(username.equalsIgnoreCase(this.username)){
+                    return numUpgrades[nameToIndex(gunName)];
+                }
+                return -1;
+            }
+            public int nameToIndex(String username){
+                int index;
+                switch(username){
+                    case "Pistol":{
+                        index = 0;
+                        break;
+                    }
+                    case "Luger":{
+                        index = 1;
+                        break;
+                    }
+                    case "Shotgun":{
+                        index = 2;
+                        break;
+                    }
+                    case "Uzi":{
+                        index = 3;
+                        break;
+                    }
+                    case "M4":{
+                        index = 4;
+                        break;
+                    }
+                    case "Grenade Launcher":{
+                        index = 5;
+                        break;
+                    }
+                    case "Revolver":{
+                        index = 6;
+                        break;
+                    }
+                    case "Thompson":{
+                        index = 7;
+                        break;
+                    }
+                    default:{
+                        index = -1;
+                        break;
+                    }
+                }
+                return index;
+            }
+        }
+        public void handleNumUpgradesPacket(Network.NumUpgrades packet){
+            synchronized (playersData){
+                for(PlayerData data : playersData){
+                    if(data == null) continue;
+                    data.handleNumUpgradesPacket(packet);
+                }
+            }
+        }
+        public void handleNumUpgradesPacketUpdate(Network.NumUpgradesUpdate packet){
+            synchronized (playersData){
+                for(PlayerData data : playersData){
+                    if(data == null) continue;
+                    data.handleNumUpgradesPacket(packet);
+                }
+            }
+
+        }
+        public int getNumUpgrades(String username, String gunName){
+            synchronized (playersData){
+                for(PlayerData data : playersData){
+                    if(data == null) continue;
+                    if (data.getNumUpgrades(username,gunName) != -1) return data.getNumUpgrades(username,gunName);
+                }
+            }
+            return 0;
+        }
+    }
+    public int getNumUpgrades(String username, String gunName){
+        return gunUpgrades.getNumUpgrades(username,gunName);
     }
 }

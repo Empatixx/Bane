@@ -243,7 +243,7 @@ public class RedSlime extends Enemy {
                     moveEnemyProjectile.id = redSlimebullet.id;
                     moveEnemyProjectile.x = redSlimebullet.getX();
                     moveEnemyProjectile.y = redSlimebullet.getY();
-                    server.sendToAllTCP(moveEnemyProjectile);
+                    server.sendToAllUDP(moveEnemyProjectile);
                 }
 
                 for(Player p : player){
@@ -329,27 +329,6 @@ public class RedSlime extends Enemy {
         movePacket();
 
     }
-/*
-if (!projectilesShooted && dead) {
-            projectilesShooted = true;
-
-            int index = theClosestPlayerIndex();
-            for (int i = 0; i < projectiles; i++) {
-                RedSlimebullet redSlimebullet = new RedSlimebullet(tileMap, px[index] - position.x, py[index] - position.y, 1.3 * i);
-                redSlimebullet.setPosition(position.x, position.y);
-                bullets.add(redSlimebullet);
-
-                Network.AddEnemyProjectile addEnemyProjectile = new Network.AddEnemyProjectile();
-                addEnemyProjectile.idEnemy = id;
-                addEnemyProjectile.id = redSlimebullet.id;
-                addEnemyProjectile.x = px[index] - position.x;
-                addEnemyProjectile.y = py[index] - position.y;
-                addEnemyProjectile.inaccuracy = 1.3f*i;
-                Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(addEnemyProjectile);
-            }
-        }
- */
     public void draw() {
         for(RedSlimebullet bullet : bullets){
             bullet.draw();

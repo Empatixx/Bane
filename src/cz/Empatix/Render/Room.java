@@ -250,9 +250,8 @@ public class Room {
     /**
      * entering room in multiplayer
      * @param tileMap
-     * @param p - player that entered this room
      */
-    public void entered(TileMap tileMap,Player p){
+    public void enteredMP(TileMap tileMap){
         entered = true;
         if (type == Room.Classic){
             int maxMobs = cz.Empatix.Java.Random.nextInt(4) + 2+tileMap.getFloor();
@@ -261,7 +260,7 @@ public class Room {
                 enemyManager.addEnemy(xMin,xMax,yMin,yMax);
             }
             Network.LockRoom enteringRoom = new Network.LockRoom();
-            enteringRoom.idRoom = id;
+            enteringRoom.idRoom = (byte)id;
             enteringRoom.lock = true;
             Server server = MultiplayerManager.getInstance().server.getServer();
             server.sendToAllTCP(enteringRoom);
@@ -276,7 +275,7 @@ public class Room {
             AudioManager.playSoundtrack(Soundtrack.BOSS);
 
             Network.LockRoom enteringRoom = new Network.LockRoom();
-            enteringRoom.idRoom = id;
+            enteringRoom.idRoom = (byte)id;
             enteringRoom.lock = true;
             Server server = MultiplayerManager.getInstance().server.getServer();
             server.sendToAllTCP(enteringRoom);
@@ -377,6 +376,7 @@ public class Room {
                         } else if(tm.isServerSide()){
                             ItemManagerMP itemManager = ItemManagerMP.getInstance();
                             ItemDrop drop = itemManager.createDrop(object.getX(),object.getY());
+                            System.out.println("TEST");
                             if(((DestroyableObject)object).isPreventItemDespawn()){
                                 drop.preventDespawn();
                             }
@@ -397,7 +397,7 @@ public class Room {
                 EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
                 if (enemyManager.areEnemiesDeadInCoords(xMin,xMax,yMin,yMax) && closed) {
                     Network.LockRoom lockRoom = new Network.LockRoom();
-                    lockRoom.idRoom = id;
+                    lockRoom.idRoom = (byte)id;
                     lockRoom.lock = false;
                     Server server = MultiplayerManager.getInstance().server.getServer();
                     server.sendToAllTCP(lockRoom);
@@ -786,6 +786,7 @@ public class Room {
     }
     public void showRoomOnMinimap() {
         minimapRoom.setDiscovered(true);
+        minimapRoom.entered();
     }
 
     public MMRoom getMinimapRoom() {
@@ -857,7 +858,7 @@ public class Room {
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.ARROWTRAP;
-            roomObject.objectType = ((ArrowTrap) object).getType();
+            roomObject.objectType = (byte)((ArrowTrap) object).getType();
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
             Server server = MultiplayerManager.getInstance().server.getServer();
@@ -868,7 +869,7 @@ public class Room {
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.TORCH;
-            roomObject.objectType = ((Torch) object).getType();
+            roomObject.objectType = (byte)((Torch) object).getType();
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
             Server server = MultiplayerManager.getInstance().server.getServer();
@@ -878,7 +879,7 @@ public class Room {
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.FLAMETHROWER;
-            roomObject.objectType = ((Flamethrower) object).getType();
+            roomObject.objectType = (byte)((Flamethrower) object).getType();
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
             Server server = MultiplayerManager.getInstance().server.getServer();

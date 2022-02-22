@@ -17,6 +17,7 @@ public class PistolUpgrade extends UpgradeBar {
         info.name = "Pistol";
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("pistol","upgrades");
+        this.numUpgrades = numUpgrades;
 
 
         UpgradeSideBar bar = new UpgradeSideBar(sideBars.size(),"pistol");
@@ -82,6 +83,8 @@ public class PistolUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("pistol","upgrades");
+        this.numUpgrades = numUpgrades;
+
         if(numUpgrades == 1){
             info.maxMagazineAmmo+=2;
         }

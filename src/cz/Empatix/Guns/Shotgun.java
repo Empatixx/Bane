@@ -9,6 +9,7 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.GunsManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
@@ -86,6 +87,33 @@ public class Shotgun extends Weapon {
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
         bullets = new ArrayList<>();
+
+    }
+    // resetting stats of gun of new owner of gun
+    @Override
+    public void restat(String username) {
+        mindamage = 2;
+        maxdamage = 3;
+        inaccuracy = 0.7f;
+        maxAmmo = 36;
+        maxMagazineAmmo = 6;
+        delayTime = 500;
+        GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
+        int numUpgrades = gunsManagerMP.getNumUpgrades(username, "Shotgun");
+        if(numUpgrades >= 1){
+            maxAmmo += 6;
+        }
+        if(numUpgrades >= 2){
+            maxMagazineAmmo++;
+        }
+        if(numUpgrades >= 3){
+            maxdamage++;
+        }
+        if(numUpgrades >= 4){
+            delayTime = (int)(delayTime*0.85f);
+        }
+        if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
+        if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
     }
     @Override
     public void reload() {
@@ -249,6 +277,7 @@ public class Shotgun extends Weapon {
     @Override
     public void updateAmmo() {
         for(int i = 0; i < bullets.size(); i++) {
+            System.out.println("UPDATED: "+bullets.get(i).id);
             bullets.get(i).update();
             if(bullets.get(i).shouldRemove()) {
                 bullets.remove(i);
@@ -298,21 +327,19 @@ public class Shotgun extends Weapon {
     @Override
     public void handleHitBulletPacket(Network.HitBullet hitBullet) {
         for(Bullet b : bullets){
-            if(b.getId() == hitBullet.id){
+            System.out.println("ID: "+b.id+ " ?= "+hitBullet.id);
+            if(b.getId() == hitBullet.id && !b.isHit()){
                 b.setHit(hitBullet.type);
                 if(hitBullet.type == Bullet.TypeHit.ENEMY){
                     EnemyManager em = EnemyManager.getInstance();
                     Enemy e = em.handleHitEnemyPacket(hitBullet.idHit,b.getDamage());
                     showDamageIndicator(b.getDamage(),b.isCritical(),e);
                 } else if (hitBullet.type == Bullet.TypeHit.ROOMOBJECT){
-                    ArrayList<RoomObject>[] objectsArray = tm.getRoomMapObjects();
-                    for(ArrayList<RoomObject> objects : objectsArray) {
-                        if (objects == null) continue;
-                        for(RoomObject obj : objects){
-                            if(obj.getId() == hitBullet.idHit) {
-                                if (obj instanceof DestroyableObject) {
-                                    ((DestroyableObject) obj).setHit(b.getDamage());
-                                }
+                    ArrayList<RoomObject> objects = tm.getRoomByCoords(b.getX(),b.getY()).getMapObjects();
+                    for(RoomObject obj : objects){
+                        if(obj.getId() == hitBullet.idHit) {
+                            if (obj instanceof DestroyableObject) {
+                                ((DestroyableObject) obj).setHit(b.getDamage());
                             }
                         }
                     }

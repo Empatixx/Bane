@@ -17,6 +17,7 @@ public class SubmachineUpgrade extends UpgradeBar {
         info.name = "Uzi";
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("uzi","upgrades");
+        this.numUpgrades = numUpgrades;
 
         UpgradeSideBar bar = new UpgradeSideBar(sideBars.size(),"uzi");
         String[] text = new String[]{"Increase firerate by 30%"};
@@ -80,6 +81,8 @@ public class SubmachineUpgrade extends UpgradeBar {
     @Override
     public void updateStats() {
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("uzi","upgrades");
+        this.numUpgrades = numUpgrades;
+
         if(numUpgrades == 1){
             info.firerate = 1f/0.105f;
         }

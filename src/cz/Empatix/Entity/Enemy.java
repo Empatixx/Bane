@@ -56,9 +56,6 @@ public abstract class Enemy extends MapObject{
 
     protected boolean reflectBullets;
 
-    // username of killer
-    private String killer;
-
     public Enemy(TileMap tm, Player player) {
         super(tm);
         this.player = new Player[1];
@@ -715,6 +712,7 @@ public abstract class Enemy extends MapObject{
             getNextPosition();
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
+
         }
     }
     public void movePacket(){
@@ -845,11 +843,38 @@ public abstract class Enemy extends MapObject{
         }
         return theClosest;
     }
+    /**
+     *
+     * @return index of the farthest player to enemy
+     */
+    public int theFarthestPlayerIndex(){
+        int theClosest = 0;
+        float distance,prevDistance = (float)Math.sqrt(Math.pow(getX()-player[0].getX(),2)+Math.pow(getY()-player[0].getY(),2));;
+        for(int i = 1;i<player.length;i++){
+            Player curPlayer = player[i];
+            if(curPlayer == null) continue;
+            if(curPlayer.isDead()) continue;
+            distance = (float)Math.sqrt(Math.pow(getX()-curPlayer.getX(),2)+Math.pow(getY()-curPlayer.getY(),2));
+            if (prevDistance < distance){
+                prevDistance = distance;
+                theClosest = i;
+            }
+        }
+        return theClosest;
+    }
     public abstract void handleAddEnemyProjectile(Network.AddEnemyProjectile o);
     public abstract void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o);
     public abstract void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket);
 
-    public String getKiller() {
-        return killer;
+    public void handleSync(Network.EnemySync sync){
+        animation.setTime(sync.time);
+        currentAction = sync.currAction;
+        animation.setFrames(spritesheet.getSprites(currentAction));
+        animation.setFrame(sync.sprite);
+    }
+    // increase health of enemy
+    public void heal(int amount){
+        health+=amount;
+        if(health > maxHealth) health = maxHealth;
     }
 }

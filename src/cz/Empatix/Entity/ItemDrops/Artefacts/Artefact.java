@@ -62,7 +62,9 @@ public abstract class Artefact {
         oneUse = false;
         canShopItem = false;
     }
+    protected abstract void preDraw();
     protected abstract void draw();
+
     public abstract void charge();
     // sp
     public abstract void activate();
@@ -128,5 +130,7 @@ public abstract class Artefact {
     public boolean canBeShopItem() {
         return canShopItem;
     }
+
+    public abstract boolean playerHitEvent();
 }
 

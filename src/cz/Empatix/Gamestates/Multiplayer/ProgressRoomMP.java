@@ -91,14 +91,14 @@ public class ProgressRoomMP extends GameState {
         switchGamestate = false;
 
         objectsFramebuffer = new Framebuffer();
-        lightManager = new LightManager();
-
         fade = new Fade("shaders\\fade");
         transitionFBO = new Framebuffer();
 
         // Tile map
         tileMap = new TileMap(64);
         tileMap.loadTiles("Textures\\tileset64.tga");
+
+        lightManager = new LightManager(tileMap);
 
         // player
         // create player object

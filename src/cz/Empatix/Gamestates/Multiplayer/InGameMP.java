@@ -279,7 +279,6 @@ public class InGameMP extends GameState {
         pauseBlurFramebuffer = new Framebuffer();
         fadeFramebuffer = new Framebuffer();
         transitionContinue = false;
-        lightManager = new LightManager();
         fade = new Fade("shaders\\fade");
         gaussianBlur = new GaussianBlur("shaders\\blur");
 
@@ -291,6 +290,8 @@ public class InGameMP extends GameState {
         // Tile map
         tileMap = new TileMap(64,miniMap);
         tileMap.loadTiles("Textures\\tileset64.tga");
+
+        lightManager = new LightManager(tileMap);
 
         // player
         // create player object
@@ -454,7 +455,7 @@ public class InGameMP extends GameState {
 
         itemManager.draw();
 
-        artefactManager.draw();
+        artefactManager.preDraw();
 
         // drawing players by order by position.y
         boolean[] used = new boolean[player.length];
@@ -470,6 +471,8 @@ public class InGameMP extends GameState {
                 used[index] = true;
             }
         }
+        artefactManager.draw();
+
 
         tileMap.drawObjects();
 

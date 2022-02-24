@@ -63,7 +63,6 @@ public class ProgressRoom extends GameState {
         DiscordRP.getInstance().update("Singplayer - In-Game","Rest room");
 
         objectsFramebuffer = new Framebuffer();
-        lightManager = new LightManager();
 
         fade = new Fade("shaders\\fade");
         transitionFBO = new Framebuffer();
@@ -72,6 +71,7 @@ public class ProgressRoom extends GameState {
         tileMap = new TileMap(64);
         tileMap.loadTiles("Textures\\tileset64.tga");
 
+        lightManager = new LightManager(tileMap);
         // player
         // create player object
         player = new Player(tileMap);

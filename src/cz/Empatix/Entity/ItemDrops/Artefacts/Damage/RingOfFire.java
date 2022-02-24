@@ -172,10 +172,15 @@ public class RingOfFire extends Artefact {
         bullet.setDamage(4);
     }
     @Override
-    protected void draw() {
+    protected void preDraw() {
         for(Bullet bullet: bullets){
             bullet.draw();
         }
+    }
+
+    @Override
+    protected void draw() {
+
     }
 
     @Override
@@ -246,6 +251,11 @@ public class RingOfFire extends Artefact {
                 b.setPosition(moveBullet.x, moveBullet.y);
             }
         }
+    }
+
+    @Override
+    public boolean playerHitEvent() {
+        return false;
     }
 
     @Override

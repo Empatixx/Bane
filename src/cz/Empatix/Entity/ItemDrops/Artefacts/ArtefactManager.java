@@ -5,6 +5,7 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Special.LuckyCoin;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Special.ReviveBook;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.Ammobelt;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.BerserkPot;
+import cz.Empatix.Entity.ItemDrops.Artefacts.Support.ShieldHorn;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
@@ -30,6 +31,7 @@ public class ArtefactManager {
         LuckyCoin.load();
         Ammobelt.load();
         ReviveBook.load();
+        ShieldHorn.load();
     }
     private ArrayList<Artefact> artefacts;
 
@@ -58,6 +60,7 @@ public class ArtefactManager {
         artefacts.add(new LuckyCoin(tm,player));
         artefacts.add(new Ammobelt(tm,player));
         artefacts.add(new ReviveBook(tm,player));
+        artefacts.add(new ShieldHorn(tm,player));
 
         artefactHud = new Image("Textures\\Artefacts\\artefacthud.tga",new Vector3f(1400,975,0),2.6f);
 
@@ -65,6 +68,11 @@ public class ArtefactManager {
     }
 
 
+    public void preDraw(){
+        for(Artefact artefact:artefacts){
+            artefact.preDraw();
+        }
+    }
     public void draw(){
         for(Artefact artefact:artefacts){
             artefact.draw();
@@ -166,5 +174,12 @@ public class ArtefactManager {
     public void clear(){
         // clearing bullets
         ((RingOfFire)artefacts.get(0)).clear();
+    }
+
+    public boolean playeHitEvent() {
+        if(currentArtefact != null){
+            return currentArtefact.playerHitEvent();
+        }
+        return false;
     }
 }

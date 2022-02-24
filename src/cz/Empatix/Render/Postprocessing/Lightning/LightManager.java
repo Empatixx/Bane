@@ -6,6 +6,7 @@ import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Framebuffer;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -26,7 +27,10 @@ public class LightManager {
 
     private int noiseTexture;
 
-    public LightManager(){
+    private static TileMap tm;
+
+    public LightManager(TileMap tm){
+        LightManager.tm = tm;
         lights = new ArrayList<>();
         shader = ShaderManager.getShader("shaders\\light");
         if (shader == null){
@@ -109,7 +113,7 @@ public class LightManager {
         glActiveTexture(GL_TEXTURE0);
     }
     public static LightPoint createLight(Vector3f color, Vector2f pos, float intensity, MapObject object){
-        LightPoint light = new LightPoint(pos,color,intensity,object);
+        LightPoint light = new LightPoint(tm,pos,color,intensity,object);
         lights.add(light);
 
         return light;

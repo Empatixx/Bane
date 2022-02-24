@@ -58,7 +58,12 @@ public class ReviveBook extends Artefact {
     }
 
     @Override
+    protected void preDraw() {
+    }
+
+    @Override
     protected void draw() {
+
     }
 
     @Override
@@ -149,6 +154,11 @@ public class ReviveBook extends Artefact {
     @Override
     public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
 
+    }
+
+    @Override
+    public boolean playerHitEvent() {
+        return false;
     }
 }
 

@@ -376,7 +376,7 @@ public abstract class MapObject {
 		temp.x = x;
 		temp.y = y;
 		if(light != null){
-			light.update();
+			light.setPos(position.x+xmap,position.y+ymap);
 		}
 	}
 	/**
@@ -565,10 +565,21 @@ public abstract class MapObject {
 		glActiveTexture(GL_TEXTURE0);
 
 	}
+
+	/**
+	 * sets location of light binded to this MapObject
+	 */
 	public void updateLight(){
 		light.setPos(position.x+xmap,position.y+ymap);
 	}
 
+	/**
+	 * sets location of specified light to MapObject location
+	 * @param light
+	 */
+	public void updateLight(LightPoint light){
+		light.setPos(position.x+xmap,position.y+ymap);
+	}
 	public int getCheight() {
 		return cheight;
 	}

@@ -57,7 +57,12 @@ public class Ammobelt extends Artefact {
     }
 
     @Override
+    protected void preDraw() {
+    }
+
+    @Override
     protected void draw() {
+
     }
 
     @Override
@@ -136,6 +141,11 @@ public class Ammobelt extends Artefact {
     @Override
     public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
 
+    }
+
+    @Override
+    public boolean playerHitEvent() {
+        return false;
     }
 }
 

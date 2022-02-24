@@ -3,6 +3,7 @@ package cz.Empatix.Entity;
 import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
+import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
@@ -537,6 +538,19 @@ public class Player extends MapObject {
     }
     public void hit(int damage){
         if (flinching ||dead || rolling) return;
+        if(tileMap.isServerSide()){
+            //Multiplayer
+        } else {
+            //Singleplayer
+            ArtefactManager artefactManager = ArtefactManager.getInstance();
+            boolean immune = artefactManager.playeHitEvent();
+            if(immune){
+                flinching = true;
+                flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
+                return;
+            }
+        }
+
 
 
         int previousArmor = armor;

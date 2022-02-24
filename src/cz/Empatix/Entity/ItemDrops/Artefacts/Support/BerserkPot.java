@@ -196,11 +196,16 @@ public class BerserkPot extends Artefact {
     }
 
     @Override
-    protected void draw() {
+    protected void preDraw() {
 
         for(SprintParticle sprintParticle : sprintParticles){
             sprintParticle.draw();
         }
+    }
+
+    @Override
+    protected void draw() {
+
     }
 
     @Override
@@ -264,6 +269,11 @@ public class BerserkPot extends Artefact {
     @Override
     public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
 
+    }
+
+    @Override
+    public boolean playerHitEvent() {
+        return false;
     }
 
     @Override

@@ -111,44 +111,42 @@ public class ArtefactManagerMP {
             playerArtefact.setCurrentArtefact(currentArtefact,x,y,username);
         }
     }
+
+    public boolean playeHitEvent(String username) {
+        for(PlayerArtefacts playerArtefact : playerArtefacts){
+            if(playerArtefact == null) continue;
+            boolean immune = playerArtefact.playerHitEvent(username);
+            if(immune) return true;
+        }
+        return false;
+    }
+
     private class PlayerArtefacts{
         private String username;
         private Artefact currentArtefact;
-        private boolean firstAlert;
 
         public PlayerArtefacts(String username){
             this.username = username;
             // preventing to keeping artefact from previous game
             currentArtefact = null;
-
-            firstAlert = false;
         }
         public void charge(){
             if(currentArtefact != null){
                 currentArtefact.charge();
-                /*if(currentArtefact.canBeActivated() && !firstAlert){
-                    Server server = MultiplayerManager.getInstance().server.getServer();
-                    Network.Alert alert = new Network.Alert();
-                    alert.text = "You've charged artefact";
-                    alert.type = AlertManager.INFORMATION;
-                    alert.username = username;
-                    server.sendToAllUDP(alert);
-                    firstAlert = true;
-                }*/
             }
         }
         public void activate(String username, Network.ArtefactActivate artefactActivate){
-            if(!this.username.equalsIgnoreCase(username)) return;
-            if(currentArtefact != null){
-                if(currentArtefact.canBeActivated()){
-                    currentArtefact.activate(username);
-                    firstAlert = false;
-                    // sending acknowledge of activating artefact
-                    Server server = MultiplayerManager.getInstance().server.getServer();
-                    artefactActivate.slot = (byte)artefacts.indexOf(currentArtefact);
-                    server.sendToAllTCP(artefactActivate);
-                    if(currentArtefact.isOneUse()){
-                        currentArtefact = null;
+            if(this.username.equalsIgnoreCase(username)){
+                if(currentArtefact != null){
+                    if(currentArtefact.canBeActivated()){
+                        currentArtefact.activate(username);
+                        // sending acknowledge of activating artefact
+                        Server server = MultiplayerManager.getInstance().server.getServer();
+                        artefactActivate.slot = (byte)artefacts.indexOf(currentArtefact);
+                        server.sendToAllTCP(artefactActivate);
+                        if(currentArtefact.isOneUse()){
+                            currentArtefact = null;
+                        }
                     }
                 }
             }
@@ -161,13 +159,22 @@ public class ArtefactManagerMP {
             return false;
         }
         public void setCurrentArtefact(Artefact currentArtefact, int x, int y, String username) {
-            if(!this.username.equalsIgnoreCase(username)) return;
-            if(this.currentArtefact != null){
-                ItemManagerMP itemManager = ItemManagerMP.getInstance();
-                itemManager.dropPlayerArtefact(this.currentArtefact,x,y,username);
+            if(this.username.equalsIgnoreCase(username)){
+                if(this.currentArtefact != null){
+                    ItemManagerMP itemManager = ItemManagerMP.getInstance();
+                    itemManager.dropPlayerArtefact(this.currentArtefact,x,y,username);
+                }
+                this.currentArtefact = currentArtefact;
             }
-            this.currentArtefact = currentArtefact;
+        }
 
+        public boolean playerHitEvent(String username) {
+            if(this.username.equalsIgnoreCase(username)) {
+                if (this.currentArtefact != null) {
+                    return this.currentArtefact.playerHitEvent();
+                }
+            }
+            return false;
         }
     }
     public void clear(){

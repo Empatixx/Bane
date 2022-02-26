@@ -394,6 +394,7 @@ public class PlayerMP extends Player {
         }
         source.play(soundPlayerhurt[Random.nextInt(2)]);
     }
+
     @Override
     public void setDead(){
         deathTime = System.currentTimeMillis();

@@ -9,6 +9,7 @@ import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
+import cz.Empatix.Multiplayer.ArtefactManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Background;
@@ -538,10 +539,16 @@ public class Player extends MapObject {
     }
     public void hit(int damage){
         if (flinching ||dead || rolling) return;
+
         if(tileMap.isServerSide()){
-            //Multiplayer
+            ArtefactManagerMP artefactManager = ArtefactManagerMP.getInstance();
+            boolean immune = artefactManager.playeHitEvent(((PlayerMP)this).getUsername());
+            if(immune){
+                flinching = true;
+                flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
+                return;
+            }
         } else {
-            //Singleplayer
             ArtefactManager artefactManager = ArtefactManager.getInstance();
             boolean immune = artefactManager.playeHitEvent();
             if(immune){
@@ -550,8 +557,6 @@ public class Player extends MapObject {
                 return;
             }
         }
-
-
 
         int previousArmor = armor;
         int previousHealth = health;

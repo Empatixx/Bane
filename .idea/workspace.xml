@@ -27,28 +27,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="0.9 pre">
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/ShieldHorn.java" afterDir="false" />
+    <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="0.9 new artefact, some light code clean up">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crashlog.log" beforeDir="false" afterPath="$PROJECT_DIR$/crashlog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/MapObject.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/MapObject.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Player.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Artefact.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Artefact.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/ArtefactManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/ArtefactManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Damage/RingOfFire.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Damage/RingOfFire.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Special/LuckyCoin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Special/LuckyCoin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Special/ReviveBook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Special/ReviveBook.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/Ammobelt.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/Ammobelt.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/BerserkPot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/BerserkPot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/TransportableArmorPot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/TransportableArmorPot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/MapObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/ShieldHorn.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/ShieldHorn.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Multiplayer/InGameMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Multiplayer/InGameMP.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Multiplayer/ProgressRoomMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Multiplayer/ProgressRoomMP.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Singleplayer/InGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Singleplayer/InGame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Singleplayer/ProgressRoom.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Singleplayer/ProgressRoom.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Postprocessing/Lightning/LightPoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/ArtefactManagerMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/ArtefactManagerMP.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/PlayerMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/PlayerMP.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -193,13 +178,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1570538926800</updated>
-    </task>
-    <task id="LOCAL-00009" summary="lights bugfix,shotgun rework,color banding fix,new prototype of generation map">
-      <created>1585146455002</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1585146455002</updated>
     </task>
     <task id="LOCAL-00010" summary="new generation of map- paths,enemy spawning collision fix,optimalizations">
       <created>1585917152050</created>
@@ -537,7 +515,14 @@
       <option name="project" value="LOCAL" />
       <updated>1645558670304</updated>
     </task>
-    <option name="localTasksCounter" value="58" />
+    <task id="LOCAL-00058" summary="0.9 new artefact, some light code clean up">
+      <created>1645730247997</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1645730247998</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="UpdateCopyrightCheckinHandler">
@@ -572,7 +557,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="death,time bugfixes" />
     <MESSAGE value="slime rework,rat rework" />
     <MESSAGE value="enemy hit effect" />
     <MESSAGE value="chest object" />
@@ -597,7 +581,8 @@
     <MESSAGE value="0.9 mp rework" />
     <MESSAGE value="0.9 mp support" />
     <MESSAGE value="0.9 pre" />
-    <option name="LAST_COMMIT_MESSAGE" value="0.9 pre" />
+    <MESSAGE value="0.9 new artefact, some light code clean up" />
+    <option name="LAST_COMMIT_MESSAGE" value="0.9 new artefact, some light code clean up" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">

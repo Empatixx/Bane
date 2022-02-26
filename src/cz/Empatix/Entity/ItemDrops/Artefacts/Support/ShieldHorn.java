@@ -5,6 +5,7 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -115,7 +116,8 @@ public class ShieldHorn extends Artefact {
 
     @Override
     public void update(String username) {
-
+        if(shield) light.update();
+        animation.update();
     }
 
     @Override
@@ -207,6 +209,12 @@ public class ShieldHorn extends Artefact {
     public void activate(String username) {
         charge = 0;
         shield = true;
+        for(Player p : p){
+            if(p == null) continue;
+            if(((PlayerMP)p).getUsername().equalsIgnoreCase(username)){
+                light = LightManager.createLight(new Vector3f(0,0,1),new Vector2f(p.getX(),p.getY()),3,p);
+            }
+        }
     }
     @Override
     public void activateClientSide() {

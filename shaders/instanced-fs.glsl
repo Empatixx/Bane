@@ -1,7 +1,6 @@
-#version 330
+#version 130
 
 in vec2 tex_coords;
-out vec4 gl_FragColor;
 uniform sampler2D sampler;
 
 

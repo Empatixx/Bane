@@ -1,4 +1,4 @@
-#version 330
+#version 130
 uniform sampler2D sampler;
 uniform vec2 stepSize;
 uniform float outlineAlpha;
@@ -6,8 +6,6 @@ uniform vec3 color;
 
 
 in vec2 tex_coords;
-out vec4 gl_FragColor;
-
 
 void main(){
     float alpha = 4*texture2D( sampler, tex_coords ).a;

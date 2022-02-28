@@ -1,10 +1,8 @@
-#version 330
+#version 130
 
 uniform sampler2D sampler;
 uniform vec2 resolution;
 uniform float darkness;
-
-out vec4 gl_FragColor;
 
 vec4 blur(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {
     vec4 color = vec4(0.0);

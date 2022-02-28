@@ -1,10 +1,8 @@
-#version 330
+#version 130
 
 uniform sampler2D sampler;
 uniform vec2 pos;
 uniform vec2 iResolution;
-
-out vec4 gl_FragColor;
 
 void main(){
     gl_FragColor = vec4(0.0);

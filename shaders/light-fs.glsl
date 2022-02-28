@@ -17,8 +17,6 @@ uniform vec2 size;
 
 in vec2 tex_coords;
 
-out vec4 gl_FragColor;
-
 
 void main()
 {

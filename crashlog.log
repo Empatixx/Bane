@@ -1,0 +1,16 @@
+00:00  INFO: [kryonet] Server opened.
+00:00  INFO: Connecting: localhost/127.0.0.1:54555/54777
+00:00  INFO: [kryonet] Connection 1 connected: /127.0.0.1
+00:00  INFO: [kryonet] Connection 1 connected: localhost/127.0.0.1
+SERVER: X: 13888.0 Y:2368.0
+SERVER: X: 13465.0 Y:6080.0
+SERVER: X: 10649.0 Y:2624.0
+SERVER: X: 4075.0 Y:3648.0
+STILL NOT LOADED MAP
+SERVER: X: 7577.0 Y:4416.0
+SERVER: X: 1728.0 Y:3008.0
+00:43  INFO: [kryonet] Closing server connections...
+00:43  INFO: [kryonet] Connection 1 disconnected.
+00:43  INFO: [kryonet] Connection 1 disconnected.
+00:43  INFO: [kryonet] Server closed.
+AL lib: (EE) alc_cleanup: 1 device not closed

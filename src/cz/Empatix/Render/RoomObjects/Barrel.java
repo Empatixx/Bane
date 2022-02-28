@@ -310,6 +310,9 @@ public class Barrel extends DestroyableObject {
             if(!tileMap.isServerSide()){
                 animation.setFrames(spritesheet.getSprites(DESTROY));
                 animation.setDelay(100);
+            } else {
+                animation = new Animation(4);
+                animation.setDelay(100);
             }
             collision = false;
             moveable = false;

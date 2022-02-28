@@ -16,6 +16,7 @@ public abstract class RoomObject extends MapObject{
 
     public float maxMovement;
 
+    private long lastTimeSync = -1;
 
     public RoomObject(TileMap tm){
         super(tm);
@@ -63,8 +64,11 @@ public abstract class RoomObject extends MapObject{
     }
 
 
-    public void animationSync(Network.RoomObjectAnimationSync packet) {
-        animation.setTime(packet.time);
-        animation.setFrame(packet.sprite);
+    public void animationSync(Network.RoomObjectAnimationSync sync) {
+        if(lastTimeSync < sync.packetTime) {
+            animation.setTime(sync.time);
+            animation.setFrame(sync.sprite);
+            lastTimeSync = sync.packetTime;
+        }
     }
 }

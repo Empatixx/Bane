@@ -122,12 +122,17 @@ public class EnemyManager {
             }
             Object[] playerHitPackets = packetHolder.get(PacketHolder.ENEMYSYNC);
             for(Enemy e : enemies) {
+                Network.EnemySync theRecent = null;
                 for(Object o : playerHitPackets){
                     Network.EnemySync sync = (Network.EnemySync) o;
                     if(e.id == sync.id) {
-                        e.handleSync(sync);
+                        if(theRecent == null) theRecent = sync;
+                        else if (theRecent.packetTime < sync.packetTime){
+                            theRecent = sync;
+                        }
                     }
                 }
+                if(theRecent != null)e.handleSync(theRecent);
             }
             for(Object o : packetHolder.get(PacketHolder.ADD_ENEMYPROJECTION)){
                 Network.AddEnemyProjectile addEnemyProjectile = (Network.AddEnemyProjectile) o;

@@ -336,6 +336,10 @@ public class Network {
         public byte sprite;
         public long time;
         public long cooldown; // like in flamethrower, arrowtrap
+        public long packetTime;
+        public RoomObjectAnimationSync(){
+            packetTime = System.nanoTime();
+        }
     }
     public static class TrapArrowMove{
         public int id;
@@ -356,6 +360,10 @@ public class Network {
         public byte currAction;
         public byte sprite;
         public long time;
+        public long packetTime;
+        public EnemySync(){
+            packetTime = System.nanoTime();
+        }
     }
     public static class LaserBeamSync {
         public int id;
@@ -363,6 +371,10 @@ public class Network {
         public float x,y;
         public long time;
         public double angle;
+        public long packetTime;
+        public LaserBeamSync(){
+            packetTime = System.nanoTime();
+        }
     }
     public static class LaserBeamHit {
         public int idHit;

@@ -376,7 +376,6 @@ public class Room {
                         } else if(tm.isServerSide()){
                             ItemManagerMP itemManager = ItemManagerMP.getInstance();
                             ItemDrop drop = itemManager.createDrop(object.getX(),object.getY());
-                            System.out.println("TEST");
                             if(((DestroyableObject)object).isPreventItemDespawn()){
                                 drop.preventDespawn();
                             }

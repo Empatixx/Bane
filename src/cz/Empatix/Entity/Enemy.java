@@ -44,17 +44,14 @@ public abstract class Enemy extends MapObject{
 
     protected boolean itemDropped;
 
-    //protected boolean flinching;
-    //protected long flinchTimer;
-
     transient private Shader outlineShader;
     transient private Shader spawnShader;
 
     protected long lastTimeDamaged;
-
     protected long spawnTime;
-
     protected boolean reflectBullets;
+
+    private long lastTimeSync = -1;
 
     public Enemy(TileMap tm, Player player) {
         super(tm);
@@ -867,10 +864,14 @@ public abstract class Enemy extends MapObject{
     public abstract void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket);
 
     public void handleSync(Network.EnemySync sync){
-        animation.setTime(sync.time);
-        currentAction = sync.currAction;
-        animation.setFrames(spritesheet.getSprites(currentAction));
-        animation.setFrame(sync.sprite);
+        // packet sync is not old
+        if(lastTimeSync < sync.packetTime){
+            animation.setTime(sync.time);
+            currentAction = sync.currAction;
+            animation.setFrames(spritesheet.getSprites(currentAction));
+            animation.setFrame(sync.sprite);
+            lastTimeSync = sync.packetTime;
+        }
     }
     // increase health of enemy
     public void heal(int amount){

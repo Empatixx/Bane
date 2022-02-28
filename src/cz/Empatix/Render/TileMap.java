@@ -726,10 +726,7 @@ public class TileMap {
 			}
 			// sync room object animations with server logic
 			Object[] syncAnimPackets = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.ROANIMSYNC);
-			for(Object o : syncAnimPackets){
-				Network.RoomObjectAnimationSync packet = (Network.RoomObjectAnimationSync) o;
-				handleRoAnimSynchronization(packet);
-			}
+			handleRoAnimSynchronization(syncAnimPackets);
 
 			// arrow trap packets
 			Object[] createTrapArrows = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.TRAPARROWADD);
@@ -815,13 +812,22 @@ public class TileMap {
 			}
 		}
 	}
-	private void handleRoAnimSynchronization(Network.RoomObjectAnimationSync packet) {
-		ArrayList<RoomObject>[] objects = getRoomMapObjects();
-		for(ArrayList<RoomObject> roomObjects : objects){
+	private void handleRoAnimSynchronization(Object[] packets) {
+		ArrayList<RoomObject>[] objectsList = getRoomMapObjects();
+		for(ArrayList<RoomObject> roomObjects : objectsList){
 			for(RoomObject roomObject : roomObjects){
-				if(roomObject.getId() == packet.id){
-					roomObject.animationSync(packet);
-					return;
+				Network.RoomObjectAnimationSync theRecent = null;
+				for(Object o : packets){
+					Network.RoomObjectAnimationSync sync = (Network.RoomObjectAnimationSync) o;
+					if(roomObject.id == sync.id) {
+						if(theRecent == null) theRecent = sync;
+						else if (theRecent.packetTime < sync.packetTime){
+							theRecent = sync;
+						}
+					}
+				}
+				if(theRecent != null){
+					roomObject.animationSync(theRecent);
 				}
 			}
 		}
@@ -829,9 +835,18 @@ public class TileMap {
 			if (sideRoom == null) continue;
 			ArrayList<RoomObject> roomObjects = sideRoom.getMapObjects();
 			for (RoomObject roomObject : roomObjects) {
-				if (roomObject.getId() == packet.id) {
-					roomObject.animationSync(packet);
-					return;
+				Network.RoomObjectAnimationSync theRecent = null;
+				for(Object o : packets){
+					Network.RoomObjectAnimationSync sync = (Network.RoomObjectAnimationSync) o;
+					if(roomObject.id == sync.id) {
+						if(theRecent == null) theRecent = sync;
+						else if (theRecent.packetTime < sync.packetTime){
+							theRecent = sync;
+						}
+					}
+				}
+				if(theRecent != null){
+					roomObject.animationSync(theRecent);
 				}
 			}
 		}

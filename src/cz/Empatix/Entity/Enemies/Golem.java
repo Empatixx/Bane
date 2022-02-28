@@ -510,6 +510,8 @@ public class Golem extends Enemy {
         double angle;
         private Player[] player;
 
+        private long lastTimeBeamSync = -1;
+
         LaserBeam(TileMap tm, Player[] p){
             super(tm);
             if(tm.isServerSide()){
@@ -595,7 +597,7 @@ public class Golem extends Enemy {
         public void update(){
             animation.update();
             setMapPosition();
-            int playerrIndex = theClosestPlayerIndex();
+            int playerrIndex = theFarthestPlayerIndex();
             if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
                 float y = originalPos.y- player[playerrIndex].getY();
                 float x = originalPos.x- player[playerrIndex].getX();
@@ -660,20 +662,28 @@ public class Golem extends Enemy {
                 }
             } else {
                 Object[] objects = MultiplayerManager.getInstance().packetHolder.getWithoutClear(PacketHolder.LASERBEAMSYNC);
+                Network.LaserBeamSync theRecent = null;
                 for(Object o : objects){
-                    handleSync((Network.LaserBeamSync) o);
+                    Network.LaserBeamSync sync = (Network.LaserBeamSync) o;
+                    if(sync.id == id){
+                        if(theRecent == null) theRecent = sync;
+                        else if (theRecent.packetTime < sync.packetTime){
+                            theRecent = sync;
+                        }
+                    }
                 }
+                if(theRecent != null)handleSync(theRecent);
             }
         }
         public void handleSync(Network.LaserBeamSync sync){
-            if(sync.id == id){
+            if(lastTimeBeamSync < sync.packetTime)
                 angle = sync.angle;
                 animation.setFrame(sync.sprite);
                 animation.setTime(sync.time);
                 position.x = sync.x;
                 position.y = sync.y;
                 MultiplayerManager.getInstance().packetHolder.remove(PacketHolder.LASERBEAMSYNC,sync);
-            }
+                lastTimeBeamSync = sync.packetTime;
         }
         @Override
         public void draw() {
@@ -895,23 +905,17 @@ public class Golem extends Enemy {
 
             return true;
         }
-        /**
-         *
-         * @return index of the closest player to enemy
-         */
-        public int theClosestPlayerIndex(){
+        public int theFarthestPlayerIndex(){
             int theClosest = 0;
-            float prevDistance = -1,distance;
-            for(int i = 0;i<player.length-1;i++){
-                Player secPlayer = player[i+1];
+            float distance,prevDistance = (float)Math.sqrt(Math.pow(getX()-player[0].getX(),2)+Math.pow(getY()-player[0].getY(),2));;
+            for(int i = 1;i<player.length;i++){
                 Player curPlayer = player[i];
-                if(secPlayer == null) break;
-                distance = (float)Math.sqrt(Math.pow(secPlayer.getX()-curPlayer.getX(),2)+Math.pow(secPlayer.getY()-curPlayer.getY(),2));
-                if(prevDistance == -1){
+                if(curPlayer == null) continue;
+                if(curPlayer.isDead()) continue;
+                distance = (float)Math.sqrt(Math.pow(getX()-curPlayer.getX(),2)+Math.pow(getY()-curPlayer.getY(),2));
+                if (prevDistance < distance){
                     prevDistance = distance;
-                } else if (prevDistance > distance){
-                    prevDistance = distance;
-                    theClosest = i+1;
+                    theClosest = i;
                 }
             }
             return theClosest;

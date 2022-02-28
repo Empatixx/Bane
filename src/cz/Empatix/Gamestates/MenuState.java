@@ -552,6 +552,8 @@ public class MenuState extends GameState{
                         source.play(soundMenuClick);
                         if(bar.getType() == CONFIRMMP) {
                             if(!mpJoinInputHuds[0].isEmpty()){
+                                mpJoinInputHuds[0].clearKeys();
+                                mpJoinInputHuds[1].clearKeys();
                                 gsm.setStateInitMP(GameStateManager.PROGRESSROOMMP,false,mpJoinInputHuds[0].getValue(),mpJoinInputHuds[1].getValue());
                                 mpSelectedMenu = -1;
                                 playMenu = false;
@@ -579,6 +581,8 @@ public class MenuState extends GameState{
                         if(bar.getType() == CONFIRMMP) {
                             if(!mpHostInputHud.isEmpty()){
                                 mpSelectedMenu = -1;
+                                mpHostInputHud.clearKeys();
+
                                 gsm.setStateInitMP(GameStateManager.PROGRESSROOMMP,true,mpHostInputHud.getValue(),"localhost");
                                 playMenu = false;
                             }

@@ -6,6 +6,7 @@ import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Multiplayer.GunsManagerMP;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
@@ -41,13 +42,24 @@ public class Ammobelt extends Artefact {
         rarity = 1;
 
         scale = 4f;
+        if(!tm.isServerSide()){
+            imageArtefact = new Image("Textures\\artefacts\\ammobelt.tga",new Vector3f(1403,975,0),
+                    scale  );
+            chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
+                    2.6f);
+        }
     }
     @Override
-    public void update(boolean pause) {
+    public void updateSP(boolean pause) {
     }
 
     @Override
-    public void update(String username) {
+    public void updateMPClient() {
+
+    }
+
+    @Override
+    public void updateMPServer(String username) {
 
     }
 
@@ -111,7 +123,6 @@ public class Ammobelt extends Artefact {
 
     @Override
     public void activate(String username) {
-        super.activateClientSide();
         charge = 0;
         // refills  players ammo by 20%
         GunsManagerMP gunsManager = GunsManagerMP.getInstance();
@@ -119,7 +130,13 @@ public class Ammobelt extends Artefact {
         gunsManager.addAmmo(20,type,username);
     }
     @Override
-    public void activateClientSide() {
+    public void activateClientSide(String user) {
+        super.activateClientSide(user);
+        if(((PlayerMP)p[0]).getUsername().equalsIgnoreCase(user)){
+            GunsManager gunsManager = GunsManager.getInstance();
+            int type = gunsManager.getWeaponTypes()[gunsManager.getCurrentslot()];
+            gunsManager.addAmmo(20,type);
+        }
         charge = 0;
     }
     @Override
@@ -146,6 +163,11 @@ public class Ammobelt extends Artefact {
     @Override
     public boolean playerHitEvent() {
         return false;
+    }
+
+    @Override
+    public void playerDropEvent() {
+
     }
 }
 

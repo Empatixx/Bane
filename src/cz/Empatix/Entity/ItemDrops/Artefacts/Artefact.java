@@ -35,6 +35,7 @@ public abstract class Artefact {
 
     public TileMap tm;
     public Player[] p;
+    protected String userMP;
     // singleplayer
     public Artefact(TileMap tm, Player p){
         this.tm = tm;
@@ -61,25 +62,66 @@ public abstract class Artefact {
         obtainable = true;
         oneUse = false;
         canShopItem = false;
+        if(!tm.isServerSide()){
+            geometryShader = ShaderManager.getShader("shaders\\geometry");
+            if (geometryShader == null){
+                geometryShader = ShaderManager.createShader("shaders\\geometry");
+            }
+
+            vboVertices = ModelManager.getModel(12,6);
+            if(vboVertices == -1){
+                vboVertices = ModelManager.createModel(12,6);
+            }
+        }
     }
     protected abstract void preDraw();
     protected abstract void draw();
 
     public abstract void charge();
-    // sp
+    /**
+     * activates artefact in singleplayer
+     */
     public abstract void activate();
-    // mp - serverside
+
+    /**
+     * activates artefact in multiplayer - server side
+     * @param username player name who activated artefact
+     */
     public abstract void activate(String username);
-    // mp - clientside
-    public void activateClientSide(){
+
+    /**
+     * activation of artefact in multiplayer - client side
+     * @param user player name who activated artefact
+     */
+    public void activateClientSide(String user){
         if(oneUse){
             ArtefactManager artefactManager = ArtefactManager.getInstance();
             artefactManager.setCurrentArtefact(null); // reseting artefact
             dropped = false;
         }
+        userMP = user;
     }
-    public abstract void update(boolean pause);
-    public abstract void update(String username);
+
+    /**
+     * updates artefact in singeplayer
+     * @param pause - if game is paused, needed for pausing timings
+     */
+    public abstract void updateSP(boolean pause);
+
+    /**
+     * updates artefact in multiplayer, works with more players
+     * variable userMP is playername who used artefact
+     * client side
+     */
+    public abstract void updateMPClient();
+
+    /**
+     * updates artefact in multiplayer, skips all visual,audio effects
+     * variable userMP is playername who used artefact
+     * server side
+     * @param username
+     */
+    public abstract void updateMPServer(String username);
     public abstract void handleAddBulletPacket(Network.ArtefactAddBullet addBullet);
 
 
@@ -132,5 +174,11 @@ public abstract class Artefact {
     }
 
     public abstract boolean playerHitEvent();
+    public abstract void playerDropEvent();
+
+    public void handleArtefactEvent(Network.ArtefactEventState p) {
+        if(p.state == 0) this.playerHitEvent();
+        if(p.state == 1) this.playerDropEvent();
+    }
 }
 

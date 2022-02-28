@@ -75,7 +75,7 @@ public class LightManager {
         ArrayList<LightPoint> lights = new ArrayList<>(LightManager.lights);
         for(int i = 0;i<lights.size();i++){
             LightPoint light = lights.get(i);
-            if(light.isNotOnScreen()){
+            if(light.isNotOnScreen() || light.shouldRemove()){
                 lights.remove(light);
                 i--;
             }

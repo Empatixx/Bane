@@ -206,6 +206,9 @@ public class ItemManager {
             for(Object dropArtefact : packetHolder.get(PacketHolder.DROPARTEFACT)){
                 dropArtefact((Network.DropArtefact) dropArtefact);
             }
+            for(Object dropArtefact : packetHolder.get(PacketHolder.MOVEITEM)){
+                handleMoveDropItemPacket((Network.MoveDropItem) dropArtefact);
+            }
             for(Object removeItem : packetHolder.get(PacketHolder.REMOVEITEM)){
                 for(ItemDrop drop:itemDrops){
                     if(drop.getId() == ((Network.RemoveItem)(removeItem)).id){

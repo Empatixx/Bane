@@ -66,7 +66,23 @@ public class ArtefactManager {
 
         firstAlert = false;
     }
+    public ArtefactManager(TileMap tm, Player[] players){
+        artefacts = new ArrayList<>();
+        // preventing to keeping artefact from previous game
+        currentArtefact = null;
 
+        artefacts.add(new RingOfFire(tm,players));
+        artefacts.add(new TransportableArmorPot(tm,players));
+        artefacts.add(new BerserkPot(tm,players));
+        artefacts.add(new LuckyCoin(tm,players));
+        artefacts.add(new Ammobelt(tm,players));
+        artefacts.add(new ReviveBook(tm,players));
+        artefacts.add(new ShieldHorn(tm,players));
+
+        artefactHud = new Image("Textures\\Artefacts\\artefacthud.tga",new Vector3f(1400,975,0),2.6f);
+
+        firstAlert = false;
+    }
 
     public void preDraw(){
         for(Artefact artefact:artefacts){
@@ -104,22 +120,25 @@ public class ArtefactManager {
     // singleplayer
     public void  update(boolean pause){
         for(Artefact artefact:artefacts){
-            artefact.update(pause);
+            artefact.updateSP(pause);
         }
         if(currentArtefact != null){
             currentArtefact.updateChargeAnimation();
         }
     }
     // multiplayer
-    public void  update(boolean pause,Object[] hitBullets){
+    public void  update(Object[] hitBullets){
         // receive packet, that player used artefact sucessfully
         MultiplayerManager mpManager = MultiplayerManager.getInstance();
         Object[] packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTACTIVATED);
         for(Object o : packets) {
             Network.ArtefactActivate p = (Network.ArtefactActivate)o;
-            if(mpManager.getUsername().equalsIgnoreCase(p.username)){
-                artefacts.get(p.slot).activateClientSide();
-            }
+            artefacts.get(p.slot).activateClientSide(p.username);
+        }
+        packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTSTATE);
+        for(Object o : packets) {
+            Network.ArtefactEventState p = (Network.ArtefactEventState)o;
+            artefacts.get(p.slot).handleArtefactEvent(p);
         }
         packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTADDBULLET);
         for(Object o : packets) {
@@ -134,7 +153,7 @@ public class ArtefactManager {
         }
 
         for(Artefact artefact:artefacts){
-            artefact.update(pause);
+            artefact.updateMPClient();
         }
         if(currentArtefact != null){
             currentArtefact.updateChargeAnimation();
@@ -153,6 +172,7 @@ public class ArtefactManager {
         if(this.currentArtefact != null){
             ItemManager itemManager = ItemManager.getInstance();
             itemManager.dropPlayerArtefact(this.currentArtefact,x,y);
+            this.currentArtefact.playerDropEvent();
         }
         this.currentArtefact = currentArtefact;
 

@@ -30,6 +30,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 public class PlayerMP extends Player {
     private String username;
+    private int idConnection;
 
     private boolean origin;
     private MultiplayerManager mpManager;
@@ -251,7 +252,7 @@ public class PlayerMP extends Player {
             heartBeat = System.currentTimeMillis()-InGame.deltaPauseTime();
             if(lastDamage == DamageAbsorbedBy.ARMOR){
                 hitVignette[1].updateFadeTime();
-            } else {
+            } else if(lastDamage == DamageAbsorbedBy.HEALTH){
                 hitVignette[0].updateFadeTime();
             }
         }
@@ -351,7 +352,7 @@ public class PlayerMP extends Player {
 
             if(lastDamage == DamageAbsorbedBy.ARMOR){
                 hitVignette[1].update();
-            } else {
+            } else if(lastDamage == DamageAbsorbedBy.HEALTH){
                 hitVignette[0].update();
             }
         }
@@ -389,7 +390,7 @@ public class PlayerMP extends Player {
         flinchingTimer = System.currentTimeMillis();
         if(lastDamage == DamageAbsorbedBy.ARMOR){
             hitVignette[1].updateFadeTime();
-        } else {
+        } else if(lastDamage == DamageAbsorbedBy.HEALTH){
             hitVignette[0].updateFadeTime();
         }
         source.play(soundPlayerhurt[Random.nextInt(2)]);
@@ -550,5 +551,13 @@ public class PlayerMP extends Player {
 
     public void setTotalMoves(int totalMoves) {
         this.totalMoves = totalMoves;
+    }
+
+    public void setIdConnection(int idConnection) {
+        this.idConnection = idConnection;
+    }
+
+    public int getIdConnection() {
+        return idConnection;
     }
 }

@@ -76,6 +76,7 @@ public class Network {
         kryo.register(NumUpgradesUpdate.class);
         kryo.register(NumUpgrades.class);
         kryo.register(EnemyHealthHeal.class);
+        kryo.register(ArtefactEventState.class);
 
     }
     // MAIN
@@ -104,6 +105,15 @@ public class Network {
     public static class MovePlayerInput {
         public String username;
         public boolean up,down,left,right;
+    }
+    public static class ArtefactEventState {
+        /*
+        States:
+            0 - Player artefact hit
+            1 - Player artefact drop
+         */
+        public int slot;
+        public int state;
     }
     // PROGRESS ROOM + MAP GENERATION, POST DEATH
     public static class Ready {

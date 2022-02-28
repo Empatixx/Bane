@@ -43,13 +43,24 @@ public class ReviveBook extends Artefact {
         scale = 3f;
         oneUse = true;
         canShopItem = true;
+        if(!tm.isServerSide()){
+            imageArtefact = new Image("Textures\\artefacts\\revivebook.tga",new Vector3f(1403,975,0),
+                    scale  );
+            chargeBar = new Image("Textures\\artefacts\\artifactcharge1.tga",new Vector3f(1400,1055,0),
+                    2.6f);
+        }
     }
     @Override
-    public void update(boolean pause) {
+    public void updateSP(boolean pause) {
     }
 
     @Override
-    public void update(String username) {
+    public void updateMPClient() {
+
+    }
+
+    @Override
+    public void updateMPServer(String username) {
     }
 
     @Override
@@ -129,8 +140,16 @@ public class ReviveBook extends Artefact {
     }
 
     @Override
-    public void activateClientSide() {
-        super.activateClientSide();
+    public void activateClientSide(String user) {
+        super.activateClientSide(user);
+        for(Player player : p){
+            if(player != null){
+                if(((PlayerMP)player).getUsername().equalsIgnoreCase(user)){
+                    ((PlayerMP)player).reset();
+                    break;
+                }
+            }
+        }
         charge = 0;
 
     }
@@ -159,6 +178,11 @@ public class ReviveBook extends Artefact {
     @Override
     public boolean playerHitEvent() {
         return false;
+    }
+
+    @Override
+    public void playerDropEvent() {
+
     }
 }
 

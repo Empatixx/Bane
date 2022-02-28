@@ -52,8 +52,6 @@ public class LightPoint {
     public void remove() {
         this.remove = true;
         object = null;
-        color = null;
-        pos = null;
     }
 
     public boolean shouldRemove() {

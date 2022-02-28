@@ -52,14 +52,25 @@ public class LuckyCoin extends Artefact {
         multiplier = 0;
 
         scale = 2f;
-
+        if(!tm.isServerSide()){
+            imageArtefact = new Image("Textures\\artefacts\\luckycoin.tga",new Vector3f(1403,975,0),
+                    scale  );
+            chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
+                    2.6f);
+            textRender = new TextRender();
+        }
     }
     @Override
-    public void update(boolean pause) {
+    public void updateSP(boolean pause) {
     }
 
     @Override
-    public void update(String username) {
+    public void updateMPClient() {
+
+    }
+
+    @Override
+    public void updateMPServer(String username) {
     }
 
     @Override
@@ -192,10 +203,17 @@ public class LuckyCoin extends Artefact {
     }
 
     @Override
-    public void activateClientSide() {
-        super.activateClientSide();
+    public void activateClientSide(String user) {
+        super.activateClientSide(user);
         charge = 0;
-        multiplier++;
+        for(Player player : p){
+            if(player != null){
+                if(((PlayerMP)p[0]).getUsername().equalsIgnoreCase(user)){
+                    multiplier++;
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -223,6 +241,10 @@ public class LuckyCoin extends Artefact {
     @Override
     public boolean playerHitEvent() {
         return false;
+    }
+
+    @Override
+    public void playerDropEvent() {
     }
 }
 

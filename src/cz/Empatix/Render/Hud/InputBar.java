@@ -246,4 +246,10 @@ public class InputBar {
         return click;
     }
     public String getValue(){return stringbuilder.toString();}
+
+    public void clearKeys() {
+        for(int i = 0;i<used.length;i++){
+            used[i] = false;
+        }
+    }
 }

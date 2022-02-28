@@ -6,6 +6,7 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Special.LuckyCoin;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Special.ReviveBook;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.Ammobelt;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.BerserkPot;
+import cz.Empatix.Entity.ItemDrops.Artefacts.Support.ShieldHorn;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
@@ -123,6 +124,9 @@ public class ArtefactDrop extends ItemDrop {
             } else if(artefact instanceof TransportableArmorPot){
                 cwidth = cheight = width = height = 32;
             }  else if(artefact instanceof ReviveBook){
+                cwidth = width = 34;
+                cheight = height = 32;
+            }  else if(artefact instanceof ShieldHorn){
                 cwidth = width = 34;
                 cheight = height = 32;
             }

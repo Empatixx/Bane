@@ -1,9 +1,12 @@
 package cz.Empatix.Entity.ItemDrops.Artefacts.Support;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.ArtefactManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
@@ -105,9 +108,61 @@ public class ShieldHorn extends Artefact {
         rarity = 1;
 
         scale = 4f;
+        if(!tm.isServerSide()){
+            imageArtefact = new Image("Textures\\artefacts\\shieldhorn.tga",new Vector3f(1400,975,0),
+                    scale  );
+
+            // try to find spritesheet if it was created once
+            magicShield = SpritesheetManager.getSpritesheet("Textures\\artefacts\\magicshield.tga");
+
+            // creating a new spritesheet
+            if (magicShield == null){
+                magicShield = SpritesheetManager.createSpritesheet("Textures\\artefacts\\magicshield.tga");
+                Sprite[] images = new Sprite[4];
+
+                for (int j = 0; j < 4; j++) {
+
+                    float[] texCoords =
+                            {
+                                    (float) j / 4, 0,
+
+                                    (float) j / 4, 1,
+
+                                    (1.0f + j) / 4, 1,
+
+                                    (1.0f + j) / 4, 0
+                            };
+
+
+                    Sprite sprite = new Sprite(texCoords);
+
+                    images[j] = sprite;
+
+                }
+
+                magicShield.addSprites(images);
+            }
+
+            animation = new Animation();
+            animation.setFrames(magicShield.getSprites(0));
+            animation.setDelay(100);
+
+            vboShield = ModelManager.getModel(64,64);
+            if (vboShield == -1){
+                vboShield = ModelManager.getModel(64,64);
+            }
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+
+            chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
+                    2.6f);
+            rarity = 1;
+        }
     }
     @Override
-    public void update(boolean pause) {
+    public void updateSP(boolean pause) {
         if(shield) light.update();
         if(!pause){
             animation.update();
@@ -115,9 +170,14 @@ public class ShieldHorn extends Artefact {
     }
 
     @Override
-    public void update(String username) {
+    public void updateMPClient() {
         if(shield) light.update();
         animation.update();
+    }
+
+
+    @Override
+    public void updateMPServer(String username) {
     }
 
     @Override
@@ -209,16 +269,20 @@ public class ShieldHorn extends Artefact {
     public void activate(String username) {
         charge = 0;
         shield = true;
-        for(Player p : p){
-            if(p == null) continue;
-            if(((PlayerMP)p).getUsername().equalsIgnoreCase(username)){
-                light = LightManager.createLight(new Vector3f(0,0,1),new Vector2f(p.getX(),p.getY()),3,p);
-            }
-        }
     }
     @Override
-    public void activateClientSide() {
-        super.activateClientSide();
+    public void activateClientSide(String user) {
+        super.activateClientSide(user);
+        for(Player p : p){
+            if(p == null) continue;
+            if(((PlayerMP)p).getUsername().equalsIgnoreCase(user)){
+                light = LightManager.createLight(new Vector3f(0,0,1),new Vector2f(0,0),3,p);
+                shield = true;
+                light.setPos(p.getX(),p.getY());
+                position = p.getPosition();
+                break;
+            }
+        }
         charge = 0;
     }
     @Override
@@ -245,11 +309,36 @@ public class ShieldHorn extends Artefact {
     @Override
     public boolean playerHitEvent() {
         if(shield){
-            light.remove();
-            light = null;
             shield = false;
+            if(tm.isServerSide()){
+                Network.ArtefactEventState aes = new Network.ArtefactEventState();
+                aes.slot = ArtefactManagerMP.getInstance().getArtefactSlot(this);
+                aes.state = 0;
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(aes);
+            } else {
+                light.remove();
+                light = null;
+            }
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void playerDropEvent() {
+        if(shield) {
+            shield = false;
+            if(tm.isServerSide()){
+                Network.ArtefactEventState aes = new Network.ArtefactEventState();
+                aes.slot = ArtefactManagerMP.getInstance().getArtefactSlot(this);
+                aes.state = 1;
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(aes);
+            } else {
+                light.remove();
+                light = null;
+            }
+        }
     }
 }

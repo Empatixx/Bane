@@ -50,7 +50,8 @@ public class Player extends MapObject {
     // if damage was absorbed by health or armor
     public enum DamageAbsorbedBy {
         ARMOR,
-        HEALTH
+        HEALTH,
+        IMMUNE
     }
 
     // stuff
@@ -348,7 +349,7 @@ public class Player extends MapObject {
             heartBeat = System.currentTimeMillis()-InGame.deltaPauseTime();
             if(lastDamage == DamageAbsorbedBy.ARMOR){
                 hitVignette[1].updateFadeTime();
-            } else {
+            } else if(lastDamage == DamageAbsorbedBy.HEALTH){
                 hitVignette[0].updateFadeTime();
             }
         }
@@ -418,7 +419,7 @@ public class Player extends MapObject {
 
         if(lastDamage == DamageAbsorbedBy.ARMOR){
             hitVignette[1].update();
-        } else {
+        } else if(lastDamage == DamageAbsorbedBy.HEALTH){
             hitVignette[0].update();
         }
         //  IMMORTALITY AFTER GETTING HIT
@@ -496,7 +497,7 @@ public class Player extends MapObject {
     public void drawVignette(){
         if(lastDamage == DamageAbsorbedBy.ARMOR){
             hitVignette[1].draw();
-        } else {
+        } else if (lastDamage == DamageAbsorbedBy.HEALTH){
             hitVignette[0].draw();
         }
     }
@@ -546,14 +547,23 @@ public class Player extends MapObject {
             if(immune){
                 flinching = true;
                 flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
+                lastDamage = DamageAbsorbedBy.IMMUNE;
+                Network.PlayerHit playerHit = new Network.PlayerHit();
+                playerHit.type = lastDamage;
+                playerHit.username = ((PlayerMP)(this)).getUsername();
+
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllTCP(playerHit);
                 return;
             }
         } else {
             ArtefactManager artefactManager = ArtefactManager.getInstance();
             boolean immune = artefactManager.playeHitEvent();
             if(immune){
+                lastDamage = DamageAbsorbedBy.IMMUNE;
                 flinching = true;
                 flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
+                source.play(soundPlayerhurt[Random.nextInt(2)]);
                 return;
             }
         }

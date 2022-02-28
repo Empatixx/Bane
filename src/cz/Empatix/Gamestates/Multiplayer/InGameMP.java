@@ -311,7 +311,7 @@ public class InGameMP extends GameState {
         gunsManager = new GunsManager(tileMap,player);
         GunsManager.init(gunsManager);
 
-        artefactManager = new ArtefactManager(tileMap,player[0]);
+        artefactManager = new ArtefactManager(tileMap,player);
         ArtefactManager.init(artefactManager);
 
         // items drops
@@ -702,7 +702,7 @@ public class InGameMP extends GameState {
 
             Object[] hitBulletPackets = mpManager.packetHolder.get(PacketHolder.HITBULLET);
             enemyManager.update();
-            artefactManager.update(pause,hitBulletPackets);
+            artefactManager.update(hitBulletPackets);
             gunsManager.update(hitBulletPackets);
 
             damageIndicator.update();
@@ -875,7 +875,7 @@ public class InGameMP extends GameState {
         // updating if player shoots any enemies
         Object[] hitBulletPackets = mpManager.packetHolder.get(PacketHolder.HITBULLET);
         enemyManager.update();
-        artefactManager.update(pause,hitBulletPackets);
+        artefactManager.update(hitBulletPackets);
         gunsManager.update(hitBulletPackets);
 
         damageIndicator.update();

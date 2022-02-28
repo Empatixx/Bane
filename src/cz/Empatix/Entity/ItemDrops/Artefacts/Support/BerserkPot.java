@@ -4,7 +4,6 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Multiplayer.Network;
@@ -76,13 +75,23 @@ public class BerserkPot extends Artefact {
         removedSpeed = true;
 
         scale = 2f;
+        if(!tm.isServerSide()){
+            imageArtefact = new Image("Textures\\artefacts\\berserkpot.tga",new Vector3f(1401,975,0),
+                    scale);
+            chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
+                    2.6f);
+            removedSpeed = true;
+            sprintParticles = new ArrayList<>(5);
+
+            textRender = new TextRender();
+        }
     }
     @Override
-    public void update(boolean pause) {
+    public void updateSP(boolean pause) {
 
         if(!removedSpeed){
 
-            if(!pause || MultiplayerManager.multiplayer){
+            if(!pause){
                 timeLeft = (System.currentTimeMillis() - this.time - InGame.deltaPauseTime() )/ 1000f;
                 timeLeft = 20 - timeLeft;
             }
@@ -131,27 +140,28 @@ public class BerserkPot extends Artefact {
             }
         }
     }
+
     @Override
-    public void update(String username) {
-        if(!removedSpeed){
-            for(Player player : p){
-                if(player != null) {
-                    if(System.currentTimeMillis() - time > 20000 && playerWithBonus.equalsIgnoreCase(((PlayerMP)player).getUsername())){
-                        removedSpeed = true;
-                        player.setMaxSpeed(player.getMaxSpeed()-bonusSpeed);
-                    }
-                    if(!((PlayerMP)player).getUsername().equalsIgnoreCase(username)) continue;
-                    timeLeft = (System.currentTimeMillis() - this.time )/ 1000f;
+    public void updateMPClient() {
+        for(Player p : p){
+            if(p != null){
+                if(!removedSpeed){
+                    timeLeft = (System.currentTimeMillis() - this.time - InGame.deltaPauseTime() )/ 1000f;
                     timeLeft = 20 - timeLeft;
-                    Vector3f speed = player.getSpeed();float maxSpeed = player.getMaxSpeed();
 
-                    if(Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed){
+                    if(((PlayerMP)p).getUsername().equalsIgnoreCase(userMP)){
+                        if(System.currentTimeMillis() - time - InGame.deltaPauseTime() > 20000){
+                            removedSpeed = true;
+                            p.setMaxSpeed(p.getMaxSpeed()-bonusSpeed);
+                        }
+                        Vector3f speed = p.getSpeed();float maxSpeed = p.getMaxSpeed();
 
-                        Vector3f position = player.getPosition();
-                        boolean up = player.isMovingUp(), down = player.isMovingDown(), left = player.isMovingLeft(), right = player.isMovingRight();
-                        int height = player.getCheight();
+                        if(Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed){
 
-                        if(!tm.isServerSide()){
+                            Vector3f position = p.getPosition();
+                            boolean up = p.isMovingUp(), down = p.isMovingDown(), left = p.isMovingLeft(), right = p.isMovingRight();
+                            int height = p.getCheight();
+
                             float value = Math.abs(speed.x);
                             if(value < Math.abs(speed.y)) value = Math.abs(speed.y);
                             if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 500-value*20){
@@ -173,18 +183,34 @@ public class BerserkPot extends Artefact {
                             }
                         }
                     }
-                    break;
                 }
             }
         }
-        if(!tm.isServerSide()){
-            for(int i = 0;i<sprintParticles.size();i++){
-                SprintParticle sprintParticle = sprintParticles.get(i);
+        for(int i = 0;i<sprintParticles.size();i++){
+            SprintParticle sprintParticle = sprintParticles.get(i);
 
-                sprintParticle.update();
-                if(sprintParticle.shouldRemove()){
-                    sprintParticles.remove(i);
-                    i--;
+            sprintParticle.update();
+            if(sprintParticle.shouldRemove()){
+                sprintParticles.remove(i);
+                i--;
+            }
+        }
+
+    }
+
+    @Override
+    public void updateMPServer(String username) {
+        if(!removedSpeed){
+            for(Player player : p){
+                if(player != null) {
+                    if(((PlayerMP)player).getUsername().equalsIgnoreCase(userMP)){
+                        if(System.currentTimeMillis() - time > 20000){
+                            removedSpeed = true;
+                            player.setMaxSpeed(player.getMaxSpeed()-bonusSpeed);
+                            userMP = null;
+                        }
+                        break;
+                    }
                 }
             }
         }
@@ -277,6 +303,11 @@ public class BerserkPot extends Artefact {
     }
 
     @Override
+    public void playerDropEvent() {
+
+    }
+
+    @Override
     public void activate() {
         charge = 0;
         removedSpeed = false;
@@ -296,20 +327,27 @@ public class BerserkPot extends Artefact {
                 bonusSpeed = player.getMaxSpeed()*0.25f;
                 player.setMaxSpeed(player.getMaxSpeed()*1.25f);
                 time = System.currentTimeMillis() - InGame.deltaPauseTime();
-                playerWithBonus = ((PlayerMP) player).getUsername();
+                userMP = username;
                 break;
             }
         }
     }
     @Override
-    public void activateClientSide() {
-        super.activateClientSide();
+    public void activateClientSide(String user) {
+        super.activateClientSide(user);
         charge = 0;
-        removedSpeed = false;
-        // refills player armor to full
-        bonusSpeed = p[0].getMaxSpeed()*0.25f;
-        p[0].setMaxSpeed(p[0].getMaxSpeed()*1.25f);
-        time = System.currentTimeMillis() - InGame.deltaPauseTime();
+        for(Player player : p){
+            if(player != null){
+                if(((PlayerMP)player).getUsername().equalsIgnoreCase(user)){
+                    removedSpeed = false;
+                    // refills player armor to full
+                    bonusSpeed = player.getMaxSpeed()*0.25f;
+                    player.setMaxSpeed(player.getMaxSpeed()*1.25f);
+                    time = System.currentTimeMillis() - InGame.deltaPauseTime();
+                    break;
+                }
+            }
+        }
     }
     @Override
     public void charge() {

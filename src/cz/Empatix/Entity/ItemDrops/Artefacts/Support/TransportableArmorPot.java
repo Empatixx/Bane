@@ -42,12 +42,24 @@ public class TransportableArmorPot extends Artefact {
         rarity = 1;
 
         scale = 3f;
+        if(!tm.isServerSide()){
+            imageArtefact = new Image("Textures\\artefacts\\tap.tga",new Vector3f(1403,975,0),
+                    scale  );
+            chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
+                    2.6f);
+        }
     }
     @Override
-    public void update(boolean pause) {
+    public void updateSP(boolean pause) {
     }
+
     @Override
-    public void update(String username) {
+    public void updateMPClient() {
+
+    }
+
+    @Override
+    public void updateMPServer(String username) {
     }
 
     @Override
@@ -115,6 +127,11 @@ public class TransportableArmorPot extends Artefact {
     }
 
     @Override
+    public void playerDropEvent() {
+
+    }
+
+    @Override
     public void activate() {
         charge = 0;
         // refills player armor to full
@@ -134,8 +151,16 @@ public class TransportableArmorPot extends Artefact {
         }
     }
     @Override
-    public void activateClientSide() {
-        super.activateClientSide();
+    public void activateClientSide(String user) {
+        super.activateClientSide(user);
+        for(Player player : p){
+            if(player != null){
+                if(((PlayerMP)player).getUsername().equalsIgnoreCase(user)){
+                    player.addArmor(100);
+                    break;
+                }
+            }
+        }
         charge = 0;
     }
     @Override

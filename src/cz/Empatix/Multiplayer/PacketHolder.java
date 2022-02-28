@@ -50,9 +50,10 @@ public class PacketHolder {
     public static final int LASERBEAMSYNC = 39;
     public static final int LASERBEAMHIT = 40;
     public static final int ENEMYHEAL = 41; // INCREASE IN HEALTH
+    public static final int ARTEFACTSTATE = 42; // ARTEFACT EVENTS
 
     public PacketHolder(){
-        final int size = 42;
+        final int size = 43;
 
         packetArrays = new ArrayList<>(size);
         for(int i = 0;i<size;i++){

@@ -50,10 +50,10 @@ public class ExplosiveAmmo extends ItemDrop {
             liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
             pickedUp = false;
 
-            width = 10;
-            height = 43;
+            width = 16;
+            height = 48;
             cwidth = 16;
-            cheight = 43;
+            cheight = 48;
             scale = 2f;
             facingRight = true;
 

@@ -129,6 +129,12 @@ public class GameClient{
                         packetHolder.add(object,PacketHolder.HITBULLET);
                     }
                 }
+                else if(object instanceof Network.ArtefactEventState){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        packetHolder.add(object,PacketHolder.ARTEFACTSTATE);
+                    }
+                }
                 else if(object instanceof Network.ArtefactAddBullet){
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
@@ -157,7 +163,7 @@ public class GameClient{
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
                         if(((InGameMP)gameState).itemManager != null){
-                            ((InGameMP)gameState).itemManager.handleMoveDropItemPacket((Network.MoveDropItem)object);
+                            packetHolder.add(object,PacketHolder.MOVEITEM);
                         }
                     }
                 }

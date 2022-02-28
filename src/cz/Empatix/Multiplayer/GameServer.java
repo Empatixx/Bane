@@ -201,6 +201,9 @@ public class GameServer {
                                         ready.setReady(false);
                                     }
                                 }
+                                itemManager.dropArtefact((int)tileMap.getPlayerStartX(),(int)tileMap.getPlayerStartY());
+                                itemManager.dropArtefact((int)tileMap.getPlayerStartX(),(int)tileMap.getPlayerStartY());
+                                itemManager.dropArtefact((int)tileMap.getPlayerStartX(),(int)tileMap.getPlayerStartY());
                             }
                         }
                         updates++;
@@ -263,6 +266,21 @@ public class GameServer {
             e.printStackTrace();
         }
         server.addListener(new Listener() {
+            @Override
+            public void disconnected(Connection connection) {
+                //TODO: synchronizace
+                synchronized (readyCheckPlayers) {
+                    for (PlayerMP player : connectedPlayers) {
+                        if (player.getIdConnection() == connection.getID()) {
+                            Network.Disconnect disconnect = new Network.Disconnect();
+                            disconnect.username = player.getUsername();
+                            server.sendToAllTCP(disconnect); // sending packet that player can't join
+                            return;
+                        }
+                    }
+                }
+            }
+
             public void received(Connection connection, Object object) {
                 if (object instanceof Network.Join) {
                     Network.Join joinPacket = (Network.Join) object;
@@ -408,6 +426,7 @@ public class GameServer {
     }
     private void handleJoin(Network.Join join, Connection connection) {
         PlayerMP playerMP = new PlayerMP(tileMap, join.username);
+        playerMP.setIdConnection(connection.getID());
 
         playerMP.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
 

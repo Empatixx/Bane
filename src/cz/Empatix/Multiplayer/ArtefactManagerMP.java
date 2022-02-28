@@ -7,6 +7,7 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Special.LuckyCoin;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Special.ReviveBook;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.Ammobelt;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.BerserkPot;
+import cz.Empatix.Entity.ItemDrops.Artefacts.Support.ShieldHorn;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Random;
@@ -43,6 +44,7 @@ public class ArtefactManagerMP {
         artefacts.add(new LuckyCoin(tm,player));
         artefacts.add(new Ammobelt(tm,player));
         artefacts.add(new ReviveBook(tm,player));
+        artefacts.add(new ShieldHorn(tm,player));
 
         init(this);
     }
@@ -67,7 +69,7 @@ public class ArtefactManagerMP {
                     updateSuccessly = playerArtefact.update(artefact); // updating players movement speed etc.
                 }
             }
-            if(!updateSuccessly) artefact.update(null); // updating like bullets etc. meanwhile players don't have artefact
+            if(!updateSuccessly) artefact.updateMPServer(null); // updating like bullets etc. meanwhile players don't have artefact
         }
     }
     public Artefact randomArtefact(){
@@ -153,7 +155,7 @@ public class ArtefactManagerMP {
         }
         public boolean update(Artefact artefact){
             if(artefact == currentArtefact){
-                currentArtefact.update(username);
+                currentArtefact.updateMPServer(username);
                 return true;
             }
             return false;
@@ -163,6 +165,7 @@ public class ArtefactManagerMP {
                 if(this.currentArtefact != null){
                     ItemManagerMP itemManager = ItemManagerMP.getInstance();
                     itemManager.dropPlayerArtefact(this.currentArtefact,x,y,username);
+                    this.currentArtefact.playerDropEvent();
                 }
                 this.currentArtefact = currentArtefact;
             }

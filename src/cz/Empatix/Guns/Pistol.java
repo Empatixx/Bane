@@ -46,7 +46,7 @@ public class Pistol extends Weapon {
     Pistol(TileMap tm, Player player, GunsManager gunsManager){
         super(tm,player,gunsManager);
         mindamage = 1;
-        maxdamage = Byte.MAX_VALUE;
+        maxdamage = 3;
         inaccuracy = 0.8f;
         maxAmmo = 120;
         maxMagazineAmmo = 7;
@@ -85,7 +85,7 @@ public class Pistol extends Weapon {
     public Pistol(TileMap tm, Player player){
         super(tm,player);
         mindamage = 1;
-        maxdamage = Byte.MAX_VALUE;
+        maxdamage = 3;
         inaccuracy = 0.8f;
         maxAmmo = 120;
         maxMagazineAmmo = 7;

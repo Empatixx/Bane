@@ -27,37 +27,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="barrel mp drops fix, sync timings fixed with udp">
+    <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="shaders optimalization, 200 fps boost, intel integrated gpu support">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crashlog.log" beforeDir="false" afterPath="$PROJECT_DIR$/crashlog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/blur-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/blur-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/blur-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/blur-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/fade-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/fade-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/fade-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/fade-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/geometry-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/geometry-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/geometry-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/geometry-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/gun-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/gun-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/gun-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/gun-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/healthbar-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/healthbar-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/healthbar-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/healthbar-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/image-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/image-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/image-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/image-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/instanced-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/instanced-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/instanced-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/instanced-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/light-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/light-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/light-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/light-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/loading-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/loading-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/loading-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/loading-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/outline-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/outline-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/outline-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/outline-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/rotation-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/rotation-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/rotation-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/rotation-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/shader-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/shader-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/shader-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/shader-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/spawn-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/spawn-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/spawn-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/spawn-vs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/text-fs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/text-fs.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/shaders/text-vs.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/shaders/text-vs.glsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/ArtefactManagerMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/ArtefactManagerMP.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/PlayerMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/PlayerMP.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,13 +176,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1570538926800</updated>
-    </task>
-    <task id="LOCAL-00012" summary="rng changes of item drops,antinonluck system">
-      <created>1586257428642</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1586257428642</updated>
     </task>
     <task id="LOCAL-00013" summary="camera singleton">
       <created>1586499159718</created>
@@ -546,7 +513,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646074881326</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="shaders optimalization, 200 fps boost, intel integrated gpu support">
+      <created>1646075593129</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1646075593130</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="UpdateCopyrightCheckinHandler">
@@ -581,7 +555,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="enemy hit effect" />
     <MESSAGE value="chest object" />
     <MESSAGE value="chest,loot rooms,gates" />
     <MESSAGE value="boss,room paths,objects,collision rework" />
@@ -606,7 +579,8 @@
     <MESSAGE value="0.9 pre" />
     <MESSAGE value="0.9 new artefact, some light code clean up" />
     <MESSAGE value="barrel mp drops fix, sync timings fixed with udp" />
-    <option name="LAST_COMMIT_MESSAGE" value="barrel mp drops fix, sync timings fixed with udp" />
+    <MESSAGE value="shaders optimalization, 200 fps boost, intel integrated gpu support" />
+    <option name="LAST_COMMIT_MESSAGE" value="shaders optimalization, 200 fps boost, intel integrated gpu support" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">

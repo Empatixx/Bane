@@ -67,9 +67,12 @@ public class ArtefactManagerMP {
             for(PlayerArtefacts playerArtefact : playerArtefacts){
                 if(playerArtefact != null){
                     updateSuccessly = playerArtefact.update(artefact); // updating players movement speed etc.
+                    if(updateSuccessly) break;
                 }
             }
-            if(!updateSuccessly) artefact.updateMPServer(null); // updating like bullets etc. meanwhile players don't have artefact
+            if(!updateSuccessly){
+                artefact.updateMPServer(null); // updating like bullets etc. meanwhile players don't have artefact
+            }
         }
     }
     public Artefact randomArtefact(){
@@ -154,7 +157,7 @@ public class ArtefactManagerMP {
             }
         }
         public boolean update(Artefact artefact){
-            if(artefact == currentArtefact){
+            if(artefact.equals(currentArtefact)){
                 currentArtefact.updateMPServer(username);
                 return true;
             }

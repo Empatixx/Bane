@@ -301,7 +301,7 @@ public class PlayerMP extends Player {
             /*System.out.println("=======");
             System.out.println("position X: "+position.x+" position y: "+position.y);
             System.out.println("T: "+t);*/
-            if(t < 0) t = 0;
+            if(t > 0) t = 1;
             Vector3f finalPos = new Vector3f();
             if(previousMove != null){
                 finalPos.x = previousMove.x;

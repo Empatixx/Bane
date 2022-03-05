@@ -13,9 +13,12 @@ import cz.Empatix.Render.TileMap;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class GameServer {
@@ -30,6 +33,7 @@ public class GameServer {
     private TileMap tileMap;
     private MiniMap map;
     private GunsManagerMP.GunUpgradesCache upgrades;
+    private ACKManager ackManager;
 
     private int gameState;
 
@@ -88,7 +92,7 @@ public class GameServer {
                                 for (PlayerMP player : connectedPlayers) {
                                     player.update();
                                     Network.MovePlayer movePlayer = new Network.MovePlayer();
-                                    movePlayer.username = player.getUsername();
+                                    movePlayer.idPlayer = player.getIdConnection();
                                     movePlayer.x = player.getX();
                                     movePlayer.y = player.getY();
                                     movePlayer.up = player.isMovingUp();
@@ -180,7 +184,7 @@ public class GameServer {
                                 for (PlayerMP player : connectedPlayers) {
                                     player.update();
                                     Network.MovePlayer movePlayer = new Network.MovePlayer();
-                                    movePlayer.username = player.getUsername();
+                                    movePlayer.idPlayer = player.getIdConnection();
                                     movePlayer.x = player.getX();
                                     movePlayer.y = player.getY();
                                     movePlayer.up = player.isMovingUp();
@@ -254,6 +258,7 @@ public class GameServer {
         while(!randomInit.get());
         tileMap.loadProgressRoom();
 
+        ackManager = new ACKManager();
         upgrades = new GunsManagerMP.GunUpgradesCache();
 
         server = new Server(16384, 4096);
@@ -267,19 +272,23 @@ public class GameServer {
             e.printStackTrace();
         }
         server.addListener(new Listener.ThreadedListener(new Listener() {
+
             @Override
             public void disconnected(Connection connection) {
-                //TODO: synchronizace
-                synchronized (readyCheckPlayers) {
-                    for (PlayerMP player : connectedPlayers) {
-                        if (player.getIdConnection() == connection.getID()) {
-                            Network.Disconnect disconnect = new Network.Disconnect();
-                            disconnect.username = player.getUsername();
-                            server.sendToAllTCP(disconnect); // sending packet that player can't join
-                            return;
+                Network.Disconnect disconnect = new Network.Disconnect();
+                disconnect.idPlayer = connection.getID();
+                server.sendToAllTCP(disconnect);
+                if (gameState == GameStateManager.INGAME) {
+                    synchronized (connectedPlayers){
+                        for (PlayerMP player : connectedPlayers) {
+                            if (player.getIdConnection() == connection.getID()) {
+                                player.setDead();
+                                tileMap.clearEnemiesInPlayersRoom(player);
+                            }
                         }
                     }
                 }
+                handleDisconnect(connection);
             }
 
             public void received(Connection connection, Object object) {
@@ -314,27 +323,16 @@ public class GameServer {
                     }
                     Network.CanJoin canJoin = new Network.CanJoin();
                     canJoin.can = true;
+                    canJoin.idPlayer = connection.getID();
                     connection.sendTCP(canJoin); // sending packet that player can join
                     handleJoin(joinPacket, connection);
-                } else if (object instanceof Network.Disconnect) {
-                    Network.Disconnect disconnectPacket = (Network.Disconnect) object;
-
-                    if (gameState == GameStateManager.INGAME) {
-                        // dont need to sync bcs we no longer remove/add any players in this moment
-                        for (PlayerMP player : connectedPlayers) {
-                            if (player.getUsername().equalsIgnoreCase(disconnectPacket.username)) {
-                                player.setDead();
-                                tileMap.clearEnemiesInPlayersRoom(player);
-                            }
-                        }
-                    }
-                    handleDisconnect(disconnectPacket);
                 } else if (object instanceof Network.RequestForPlayers) {
                     Network.RequestForPlayers request = (Network.RequestForPlayers) object;
                     for (PlayerMP player : connectedPlayers) {
                         if (!player.getUsername().equalsIgnoreCase(request.exceptUsername)) {
                             Network.AddPlayer addPlayer = new Network.AddPlayer();
                             addPlayer.username = player.getUsername();
+                            addPlayer.idPlayer = player.getIdConnection();
                             connection.sendTCP(addPlayer);
                         }
                     }
@@ -377,16 +375,22 @@ public class GameServer {
                 }
             }
         }));
+        /*new Thread("Server-ACK") {
+            @Override
+            public void run() {
+                while(true){
+                    ackManager.update();
+                }
+            }
+        }.start();*/
     }
 
-    private void handleDisconnect(Network.Disconnect disconnectPacket) {
-        String packetUsername = disconnectPacket.username;
-
+    private void handleDisconnect(Connection connection) {
         // player is already connected
         synchronized (connectedPlayers){
             for(int i = 0;i<connectedPlayers.size();i++){
                 PlayerMP player = connectedPlayers.get(i);
-                if (player.getUsername().equalsIgnoreCase(packetUsername)) {
+                if (player.getIdConnection() == connection.getID()) {
                     connectedPlayers.remove(i);
                     synchronized (readyCheckPlayers){
                         for(int j = 0;j<readyCheckPlayers.size();j++){
@@ -407,8 +411,6 @@ public class GameServer {
                 r.setReady(false);
             }
         }
-        server.sendToAllTCP(disconnectPacket);
-
     }
     private void handleMove(Network.MovePlayerInput movePlayer) {
         // player is already connceted
@@ -429,6 +431,7 @@ public class GameServer {
         PlayerMP playerMP = new PlayerMP(tileMap, join.username);
         playerMP.setIdConnection(connection.getID());
 
+
         playerMP.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
 
         if(join.host){
@@ -439,6 +442,7 @@ public class GameServer {
             for (PlayerMP otherPlayer : connectedPlayers) {
                 Network.AddPlayer addPlayer = new Network.AddPlayer();
                 addPlayer.username = otherPlayer.getUsername();
+                addPlayer.idPlayer = otherPlayer.getIdConnection();
                 // send other players to new player
                 connection.sendTCP(addPlayer);
             }
@@ -447,6 +451,7 @@ public class GameServer {
             upgrades.addPlayer(join.username);
             Network.AddPlayer addPlayer = new Network.AddPlayer();
             addPlayer.username = join.username;
+            addPlayer.idPlayer = connection.getID();
             // send new player to others players
             server.sendToAllExceptTCP(connection.getID(),addPlayer);
         }
@@ -457,5 +462,75 @@ public class GameServer {
     public void close(){
         server.close();
         Random.closeMP();
+    }
+    private static class ACKManager{
+        private ArrayList<PacketWaitingACK> packets;
+        private ArrayList<PacketWaitingACK> waitingForAdd;
+        private int[] confirmedACKs;
+        private int totalConfirmedACKs;
+        private Lock waitingLock;
+        private Lock ackLock;
+        ACKManager(){
+            packets = new ArrayList<>(300);
+            waitingLock = new ReentrantLock();
+        }
+        public void acknowledged(int id){
+            ackLock.lock();
+            try{
+                confirmedACKs[totalConfirmedACKs] = id;
+                totalConfirmedACKs++;
+            } finally {
+                ackLock.unlock();
+            }
+        }
+        public void add(Object o,int id){
+            waitingLock.lock();
+            try{
+                waitingForAdd.add(new PacketWaitingACK(o,id));
+            } finally {
+                waitingLock.unlock();
+            }
+        }
+        public void update(){
+            waitingLock.lock();
+            try{
+                packets.addAll(waitingForAdd);
+                waitingForAdd.clear();
+            } finally {
+                waitingLock.unlock();
+            }
+            ackLock.lock();
+            int[] acks;
+            try{
+                acks = Arrays.copyOf(confirmedACKs,totalConfirmedACKs);
+                totalConfirmedACKs = 0;
+            } finally {
+                ackLock.unlock();
+            }
+            for(int ackId : acks){
+                packets.removeIf(ack -> ack.id == ackId);
+            }
+            for(PacketWaitingACK p : packets){
+                if(p.shouldResend()){
+                    MultiplayerManager.getInstance().server.server.sendToAllUDP(p.getPacket());
+                }
+            }
+        }
+        private static class PacketWaitingACK{
+            private Object packet;
+            private int id;
+            private long timeSent;
+            PacketWaitingACK(Object packet, int id){
+                this.id = id;
+                this.timeSent = System.nanoTime();
+                this.packet = packet;
+            }
+            boolean shouldResend(){
+                return System.nanoTime() - timeSent > 30000;
+            }
+            public Object getPacket() {
+                return packet;
+            }
+        }
     }
 }

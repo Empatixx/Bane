@@ -1,4 +1,26 @@
 00:00  INFO: [kryonet] Server opened.
 00:00  INFO: Connecting: localhost/127.0.0.1:54555/54777
-00:00  INFO: [kryonet] Connection 1 connected: /127.0.0.1
 00:00  INFO: [kryonet] Connection 1 connected: localhost/127.0.0.1
+00:00  INFO: [kryonet] Connection 1 connected: /127.0.0.1
+00:05  INFO: [kryonet] Connection 2 connected: /127.0.0.1
+00:09  INFO: [kryonet] Connection 2 disconnected.
+00:12  INFO: [kryonet] Connection 3 connected: /127.0.0.1
+00:16  INFO: [kryonet] Connection 3 disconnected.
+00:18  INFO: [kryonet] Connection 4 connected: /127.0.0.1
+00:26  INFO: [kryonet] Connection 4 disconnected.
+00:28  INFO: [kryonet] Connection 5 connected: /127.0.0.1
+00:29  INFO: [kryonet] Connection 5 disconnected.
+00:31  INFO: [kryonet] Connection 6 connected: /127.0.0.1
+SAME NAME
+00:31  INFO: [kryonet] Connection 6 disconnected.
+00:35  INFO: [kryonet] Connection 7 connected: /127.0.0.1
+00:38  INFO: [kryonet] Connection 7 disconnected.
+00:40  INFO: [kryonet] Connection 8 connected: /127.0.0.1
+00:42  INFO: [kryonet] Connection 8 disconnected.
+00:44  INFO: [kryonet] Connection 9 connected: /127.0.0.1
+00:45  INFO: [kryonet] Connection 9 disconnected.
+00:46  INFO: [kryonet] Closing server connections...
+00:46  INFO: [kryonet] Connection 1 disconnected.
+00:46  INFO: [kryonet] Server closed.
+00:46  INFO: [kryonet] Connection 1 disconnected.
+AL lib: (EE) alc_cleanup: 1 device not closed

@@ -3,7 +3,6 @@ package cz.Empatix.Gamestates.Multiplayer;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Multiplayer.GameClient;
 import cz.Empatix.Multiplayer.GameServer;
-import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PacketHolder;
 
 public class MultiplayerManager {
@@ -16,6 +15,7 @@ public class MultiplayerManager {
 
     private boolean host;
     private String username;
+    private int idConnection;
 
     public static boolean multiplayer = false;
 
@@ -54,10 +54,6 @@ public class MultiplayerManager {
         if(isHost()) {
             server.close();
             server = null;
-        } else {
-            Network.Disconnect disconnect = new Network.Disconnect();
-            disconnect.username = getUsername();
-            client.getClient().sendTCP(disconnect);
         }
         multiplayer = false;
         client.close();
@@ -65,4 +61,15 @@ public class MultiplayerManager {
         packetHolder = null;
     }
 
+    public void setIdConnection(int id) {
+        idConnection = id;
+    }
+
+    /**
+     * returns connection id of this current player, useful for receiving packets from server
+     * @return connectin id from KryoNet
+     */
+    public int getIdConnection() {
+        return idConnection;
+    }
 }

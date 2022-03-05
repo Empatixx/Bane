@@ -301,6 +301,7 @@ public class InGameMP extends GameState {
         String username = mpManager.getUsername();
         player[0] = new PlayerMP(tileMap,username);
         player[0].setOrigin(true);
+        player[0].setIdConnection(mpManager.getIdConnection());
         playerReadies[0] = new PlayerReady(username);
         mpStatistics.addPlayer(username);
 
@@ -408,6 +409,7 @@ public class InGameMP extends GameState {
             String packetUsername = player.username;
             PlayerMP playerMP = new PlayerMP(tileMap, packetUsername);
             playerMP.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
+            playerMP.setIdConnection(player.idPlayer);
             this.player[index] = playerMP;
             playerReadies[index] = new PlayerReady(packetUsername);
             index++;
@@ -418,13 +420,12 @@ public class InGameMP extends GameState {
         for(Object object : disconnectPackets){
             index--;
             Network.Disconnect packet = (Network.Disconnect) object;
-            String packetUsername = packet.username;
-            String playerUsername = mpManager.getUsername();
+            int idOrigin = mpManager.getIdConnection();
             player[index].remove();
             player[index] = null;
             playerReadies[index] = null;
-            if(!packetUsername.equalsIgnoreCase(playerUsername)){
-                AlertManager.add(AlertManager.WARNING,packetUsername+" has left the game!");
+            if(idOrigin != packet.idPlayer){
+                AlertManager.add(AlertManager.WARNING,player[1].getUsername()+" has left the game!");
             }
             for(PlayerReady pready : playerReadies){
                 if(pready != null) pready.setReady(false);
@@ -817,7 +818,7 @@ public class InGameMP extends GameState {
             Network.MovePlayer recent=null;
             for (Object o : objects) {
                 Network.MovePlayer move = (Network.MovePlayer) o;
-                if (p.getUsername().equalsIgnoreCase(move.username)) {
+                if (p.getIdConnection() == move.idPlayer) {
                     if (recent == null) recent = move;
                     if (recent.time < move.time) recent = move;
                 }
@@ -900,30 +901,18 @@ public class InGameMP extends GameState {
 
         mpStatistics.reveicePackets();
 
-        Object[] joinPackets = mpManager.packetHolder.get(PacketHolder.JOINPLAYER);
         int index = mpManager.client.getTotalPlayers();
-        for(Object object : joinPackets) {
-            Network.AddPlayer player = (Network.AddPlayer) object;
-            String packetUsername = player.username;
-            PlayerMP playerMP = new PlayerMP(tileMap, packetUsername);
-            this.player[index] = playerMP;
-            playerReadies[index] = new PlayerReady(packetUsername);
-            index++;
-        }
-        mpManager.client.setNumPlayers(index);
-
         Object[] disconnectPackets = mpManager.packetHolder.get(PacketHolder.DISCONNECTPLAYER);
         for(Object object : disconnectPackets){
             index--;
             Network.Disconnect packet = (Network.Disconnect) object;
-            String packetUsername = packet.username;
-            String playerUsername = mpManager.getUsername();
+            int idOrigin = mpManager.getIdConnection();
             player[index].remove();
+            if(idOrigin != packet.idPlayer){
+                AlertManager.add(AlertManager.WARNING,player[1].getUsername()+" has left the game!");
+            }
             player[index] = null;
             playerReadies[index] = null;
-            if(!packetUsername.equalsIgnoreCase(playerUsername)){
-                AlertManager.add(AlertManager.WARNING,packetUsername+" has left the game!");
-            }
             for(PlayerReady pready : playerReadies){
                 if(pready != null) pready.setReady(false);
             }

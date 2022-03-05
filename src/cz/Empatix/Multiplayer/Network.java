@@ -88,18 +88,21 @@ public class Network {
     }
     public static class CanJoin {
         public boolean can;
+        public int idPlayer;
     }
     public static class AllPlayersDeath {
     }
     public static class AddPlayer {
         public String username;
+        public int idPlayer;
     }
     public static class Disconnect {
-        public String username;
+        public int idPlayer;
     }
     public static class MovePlayer {
         public int idPacket;
-        public String username;
+        //public String username;
+        public int idPlayer;
         public float x;
         public float y;
         public boolean up,down,left,right;

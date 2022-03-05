@@ -96,7 +96,10 @@ public class GameStateManager {
                 Object[] objects = mpManager.packetHolder.get(PacketHolder.CANJOIN);
                 if(objects.length >= 1){
                     Network.CanJoin canJoin = (Network.CanJoin) objects[0];
-                    if(canJoin.can) break;
+                    if(canJoin.can){
+                        mpManager.setIdConnection(canJoin.idPlayer);
+                        break;
+                    }
                     else{
                         currentState = previousState;
                         mpManager.close();

@@ -108,6 +108,7 @@ public class ProgressRoomMP extends GameState {
         String username = mpManager.getUsername();
         player[0] = new PlayerMP(tileMap,username);
         player[0].setOrigin(true);
+        player[0].setIdConnection(mpManager.getIdConnection());
         playerReadies[0] = new PlayerReady(username);
 
         player[0].setCoins(GameStateManager.getDb().getValue("money","general"));
@@ -145,6 +146,7 @@ public class ProgressRoomMP extends GameState {
             String packetUsername = player.username;
             PlayerMP playerMP = new PlayerMP(tileMap, packetUsername);
             playerMP.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
+            playerMP.setIdConnection(player.idPlayer);
             this.player[index] = playerMP;
             playerReadies[index] = new PlayerReady(packetUsername);
             index++;
@@ -324,7 +326,7 @@ public class ProgressRoomMP extends GameState {
             Network.MovePlayer recent=null;
             for (Object o : objects) {
                 Network.MovePlayer move = (Network.MovePlayer) o;
-                if (p.getUsername().equalsIgnoreCase(move.username)) {
+                if (p.getIdConnection() == move.idPlayer) {
                     if (recent == null) recent = move;
                     if (recent.time < move.time) recent = move;
                 }
@@ -367,6 +369,7 @@ public class ProgressRoomMP extends GameState {
             Network.AddPlayer player = (Network.AddPlayer) object;
             String packetUsername = player.username;
             PlayerMP playerMP = new PlayerMP(tileMap, packetUsername);
+            playerMP.setIdConnection(player.idPlayer);
             this.player[index] = playerMP;
             playerReadies[index] = new PlayerReady(packetUsername);
             index++;
@@ -377,19 +380,24 @@ public class ProgressRoomMP extends GameState {
         Object[] disconnectPackets = mpManager.packetHolder.get(PacketHolder.DISCONNECTPLAYER);
         index = mpManager.client.getTotalPlayers();
         for(Object object : disconnectPackets){
-            index--;
-            Network.Disconnect packet = (Network.Disconnect) object;
-            String packetUsername = packet.username;
-            String playerUsername = mpManager.getUsername();
-            player[index].remove();
-            player[index] = null;
-            playerReadies[index] = null;
-            if(!packetUsername.equalsIgnoreCase(playerUsername)){
-                AlertManager.add(AlertManager.WARNING,packetUsername+" has left the lobby!");
-            }
-            DiscordRP.getInstance().update("Multiplayer - In-Game","Lobby "+index+"/2");
-            for(PlayerReady pready : playerReadies){
-                if(pready != null) pready.setReady(false);
+            for(PlayerMP player : player){
+                if(player != null){
+                    Network.Disconnect packet = (Network.Disconnect) object;
+                    if(packet.idPlayer == player.getIdConnection()){
+                        index--;
+                        int idOrigin = mpManager.getIdConnection();
+                        this.player[index].remove();
+                        if(idOrigin != packet.idPlayer){
+                            AlertManager.add(AlertManager.WARNING,this.player[index].getUsername()+" has left the game!");
+                        }
+                        this.player[index] = null;
+                        playerReadies[index] = null;
+                        DiscordRP.getInstance().update("Multiplayer - In-Game","Lobby "+index+"/2");
+                        for(PlayerReady pready : playerReadies){
+                            if(pready != null) pready.setReady(false);
+                        }
+                    }
+                }
             }
         }
         mpManager.client.setNumPlayers(index);

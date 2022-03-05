@@ -91,7 +91,7 @@ public class Shotgun extends Weapon {
     }
     // resetting stats of gun of new owner of gun
     @Override
-    public void restat(String username) {
+    public void restat(String username, boolean fullAmmo) {
         mindamage = 2;
         maxdamage = 3;
         inaccuracy = 0.7f;
@@ -112,8 +112,10 @@ public class Shotgun extends Weapon {
         if(numUpgrades >= 4){
             delayTime = (int)(delayTime*0.85f);
         }
-        if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
-        if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
+        if(!fullAmmo){
+            if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
+            if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
+        }
     }
     @Override
     public void reload() {

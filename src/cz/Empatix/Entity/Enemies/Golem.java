@@ -400,7 +400,7 @@ public class Golem extends Enemy {
                 golemAnimSync.time = animation.getTime();
 
                 Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(golemAnimSync);
+                server.sendToAllUDP(golemAnimSync);
             }
             if(currentAction == ATTACK){
                 right = false;
@@ -431,7 +431,7 @@ public class Golem extends Enemy {
                         healPacket.id = id;
                         healPacket.amount = (short) regen;
                         Server server = MultiplayerManager.getInstance().server.getServer();
-                        server.sendToAllTCP(healPacket);
+                        server.sendToAllUDP(healPacket);
                     }
                     heal(regen);
                 }
@@ -644,7 +644,7 @@ public class Golem extends Enemy {
                                 Network.LaserBeamHit laserBeamHit = new Network.LaserBeamHit();
                                 laserBeamHit.idHit = object.id;
                                 Server server = MultiplayerManager.getInstance().server.getServer();
-                                server.sendToAllTCP(laserBeamHit);
+                                server.sendToAllUDP(laserBeamHit);
                             }
                         }
                     }
@@ -676,13 +676,13 @@ public class Golem extends Enemy {
             }
         }
         public void handleSync(Network.LaserBeamSync sync){
+            MultiplayerManager.getInstance().packetHolder.remove(PacketHolder.LASERBEAMSYNC,sync);
             if(lastTimeBeamSync < sync.packetTime)
                 angle = sync.angle;
                 animation.setFrame(sync.sprite);
                 animation.setTime(sync.time);
                 position.x = sync.x;
                 position.y = sync.y;
-                MultiplayerManager.getInstance().packetHolder.remove(PacketHolder.LASERBEAMSYNC,sync);
                 lastTimeBeamSync = sync.packetTime;
         }
         @Override

@@ -33,7 +33,7 @@ public class GameClient{
 
         recon = false;
 
-        client.addListener(new Listener() {
+        client.addListener(new Listener.ThreadedListener(new Listener() {
             public void received (Connection connection, Object object) {
                 if (object instanceof Network.AddPlayer) {
                     packetHolder.add(object,PacketHolder.JOINPLAYER);
@@ -312,7 +312,7 @@ public class GameClient{
                     }
                 }
             }
-        });
+        }));
 
         Network.register(client);
 

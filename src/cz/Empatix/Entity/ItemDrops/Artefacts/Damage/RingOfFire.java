@@ -319,7 +319,7 @@ public class RingOfFire extends Artefact {
                     i = -i;
                     addBullet.inaccuracy = (float)inaccuracy;
                     addBullet.id = bullet.getId();
-                    server.sendToAllTCP(addBullet);
+                    server.sendToAllUDP(addBullet);
                 }
                 break;
             }

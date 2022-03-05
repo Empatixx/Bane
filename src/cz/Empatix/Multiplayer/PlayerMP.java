@@ -3,7 +3,6 @@ package cz.Empatix.Multiplayer;
 import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Random;
@@ -41,12 +40,14 @@ public class PlayerMP extends Player {
     private Spritesheet ghostSpritesheet;
     private int vboGhostVertices;
 
-    private long lastTimeMove;
-    private Network.MovePlayer currentMove;
-    private Network.MovePlayer previousMove;
+    //private long lastTimeMove;
+    //private long lastTimePacket;
+
+    //private Network.MovePlayer currentMove;
+    //private Network.MovePlayer previousMove;
 
     private Room deathRoom;
-    private int totalMoves;
+    //private int totalMoves;
 
     public PlayerMP(TileMap tm, String username){
         super(tm);
@@ -293,30 +294,31 @@ public class PlayerMP extends Player {
         else checkGhostRestrictions();
         checkTileMapCollision();
         if(tileMap.isServerSide())setPosition(temp.x, temp.y);
-        else if(currentMove != null){
-            float timeSinceLastInput = (System.currentTimeMillis() - mpManager.client.getClient().getReturnTripTime() - lastTimeMove)/1000f;
-            //System.out.println("SEC: "+timeSinceLastInput);
+        /*else if(currentMove != null){
+            float timeSinceLastInput = (System.currentTimeMillis() - lastTimeMove)/1000f;
             final double ns = 1 / 60.0;
             float t = (float) (timeSinceLastInput/totalMoves / (ns));
-            /*System.out.println("=======");
-            System.out.println("position X: "+position.x+" position y: "+position.y);
-            System.out.println("T: "+t);*/
-            if(t > 0) t = 1;
-            Vector3f finalPos = new Vector3f();
-            if(previousMove != null){
-                finalPos.x = previousMove.x;
-                finalPos.y = previousMove.y;
-                finalPos.lerp(new Vector3f(currentMove.x,currentMove.y,0),t);
-            }
-            else {
-                finalPos.x = currentMove.x;
-                finalPos.y = currentMove.y;
-            }
-            //System.out.println("dif X: "+(finalPos.x-position.x)+" dif y: "+(finalPos.y-position.y));
-            setPosition(finalPos.x,finalPos.y);
-            //System.out.println("=======");
+            if(t<1){
+                Vector3f finalPos = new Vector3f();
+                if(previousMove != null){
+                    finalPos.x = previousMove.x;
+                    finalPos.y = previousMove.y;
+                    finalPos.lerp(new Vector3f(currentMove.x,currentMove.y,0),t);
+                }
+                else {
+                    finalPos.x = currentMove.x;
+                    finalPos.y = currentMove.y;
+                }
+                setPosition(finalPos.x,finalPos.y);
 
-        }
+            } else {
+                //finalPos.x = currentMove.x;
+                //finalPos.y = currentMove.y;
+                setLastTimePacket(System.nanoTime());
+                setPosition(currentMove.x+speed.x,currentMove.y+speed.y);
+            }
+
+        }*/
         if(!tileMap.isServerSide()){
             if(!ghost){
                 if (right || left) {
@@ -529,10 +531,11 @@ public class PlayerMP extends Player {
             light.setIntensity(4f);
         }
     }
-
+/*
     public void setPosition(Network.MovePlayer move)
     {
         RefreshToPosition(move, currentMove);
+        setLastTimePacket(move.time);
     }
 
     private void RefreshToPosition(Network.MovePlayer move, Network.MovePlayer prevData)
@@ -552,7 +555,7 @@ public class PlayerMP extends Player {
     public void setTotalMoves(int totalMoves) {
         this.totalMoves = totalMoves;
     }
-
+*/
     public void setIdConnection(int idConnection) {
         this.idConnection = idConnection;
     }
@@ -560,4 +563,12 @@ public class PlayerMP extends Player {
     public int getIdConnection() {
         return idConnection;
     }
+/*
+    public void setLastTimePacket(long lastTimePacket) {
+        this.lastTimePacket = lastTimePacket;
+    }
+
+    public long getLastTimePacket() {
+        return lastTimePacket;
+    }*/
 }

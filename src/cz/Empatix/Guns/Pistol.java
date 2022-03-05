@@ -98,7 +98,7 @@ public class Pistol extends Weapon {
 
     // resetting stats of gun of new owner of gun
     @Override
-    public void restat(String username) {
+    public void restat(String username, boolean fullAmmo) {
         mindamage = 1;
         maxdamage = Byte.MAX_VALUE;
         inaccuracy = 0.8f;
@@ -120,8 +120,10 @@ public class Pistol extends Weapon {
         if(numUpgrades >= 4){
             doubleShots = true;
         }
-        if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
-        if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
+        if(!fullAmmo){
+            if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
+            if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
+        }
     }
 
     @Override

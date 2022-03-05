@@ -276,8 +276,8 @@ public abstract class Weapon{
         response.username = username;
         response.slot = (byte)GunsManagerMP.getInstance().getWeaponSlot(this);
         Server server = mpManager.server.getServer();
-        server.sendToAllTCP(response);
+        server.sendToAllUDP(response);
     }
 
-    public abstract void restat(String username);
+    public abstract void restat(String username, boolean fullAmmo);
 }

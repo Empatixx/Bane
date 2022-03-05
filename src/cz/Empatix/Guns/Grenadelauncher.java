@@ -85,7 +85,7 @@ public class Grenadelauncher extends Weapon {
     }
     // resetting stats of gun of new owner of gun
     @Override
-    public void restat(String username) {
+    public void restat(String username, boolean fullAmmo) {
         mindamage = 4;
         maxdamage = 7;
         inaccuracy = 0.7f;
@@ -106,8 +106,10 @@ public class Grenadelauncher extends Weapon {
         if(numUpgrades >= 4){
             criticalHits=true;
         }
-        if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
-        if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
+        if(!fullAmmo){
+            if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
+            if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
+        }
     }
     @Override
     public void reload() {

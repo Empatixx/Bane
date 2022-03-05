@@ -125,7 +125,7 @@ public class EnemyManagerMP {
             addEnemy.id = slime.id;
 
             Server server = mpManager.server.getServer();
-            server.sendToAllTCP(addEnemy);
+            server.sendToAllUDP(addEnemy);
         } else {
             Golem golem = new Golem(tileMap, player);
             golem.setPosition(x, y);
@@ -139,7 +139,7 @@ public class EnemyManagerMP {
             addEnemy.id = golem.id;
 
             Server server = mpManager.server.getServer();
-            server.sendToAllTCP(addEnemy);
+            server.sendToAllUDP(addEnemy);
         }
     }
 
@@ -255,7 +255,7 @@ public class EnemyManagerMP {
         addEnemy.id = instance.id;
 
         Server server = mpManager.server.getServer();
-        server.sendToAllTCP(addEnemy);
+        server.sendToAllUDP(addEnemy);
     }
 
     public boolean areEnemiesDeadInCoords(int xMin, int xMax, int yMin, int yMax) {
@@ -281,7 +281,7 @@ public class EnemyManagerMP {
                 Network.RemoveEnemy rEnemy = new Network.RemoveEnemy();
                 rEnemy.id = e.id;
                 Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(rEnemy);
+                server.sendToAllUDP(rEnemy);
             }
         }
 

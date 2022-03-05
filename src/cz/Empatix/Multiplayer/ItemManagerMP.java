@@ -205,7 +205,7 @@ public class ItemManagerMP {
         dropItem.x = (int)x;
         dropItem.y = (int)y;
         dropItem.amount = (byte)drop.getAmount();
-        server.sendToAllTCP(dropItem);
+        server.sendToAllUDP(dropItem);
         return drop;
     }
 
@@ -284,7 +284,7 @@ public class ItemManagerMP {
                                 Server server = MultiplayerManager.getInstance().server.getServer();
                                 Network.RemoveItem item = new Network.RemoveItem();
                                 item.id = drop.getId();
-                                server.sendToAllTCP(item);
+                                server.sendToAllUDP(item);
                             }
                         }
 
@@ -317,7 +317,7 @@ public class ItemManagerMP {
         dropWeapon.slot = (byte)gm.getWeaponSlot(weapon);
 
         Server server = MultiplayerManager.getInstance().server.getServer();
-        server.sendToAllTCP(dropWeapon);
+        server.sendToAllUDP(dropWeapon);
     }
     public void dropWeapon(Weapon weapon, int x, int y, Vector2f speed) {
         weapon.drop();
@@ -343,7 +343,7 @@ public class ItemManagerMP {
         dropArtefact.y = y;
         dropArtefact.slot = (byte)am.getArtefactSlot(artefact);
         Server server = MultiplayerManager.getInstance().server.getServer();
-        server.sendToAllTCP(dropArtefact);
+        server.sendToAllUDP(dropArtefact);
 
         itemDrops.add(drop);
     }
@@ -374,7 +374,7 @@ public class ItemManagerMP {
                 itemDrops.add(drop);
 
                 Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(dropArtefact);
+                server.sendToAllUDP(dropArtefact);
                 break;
             }
         }
@@ -461,7 +461,7 @@ public class ItemManagerMP {
         dropItem.x = (int)x;
         dropItem.y = (int)y;
         dropItem.amount = (byte)drop.getAmount();
-        server.sendToAllTCP(dropItem);
+        server.sendToAllUDP(dropItem);
     }
 
     public void dropPlayerWeapon(Weapon weapon, int x, int y, int slot, String username) {
@@ -481,7 +481,7 @@ public class ItemManagerMP {
                     dropWeapon.slot = (byte)slot;
 
                     Server server = MultiplayerManager.getInstance().server.getServer();
-                    server.sendToAllTCP(dropWeapon);
+                    server.sendToAllUDP(dropWeapon);
 
                     itemDrops.add(drop);
                 }
@@ -502,7 +502,7 @@ public class ItemManagerMP {
         dropItem.y = (int)itemdrop.getY();
         dropItem.amount = (byte)itemdrop.getAmount();
         Server server = MultiplayerManager.getInstance().server.getServer();
-        server.sendToAllTCP(dropItem);
+        server.sendToAllUDP(dropItem);
     }
 
     public boolean pickup(Network.DropInteract pickup) {
@@ -541,14 +541,14 @@ public class ItemManagerMP {
                     pickup.sucessful = true;
                     pickup.id = selectedDrop.getId();
                     Server server = MultiplayerManager.getInstance().server.getServer();
-                    server.sendToAllTCP(pickup);
+                    server.sendToAllUDP(pickup);
                 } else {
                     am.setCurrentArtefact(((ArtefactDrop) selectedDrop).getArtefact(),x,y, pickup.username);
                     selectedDrop.pickedUp = true;
                     pickup.sucessful = true;
                     pickup.id = selectedDrop.getId();
                     Server server = MultiplayerManager.getInstance().server.getServer();
-                    server.sendToAllTCP(pickup);
+                    server.sendToAllUDP(pickup);
                     selectedDrop.pickedUp = true;
                 }
                 return true;
@@ -563,7 +563,7 @@ public class ItemManagerMP {
                         shopItem[i].pickedUp = true;
                         pickup.sucessful = true;
                         pickup.id = shopItem[i].getId();
-                        server.sendToAllTCP(pickup);
+                        server.sendToAllUDP(pickup);
                     } else {
                         if(System.currentTimeMillis() - alertCooldown[i] > 2000){
                             alertCooldown[i]  = System.currentTimeMillis();
@@ -580,7 +580,7 @@ public class ItemManagerMP {
                         shopItem[i].shopBuy();
                         pickup.sucessful = true;
                         pickup.id = shopItem[i].getId();
-                        server.sendToAllTCP(pickup);
+                        server.sendToAllUDP(pickup);
                     } else {
                         if (System.currentTimeMillis() - alertCooldown[i]  > 2000) {
                             alertCooldown[i]  = System.currentTimeMillis();

@@ -241,7 +241,7 @@ public class GunsManager {
                 dropWeapon.username = mp.getUsername();
                 dropWeapon.x = x;
                 dropWeapon.y = y;
-                client.sendTCP(dropWeapon);
+                client.sendUDP(dropWeapon);
             } else {
                 if(current != null){
                     stopShooting();
@@ -257,7 +257,7 @@ public class GunsManager {
                 Network.SwitchWeaponSlot switchWeaponSlot = new Network.SwitchWeaponSlot();
                 switchWeaponSlot.username = MultiplayerManager.getInstance().getUsername();
                 switchWeaponSlot.slot = FIRSTSLOT;
-                client.sendTCP(switchWeaponSlot);
+                client.sendUDP(switchWeaponSlot);
             } else {
                 setCurrentWeapon(equipedweapons[FIRSTSLOT],FIRSTSLOT);
             }
@@ -267,7 +267,7 @@ public class GunsManager {
                 Network.SwitchWeaponSlot switchWeaponSlot = new Network.SwitchWeaponSlot();
                 switchWeaponSlot.username = MultiplayerManager.getInstance().getUsername();
                 switchWeaponSlot.slot = SECONDARYSLOT;
-                client.sendTCP(switchWeaponSlot);
+                client.sendUDP(switchWeaponSlot);
             } else {
                 setCurrentWeapon(equipedweapons[SECONDARYSLOT],SECONDARYSLOT);
             }
@@ -280,7 +280,7 @@ public class GunsManager {
             Network.StopShooting stopShooting = new Network.StopShooting();
             stopShooting.username = ((PlayerMP)players[0]).getUsername();
             Client client = MultiplayerManager.getInstance().client.getClient();
-            client.sendTCP(stopShooting);
+            client.sendUDP(stopShooting);
         }
     }
     public void startShooting(){
@@ -290,7 +290,7 @@ public class GunsManager {
             Network.StartShooting startShooting = new Network.StartShooting();
             startShooting.username = ((PlayerMP)players[0]).getUsername();
             Client client = MultiplayerManager.getInstance().client.getClient();
-            client.sendTCP(startShooting);
+            client.sendUDP(startShooting);
         }
     }
     public boolean addAmmo(int amountpercent, int type) {
@@ -379,7 +379,7 @@ public class GunsManager {
             Network.SwitchWeaponSlot switchWeaponSlot = new Network.SwitchWeaponSlot();
             switchWeaponSlot.username = MultiplayerManager.getInstance().getUsername();
             switchWeaponSlot.slot = (byte)slot;
-            client.sendTCP(switchWeaponSlot);
+            client.sendUDP(switchWeaponSlot);
         }
     }
     public int[] getWeaponTypes(){

@@ -57,100 +57,66 @@ public class PacketHolder {
 
         packetArrays = new ArrayList<>(size);
         for(int i = 0;i<size;i++){
-            PacketArray packetArray = new PacketArray(i);
+            PacketArray packetArray = new PacketArray();
             packetArrays.add(packetArray);
         }
     }
     public void add(Object o, int id){
-        for (PacketArray packetArray : packetArrays) {
-            if (id == packetArray.id) {
-                packetArray.lock();
-                try {
-                    packetArray.packets.add(o);
-                } finally {
-                    packetArray.unlock();
-                }
-                break;
-            }
+        PacketArray packetArray = packetArrays.get(id);
+        packetArray.lock();
+        try {
+            packetArray.packets.add(o);
+        } finally {
+            packetArray.unlock();
         }
     }
 
     public Object[] get(int id){
-        for (PacketArray packetArray : packetArrays) {
-            if (id == packetArray.id) {
-                packetArray.lock();
-                try {
-                    Object[] packets =  packetArray.packets.toArray();
-                    packetArray.packets.toArray();
-                    packetArray.packets.clear();
-                    return packets;
-                } finally {
-                    packetArray.unlock();
-                }
-            }
+        PacketArray packetArray = packetArrays.get(id);
+        packetArray.lock();
+        try {
+            Object[] packets =  packetArray.packets.toArray();
+            packetArray.packets.clear();
+            return packets;
+        } finally {
+            packetArray.unlock();
         }
-        return null;
     }
 
     public Object[] getWithoutClear(int id) {
-        for (PacketArray packetArray : packetArrays) {
-            if (id == packetArray.id) {
-                packetArray.lock();
-                try {
-                    Object[] packets =  packetArray.packets.toArray();
-                    packetArray.packets.toArray();
-                    return packets;
-                } finally {
-                    packetArray.unlock();
-                }
-            }
+        PacketArray packetArray = packetArrays.get(id);
+        packetArray.lock();
+        try {
+            Object[] packets =  packetArray.packets.toArray();
+            return packets;
+        } finally {
+            packetArray.unlock();
         }
-        return null;
     }
     public void remove(int id, Object o) {
-        for (PacketArray packetArray : packetArrays) {
-            if (id == packetArray.id) {
-                packetArray.lock();
-                try {
-                    packetArrays.get(id).packets.remove(o);
-                } finally {
-                    packetArray.unlock();
-                }
-            }
+        PacketArray packetArray = packetArrays.get(id);
+        packetArray.lock();
+        try {
+            packetArrays.get(id).packets.remove(o);
+        } finally {
+            packetArray.unlock();
         }
     }
     public void clear(int id) {
-        for (PacketArray packetArray : packetArrays) {
-            if (id == packetArray.id) {
-                packetArray.lock();
-                try {
-                    packetArrays.get(id).packets.clear();
-                } finally {
-                    packetArray.unlock();
-                }
-            }
-        }
-    }
-    public void clearIngamePackets() {
-        for (PacketArray packetArray : packetArrays) {
-            if (packetArray.id != 17) {
-                packetArray.lock();
-                try {
-                    packetArrays.get(packetArray.id).packets.clear();
-                } finally {
-                    packetArray.unlock();
-                }
-            }
+        PacketArray packetArray = packetArrays.get(id);
+        packetArray.lock();
+        try {
+            packetArrays.get(id).packets.clear();
+        } finally {
+            packetArray.unlock();
         }
     }
     private static class PacketArray{
-        private int id;
-        private LinkedList<Object> packets;
-        private Lock lock;
-        PacketArray(int id){
+        private final LinkedList<Object> packets;
+        private final Lock lock;
+        PacketArray(){
             packets = new LinkedList<>();
             lock = new ReentrantLock();
-            this.id = id;
         }
 
         public void lock(){

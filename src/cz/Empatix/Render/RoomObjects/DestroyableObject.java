@@ -143,5 +143,7 @@ public abstract class DestroyableObject extends RoomObject {
     public boolean isPreventItemDespawn(){
         return preventItemDespawn;
     }
-
+    public void setHealth(int health) {
+        this.health = health;
+    }
 }

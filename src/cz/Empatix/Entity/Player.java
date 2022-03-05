@@ -553,7 +553,7 @@ public class Player extends MapObject {
                 playerHit.username = ((PlayerMP)(this)).getUsername();
 
                 Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(playerHit);
+                server.sendToAllUDP(playerHit);
                 return;
             }
         } else {
@@ -601,7 +601,7 @@ public class Player extends MapObject {
             playerHit.username = ((PlayerMP)(this)).getUsername();
 
             Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllTCP(playerHit);
+            server.sendToAllUDP(playerHit);
         }
         if(health <= 0) setDead();
     }

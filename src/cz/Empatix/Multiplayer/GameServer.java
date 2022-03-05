@@ -87,6 +87,16 @@ public class GameServer {
                             synchronized (connectedPlayers) {
                                 for (PlayerMP player : connectedPlayers) {
                                     player.update();
+                                    Network.MovePlayer movePlayer = new Network.MovePlayer();
+                                    movePlayer.username = player.getUsername();
+                                    movePlayer.x = player.getX();
+                                    movePlayer.y = player.getY();
+                                    movePlayer.up = player.isMovingUp();
+                                    movePlayer.down = player.isMovingDown();
+                                    movePlayer.right = player.isMovingRight();
+                                    movePlayer.left = player.isMovingLeft();
+                                    movePlayer.time = System.nanoTime();
+                                    server.sendToAllUDP(movePlayer);
                                 }
                             }
                             tileMap.updateCurrentRoom();
@@ -107,6 +117,18 @@ public class GameServer {
                             }
                             artefactManager.update();
                             mpStatistics.sentPackets();
+                            synchronized (connectedPlayers) {
+                                for (PlayerMP player : connectedPlayers) {
+                                    Network.PlayerInfo playerInfo = new Network.PlayerInfo();
+                                    playerInfo.username = player.getUsername();
+                                    playerInfo.coins = (short) player.getCoins();
+                                    playerInfo.health = (byte) player.getHealth();
+                                    playerInfo.maxHealth = (byte) player.getMaxHealth();
+                                    playerInfo.armor = (byte) player.getArmor();
+                                    playerInfo.maxArmor = (byte) player.getMaxArmor();
+                                    server.sendToAllUDP(playerInfo);
+                                }
+                            }
                             boolean allDead = true;
                             synchronized (connectedPlayers) {
                                 for (Player player : connectedPlayers) {
@@ -155,9 +177,18 @@ public class GameServer {
                             }
                         } else {
                             synchronized (connectedPlayers) {
-                                for (Player player : connectedPlayers) {
+                                for (PlayerMP player : connectedPlayers) {
                                     player.update();
-
+                                    Network.MovePlayer movePlayer = new Network.MovePlayer();
+                                    movePlayer.username = player.getUsername();
+                                    movePlayer.x = player.getX();
+                                    movePlayer.y = player.getY();
+                                    movePlayer.up = player.isMovingUp();
+                                    movePlayer.down = player.isMovingDown();
+                                    movePlayer.right = player.isMovingRight();
+                                    movePlayer.left = player.isMovingLeft();
+                                    movePlayer.time = System.nanoTime();
+                                    server.sendToAllUDP(movePlayer);
                                 }
                             }
                             boolean allReady = true;
@@ -201,39 +232,9 @@ public class GameServer {
                                         ready.setReady(false);
                                     }
                                 }
-                                itemManager.dropArtefact((int)tileMap.getPlayerStartX(),(int)tileMap.getPlayerStartY());
-                                itemManager.dropArtefact((int)tileMap.getPlayerStartX(),(int)tileMap.getPlayerStartY());
-                                itemManager.dropArtefact((int)tileMap.getPlayerStartX(),(int)tileMap.getPlayerStartY());
                             }
                         }
                         updates++;
-                        synchronized (connectedPlayers) {
-                            for (PlayerMP player : connectedPlayers) {
-                                Network.MovePlayer movePlayer = new Network.MovePlayer();
-                                movePlayer.username = player.getUsername();
-                                movePlayer.x = player.getX();
-                                movePlayer.y = player.getY();
-                                movePlayer.up = player.isMovingUp();
-                                movePlayer.down = player.isMovingDown();
-                                movePlayer.right = player.isMovingRight();
-                                movePlayer.left = player.isMovingLeft();
-                                movePlayer.time = System.nanoTime();
-                                server.sendToAllTCP(movePlayer);
-
-                                if (gameState == GameStateManager.INGAME) {
-                                    Network.PlayerInfo playerInfo = new Network.PlayerInfo();
-                                    playerInfo.username = player.getUsername();
-                                    playerInfo.coins = (short) player.getCoins();
-                                    playerInfo.health = (byte) player.getHealth();
-                                    playerInfo.maxHealth = (byte) player.getMaxHealth();
-                                    playerInfo.armor = (byte) player.getArmor();
-                                    playerInfo.maxArmor = (byte) player.getMaxArmor();
-                                    server.sendToAllUDP(playerInfo);
-                                }
-                            }
-                        }
-
-
                         delta--;
                     }
 
@@ -255,7 +256,7 @@ public class GameServer {
 
         upgrades = new GunsManagerMP.GunUpgradesCache();
 
-        server = new Server(32768, 8192);
+        server = new Server(16384, 4096);
         Network.register(server);
         //Log.DEBUG();
 
@@ -265,7 +266,7 @@ public class GameServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        server.addListener(new Listener() {
+        server.addListener(new Listener.ThreadedListener(new Listener() {
             @Override
             public void disconnected(Connection connection) {
                 //TODO: synchronizace
@@ -375,7 +376,7 @@ public class GameServer {
                     connection.sendUDP(object);
                 }
             }
-        });
+        }));
     }
 
     private void handleDisconnect(Network.Disconnect disconnectPacket) {

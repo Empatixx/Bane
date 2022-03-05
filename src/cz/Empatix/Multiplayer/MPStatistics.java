@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class MPStatistics {
     private ArrayList<PStats> playersStats;
+    private long delay;
     public static class PStats{
         private int bulletShooted;
         private int enemiesKilled;
@@ -58,15 +59,18 @@ public class MPStatistics {
     }
     // server side
     public void sentPackets(){
-        Server server = MultiplayerManager.getInstance().server.getServer();
-        for(PStats stats : playersStats){
-            Network.PstatsUpdate pu = new Network.PstatsUpdate();
-            pu.bulletsHit = (short)stats.bulletsHit;
-            pu.shootShooted = (short)stats.bulletShooted;
-            pu.deathTime = stats.deathTime;
-            pu.enemiesKilled = (short)stats.enemiesKilled;
-            pu.username = stats.username;
-            server.sendToAllUDP(pu);
+        if(System.currentTimeMillis() - delay > 500){
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            for(PStats stats : playersStats){
+                Network.PstatsUpdate pu = new Network.PstatsUpdate();
+                pu.bulletsHit = (short)stats.bulletsHit;
+                pu.shootShooted = (short)stats.bulletShooted;
+                pu.deathTime = stats.deathTime;
+                pu.enemiesKilled = (short)stats.enemiesKilled;
+                pu.username = stats.username;
+                server.sendToAllUDP(pu);
+            }
+            delay = System.currentTimeMillis();
         }
     }
     // client side

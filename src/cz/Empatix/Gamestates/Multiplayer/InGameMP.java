@@ -192,7 +192,7 @@ public class InGameMP extends GameState {
             Network.Reload reload = new Network.Reload();
             reload.username = MultiplayerManager.getInstance().getUsername();
             Client client = MultiplayerManager.getInstance().client.getClient();
-            client.sendTCP(reload);
+            client.sendUDP(reload);
             gunsManager.reload();
         }
     }
@@ -209,7 +209,7 @@ public class InGameMP extends GameState {
                 ready.username = player[0].getUsername();
                 ready.state = true;
                 Client client = mpManager.client.getClient();
-                client.sendTCP(ready);
+                client.sendUDP(ready);
                 this.ready = true;
             }
         }
@@ -239,17 +239,17 @@ public class InGameMP extends GameState {
             pickup.username = player[0].getUsername();
             pickup.x = (int)(mouseX-mx-px);
             pickup.y = (int)(mouseY-my-py);
-            client.sendTCP(pickup);
+            client.sendUDP(pickup);
 
             Network.ObjectInteract interact = new Network.ObjectInteract();
             interact.username = player[0].getUsername();
-            client.sendTCP(interact);
+            client.sendUDP(interact);
         }
 
         if(k == ControlSettings.getValue(ControlSettings.ARTEFACT_USE)){
             Network.ArtefactActivate packetAActivate = new Network.ArtefactActivate();
             packetAActivate.username = mpManager.getUsername();
-            mpManager.client.getClient().sendTCP(packetAActivate);
+            mpManager.client.getClient().sendUDP(packetAActivate);
 
         }
 
@@ -813,7 +813,6 @@ public class InGameMP extends GameState {
         }
         Object[] objects = mpManager.packetHolder.get(PacketHolder.MOVEPLAYER);
         for(PlayerMP p : player) {
-            int totalMoves = 0;
             if(p == null) continue;
             Network.MovePlayer recent=null;
             for (Object o : objects) {
@@ -821,35 +820,23 @@ public class InGameMP extends GameState {
                 if (p.getUsername().equalsIgnoreCase(move.username)) {
                     if (recent == null) recent = move;
                     if (recent.time < move.time) recent = move;
-                    totalMoves++;
                 }
             }
             if(recent != null){
-                p.setTotalMoves(totalMoves);
-                p.setPosition(recent);
+                p.setPosition(recent.x,recent.y);
                 if(!p.isOrigin()){
                     p.setUp(recent.up);
                     p.setDown(recent.down);
                     p.setRight(recent.right);
                     p.setLeft(recent.left);
                 }
+            } else {
+                p.update();
             }
         }
-        for(Player p : player){
+        for(PlayerMP p : player){
             if(p != null)p.update();
         }
-        Object[] playerHitPackets = mpManager.packetHolder.get(PacketHolder.PLAYERHIT);
-        for(PlayerMP p : player) {
-            if (p != null) {
-                for(Object o : playerHitPackets){
-                    Network.PlayerHit playerHit = (Network.PlayerHit) o;
-                    if(p.getUsername().equalsIgnoreCase(playerHit.username)){
-                        p.fakeHit(playerHit);
-                    }
-                }
-            }
-        }
-
         tileMap.createRoomObjectsViaPackets();
         tileMap.updateObjects();
 

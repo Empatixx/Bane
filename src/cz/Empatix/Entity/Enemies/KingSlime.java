@@ -276,7 +276,7 @@ public class KingSlime extends Enemy {
                     Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
                     enemyProjectile.id = slimebullet.id;
                     enemyProjectile.idEnemy = getId();
-                    server.sendToAllTCP(enemyProjectile);
+                    server.sendToAllUDP(enemyProjectile);
                 }
                 if(slimebullet.isHit()) continue;
                 if(tileMap.isServerSide()){
@@ -299,7 +299,7 @@ public class KingSlime extends Enemy {
                                 Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
                                 enemyProjectile.id = slimebullet.id;
                                 enemyProjectile.idEnemy = getId();
-                                server.sendToAllTCP(enemyProjectile);
+                                server.sendToAllUDP(enemyProjectile);
                             }
                         }
                     }
@@ -319,7 +319,7 @@ public class KingSlime extends Enemy {
                                     enemyProjectile.id = slimebullet.id;
                                     enemyProjectile.idEnemy = getId();
                                     enemyProjectile.idHit = object.getId();
-                                    server.sendToAllTCP(enemyProjectile);
+                                    server.sendToAllUDP(enemyProjectile);
                                 }
                             }
                         } else if (object.collision && slimebullet.intersects(object)) {
@@ -330,7 +330,7 @@ public class KingSlime extends Enemy {
                                 Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
                                 enemyProjectile.id = slimebullet.id;
                                 enemyProjectile.idEnemy = getId();
-                                server.sendToAllTCP(enemyProjectile);
+                                server.sendToAllUDP(enemyProjectile);
                             }
                         }
                     }
@@ -368,7 +368,7 @@ public class KingSlime extends Enemy {
                     addEnemyProjectile.y = py[index] - position.y;
                     addEnemyProjectile.inaccuracy = (float)inaccuracy;
                     Server server = MultiplayerManager.getInstance().server.getServer();
-                    server.sendToAllTCP(addEnemyProjectile);
+                    server.sendToAllUDP(addEnemyProjectile);
                 }
                 if (i >= 0) i++;
                 else i--;
@@ -422,7 +422,7 @@ public class KingSlime extends Enemy {
                 addEnemyProjectile.y = (float)Math.sin(Math.toRadians(angle-90));
                 addEnemyProjectile.inaccuracy = (float)(offset+0.05 *(1-Random.nextInt(2)*2));
                 Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(addEnemyProjectile);
+                server.sendToAllUDP(addEnemyProjectile);
 
                 slimebullet = new KingSlimebullet(
                         tileMap,
@@ -438,7 +438,7 @@ public class KingSlime extends Enemy {
                 addEnemyProjectile.x = (float)Math.sin(Math.toRadians(angle-180));
                 addEnemyProjectile.y = (float)Math.sin(Math.toRadians(angle-270));
                 addEnemyProjectile.inaccuracy = (float)(offset+0.05 *(1-Random.nextInt(2)*2));
-                server.sendToAllTCP(addEnemyProjectile);
+                server.sendToAllUDP(addEnemyProjectile);
             // SP
             } else if (!MultiplayerManager.multiplayer){
                 KingSlimebullet slimebullet = new KingSlimebullet(

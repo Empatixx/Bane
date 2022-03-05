@@ -315,7 +315,7 @@ public class ShieldHorn extends Artefact {
                 aes.slot = ArtefactManagerMP.getInstance().getArtefactSlot(this);
                 aes.state = 0;
                 Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(aes);
+                server.sendToAllUDP(aes);
             } else {
                 light.remove();
                 light = null;
@@ -334,7 +334,7 @@ public class ShieldHorn extends Artefact {
                 aes.slot = ArtefactManagerMP.getInstance().getArtefactSlot(this);
                 aes.state = 1;
                 Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(aes);
+                server.sendToAllUDP(aes);
             } else {
                 light.remove();
                 light = null;

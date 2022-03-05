@@ -362,7 +362,7 @@ public class Bullet extends MapObject implements Serializable {
             Network.HitBullet hitBullet = new Network.HitBullet();
             hitBullet.type = type;
             hitBullet.id = id;
-            server.sendToAllTCP(hitBullet);
+            server.sendToAllUDP(hitBullet);
         } else {
             if(type == TypeHit.WALL){
                 source.play(soundWallhit);
@@ -391,7 +391,7 @@ public class Bullet extends MapObject implements Serializable {
             hitBullet.type = type;
             hitBullet.id = id;
             hitBullet.idHit = idHit;
-            server.sendToAllTCP(hitBullet);
+            server.sendToAllUDP(hitBullet);
             // increasing statistic of hit bullet so we can calculate accuracy
             if(owner != null && type != TypeHit.WALL){
                 MPStatistics mpStatistics = mpManager.server.getMpStatistics();

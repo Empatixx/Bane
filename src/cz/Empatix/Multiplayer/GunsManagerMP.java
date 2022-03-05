@@ -176,7 +176,7 @@ public class GunsManagerMP {
             equipedweapons = new Weapon[2];
 
             equipedweapons[0] = weapons.get(index);
-            equipedweapons[0].restat(p.getUsername());
+            equipedweapons[0].restat(p.getUsername(), true);
 
             current = equipedweapons[FIRSTSLOT];
             currentslot = FIRSTSLOT;
@@ -198,7 +198,7 @@ public class GunsManagerMP {
             if(weaponSlot.username.equalsIgnoreCase(username)){
                 weaponSlot.sucessful = setCurrentWeapon(equipedweapons[weaponSlot.slot], weaponSlot.slot);
                 Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(weaponSlot);
+                server.sendToAllUDP(weaponSlot);
             }
         }
         public void update(){
@@ -283,7 +283,7 @@ public class GunsManagerMP {
                 if(equipedweapons[currentslot] == null){
                     equipedweapons[currentslot] = weapon;
                     current = weapon;
-                    current.restat(username);
+                    current.restat(username, false);
                     return;
                 }
                 // check player's all slots
@@ -291,7 +291,7 @@ public class GunsManagerMP {
                     if(equipedweapons[i] == null){
                         if(i==currentslot) current = weapon;
                         equipedweapons[i] = weapon;
-                        weapon.restat(username);
+                        weapon.restat(username, false);
                         return;
                     }
                 }
@@ -343,7 +343,7 @@ public class GunsManagerMP {
                 dropWeapon.sucessful = true;
                 dropWeapon.playerSlot = (byte)currentslot;
                 Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(dropWeapon);
+                server.sendToAllUDP(dropWeapon);
             }
         }
         public int getCurrentslot() {
@@ -364,7 +364,7 @@ public class GunsManagerMP {
                     dropWeapon.sucessful = true;
                     dropWeapon.username = username;
                     dropWeapon.playerSlot = (byte)slot;
-                    server.sendToAllTCP(dropWeapon);
+                    server.sendToAllUDP(dropWeapon);
                 }
             }
         }

@@ -233,7 +233,7 @@ public class RedSlime extends Enemy {
                     Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
                     enemyProjectile.id = redSlimebullet.id;
                     enemyProjectile.idEnemy = getId();
-                    server.sendToAllTCP(enemyProjectile);
+                    server.sendToAllUDP(enemyProjectile);
                 }
                 if(redSlimebullet.isHit()) continue;
                 if(tileMap.isServerSide()){
@@ -257,7 +257,7 @@ public class RedSlime extends Enemy {
                                 Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
                                 enemyProjectile.id = redSlimebullet.id;
                                 enemyProjectile.idEnemy = getId();
-                                server.sendToAllTCP(enemyProjectile);
+                                server.sendToAllUDP(enemyProjectile);
                             }
                         }
                     }
@@ -277,7 +277,7 @@ public class RedSlime extends Enemy {
                                     enemyProjectile.id = redSlimebullet.id;
                                     enemyProjectile.idEnemy = getId();
                                     enemyProjectile.idHit = object.getId();
-                                    server.sendToAllTCP(enemyProjectile);
+                                    server.sendToAllUDP(enemyProjectile);
                                 }
                             }
                         } else if (object.collision && redSlimebullet.intersects(object)) {
@@ -288,7 +288,7 @@ public class RedSlime extends Enemy {
                                 Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
                                 enemyProjectile.id = redSlimebullet.id;
                                 enemyProjectile.idEnemy = getId();
-                                server.sendToAllTCP(enemyProjectile);
+                                server.sendToAllUDP(enemyProjectile);
                             }
                         }
                     }
@@ -318,7 +318,7 @@ public class RedSlime extends Enemy {
                     addEnemyProjectile.y = py[index] - position.y;
                     addEnemyProjectile.inaccuracy = 1.3f*i;
                     Server server = MultiplayerManager.getInstance().server.getServer();
-                    server.sendToAllTCP(addEnemyProjectile);
+                    server.sendToAllUDP(addEnemyProjectile);
                 }
             }
         }

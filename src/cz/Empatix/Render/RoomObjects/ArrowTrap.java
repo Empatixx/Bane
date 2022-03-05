@@ -277,7 +277,7 @@ public class ArrowTrap extends RoomObject {
                 arrowCreate.facingRight = arrow.isFacingRight();
                 arrowCreate.horizontal = arrow.horizontal;
                 Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(arrowCreate);
+                server.sendToAllUDP(arrowCreate);
             }
 
             arrowShootCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
@@ -675,7 +675,7 @@ public class ArrowTrap extends RoomObject {
                 Network.TrapArrowHit arrowHit = new Network.TrapArrowHit();
                 arrowHit.id = id;
                 Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(arrowHit);
+                server.sendToAllUDP(arrowHit);
             }
         }
 

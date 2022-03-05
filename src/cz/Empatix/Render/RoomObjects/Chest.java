@@ -314,7 +314,7 @@ public class Chest extends RoomObject {
             openChest.id = getId();
             openChest.idRoom = (byte)tileMap.getRoomByCoords(position.x,position.y).getId();
             Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllTCP(openChest);
+            server.sendToAllUDP(openChest);
         } else {
             animation.setFrames(spritesheet.getSprites(OPEN));
         }

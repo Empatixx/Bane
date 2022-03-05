@@ -261,7 +261,7 @@ public class EyeBat extends Enemy {
                 golemAnimSync.time = animation.getTime();
 
                 Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllTCP(golemAnimSync);
+                server.sendToAllUDP(golemAnimSync);
             }
             if(currentAction == BEAM){
                 right = false;
@@ -350,6 +350,7 @@ public class EyeBat extends Enemy {
         private Vector3f originalPos;
         double angle;
         private Player[] player;
+        private long lastTimeBeamSync;
 
         LaserBeam(TileMap tm, Player[] p) {
             super(tm);
@@ -501,7 +502,7 @@ public class EyeBat extends Enemy {
                                 Network.LaserBeamHit laserBeamHit = new Network.LaserBeamHit();
                                 laserBeamHit.idHit = object.id;
                                 Server server = MultiplayerManager.getInstance().server.getServer();
-                                server.sendToAllTCP(laserBeamHit);
+                                server.sendToAllUDP(laserBeamHit);
                             }
                         }
                     }
@@ -519,20 +520,29 @@ public class EyeBat extends Enemy {
                 }
             } else {
                 Object[] objects = MultiplayerManager.getInstance().packetHolder.getWithoutClear(PacketHolder.LASERBEAMSYNC);
+                Network.LaserBeamSync theRecent = null;
                 for(Object o : objects){
-                    handleSync((Network.LaserBeamSync) o);
+                    Network.LaserBeamSync sync = (Network.LaserBeamSync) o;
+                    if(sync.id == id){
+                        if(theRecent == null) theRecent = sync;
+                        else if (theRecent.packetTime < sync.packetTime){
+                            theRecent = sync;
+                        }
+                    }
                 }
+                if(theRecent != null)handleSync(theRecent);
             }
 
         }
-        public void handleSync(Network.LaserBeamSync sync){
-            if(sync.id == id){
+        public void handleSync(Network.LaserBeamSync sync) {
+            MultiplayerManager.getInstance().packetHolder.remove(PacketHolder.LASERBEAMSYNC,sync);
+            if (lastTimeBeamSync < sync.packetTime){
                 angle = sync.angle;
                 animation.setFrame(sync.sprite);
                 animation.setTime(sync.time);
                 position.x = sync.x;
                 position.y = sync.y;
-                MultiplayerManager.getInstance().packetHolder.remove(PacketHolder.LASERBEAMSYNC,sync);
+                lastTimeBeamSync = sync.packetTime;
             }
         }
         @Override

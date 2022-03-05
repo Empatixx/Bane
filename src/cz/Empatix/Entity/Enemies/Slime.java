@@ -225,7 +225,7 @@ public class Slime extends Enemy {
                     Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
                     enemyProjectile.id = slimebullet.id;
                     enemyProjectile.idEnemy = getId();
-                    server.sendToAllTCP(enemyProjectile);
+                    server.sendToAllUDP(enemyProjectile);
                 }
                 if(slimebullet.isHit()) continue;
                 if(tileMap.isServerSide()){
@@ -248,7 +248,7 @@ public class Slime extends Enemy {
                                 Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
                                 enemyProjectile.id = slimebullet.id;
                                 enemyProjectile.idEnemy = getId();
-                                server.sendToAllTCP(enemyProjectile);
+                                server.sendToAllUDP(enemyProjectile);
                             }
                         }
                     }
@@ -268,7 +268,7 @@ public class Slime extends Enemy {
                                     enemyProjectile.id = slimebullet.id;
                                     enemyProjectile.idEnemy = getId();
                                     enemyProjectile.idHit = object.getId();
-                                    server.sendToAllTCP(enemyProjectile);
+                                    server.sendToAllUDP(enemyProjectile);
                                 }
                             }
                         } else if (object.collision && slimebullet.intersects(object)) {
@@ -279,12 +279,12 @@ public class Slime extends Enemy {
                                 Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
                                 enemyProjectile.id = slimebullet.id;
                                 enemyProjectile.idEnemy = getId();
-                                server.sendToAllTCP(enemyProjectile);
+                                server.sendToAllUDP(enemyProjectile);
                             }
                         }
                     }
                 }
-            // singleplayer
+                // singleplayer
             }
             if(slimebullet.shouldRemove()) {
                 bullets.remove(i);
@@ -322,7 +322,7 @@ public class Slime extends Enemy {
                         addEnemyProjectile.y = py[playerIndex] - position.y;
                         addEnemyProjectile.inaccuracy = 1.3f*i;
                         Server server = MultiplayerManager.getInstance().server.getServer();
-                        server.sendToAllTCP(addEnemyProjectile);
+                        server.sendToAllUDP(addEnemyProjectile);
                     }
                 }
             }

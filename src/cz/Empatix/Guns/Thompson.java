@@ -94,7 +94,7 @@ public class Thompson extends Weapon{
     }
     // resetting stats of gun of new owner of gun
     @Override
-    public void restat(String username) {
+    public void restat(String username, boolean fullAmmo) {
         mindamage = 1;
         maxdamage = 3;
         inaccuracy = 0.5f;
@@ -115,8 +115,10 @@ public class Thompson extends Weapon{
         if(numUpgrades >= 4){
             boostFirerate = true;
         }
-        if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
-        if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
+        if(!fullAmmo){
+            if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
+            if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
+        }
     }
     @Override
     public void reload() {

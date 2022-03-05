@@ -186,7 +186,7 @@ public class Portal extends RoomObject {
                 Client client = mpManager.client.getClient();
                 ready.username = username;
                 ready.state = false;
-                client.sendTCP(ready);
+                client.sendUDP(ready);
                 packetChangeSent = false;
             } else {
                 if(!packetChangeSent){
@@ -194,7 +194,7 @@ public class Portal extends RoomObject {
                     Client client = mpManager.client.getClient();
                     ready.username = username;
                     ready.state = true;
-                    client.sendTCP(ready);
+                    client.sendUDP(ready);
                     packetChangeSent = true;
                 }
 

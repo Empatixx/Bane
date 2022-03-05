@@ -7,6 +7,8 @@ import cz.Empatix.Guns.Bullet;
 
 // This class is a convenient place to keep things common to both the client and server.
 public class Network {
+    private static int idPacketServer = 0;
+    private static int idPacketClient = 0;
 
     static int port = 54555;
     // This registers objects that are going to be sent over the network.
@@ -96,17 +98,26 @@ public class Network {
         public String username;
     }
     public static class MovePlayer {
+        public int idPacket;
         public String username;
         public float x;
         public float y;
         public boolean up,down,left,right;
         public long time;
+        public MovePlayer(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class MovePlayerInput {
+        public int idPacket;
         public String username;
         public boolean up,down,left,right;
+        public MovePlayerInput(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class ArtefactEventState {
+        public int idPacket;
         /*
         States:
             0 - Player artefact hit
@@ -114,11 +125,18 @@ public class Network {
          */
         public int slot;
         public int state;
+        public ArtefactEventState(){
+            idPacket = getIdPacketS();
+        }
     }
     // PROGRESS ROOM + MAP GENERATION, POST DEATH
     public static class Ready {
+        public int idPacket;
         public String username;
         public boolean state;
+        public Ready(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class TransferRoomMap {
         public int[][] roomMap;
@@ -143,19 +161,35 @@ public class Network {
     }
     // GUNS
     public static class MouseCoords{
+        public int idPacket;
         public String username;
         public float x,y;
+        public MouseCoords(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class StartShooting {
         public String username;
+        public int idPacket;
+        public StartShooting(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class StopShooting {
         public String username;
+        public int idPacket;
+        public StopShooting(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class Ping{
     }
     public static class Reload {
         public String username;
+        public int idPacket;
+        public Reload(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class AddBullet {
         public String username;
@@ -167,62 +201,114 @@ public class Network {
         public float inaccuracy;
         public byte slot;
         public int id;
+        public int idPacket;
+        public AddBullet(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class MoveBullet{
         public float x,y;
         public int id;
+        public int idPacket;
+        public MoveBullet(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class HitBullet{
         public Bullet.TypeHit type;
         public int id;
         public int idHit;
+        public int idPacket;
+        public HitBullet(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class DropItem{
         public byte type;
         public int id;
         public int x, y;
         public byte amount;
+        public int idPacket;
+        public DropItem(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class MoveDropItem{
         public float x,y;
         public int id;
+        public int idPacket;
+        public MoveDropItem(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class RemoveItem{
         public int id;
+        public int idPacket;
+        public RemoveItem(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class MoveEnemy {
         public float x, y;
         public int id;
         public boolean up, down, right, left, facingRight;
+        public int idPacket;
+        public MoveEnemy(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class AddEnemy {
         public float x,y;
         public String type;
         public int id;
+        public int idPacket;
+        public AddEnemy(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class RemoveEnemy {
         public int id;
+        public int idPacket;
+        public RemoveEnemy(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class WeaponInfo {
         public String username;
         public short currentAmmo;
         public short currentMagazineAmmo;
+        public int idPacket;
+        public WeaponInfo(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class SwitchWeaponSlot{
         public String username;
         public byte slot;
         public boolean sucessful;
+        public int idPacket;
+        public SwitchWeaponSlot(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class PlayerDropWeapon{
         public String username;
         public boolean sucessful;
         public int x, y;
         public byte playerSlot;
+        public int idPacket;
+        public PlayerDropWeapon(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class DropWeapon{
         public int x, y;
         public int id;
         public byte slot;
+        public int idPacket;
+        public DropWeapon(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class DropArtefact{
         public short dx, dy;
@@ -230,16 +316,28 @@ public class Network {
         public int id;
         public byte slot;
         public String username;
+        public int idPacket;
+        public DropArtefact(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class DropInteract {
         public String username;
         public boolean sucessful;
         public int id;
         public int x, y;
+        public int idPacket;
+        public DropInteract(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class ObjectInteract {
         public String username;
         public int id;
+        public int idPacket;
+        public ObjectInteract(){
+            idPacket = getIdPacketC();
+        }
     }
     public enum TypeRoomObject{
         CHEST,SPIKE,BONES,TORCH,BARREL,POT,SHOPKEEPER,SHOPTABLE,FLAMETHROWER,LADDER,
@@ -251,28 +349,46 @@ public class Network {
         public int x, y;
         public TypeRoomObject type;
         public byte objectType; // type as TOP/LEFT/RIGHT torch, or TOP/SIDE arrowtrap
+        public int idPacket;
+        public AddRoomObject(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class MoveRoomObject{
         public int id;
         public float x, y;
+        public int idPacket;
+        public MoveRoomObject(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class AddEnemyProjectile{
         public int id;
         public int idEnemy;
         public float x, y; // direction
         public float inaccuracy;
+        public int idPacket;
+        public AddEnemyProjectile(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class MoveEnemyProjectile{
         public int id;
         public int idEnemy;
         public float x, y;
+        public int idPacket;
+        public MoveEnemyProjectile(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class HitEnemyProjectile {
         public int id; // id of projectile
         public int idEnemy; // id of owner's projectile
         public int idHit; // id of room that was hitted
+        public int idPacket;
         public HitEnemyProjectile(){
             idHit= -1;
+            idPacket = getIdPacketS();
         }
         // idHit == -1  means that player was hitted or room object
         // damage hit is done on serverside, only if it is room object damage is done on clientside
@@ -291,23 +407,43 @@ public class Network {
         public byte health, maxHealth;
         public short coins;
         public byte armor, maxArmor;
+        public int idPacket;
+        public PlayerInfo(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class Alert {
         public String username;
         public String text;
         public boolean warning;
+        public int idPacket;
+        public Alert(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class OpenChest {
         public int id;
         public byte idRoom;
+        public int idPacket;
+        public OpenChest(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class PlayerHit {
         public String username;
         public Player.DamageAbsorbedBy type;
+        public int idPacket;
+        public PlayerHit(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class ArtefactActivate{
         public String username;
         public byte slot;
+        public int idPacket;
+        public ArtefactActivate(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class ArtefactAddBullet{
         public String username;
@@ -316,10 +452,18 @@ public class Network {
         public int id;
         public float inaccuracy;
         public byte slot;
+        public int idPacket;
+        public ArtefactAddBullet(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class LockRoom{
         public boolean lock;
         public byte idRoom;
+        public int idPacket;
+        public LockRoom(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class NextFloor{
         public byte floor;
@@ -330,6 +474,10 @@ public class Network {
         public short enemiesKilled;
         public short bulletsHit;
         public long deathTime;
+        public int idPacket;
+        public PstatsUpdate(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class RoomObjectAnimationSync{ // made so animations of trap are same as server logic
         public int id;
@@ -337,13 +485,19 @@ public class Network {
         public long time;
         public long cooldown; // like in flamethrower, arrowtrap
         public long packetTime;
+        public int idPacket;
         public RoomObjectAnimationSync(){
             packetTime = System.nanoTime();
+            idPacket = getIdPacketS();
         }
     }
     public static class TrapArrowMove{
         public int id;
         public float x,y;
+        public int idPacket;
+        public TrapArrowMove(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class TrapArrowAdd {
         public int id;
@@ -351,9 +505,17 @@ public class Network {
         public float x,y;
         public boolean horizontal;
         public boolean facingRight;
+        public int idPacket;
+        public TrapArrowAdd(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class TrapArrowHit{
         public int id;
+        public int idPacket;
+        public TrapArrowHit(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class EnemySync {
         public int id;
@@ -361,8 +523,10 @@ public class Network {
         public byte sprite;
         public long time;
         public long packetTime;
+        public int idPacket;
         public EnemySync(){
             packetTime = System.nanoTime();
+            idPacket = getIdPacketS();
         }
     }
     public static class LaserBeamSync {
@@ -372,12 +536,18 @@ public class Network {
         public long time;
         public double angle;
         public long packetTime;
+        public int idPacket;
         public LaserBeamSync(){
             packetTime = System.nanoTime();
+            idPacket = getIdPacketS();
         }
     }
     public static class LaserBeamHit {
         public int idHit;
+        public int idPacket;
+        public LaserBeamHit(){
+            idPacket = getIdPacketS();
+        }
     }
     public static class NumUpgrades {
         public String username;
@@ -391,5 +561,18 @@ public class Network {
     public static class EnemyHealthHeal {
         public int id;
         public short amount;
+        public int idPacket;
+        public EnemyHealthHeal(){
+            idPacket = getIdPacketS();
+        }
     }
+    // WHEN UDP PACKET WAS RECEIVED BY SERVER or CLIENT
+    // IT WILL BE SEND AS ACKNOWLEDGE PACKET IN TCP, BUT WITHOUT WAITING FOR CORRECTION
+    public static class PacketACK{
+        int id;
+    }
+
+    private static int getIdPacketS(){return idPacketServer++;}
+    private static int getIdPacketC(){return idPacketClient++;}
+
 }

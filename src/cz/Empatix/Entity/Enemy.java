@@ -878,4 +878,8 @@ public abstract class Enemy extends MapObject{
         health+=amount;
         if(health > maxHealth) health = maxHealth;
     }
+
+    public void setHealth(short health) {
+        this.health = health;
+    }
 }

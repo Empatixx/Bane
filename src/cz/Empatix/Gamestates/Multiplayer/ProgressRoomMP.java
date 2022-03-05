@@ -318,36 +318,8 @@ public class ProgressRoomMP extends GameState {
         }
 
         tileMap.updateObjects();
-/*
-        Object[] objects = mpManager.packetHolder.getWithoutClear(PacketHolder.MOVEPLAYER);
-        for(PlayerMP p : player) {
-            if(p == null) continue;
-            Network.MovePlayer recent=null;
-            for (Object o : objects) {
-                Network.MovePlayer move = (Network.MovePlayer) o;
-                if (p.getUsername().equalsIgnoreCase(move.username)) {
-                    if (recent == null) recent = move;
-                    if (recent.time > move.time) recent = move;
-                }
-            }
-            if(recent != null){
-                //if(lastMoveTime > recent.time) continue;
-                lastMoveTime = recent.time;
-                p.setPosition(recent);
-                if(!p.isOrigin()){
-                    p.setUp(recent.up);
-                    p.setDown(recent.down);
-                    p.setRight(recent.right);
-                    p.setLeft(recent.left);
-                }
-                mpManager.packetHolder.remove(PacketHolder.MOVEPLAYER,recent);
-            } else {
-                p.updateLostPacket();
-            }
-        }*/
         Object[] objects = mpManager.packetHolder.get(PacketHolder.MOVEPLAYER);
         for(PlayerMP p : player) {
-            int totalMoves = 0;
             if(p == null) continue;
             Network.MovePlayer recent=null;
             for (Object o : objects) {
@@ -355,26 +327,21 @@ public class ProgressRoomMP extends GameState {
                 if (p.getUsername().equalsIgnoreCase(move.username)) {
                     if (recent == null) recent = move;
                     if (recent.time < move.time) recent = move;
-                    totalMoves++;
                 }
             }
             if(recent != null){
-                //if(lastMoveTime > recent.time) continue;
-                lastMoveTime = recent.time;
-                p.setTotalMoves(totalMoves);
-                p.setPosition(recent);
+                p.setPosition(recent.x,recent.y);
                 if(!p.isOrigin()){
                     p.setUp(recent.up);
                     p.setDown(recent.down);
                     p.setRight(recent.right);
                     p.setLeft(recent.left);
                 }
-                //mpManager.packetHolder.remove(PacketHolder.MOVEPLAYER,recent);
             } else {
-                //p.updateLostPacket();
+                p.update();
             }
         }
-        for(Player p : player){
+        for(PlayerMP p : player){
             if(p != null)p.update();
         }
         progressNPC.update(mouseX,mouseY);

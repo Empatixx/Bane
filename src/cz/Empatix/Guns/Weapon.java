@@ -87,7 +87,7 @@ public abstract class Weapon{
     // SINGLEPLAYER
     public abstract void shoot(float x, float y, float px, float py);
     // MULTIPLAYER
-    public abstract void shoot(float x, float y, float px, float py, String username);
+    public abstract void shoot(float x, float y, float px, float py, int idPlayer);
 
     public abstract void reload();
 
@@ -230,8 +230,8 @@ public abstract class Weapon{
                         MultiplayerManager mpManager = MultiplayerManager.getInstance();
                         // increasing statistic of killed enemies by player
                         MPStatistics mpStatistics = mpManager.server.getMpStatistics();
-                        String owner = bullet.getOwner();
-                        if(owner != null) mpStatistics.addEnemiesKill(bullet.getOwner());
+                        int owner = bullet.getOwner();
+                        if(owner != 0) mpStatistics.addEnemiesKill(bullet.getOwner());
                     }
                     if(!tm.isServerSide()){
                         showDamageIndicator(bullet.getDamage(),bullet.isCritical(),enemy);
@@ -258,11 +258,11 @@ public abstract class Weapon{
     }
     public abstract void shootSound(Network.AddBullet response);
 
-    public void sendAddBulletPacket(Bullet bullet, float x, float y, float px, float py, String username){
+    public void sendAddBulletPacket(Bullet bullet, float x, float y, float px, float py, int idPlayer){
         MultiplayerManager mpManager = MultiplayerManager.getInstance();
         // increasing statistic of shooted bullets so we can calculate accuracy
         MPStatistics mpStatistics = mpManager.server.getMpStatistics();
-        mpStatistics.addBulletShoot(username);
+        mpStatistics.addBulletShoot(idPlayer);
         // sending new bullet as packet
         Network.AddBullet response = new Network.AddBullet();
         response.x = x;
@@ -273,11 +273,11 @@ public abstract class Weapon{
         response.speed = 30;
         response.damage = (byte)bullet.getDamage();
         response.id = bullet.getId();
-        response.username = username;
+        response.idPlayer = idPlayer;
         response.slot = (byte)GunsManagerMP.getInstance().getWeaponSlot(this);
         Server server = mpManager.server.getServer();
         server.sendToAllUDP(response);
     }
 
-    public abstract void restat(String username, boolean fullAmmo);
+    public abstract void restat(int idPlayer, boolean fullAmmo);
 }

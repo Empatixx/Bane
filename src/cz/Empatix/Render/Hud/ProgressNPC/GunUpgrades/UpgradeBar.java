@@ -253,7 +253,7 @@ public abstract class UpgradeBar {
         if(MultiplayerManager.multiplayer){
             MultiplayerManager mpManager = MultiplayerManager.getInstance();
             Network.NumUpgradesUpdate update = new Network.NumUpgradesUpdate();
-            update.username = mpManager.getUsername();
+            update.idPlayer = mpManager.getIdConnection();
             update.gunName = info.name;
             update.numUpgrades = (byte)getNumUpgrades();
             Client client = mpManager.client.getClient();

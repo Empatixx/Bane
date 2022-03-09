@@ -149,7 +149,7 @@ public class BerserkPot extends Artefact {
                     timeLeft = (System.currentTimeMillis() - this.time - InGame.deltaPauseTime() )/ 1000f;
                     timeLeft = 20 - timeLeft;
 
-                    if(((PlayerMP)p).getUsername().equalsIgnoreCase(userMP)){
+                    if(((PlayerMP)p).getIdConnection() == idUser){
                         if(System.currentTimeMillis() - time - InGame.deltaPauseTime() > 20000){
                             removedSpeed = true;
                             p.setMaxSpeed(p.getMaxSpeed()-bonusSpeed);
@@ -203,11 +203,11 @@ public class BerserkPot extends Artefact {
         if(!removedSpeed){
             for(Player player : p){
                 if(player != null) {
-                    if(((PlayerMP)player).getUsername().equalsIgnoreCase(userMP)){
+                    if(((PlayerMP)player).getIdConnection() == idUser){
                         if(System.currentTimeMillis() - time > 20000){
                             removedSpeed = true;
                             player.setMaxSpeed(player.getMaxSpeed()-bonusSpeed);
-                            userMP = null;
+                            idUser = 0; // setting user to no one
                         }
                         break;
                     }
@@ -317,28 +317,28 @@ public class BerserkPot extends Artefact {
         time = System.currentTimeMillis() - InGame.deltaPauseTime();
     }
     @Override
-    public void activate(String username) {
+    public void activate(int idUser) {
         charge = 0;
         removedSpeed = false;
         // refills player armor to full
         for(Player player : p){
             if(player == null) continue;
-            if(((PlayerMP)player).getUsername().equalsIgnoreCase(username)){
+            if(((PlayerMP)player).getIdConnection() == idUser){
                 bonusSpeed = player.getMaxSpeed()*0.25f;
                 player.setMaxSpeed(player.getMaxSpeed()*1.25f);
                 time = System.currentTimeMillis() - InGame.deltaPauseTime();
-                userMP = username;
+                this.idUser = idUser;
                 break;
             }
         }
     }
     @Override
-    public void activateClientSide(String user) {
-        super.activateClientSide(user);
+    public void activateClientSide(int idUser) {
+        super.activateClientSide(idUser);
         charge = 0;
         for(Player player : p){
             if(player != null){
-                if(((PlayerMP)player).getUsername().equalsIgnoreCase(user)){
+                if(((PlayerMP)player).getIdConnection() == idUser){
                     removedSpeed = false;
                     // refills player armor to full
                     bonusSpeed = player.getMaxSpeed()*0.25f;

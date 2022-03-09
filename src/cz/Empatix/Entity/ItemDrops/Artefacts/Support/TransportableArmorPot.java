@@ -138,12 +138,12 @@ public class TransportableArmorPot extends Artefact {
         p[0].addArmor(100);
     }
     @Override
-    public void activate(String username) {
+    public void activate(int idUser) {
         charge = 0;
         // refills player armor to full
         for(Player player : p){
             if(player != null){
-                if(((PlayerMP)player).getUsername().equalsIgnoreCase(username)){
+                if(((PlayerMP)player).getIdConnection() == idUser){
                     player.addArmor(100);
                     break;
                 }
@@ -151,11 +151,11 @@ public class TransportableArmorPot extends Artefact {
         }
     }
     @Override
-    public void activateClientSide(String user) {
-        super.activateClientSide(user);
+    public void activateClientSide(int idUser) {
+        super.activateClientSide(idUser);
         for(Player player : p){
             if(player != null){
-                if(((PlayerMP)player).getUsername().equalsIgnoreCase(user)){
+                if(((PlayerMP)player).getIdConnection() == idUser){
                     player.addArmor(100);
                     break;
                 }

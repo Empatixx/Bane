@@ -370,7 +370,8 @@ public class PlayerMP extends Player {
         if(isOrigin()){
             Client client = mpManager.client.getClient();
             Network.MovePlayerInput movePlayer = new Network.MovePlayerInput();
-            movePlayer.username = username;
+            movePlayer.idPacket = Network.getIdPacketC();
+            movePlayer.idPlayer = idConnection;
             movePlayer.down = down;
             movePlayer.up = up;
             movePlayer.left = left;
@@ -422,18 +423,18 @@ public class PlayerMP extends Player {
             ArtefactManagerMP artefactManagerMP = ArtefactManagerMP.getInstance();
 
             MPStatistics mpStatistics = MultiplayerManager.getInstance().server.getMpStatistics();
-            mpStatistics.setTimeDeath(username,deathTime);
+            mpStatistics.setTimeDeath(idConnection,deathTime);
 
             // random direction of drop
             int x = -100 + Random.nextInt(201);
             int y = -100 + Random.nextInt(201);
-            gunsManagerMP.dropPlayerWeapon(username,x,y,0);
+            gunsManagerMP.dropPlayerWeapon(idConnection,x,y,0);
             x = -100 + Random.nextInt(201);
             y = -100 + Random.nextInt(201);
-            gunsManagerMP.dropPlayerWeapon(username,x,y,1);
+            gunsManagerMP.dropPlayerWeapon(idConnection,x,y,1);
             x = -100 + Random.nextInt(201);
             y = -100 + Random.nextInt(201);
-            artefactManagerMP.setCurrentArtefact(null,x,y,username);
+            artefactManagerMP.setCurrentArtefact(null,x,y,idConnection);
         }
         deathRoom = tileMap.getRoomByCoords(position.x,position.y);
         cwidth = width = 32;

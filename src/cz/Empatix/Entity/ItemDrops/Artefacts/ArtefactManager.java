@@ -133,7 +133,7 @@ public class ArtefactManager {
         Object[] packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTACTIVATED);
         for(Object o : packets) {
             Network.ArtefactActivate p = (Network.ArtefactActivate)o;
-            artefacts.get(p.slot).activateClientSide(p.username);
+            artefacts.get(p.slot).activateClientSide(p.idPlayer);
         }
         packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTSTATE);
         for(Object o : packets) {

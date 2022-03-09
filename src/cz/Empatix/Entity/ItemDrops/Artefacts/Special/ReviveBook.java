@@ -121,14 +121,14 @@ public class ReviveBook extends Artefact {
         // it is only multiplayer item
     }
     @Override
-    public void activate(String username) {
+    public void activate(int idUser) {
         for(Player player : p){
             if(player != null){
                 if(player.isDead()){
                     ((PlayerMP)player).reset();
                     for(Player user : p){
                         if(user != null){
-                            if(((PlayerMP)user).getUsername().equalsIgnoreCase(username)){
+                            if(((PlayerMP)user).getIdConnection() == idUser){
                                 player.setPosition(user.getX(),user.getY());
                                 break;
                             }
@@ -140,11 +140,11 @@ public class ReviveBook extends Artefact {
     }
 
     @Override
-    public void activateClientSide(String user) {
-        super.activateClientSide(user);
+    public void activateClientSide(int idUser) {
+        super.activateClientSide(idUser);
         for(Player player : p){
             if(player != null){
-                if(((PlayerMP)player).getUsername().equalsIgnoreCase(user)){
+                if(((PlayerMP)player).getIdConnection() == idUser){
                     ((PlayerMP)player).reset();
                     break;
                 }

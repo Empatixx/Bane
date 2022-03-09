@@ -550,7 +550,7 @@ public class Player extends MapObject {
                 lastDamage = DamageAbsorbedBy.IMMUNE;
                 Network.PlayerHit playerHit = new Network.PlayerHit();
                 playerHit.type = lastDamage;
-                playerHit.username = ((PlayerMP)(this)).getUsername();
+                playerHit.idPlayer = ((PlayerMP)(this)).getIdConnection();
 
                 Server server = MultiplayerManager.getInstance().server.getServer();
                 server.sendToAllUDP(playerHit);
@@ -598,7 +598,7 @@ public class Player extends MapObject {
         } else {
             Network.PlayerHit playerHit = new Network.PlayerHit();
             playerHit.type = lastDamage;
-            playerHit.username = ((PlayerMP)(this)).getUsername();
+            playerHit.idPlayer = ((PlayerMP)(this)).getIdConnection();
 
             Server server = MultiplayerManager.getInstance().server.getServer();
             server.sendToAllUDP(playerHit);

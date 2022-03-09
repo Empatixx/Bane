@@ -161,14 +161,14 @@ public class LuckyCoin extends Artefact {
         multiplier++;
     }
     @Override
-    public void activate(String username) {
+    public void activate(int idUser) {
 
         charge = 0;
         ItemManagerMP im = ItemManagerMP.getInstance();
 
         for(Player p : p){
             if(p == null) continue;
-            if(username.equalsIgnoreCase(((PlayerMP)p).getUsername())){
+            if(((PlayerMP)p).getIdConnection() == idUser){
                 for(int i = 0;i<5 + multiplier;i++){
                     int tileSize = tm.getTileSize();
 
@@ -203,12 +203,12 @@ public class LuckyCoin extends Artefact {
     }
 
     @Override
-    public void activateClientSide(String user) {
-        super.activateClientSide(user);
+    public void activateClientSide(int idUser) {
+        super.activateClientSide(idUser);
         charge = 0;
         for(Player player : p){
             if(player != null){
-                if(((PlayerMP)p[0]).getUsername().equalsIgnoreCase(user)){
+                if(((PlayerMP)p[0]).getIdConnection() == idUser){
                     multiplier++;
                     break;
                 }

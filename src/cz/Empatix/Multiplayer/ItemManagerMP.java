@@ -138,7 +138,7 @@ public class ItemManagerMP {
         }
         int random = cz.Empatix.Java.Random.nextInt(drops);
 
-        int[] weaponTypes = gm.getWeaponTypes(player[randomIndexPlayer].getUsername());
+        int[] weaponTypes = gm.getWeaponTypes(player[randomIndexPlayer].getIdConnection());
         ItemDrop drop = null;
         if (random == 0) {
             int numWeapons = 0;
@@ -240,14 +240,14 @@ public class ItemManagerMP {
                             }
                         } else  {
                             if (type == ItemDrop.PISTOLAMMO || type == ItemDrop.SHOTGUNAMMO || type == ItemDrop.EXPLOSIVEAMMO) {
-                                boolean done = gm.addAmmo(drop.getAmount(), type, player.getUsername());
+                                boolean done = gm.addAmmo(drop.getAmount(), type, player.getIdConnection());
                                 if (done) {
                                     drop.pickedUp = true;
                                 }
                             } else if (type == ItemDrop.AMMOBOX) {
                                 int[] ammotypes = new int[]{1,3,4};
                                 for(int atype : ammotypes){
-                                    boolean done = gm.addAmmo(drop.getAmount(), atype,player.getUsername());
+                                    boolean done = gm.addAmmo(drop.getAmount(), atype,player.getIdConnection());
                                     if (done) {
                                         drop.pickedUp = true;
                                         break;
@@ -353,12 +353,12 @@ public class ItemManagerMP {
      * @param artefact - artefact that we want to drop
      * @param dx - X direction of drop
      * @param dy - Y direction of drop
-     * @param username -
+     * @param idPlayer - id connection of player
      */
-    public void dropPlayerArtefact(Artefact artefact, int dx, int dy, String username) {
+    public void dropPlayerArtefact(Artefact artefact, int dx, int dy, int idPlayer) {
         for(PlayerMP p : player){
             if(p == null) continue;
-            if(p.getUsername().equalsIgnoreCase(username)){
+            if(p.getIdConnection() == idPlayer){
                 ArtefactDrop drop = new ArtefactDrop(tm, artefact,dx,dy);
                 int x = (int)p.getX();
                 int y = (int)p.getY()+30;
@@ -369,7 +369,7 @@ public class ItemManagerMP {
                 dropArtefact.y = y;
                 dropArtefact.dx = (byte)dx;
                 dropArtefact.dy = (byte)dy;
-                dropArtefact.username = username;
+                dropArtefact.idPlayer = idPlayer;
                 dropArtefact.id = drop.getId();
                 itemDrops.add(drop);
 
@@ -390,7 +390,7 @@ public class ItemManagerMP {
             drops--;
         }
         int random = cz.Empatix.Java.Random.nextInt(drops);
-        int[] weaponTypes = gm.getWeaponTypes(player[randomIndexPlayer].getUsername());
+        int[] weaponTypes = gm.getWeaponTypes(player[randomIndexPlayer].getIdConnection());
 
         ItemDrop drop = null;
         if (random == 0) {
@@ -464,11 +464,11 @@ public class ItemManagerMP {
         server.sendToAllUDP(dropItem);
     }
 
-    public void dropPlayerWeapon(Weapon weapon, int x, int y, int slot, String username) {
+    public void dropPlayerWeapon(Weapon weapon, int x, int y, int slot, int idPlayer) {
         WeaponDrop drop = new WeaponDrop(tm, weapon, x, y);
         for(PlayerMP p : player){
             if(p != null){
-                if(p.getUsername().equalsIgnoreCase(username)){
+                if(p.getIdConnection() == idPlayer){
                     int px = (int) p.getX();
                     int py = (int) p.getY()+30;
                     drop.setPosition((int) p.getX(), (int) p.getY()+30);
@@ -510,7 +510,7 @@ public class ItemManagerMP {
         int y = pickup.y;
         for(int i = 0;i< player.length;i++){
             PlayerMP player = this.player[i];
-            if(!pickup.username.equalsIgnoreCase(player.getUsername()) || player.isDead()) continue;
+            if(pickup.idPlayer != player.getIdConnection() || player.isDead()) continue;
             // picking gun from ground
             float distance = -1;
             ItemDrop selectedDrop = null;
@@ -536,14 +536,14 @@ public class ItemManagerMP {
             }
             if (selectedDrop != null) {
                 if(selectedDrop instanceof WeaponDrop){
-                    gm.changeGun(x, y, ((WeaponDrop) selectedDrop).getWeapon(),player.getUsername());
+                    gm.changeGun(x, y, ((WeaponDrop) selectedDrop).getWeapon(),player.getIdConnection());
                     selectedDrop.pickedUp = true;
                     pickup.sucessful = true;
                     pickup.id = selectedDrop.getId();
                     Server server = MultiplayerManager.getInstance().server.getServer();
                     server.sendToAllUDP(pickup);
                 } else {
-                    am.setCurrentArtefact(((ArtefactDrop) selectedDrop).getArtefact(),x,y, pickup.username);
+                    am.setCurrentArtefact(((ArtefactDrop) selectedDrop).getArtefact(),x,y, pickup.idPlayer);
                     selectedDrop.pickedUp = true;
                     pickup.sucessful = true;
                     pickup.id = selectedDrop.getId();
@@ -559,7 +559,7 @@ public class ItemManagerMP {
                 if(shopItem[i] instanceof WeaponDrop) {
                     if (player.getCoins() >= shopItem[i].getPrice()) {
                         player.removeCoins(shopItem[i].getPrice());
-                        gm.changeGun(x, y, ((WeaponDrop) shopItem[i]).getWeapon(), player.getUsername());
+                        gm.changeGun(x, y, ((WeaponDrop) shopItem[i]).getWeapon(), player.getIdConnection());
                         shopItem[i].pickedUp = true;
                         pickup.sucessful = true;
                         pickup.id = shopItem[i].getId();
@@ -570,7 +570,7 @@ public class ItemManagerMP {
                             Network.Alert alert = new Network.Alert();
                             alert.text = "You don't have enough coins";
                             alert.warning = true;
-                            alert.username = pickup.username;
+                            alert.idPlayer = pickup.idPlayer;
                             server.sendToAllUDP(alert);
                         }
                     }
@@ -587,7 +587,7 @@ public class ItemManagerMP {
                             Network.Alert alert = new Network.Alert();
                             alert.text = "You don't have enough coins";
                             alert.warning = true;
-                            alert.username = pickup.username;
+                            alert.idPlayer = pickup.idPlayer;
                             server.sendToAllUDP(alert);
                         }
                     }
@@ -605,30 +605,30 @@ public class ItemManagerMP {
         for(int i = 0;i< player.length;i++){
             PlayerMP p = player[i];
             if(p == null) interactionAcknowledges[i] = null;
-            else interactionAcknowledges[i] = new InteractionAcknowledge(p.getUsername());
+            else interactionAcknowledges[i] = new InteractionAcknowledge(p.getIdConnection());
         }
         for(Network.DropInteract dropInteract : dropInteractPackets){
             boolean interact = pickup(dropInteract);
-            if(interact) for(InteractionAcknowledge acknowledge : interactionAcknowledges) acknowledge.pickup(dropInteract.username);
+            if(interact) for(InteractionAcknowledge acknowledge : interactionAcknowledges) acknowledge.pickup(dropInteract.idPlayer);
         }
         dropInteractPackets.clear();
         return interactionAcknowledges;
     }
 
     public static class InteractionAcknowledge{
-        private final String username;
+        private final int idPlayer;
         private boolean interact;
-        private InteractionAcknowledge(String username){
-            this.username = username;
+        private InteractionAcknowledge(int idPlayer){
+            this.idPlayer = idPlayer;
             this.interact = false;
         }
-        private void pickup(String username){
-            if(this.username.equalsIgnoreCase(username)){
+        private void pickup(int idPlayer){
+            if(this.idPlayer == idPlayer){
                 interact = true;
             }
         }
-        public boolean isThisAckOfPlayer(String username){
-            return this.username.equalsIgnoreCase(username);
+        public boolean isThisAckOfPlayer(int idPlayer){
+            return this.idPlayer == idPlayer;
         }
 
         public boolean didInteract() {

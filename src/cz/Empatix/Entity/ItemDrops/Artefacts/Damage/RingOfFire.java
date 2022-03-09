@@ -297,11 +297,11 @@ public class RingOfFire extends Artefact {
 
     }
     @Override
-    public void activate(String username) {
+    public void activate(int idUser) {
         charge = 0;
         for(Player p : p){
             if(p == null) continue;
-            if(((PlayerMP)p).getUsername().equalsIgnoreCase(username)){
+            if(((PlayerMP)p).getIdConnection() == idUser){
                 Network.ArtefactAddBullet addBullet = new Network.ArtefactAddBullet();
                 Server server = MultiplayerManager.getInstance().server.getServer();
                 ArtefactManagerMP artefactManager = ArtefactManagerMP.getInstance();
@@ -327,8 +327,8 @@ public class RingOfFire extends Artefact {
 
     }
     @Override
-    public void activateClientSide(String user) {
-        super.activateClientSide(user);
+    public void activateClientSide(int idUser) {
+        super.activateClientSide(idUser);
         charge = 0;
     }
     @Override

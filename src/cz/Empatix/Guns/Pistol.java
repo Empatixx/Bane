@@ -98,7 +98,7 @@ public class Pistol extends Weapon {
 
     // resetting stats of gun of new owner of gun
     @Override
-    public void restat(String username, boolean fullAmmo) {
+    public void restat(int idPlayer, boolean fullAmmo) {
         mindamage = 1;
         maxdamage = Byte.MAX_VALUE;
         inaccuracy = 0.8f;
@@ -107,7 +107,7 @@ public class Pistol extends Weapon {
         delayTime = 250;
 
         GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
-        int numUpgrades = gunsManagerMP.getNumUpgrades(username, "Pistol");
+        int numUpgrades = gunsManagerMP.getNumUpgrades(idPlayer, "Pistol");
         if(numUpgrades >= 1){
             maxMagazineAmmo+=2;
         }
@@ -205,7 +205,7 @@ public class Pistol extends Weapon {
     }
     // MULTIPLAYER
     @Override
-    public void shoot(float x, float y, float px, float py, String username) {
+    public void shoot(float x, float y, float px, float py, int idPlayer) {
         if(MultiplayerManager.multiplayer && !tm.isServerSide()){
             if(isShooting()) {
                 if (currentMagazineAmmo != 0) {
@@ -234,12 +234,12 @@ public class Pistol extends Weapon {
                     }
                 }
                 bullet.setDamage(damage);
-                bullet.setOwner(username);
+                bullet.setOwner(idPlayer);
 
                 bullets.add(bullet);
                 currentMagazineAmmo--;
                 secondShotReady=false;
-                sendAddBulletPacket(bullet,x,y,px,py,username);
+                sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
             }
             if(isShooting()) {
                 if (currentMagazineAmmo != 0) {
@@ -254,7 +254,7 @@ public class Pistol extends Weapon {
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                         Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                         bullet.setPosition(px, py);
-                        bullet.setOwner(username);
+                        bullet.setOwner(idPlayer);
 
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
 
@@ -268,7 +268,7 @@ public class Pistol extends Weapon {
                         bullets.add(bullet);
                         currentMagazineAmmo--;
 
-                        sendAddBulletPacket(bullet,x,y,px,py,username);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
 
                         lastX = x;
                         lastY = y;

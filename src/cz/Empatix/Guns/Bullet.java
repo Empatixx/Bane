@@ -44,7 +44,7 @@ public class Bullet extends MapObject implements Serializable {
     private boolean crit;
 
     private boolean friendlyFire;
-    private String owner;
+    private int owner; // id connection of player who shooted this bullet
 
     public enum TypeHit {
         WALL,
@@ -393,7 +393,7 @@ public class Bullet extends MapObject implements Serializable {
             hitBullet.idHit = idHit;
             server.sendToAllUDP(hitBullet);
             // increasing statistic of hit bullet so we can calculate accuracy
-            if(owner != null && type != TypeHit.WALL){
+            if(owner != 0 && type != TypeHit.WALL){
                 MPStatistics mpStatistics = mpManager.server.getMpStatistics();
                 mpStatistics.addBulletHit(owner);
             }
@@ -526,11 +526,11 @@ public class Bullet extends MapObject implements Serializable {
         if(damage < 1) damage = 1;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(int owner) {
         this.owner = owner;
     }
 
-    public String getOwner() {
+    public int getOwner() {
         return owner;
     }
 }

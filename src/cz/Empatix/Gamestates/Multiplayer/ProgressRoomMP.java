@@ -109,7 +109,7 @@ public class ProgressRoomMP extends GameState {
         player[0] = new PlayerMP(tileMap,username);
         player[0].setOrigin(true);
         player[0].setIdConnection(mpManager.getIdConnection());
-        playerReadies[0] = new PlayerReady(username);
+        playerReadies[0] = new PlayerReady(username,mpManager.getIdConnection());
 
         player[0].setCoins(GameStateManager.getDb().getValue("money","general"));
 
@@ -148,7 +148,7 @@ public class ProgressRoomMP extends GameState {
             playerMP.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
             playerMP.setIdConnection(player.idPlayer);
             this.player[index] = playerMP;
-            playerReadies[index] = new PlayerReady(packetUsername);
+            playerReadies[index] = new PlayerReady(packetUsername,player.idPlayer);
             index++;
             DiscordRP.getInstance().update("Multiplayer - In-Game", "Lobby " + index + "/2");
         }
@@ -265,7 +265,7 @@ public class ProgressRoomMP extends GameState {
             Object[] AlertPackets = mpManager.packetHolder.get(PacketHolder.ALERT);
             for(Object o : AlertPackets){
                 Network.Alert alert = (Network.Alert) o;
-                if(mpManager.getUsername().equalsIgnoreCase(alert.username)){
+                if(mpManager.getIdConnection() == alert.idPlayer){
                     AlertManager.add(alert.warning ? AlertManager.WARNING : AlertManager.INFORMATION,alert.text);
                 }
             }
@@ -312,7 +312,7 @@ public class ProgressRoomMP extends GameState {
 
             Client client = mpManager.client.getClient();
             Network.RequestForPlayers request = new Network.RequestForPlayers();
-            request.exceptUsername = mpManager.getUsername();
+            request.exceptIdPlayer = mpManager.getIdConnection();
 
             client.sendTCP(request);
             return;
@@ -340,7 +340,7 @@ public class ProgressRoomMP extends GameState {
                     p.setLeft(recent.left);
                 }
             } else {
-                p.update();
+                p.updateLostPacket();
             }
         }
         for(PlayerMP p : player){
@@ -351,7 +351,7 @@ public class ProgressRoomMP extends GameState {
         Object[] AlertPackets = mpManager.packetHolder.get(PacketHolder.ALERT);
         for(Object o : AlertPackets){
             Network.Alert alert = (Network.Alert) o;
-            if(mpManager.getUsername().equalsIgnoreCase(alert.username)){
+            if(mpManager.getIdConnection() == alert.idPlayer){
                 AlertManager.add(alert.warning ? AlertManager.WARNING : AlertManager.INFORMATION,alert.text);
             }
         }
@@ -371,7 +371,7 @@ public class ProgressRoomMP extends GameState {
             PlayerMP playerMP = new PlayerMP(tileMap, packetUsername);
             playerMP.setIdConnection(player.idPlayer);
             this.player[index] = playerMP;
-            playerReadies[index] = new PlayerReady(packetUsername);
+            playerReadies[index] = new PlayerReady(packetUsername,player.idPlayer);
             index++;
             DiscordRP.getInstance().update("Multiplayer - In-Game", "Lobby " + index + "/2");
         }

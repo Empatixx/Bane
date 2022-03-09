@@ -32,7 +32,7 @@ public class ArtefactManagerMP {
         playerArtefacts = new PlayerArtefacts[player.length];
         for(int i = 0;i<player.length;i++){
             if(player[i] != null){
-                playerArtefacts[i] = new PlayerArtefacts(player[i].getUsername());
+                playerArtefacts[i] = new PlayerArtefacts(player[i].getUsername(),player[i].getIdConnection());
             } else {
                 break;
             }
@@ -55,10 +55,10 @@ public class ArtefactManagerMP {
             playerArtefact.charge();
         }
     }
-    public void activate(String username,Network.ArtefactActivate artefactActivate){
+    public void activate(Network.ArtefactActivate artefactActivate){
         for(PlayerArtefacts playerArtefact : playerArtefacts){
             if(playerArtefact == null) continue;
-            playerArtefact.activate(username, artefactActivate);
+            playerArtefact.activate(artefactActivate);
         }
     }
     public void update(){
@@ -110,10 +110,10 @@ public class ArtefactManagerMP {
     public int getArtefactSlot(Artefact artefact){
         return artefacts.indexOf(artefact);
     }
-    public void setCurrentArtefact(Artefact currentArtefact, int x, int y, String username) {
+    public void setCurrentArtefact(Artefact currentArtefact, int x, int y, int idPlayer) {
         for(PlayerArtefacts playerArtefact : playerArtefacts){
             if(playerArtefact == null) continue;
-            playerArtefact.setCurrentArtefact(currentArtefact,x,y,username);
+            playerArtefact.setCurrentArtefact(currentArtefact,x,y,idPlayer);
         }
     }
 
@@ -128,10 +128,12 @@ public class ArtefactManagerMP {
 
     private class PlayerArtefacts{
         private String username;
+        private int idPlayer;
         private Artefact currentArtefact;
 
-        public PlayerArtefacts(String username){
+        public PlayerArtefacts(String username, int idPlayer){
             this.username = username;
+            this.idPlayer = idPlayer;
             // preventing to keeping artefact from previous game
             currentArtefact = null;
         }
@@ -140,11 +142,11 @@ public class ArtefactManagerMP {
                 currentArtefact.charge();
             }
         }
-        public void activate(String username, Network.ArtefactActivate artefactActivate){
-            if(this.username.equalsIgnoreCase(username)){
+        public void activate(Network.ArtefactActivate artefactActivate){
+            if(this.idPlayer == artefactActivate.idPlayer){
                 if(currentArtefact != null){
                     if(currentArtefact.canBeActivated()){
-                        currentArtefact.activate(username);
+                        currentArtefact.activate(artefactActivate.idPlayer);
                         // sending acknowledge of activating artefact
                         Server server = MultiplayerManager.getInstance().server.getServer();
                         artefactActivate.slot = (byte)artefacts.indexOf(currentArtefact);
@@ -163,11 +165,11 @@ public class ArtefactManagerMP {
             }
             return false;
         }
-        public void setCurrentArtefact(Artefact currentArtefact, int x, int y, String username) {
-            if(this.username.equalsIgnoreCase(username)){
+        public void setCurrentArtefact(Artefact currentArtefact, int x, int y, int idPlayer) {
+            if(this.idPlayer == idPlayer){
                 if(this.currentArtefact != null){
                     ItemManagerMP itemManager = ItemManagerMP.getInstance();
-                    itemManager.dropPlayerArtefact(this.currentArtefact,x,y,username);
+                    itemManager.dropPlayerArtefact(this.currentArtefact,x,y,idPlayer);
                     this.currentArtefact.playerDropEvent();
                 }
                 this.currentArtefact = currentArtefact;

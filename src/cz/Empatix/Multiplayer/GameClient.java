@@ -10,6 +10,10 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class GameClient{
 
@@ -17,6 +21,8 @@ public class GameClient{
     private MultiplayerManager mpManager;
     private GameStateManager gsm;
     private Client client;
+
+    private ACKManager ackManager;
 
     private int numPlayers;
     private boolean recon;
@@ -32,7 +38,16 @@ public class GameClient{
         client.start();
 
         recon = false;
+        ackManager = new ACKManager();
 
+        new Thread("Client-ACK") {
+            @Override
+            public void run() {
+                while(MultiplayerManager.multiplayer){
+                    ackManager.update();
+                }
+            }
+        }.start();
         client.addListener(new Listener.ThreadedListener(new Listener() {
             public void received (Connection connection, Object object) {
                 if (object instanceof Network.AddPlayer) {
@@ -57,17 +72,16 @@ public class GameClient{
                     boolean state = ((Network.Ready) object).state;
 
                     GameState gameState = gsm.getCurrentGamestate();
-                    String packetUsername = ((Network.Ready) object).username;
                     if(gameState instanceof ProgressRoomMP) {
                         for(PlayerReady playerReady : ((ProgressRoomMP) gameState).playerReadies){
                             if(playerReady == null) continue;
-                            if(playerReady.getUsername().equalsIgnoreCase(packetUsername)){
+                            if(playerReady.isEqual(((Network.Ready) object).idPlayer)){
                                 playerReady.setReady(state);
-                                String playerUsername = mpManager.getUsername();
-                                if(!packetUsername.equalsIgnoreCase(playerUsername) && state){
+                                int selfId = mpManager.getIdConnection(); // origin id
+                                if(selfId != ((Network.Ready) object).idPlayer && state){
                                     Network.Alert alert = new Network.Alert();
-                                    alert.text = packetUsername+" is ready!";
-                                    alert.username = MultiplayerManager.getInstance().getUsername();
+                                    alert.text = playerReady.getUsername()+" is ready!";
+                                    alert.idPlayer = mpManager.getIdConnection();
                                     alert.warning = false;
                                     packetHolder.add(alert,PacketHolder.ALERT);
                                 }
@@ -77,7 +91,7 @@ public class GameClient{
                     if(gameState instanceof InGameMP) {
                         for(PlayerReady playerReady : ((InGameMP) gameState).playerReadies){
                             if(playerReady == null) continue;
-                            if(playerReady.getUsername().equalsIgnoreCase(packetUsername)){
+                            if(playerReady.isEqual(((Network.Ready) object).idPlayer)){
                                 playerReady.setReady(state);
                             }
                         }
@@ -200,7 +214,9 @@ public class GameClient{
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
                         packetHolder.add(object,PacketHolder.PLAYERHIT);
+
                     }
+
                 }
                 else if (object instanceof Network.MoveEnemy){
                     packetHolder.add(object,PacketHolder.MOVEENEMY);
@@ -310,6 +326,8 @@ public class GameClient{
                     if(gameState instanceof InGameMP) {
                         packetHolder.add(object,PacketHolder.ARTEFACTACTIVATED);
                     }
+                } else if (object instanceof Network.PacketACK){
+                    ackManager.acknowledged(((Network.PacketACK) object).id);
                 }
             }
         }));
@@ -322,6 +340,9 @@ public class GameClient{
             e.printStackTrace();
         }
 
+    }
+    public void requestACK(Object packet, int idPacket){
+        ackManager.add(packet,idPacket);
     }
 
     public Client getClient() {
@@ -369,5 +390,80 @@ public class GameClient{
                 }
             }
         };*/
+    }
+    private static class ACKManager{
+        private ArrayList<PacketWaitingACK> packets;
+        private ArrayList<PacketWaitingACK> waitingForAdd;
+        private int[] confirmedACKs;
+        private int totalConfirmedACKs;
+        private Lock waitingLock;
+        private Lock ackLock;
+        ACKManager(){
+            packets = new ArrayList<>(100);
+            waitingLock = new ReentrantLock();
+            ackLock = new ReentrantLock();
+            confirmedACKs = new int[200];
+            waitingForAdd = new ArrayList<>();
+        }
+        public void acknowledged(int id){
+            ackLock.lock();
+            try{
+                confirmedACKs[totalConfirmedACKs] = id;
+                totalConfirmedACKs++;
+            } finally {
+                ackLock.unlock();
+            }
+        }
+        public void add(Object o,int id){
+            waitingLock.lock();
+            try{
+                waitingForAdd.add(new PacketWaitingACK(o,id));
+            } finally {
+                waitingLock.unlock();
+            }
+        }
+        public void update(){
+            waitingLock.lock();
+            try{
+                packets.addAll(waitingForAdd);
+                waitingForAdd.clear();
+            } finally {
+                waitingLock.unlock();
+            }
+            ackLock.lock();
+            int[] acks;
+            try{
+                acks = Arrays.copyOf(confirmedACKs,totalConfirmedACKs);
+                totalConfirmedACKs = 0;
+            } finally {
+                ackLock.unlock();
+            }
+            for(int ackId : acks){
+                packets.removeIf(ack -> ack.id == ackId);
+            }
+            for(PacketWaitingACK p : packets){
+                if(p.shouldResend()){
+                    MultiplayerManager.getInstance().client.getClient().sendUDP(p.getPacket());
+                }
+            }
+        }
+        private static class PacketWaitingACK{
+            private Object packet;
+            private int id;
+            private long timeSent;
+            PacketWaitingACK(Object packet, int id){
+                this.id = id;
+                this.timeSent = System.nanoTime();
+                this.packet = packet;
+            }
+            boolean shouldResend(){
+                boolean sent = System.nanoTime() - timeSent > 100000000;
+                if(sent) timeSent = System.nanoTime();
+                return sent;
+            }
+            public Object getPacket() {
+                return packet;
+            }
+        }
     }
 }

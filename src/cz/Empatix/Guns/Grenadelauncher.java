@@ -85,14 +85,14 @@ public class Grenadelauncher extends Weapon {
     }
     // resetting stats of gun of new owner of gun
     @Override
-    public void restat(String username, boolean fullAmmo) {
+    public void restat(int idPlayer, boolean fullAmmo) {
         mindamage = 4;
         maxdamage = 7;
         inaccuracy = 0.7f;
         maxAmmo = 24;
         maxMagazineAmmo = 6;
         GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
-        int numUpgrades = gunsManagerMP.getNumUpgrades(username, "Grenade Launcher");
+        int numUpgrades = gunsManagerMP.getNumUpgrades(idPlayer, "Grenade Launcher");
         if(numUpgrades >= 1){
             maxAmmo+=4;
         }
@@ -160,7 +160,7 @@ public class Grenadelauncher extends Weapon {
     }
 
     @Override
-    public void shoot(float x, float y, float px, float py, String username) {
+    public void shoot(float x, float y, float px, float py, int idPlayer) {
 
     }
 

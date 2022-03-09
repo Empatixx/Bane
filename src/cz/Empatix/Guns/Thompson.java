@@ -94,7 +94,7 @@ public class Thompson extends Weapon{
     }
     // resetting stats of gun of new owner of gun
     @Override
-    public void restat(String username, boolean fullAmmo) {
+    public void restat(int idPlayer, boolean fullAmmo) {
         mindamage = 1;
         maxdamage = 3;
         inaccuracy = 0.5f;
@@ -102,7 +102,7 @@ public class Thompson extends Weapon{
         maxMagazineAmmo = 50;
         delayTime = 200;
         GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
-        int numUpgrades = gunsManagerMP.getNumUpgrades(username, "Thompson");
+        int numUpgrades = gunsManagerMP.getNumUpgrades(idPlayer, "Thompson");
         if(numUpgrades >= 1){
             mindamage+=1;
         }
@@ -185,7 +185,7 @@ public class Thompson extends Weapon{
     }
 
     @Override
-    public void shoot(float x, float y, float px, float py, String username) {
+    public void shoot(float x, float y, float px, float py, int idPlayer) {
         if(MultiplayerManager.multiplayer && !tm.isServerSide()){
             if(isShooting()) {
                 if (currentMagazineAmmo != 0) {
@@ -212,7 +212,7 @@ public class Thompson extends Weapon{
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                         Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                         bullet.setPosition(px, py);
-                        bullet.setOwner(username);
+                        bullet.setOwner(idPlayer);
 
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                         if(criticalHits){
@@ -225,7 +225,7 @@ public class Thompson extends Weapon{
                         bullets.add(bullet);
 
                         currentMagazineAmmo--;
-                        sendAddBulletPacket(bullet,x,y,px,py,username);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
                         if(boostFirerate){
                             delayTime -= 5;
                             if(delayTime < 130) delayTime = 130;

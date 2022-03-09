@@ -138,18 +138,18 @@ public class GunsManager {
         current.shoot(x,y,px,py);
     }
     // multiplayer
-    public void shoot(float x, float y, float px, float py, String username){
+    public void shoot(float x, float y, float px, float py, int idPlayer){
         if(current == null) return;
-        current.shoot(x,y,px,py,username);
+        current.shoot(x,y,px,py,idPlayer);
 
-        if(MultiplayerManager.multiplayer){
-            Client client = MultiplayerManager.getInstance().client.getClient();
-            Network.MouseCoords mouseCoords = new Network.MouseCoords();
-            mouseCoords.x = x;
-            mouseCoords.y = y;
-            mouseCoords.username = MultiplayerManager.getInstance().getUsername();
-            client.sendUDP(mouseCoords);
-        }
+        Client client = MultiplayerManager.getInstance().client.getClient();
+        Network.MouseCoords mouseCoords = new Network.MouseCoords();
+        mouseCoords.idPacket = Network.getIdPacketC();
+        mouseCoords.x = x;
+        mouseCoords.y = y;
+        mouseCoords.idPlayer = idPlayer;
+        client.sendUDP(mouseCoords);
+
     }
     public void reload(){
         if(current == null)return;
@@ -238,7 +238,9 @@ public class GunsManager {
                 MultiplayerManager mp = MultiplayerManager.getInstance();
                 Client client = mp.client.getClient();
                 Network.PlayerDropWeapon dropWeapon = new Network.PlayerDropWeapon();
-                dropWeapon.username = mp.getUsername();
+                dropWeapon.idPacket = Network.getIdPacketC();
+                MultiplayerManager.getInstance().client.requestACK(dropWeapon,dropWeapon.idPacket);
+                dropWeapon.idPlayer = mp.getIdConnection();
                 dropWeapon.x = x;
                 dropWeapon.y = y;
                 client.sendUDP(dropWeapon);
@@ -255,7 +257,9 @@ public class GunsManager {
             if(MultiplayerManager.multiplayer){
                 Client client = MultiplayerManager.getInstance().client.getClient();
                 Network.SwitchWeaponSlot switchWeaponSlot = new Network.SwitchWeaponSlot();
-                switchWeaponSlot.username = MultiplayerManager.getInstance().getUsername();
+                switchWeaponSlot.idPacket = Network.getIdPacketC();
+                MultiplayerManager.getInstance().client.requestACK(switchWeaponSlot,switchWeaponSlot.idPacket);
+                switchWeaponSlot.idPlayer = MultiplayerManager.getInstance().getIdConnection();
                 switchWeaponSlot.slot = FIRSTSLOT;
                 client.sendUDP(switchWeaponSlot);
             } else {
@@ -265,7 +269,9 @@ public class GunsManager {
             if(MultiplayerManager.multiplayer){
                 Client client = MultiplayerManager.getInstance().client.getClient();
                 Network.SwitchWeaponSlot switchWeaponSlot = new Network.SwitchWeaponSlot();
-                switchWeaponSlot.username = MultiplayerManager.getInstance().getUsername();
+                switchWeaponSlot.idPacket = Network.getIdPacketC();
+                MultiplayerManager.getInstance().client.requestACK(switchWeaponSlot,switchWeaponSlot.idPacket);
+                switchWeaponSlot.idPlayer = MultiplayerManager.getInstance().getIdConnection();
                 switchWeaponSlot.slot = SECONDARYSLOT;
                 client.sendUDP(switchWeaponSlot);
             } else {
@@ -278,7 +284,9 @@ public class GunsManager {
         current.setShooting(false);
         if(MultiplayerManager.multiplayer){
             Network.StopShooting stopShooting = new Network.StopShooting();
-            stopShooting.username = ((PlayerMP)players[0]).getUsername();
+            stopShooting.idPacket = Network.getIdPacketC();
+            MultiplayerManager.getInstance().client.requestACK(stopShooting,stopShooting.idPacket);
+            stopShooting.idPlayer = MultiplayerManager.getInstance().getIdConnection();
             Client client = MultiplayerManager.getInstance().client.getClient();
             client.sendUDP(stopShooting);
         }
@@ -288,7 +296,9 @@ public class GunsManager {
         current.setShooting(true);
         if(MultiplayerManager.multiplayer){
             Network.StartShooting startShooting = new Network.StartShooting();
-            startShooting.username = ((PlayerMP)players[0]).getUsername();
+            startShooting.idPacket = Network.getIdPacketC();
+            MultiplayerManager.getInstance().client.requestACK(startShooting,startShooting.idPacket);
+            startShooting.idPlayer = MultiplayerManager.getInstance().getIdConnection();
             Client client = MultiplayerManager.getInstance().client.getClient();
             client.sendUDP(startShooting);
         }
@@ -377,7 +387,9 @@ public class GunsManager {
         if(MultiplayerManager.multiplayer){
             Client client = MultiplayerManager.getInstance().client.getClient();
             Network.SwitchWeaponSlot switchWeaponSlot = new Network.SwitchWeaponSlot();
-            switchWeaponSlot.username = MultiplayerManager.getInstance().getUsername();
+            switchWeaponSlot.idPacket = Network.getIdPacketC();
+            MultiplayerManager.getInstance().client.requestACK(switchWeaponSlot,switchWeaponSlot.idPacket);
+            switchWeaponSlot.idPlayer = MultiplayerManager.getInstance().getIdConnection();
             switchWeaponSlot.slot = (byte)slot;
             client.sendUDP(switchWeaponSlot);
         }
@@ -399,7 +411,7 @@ public class GunsManager {
         PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
         packetHolder.add(response,PacketHolder.ADDBULLET);
         if(current != null){
-            if(MultiplayerManager.getInstance().getUsername().equalsIgnoreCase(response.username)){
+            if(MultiplayerManager.getInstance().getIdConnection() == response.idPlayer){
                 current.shootSound(response);
             }
         }
@@ -412,8 +424,8 @@ public class GunsManager {
     }
 
     public void handleWeaponInfoPacket(Network.WeaponInfo weaponInfo){
-        String username = MultiplayerManager.getInstance().getUsername();
-        if(username.equalsIgnoreCase(weaponInfo.username)){
+        int selfId = MultiplayerManager.getInstance().getIdConnection();
+        if(selfId == weaponInfo.idPlayer){
             if(current != null){
                 current.handleWeaponInfoPacket(weaponInfo);
             }
@@ -422,7 +434,7 @@ public class GunsManager {
 
     public void handleSwitchWeaponPacket(Network.SwitchWeaponSlot switchWeapon) {
         if(switchWeapon.sucessful){
-            if(MultiplayerManager.getInstance().getUsername().equalsIgnoreCase(switchWeapon.username)){
+            if(MultiplayerManager.getInstance().getIdConnection() == switchWeapon.idPlayer){
                 setCurrentWeapon(equipedweapons[switchWeapon.slot],switchWeapon.slot);
             }
         }
@@ -430,7 +442,7 @@ public class GunsManager {
 
     public void handleDropPlayerWeaponPacket(Network.PlayerDropWeapon playerDropWeapon) {
         if(playerDropWeapon.sucessful){
-            if(MultiplayerManager.getInstance().getUsername().equalsIgnoreCase(playerDropWeapon.username)){
+            if(MultiplayerManager.getInstance().getIdConnection() == playerDropWeapon.idPlayer){
                 if(equipedweapons[playerDropWeapon.playerSlot] != null){
                     stopShooting();
                     source.play(soundSwitchingGun);

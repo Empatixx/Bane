@@ -103,7 +103,7 @@ public class M4 extends Weapon {
     }
     // resetting stats of gun of new owner of gun
     @Override
-    public void restat(String username, boolean fullAmmo) {
+    public void restat(int idPlayer, boolean fullAmmo) {
         mindamage = 2;
         maxdamage = 2;
         inaccuracy = 0.5f;
@@ -112,7 +112,7 @@ public class M4 extends Weapon {
         delayTime = 750;
 
         GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
-        int numUpgrades = gunsManagerMP.getNumUpgrades(username, "M4");
+        int numUpgrades = gunsManagerMP.getNumUpgrades(idPlayer, "M4");
         if(numUpgrades >= 1){
             maxMagazineAmmo+=4;
             currentMagazineAmmo = maxMagazineAmmo;
@@ -196,7 +196,7 @@ public class M4 extends Weapon {
     }
 
     @Override
-    public void shoot(float x, float y, float px, float py, String username) {
+    public void shoot(float x, float y, float px, float py, int idPlayer) {
         if(MultiplayerManager.multiplayer && !tm.isServerSide()){
             if(isShooting()) {
                 if (currentMagazineAmmo != 0) {
@@ -216,11 +216,11 @@ public class M4 extends Weapon {
                 bullet.setPosition(px, py);
                 int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                 bullet.setDamage(damage);
-                bullet.setOwner(username);
+                bullet.setOwner(idPlayer);
                 bullets.add(bullet);
                 bonusShots--;
                 currentMagazineAmmo--;
-                sendAddBulletPacket(bullet,x,y,px,py,username);
+                sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
                 push += 35;
             }
             if(isShooting()) {
@@ -237,10 +237,10 @@ public class M4 extends Weapon {
                         bullet.setPosition(px, py);
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                         bullet.setDamage(damage);
-                        bullet.setOwner(username);
+                        bullet.setOwner(idPlayer);
                         bullets.add(bullet);
                         currentMagazineAmmo--;
-                        sendAddBulletPacket(bullet,x,y,px,py,username);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
                         for(int i = 0;i<3 && currentMagazineAmmo-i != 0;i++){
                             bonusShots++;
                         }

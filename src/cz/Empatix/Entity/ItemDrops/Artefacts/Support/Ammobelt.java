@@ -122,17 +122,17 @@ public class Ammobelt extends Artefact {
     }
 
     @Override
-    public void activate(String username) {
+    public void activate(int idUser) {
         charge = 0;
         // refills  players ammo by 20%
         GunsManagerMP gunsManager = GunsManagerMP.getInstance();
-        int type = gunsManager.getWeaponTypes(username)[gunsManager.getCurrentWeaponSlot(username)];
-        gunsManager.addAmmo(20,type,username);
+        int type = gunsManager.getWeaponTypes(idUser)[gunsManager.getCurrentWeaponSlot(idUser)];
+        gunsManager.addAmmo(20,type,idUser);
     }
     @Override
-    public void activateClientSide(String user) {
-        super.activateClientSide(user);
-        if(((PlayerMP)p[0]).getUsername().equalsIgnoreCase(user)){
+    public void activateClientSide(int idUser) {
+        super.activateClientSide(idUser);
+        if(((PlayerMP)p[0]).getIdConnection() == idUser){
             GunsManager gunsManager = GunsManager.getInstance();
             int type = gunsManager.getWeaponTypes()[gunsManager.getCurrentslot()];
             gunsManager.addAmmo(20,type);

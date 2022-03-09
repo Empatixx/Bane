@@ -45,7 +45,7 @@ public class GunsManagerMP {
         playerWeapons = new PlayerWeapons[p.length];
         for(int i = 0;i<p.length;i++){
             if(p[i] != null){
-                playerWeapons[i] = new PlayerWeapons(p[i], i);
+                playerWeapons[i] = new PlayerWeapons(p[i],p[i].getIdConnection(), i);
             } else {
                 break;
             }
@@ -59,16 +59,16 @@ public class GunsManagerMP {
         return weapons.indexOf(weapon);
     }
 
-    public void stopShooting(String username){
+    public void stopShooting(int idPlayer){
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            playerWeapons.stopShooting(username);
+            playerWeapons.stopShooting(idPlayer);
         }
     }
-    public void startShooting(String username){
+    public void startShooting(int idPlayer){
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            playerWeapons.startShooting(username);
+            playerWeapons.startShooting(idPlayer);
         }
     }
     public void shoot(){
@@ -77,10 +77,10 @@ public class GunsManagerMP {
             playerWeapons.shoot();
         }
     }
-    public void reload(String username){
+    public void reload(int idPlayer){
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            playerWeapons.reload(username);
+            playerWeapons.reload(idPlayer);
         }
     }
     public void update(){
@@ -98,10 +98,10 @@ public class GunsManagerMP {
             weapon.checkCollisions(enemies);
         }
     }
-    public void changeGun(int x, int y, Weapon weapon, String username){
+    public void changeGun(int x, int y, Weapon weapon, int idPlayer){
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            playerWeapons.changeGun(x,y,weapon,username);
+            playerWeapons.changeGun(x,y,weapon,idPlayer);
         }
     }
     public Weapon randomGun(){
@@ -111,23 +111,23 @@ public class GunsManagerMP {
         }
         return weapon;
     }
-    public void changeGunScroll(String username){
+    public void changeGunScroll(int idPlayer){
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            playerWeapons.changeGunScroll(username);
+            playerWeapons.changeGunScroll(idPlayer);
         }
     }
-    public int[] getWeaponTypes(String username){
+    public int[] getWeaponTypes(int idUser){
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            if(playerWeapons.isThisPlayer(username)) return playerWeapons.getWeaponTypes();
+            if(playerWeapons.isThisPlayer(idUser)) return playerWeapons.getWeaponTypes();
         }
         return null;
     }
-    public boolean addAmmo(int amountpercent, int type, String username) {
+    public boolean addAmmo(int amountpercent, int type, int idPlayer) {
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            if(playerWeapons.isThisPlayer(username)) return playerWeapons.addAmmo(amountpercent,type);
+            if(playerWeapons.isThisPlayer(idPlayer)) return playerWeapons.addAmmo(amountpercent,type);
         }
         return false;
     }
@@ -144,16 +144,16 @@ public class GunsManagerMP {
             playerWeapons.dropPlayerWeapon(dropWeapon);
         }
     }
-    public void dropPlayerWeapon(String username,int x, int y, int slot) {
+    public void dropPlayerWeapon(int idPlayer,int x, int y, int slot) {
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            playerWeapons.dropPlayerWeapon(username,x,y,slot);
+            playerWeapons.dropPlayerWeapon(idPlayer,x,y,slot);
         }
     }
-    public int getCurrentWeaponSlot(String username){
+    public int getCurrentWeaponSlot(int idUser){
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            if(playerWeapons.isThisPlayer(username)){
+            if(playerWeapons.isThisPlayer(idUser)){
                 return playerWeapons.getCurrentslot();
             }
         }
@@ -163,7 +163,7 @@ public class GunsManagerMP {
     private class PlayerWeapons{
         private float px,py;
         private float mouseX,mouseY;
-        private String username;
+        private final int idPlayer; // id connection of player
 
         private int currentslot;
         private Weapon current;
@@ -172,30 +172,30 @@ public class GunsManagerMP {
 
         private long switchDelay;
 
-        public PlayerWeapons(PlayerMP p, int index){
+        public PlayerWeapons(PlayerMP p, int idPlayer, int index){
+            this.idPlayer = idPlayer;
             equipedweapons = new Weapon[2];
 
             equipedweapons[0] = weapons.get(index);
-            equipedweapons[0].restat(p.getUsername(), true);
+            equipedweapons[0].restat(p.getIdConnection(), true);
 
             current = equipedweapons[FIRSTSLOT];
             currentslot = FIRSTSLOT;
 
-            username = p.getUsername();
         }
         public void shoot(){
             if(current != null){
-                current.shoot(mouseX,mouseY,px,py,username);
+                current.shoot(mouseX,mouseY,px,py,idPlayer);
             }
         }
-        public void reload(String username){
+        public void reload(int idPlayer){
             if(current == null)return;
-            if(username.equalsIgnoreCase(this.username)) {
+            if(this.idPlayer == idPlayer) {
                 current.reload();
             }
         }
         public void switchWeapon(Network.SwitchWeaponSlot weaponSlot){
-            if(weaponSlot.username.equalsIgnoreCase(username)){
+            if(weaponSlot.idPlayer == idPlayer){
                 weaponSlot.sucessful = setCurrentWeapon(equipedweapons[weaponSlot.slot], weaponSlot.slot);
                 Server server = MultiplayerManager.getInstance().server.getServer();
                 server.sendToAllUDP(weaponSlot);
@@ -209,7 +209,7 @@ public class GunsManagerMP {
             Network.WeaponInfo weaponInfo = new Network.WeaponInfo();
             weaponInfo.currentAmmo = (short)current.getCurrentAmmo();
             weaponInfo.currentMagazineAmmo = (short)current.getCurrentMagazineAmmo();
-            weaponInfo.username = username;
+            weaponInfo.idPlayer = idPlayer;
 
             server.sendToAllUDP(weaponInfo);
         }
@@ -236,14 +236,14 @@ public class GunsManagerMP {
             }
             return false;
         }
-        public void stopShooting(String username){
-            if(this.username.equalsIgnoreCase(username)){
+        public void stopShooting(int idPlayer){
+            if(this.idPlayer == idPlayer){
                 if(current == null) return;
                 current.setShooting(false);
             }
         }
-        public void startShooting(String username){
-            if(this.username.equalsIgnoreCase(username)){
+        public void startShooting(int idPlayer){
+            if(this.idPlayer == idPlayer){
                 if(current == null) return;
                 current.setShooting(true);
             }
@@ -276,14 +276,14 @@ public class GunsManagerMP {
 
             return false;
         }
-        public void changeGun(int x, int y, Weapon weapon, String username){
-            if(this.username.equalsIgnoreCase(username)){
+        public void changeGun(int x, int y, Weapon weapon, int idPlayer){
+            if(this.idPlayer == idPlayer){
                 stopShooting();
                 // check player's currentslot
                 if(equipedweapons[currentslot] == null){
                     equipedweapons[currentslot] = weapon;
                     current = weapon;
-                    current.restat(username, false);
+                    current.restat(idPlayer, false);
                     return;
                 }
                 // check player's all slots
@@ -291,20 +291,20 @@ public class GunsManagerMP {
                     if(equipedweapons[i] == null){
                         if(i==currentslot) current = weapon;
                         equipedweapons[i] = weapon;
-                        weapon.restat(username, false);
+                        weapon.restat(idPlayer, false);
                         return;
                     }
                 }
                 // if player's slots are already filled
 
                 ItemManagerMP itemManager = ItemManagerMP.getInstance();
-                itemManager.dropPlayerWeapon(current,x,y,weapons.indexOf(current),username);
+                itemManager.dropPlayerWeapon(current,x,y,weapons.indexOf(current),idPlayer);
                 equipedweapons[currentslot] = weapon;
                 current=weapon;
             }
         }
-        public void changeGunScroll(String username){
-            if(this.username.equalsIgnoreCase(username)){
+        public void changeGunScroll(int idPlayer){
+            if(idPlayer == this.idPlayer){
                 int slot = currentslot;
                 slot++;
                 if(slot > 1) slot = 0;
@@ -319,7 +319,7 @@ public class GunsManagerMP {
             else types[1] = -1;
             return types;
         }
-        public boolean isThisPlayer(String username){return this.username.equalsIgnoreCase(username);}
+        public boolean isThisPlayer(int id){return this.idPlayer == id;} // id connection of player
 
         public void setMouseLocations(float x, float y){
             mouseX = x;
@@ -331,27 +331,27 @@ public class GunsManagerMP {
         }
 
         public void dropPlayerWeapon(Network.PlayerDropWeapon dropWeapon) {
-            if(username.equalsIgnoreCase(dropWeapon.username)){
+            if(dropWeapon.idPlayer == idPlayer){
                 if(current != null){
                     stopShooting();
                     ItemManagerMP itemManagerMP = ItemManagerMP.getInstance();
-                    itemManagerMP.dropPlayerWeapon(current, dropWeapon.x, dropWeapon.y,weapons.indexOf(current),username);
+                    itemManagerMP.dropPlayerWeapon(current, dropWeapon.x, dropWeapon.y,weapons.indexOf(current),idPlayer);
+                    current = null;
+                    equipedweapons[currentslot] = null;
+                    // sending back packet with the success
+                    dropWeapon.sucessful = true;
+                    dropWeapon.playerSlot = (byte)currentslot;
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    server.sendToAllUDP(dropWeapon);
                 }
-                current = null;
-                equipedweapons[currentslot] = null;
-                // sending back packet with the success
-                dropWeapon.sucessful = true;
-                dropWeapon.playerSlot = (byte)currentslot;
-                Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllUDP(dropWeapon);
             }
         }
         public int getCurrentslot() {
             return currentslot;
         }
 
-        public void dropPlayerWeapon(String username, int x, int y, int slot) {
-            if(this.username.equalsIgnoreCase(username)){
+        public void dropPlayerWeapon(int idPlayer, int x, int y, int slot) {
+            if(this.idPlayer == idPlayer){
                 stopShooting();
                 current = null;
                 // sending back packet so it will remove weapon in hud from client side
@@ -359,10 +359,10 @@ public class GunsManagerMP {
                 Network.PlayerDropWeapon dropWeapon = new Network.PlayerDropWeapon();
                 if(equipedweapons[slot] != null){
                     ItemManagerMP itemManagerMP = ItemManagerMP.getInstance();
-                    itemManagerMP.dropPlayerWeapon(equipedweapons[slot], x, y,weapons.indexOf(equipedweapons[slot]),username);
+                    itemManagerMP.dropPlayerWeapon(equipedweapons[slot], x, y,weapons.indexOf(equipedweapons[slot]),idPlayer);
                     equipedweapons[slot] = null;
                     dropWeapon.sucessful = true;
-                    dropWeapon.username = username;
+                    dropWeapon.idPlayer = idPlayer;
                     dropWeapon.playerSlot = (byte)slot;
                     server.sendToAllUDP(dropWeapon);
                 }
@@ -372,7 +372,7 @@ public class GunsManagerMP {
     public void handleMouseCoords(Network.MouseCoords coords){
         for(PlayerWeapons playerWeapons : playerWeapons){
             if(playerWeapons == null) continue;
-            if(playerWeapons.isThisPlayer(coords.username)){
+            if(playerWeapons.isThisPlayer(coords.idPlayer)){
                 playerWeapons.setMouseLocations(coords.x,coords.y);
             }
         }
@@ -382,8 +382,8 @@ public class GunsManagerMP {
             if(playerWeapons == null) continue;
             for(PlayerMP player : players){
                 if(player == null) continue;
-                String pUsername = player.getUsername();
-                if(playerWeapons.isThisPlayer(pUsername)){
+                int id = player.getIdConnection();
+                if(playerWeapons.isThisPlayer(id)){
                     playerWeapons.setPlayerLocation(player.getX(),player.getY());
                 }
             }
@@ -400,14 +400,14 @@ public class GunsManagerMP {
         public GunUpgradesCache(){
             playersData = Collections.synchronizedList(new ArrayList<>());
         }
-        public void addPlayer(String username){
-            PlayerData data = new PlayerData(username);
+        public void addPlayer(int idPlayer){
+            PlayerData data = new PlayerData(idPlayer);
             playersData.add(data);
         }
-        public void removePlayer(String username){
+        public void removePlayer(int idPlayer){
             synchronized (playersData){
                 for(int i = 0;i<playersData.size();i++){
-                    if(playersData.get(i).username.equalsIgnoreCase(username)){
+                    if(playersData.get(i).idPlayer == idPlayer){
                         playersData.remove(i);
                         i--;
                     }
@@ -415,28 +415,28 @@ public class GunsManagerMP {
             }
         }
         private static class PlayerData{
-            private String username;
+            private int idPlayer;
             private int[] numUpgrades;
             private static final int MAX_WEAPONS = 9;
-            public PlayerData(String username){
-                this.username = username;
+            public PlayerData(int idPlayer){
+                this.idPlayer = idPlayer;
                 numUpgrades = new int[MAX_WEAPONS];
             }
             // all upgrades
             public void handleNumUpgradesPacket(Network.NumUpgrades packet){
-                if(packet.username.equalsIgnoreCase(this.username)){
+                if(idPlayer == packet.idPlayer){
                     numUpgrades = packet.numUpgrades;
                 }
 
             }
             // only one upgrade
             public void handleNumUpgradesPacket(Network.NumUpgradesUpdate packet){
-                if(packet.username.equalsIgnoreCase(this.username)){
+                if(idPlayer == packet.idPlayer){
                     numUpgrades[nameToIndex(packet.gunName)] = packet.numUpgrades;
                 }
             }
-            public int getNumUpgrades(String username, String gunName){
-                if(username.equalsIgnoreCase(this.username)){
+            public int getNumUpgrades(int idPlayer, String gunName){
+                if(this.idPlayer == idPlayer){
                     return numUpgrades[nameToIndex(gunName)];
                 }
                 return -1;
@@ -501,17 +501,17 @@ public class GunsManagerMP {
             }
 
         }
-        public int getNumUpgrades(String username, String gunName){
+        public int getNumUpgrades(int idPlayer, String gunName){
             synchronized (playersData){
                 for(PlayerData data : playersData){
                     if(data == null) continue;
-                    if (data.getNumUpgrades(username,gunName) != -1) return data.getNumUpgrades(username,gunName);
+                    if (data.getNumUpgrades(idPlayer,gunName) != -1) return data.getNumUpgrades(idPlayer,gunName);
                 }
             }
             return 0;
         }
     }
-    public int getNumUpgrades(String username, String gunName){
-        return gunUpgrades.getNumUpgrades(username,gunName);
+    public int getNumUpgrades(int idPlayer, String gunName){
+        return gunUpgrades.getNumUpgrades(idPlayer,gunName);
     }
 }

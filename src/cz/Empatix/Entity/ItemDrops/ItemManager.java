@@ -13,7 +13,6 @@ import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PacketHolder;
-import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
@@ -229,7 +228,7 @@ public class ItemManager {
                         // if player is the one that interacted with drop
                         if(drop instanceof WeaponDrop) {
                             drop.pickedUp = true;
-                            if(((PlayerMP)player).getUsername().equalsIgnoreCase(dropInteract.username)){
+                            if(MultiplayerManager.getInstance().getIdConnection() == dropInteract.idPlayer){
                                 Weapon weapon = ((WeaponDrop) drop).getWeapon();
                                 gm.changeGun(weapon);
                                 if (drop.isShop()) {
@@ -239,7 +238,7 @@ public class ItemManager {
                             }
                         } else if(drop instanceof ArtefactDrop){
                             drop.pickedUp = true;
-                            if(((PlayerMP)player).getUsername().equalsIgnoreCase(dropInteract.username)){
+                            if(MultiplayerManager.getInstance().getIdConnection() == dropInteract.idPlayer){
                                 Artefact artefact = ((ArtefactDrop)drop).getArtefact();
                                 am.setCurrentArtefact(artefact);
                                 if(drop.isShop()) {
@@ -394,8 +393,8 @@ public class ItemManager {
     }
     private void dropArtefact(Network.DropArtefact dropArtefact) {
         ArtefactDrop drop;
-        if(dropArtefact.username != null){
-            if(((PlayerMP)player).getUsername().equalsIgnoreCase(dropArtefact.username)) am.setCurrentArtefact(null);
+        if(dropArtefact.idPlayer != 0){
+            if(MultiplayerManager.getInstance().getIdConnection() == dropArtefact.idPlayer) am.setCurrentArtefact(null);
             drop = new ArtefactDrop(tm, am.getArtefact(dropArtefact.slot),dropArtefact.dx,dropArtefact.dy);
         } else {
             drop = new ArtefactDrop(tm, am.getArtefact(dropArtefact.slot));

@@ -266,16 +266,16 @@ public class ShieldHorn extends Artefact {
     }
 
     @Override
-    public void activate(String username) {
+    public void activate(int idUser) {
         charge = 0;
         shield = true;
     }
     @Override
-    public void activateClientSide(String user) {
-        super.activateClientSide(user);
+    public void activateClientSide(int idUser) {
+        super.activateClientSide(idUser);
         for(Player p : p){
             if(p == null) continue;
-            if(((PlayerMP)p).getUsername().equalsIgnoreCase(user)){
+            if(((PlayerMP)p).getIdConnection() == idUser){
                 light = LightManager.createLight(new Vector3f(0,0,1),new Vector2f(0,0),3,p);
                 shield = true;
                 light.setPos(p.getX(),p.getY());

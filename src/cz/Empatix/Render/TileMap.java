@@ -2036,10 +2036,10 @@ public class TileMap {
 		A: for(Network.ObjectInteract objectInteract : objectInteractPackets){
 			for(Player p : player){
 				if(p == null) continue;
-				String pname = ((PlayerMP)p).getUsername();
-				if(pname.equalsIgnoreCase(objectInteract.username) || !p.isDead()){
+				int idPlayer = ((PlayerMP) p).getIdConnection();
+				if(idPlayer == objectInteract.id || !p.isDead()){
 					for(ItemManagerMP.InteractionAcknowledge ack : acknowledges){
-						if(ack.isThisAckOfPlayer(pname)){
+						if(ack.isThisAckOfPlayer(idPlayer)){
 							if (ack.didInteract()) continue A;
 						}
 					}

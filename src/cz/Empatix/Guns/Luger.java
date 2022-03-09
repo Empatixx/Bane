@@ -104,7 +104,7 @@ public class Luger extends Weapon {
     }
     // resetting stats of gun of new owner of gun
     @Override
-    public void restat(String username, boolean fullAmmo) {
+    public void restat(int idPlayer, boolean fullAmmo) {
         mindamage = 1;
         maxdamage = 2;
         inaccuracy = 0.8f;
@@ -113,7 +113,7 @@ public class Luger extends Weapon {
         delayTime = 250;
 
         GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
-        int numUpgrades = gunsManagerMP.getNumUpgrades(username, "Luger");
+        int numUpgrades = gunsManagerMP.getNumUpgrades(idPlayer, "Luger");
         if(numUpgrades >= 1){
             maxdamage++;
             mindamage++;
@@ -210,7 +210,7 @@ public class Luger extends Weapon {
     }
 
     @Override
-    public void shoot(float x, float y, float px, float py, String username) {
+    public void shoot(float x, float y, float px, float py, int idPlayer) {
         if(MultiplayerManager.multiplayer && !tm.isServerSide()){
             if(isShooting()) {
                 if (currentMagazineAmmo != 0) {
@@ -237,10 +237,10 @@ public class Luger extends Weapon {
                         bullet.setPosition(px, py);
                         bullet.setDamage(lastDamage);
                         bullet.setCritical(lastDamageCrit);
-                        bullet.setOwner(username);
+                        bullet.setOwner(idPlayer);
                         bullets.add(bullet);
                         bonusShots--;
-                        sendAddBulletPacket(bullet,x,y,px,py,username);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
                     }
                     if (delta > delayTime) {
                         double inaccuracy = 0;
@@ -261,10 +261,10 @@ public class Luger extends Weapon {
                         }
                         lastDamage = damage;
                         bullet.setDamage(damage);
-                        bullet.setOwner(username);
+                        bullet.setOwner(idPlayer);
                         bullets.add(bullet);
                         currentMagazineAmmo--;
-                        sendAddBulletPacket(bullet,x,y,px,py,username);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
                         while(Math.random() > 1-chanceBonusShots && currentMagazineAmmo != 0 && bonusShots < 9){
                             bonusShots++;
                             if(!bonusShotsAntiConsume)currentMagazineAmmo--;

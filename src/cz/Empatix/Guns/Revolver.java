@@ -96,7 +96,7 @@ public class Revolver extends Weapon {
     }
     // resetting stats of gun of new owner of gun
     @Override
-    public void restat(String username, boolean fullAmmo) {
+    public void restat(int idPlayer, boolean fullAmmo) {
         mindamage = 4;
         maxdamage = 6;
         inaccuracy = 0.8f;
@@ -105,7 +105,7 @@ public class Revolver extends Weapon {
         delayTime = 450;
 
         GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
-        int numUpgrades = gunsManagerMP.getNumUpgrades(username, "Revolver");
+        int numUpgrades = gunsManagerMP.getNumUpgrades(idPlayer, "Revolver");
         if(numUpgrades >= 1){
             maxMagazineAmmo+=2;
         }
@@ -187,7 +187,7 @@ public class Revolver extends Weapon {
     }
 
     @Override
-    public void shoot(float x, float y, float px, float py, String username) {
+    public void shoot(float x, float y, float px, float py, int idPlayer) {
         if(MultiplayerManager.multiplayer && !tm.isServerSide()){
             if(isShooting()) {
                 if (currentMagazineAmmo != 0) {
@@ -215,7 +215,7 @@ public class Revolver extends Weapon {
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                         Bullet bullet = new Bullet(tm, x, y, inaccuracy,40);
                         bullet.setPosition(px, py);
-                        bullet.setOwner(username);
+                        bullet.setOwner(idPlayer);
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                         if(criticalHits){
                             if(Math.random() > 0.9-nextCritChance){
@@ -229,7 +229,7 @@ public class Revolver extends Weapon {
                         bullet.setDamage(damage);
                         bullets.add(bullet);
                         currentMagazineAmmo--;
-                        sendAddBulletPacket(bullet,x,y,px,py,username);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
 
                         double atan = Math.atan2(y, x);
                         push = 80;

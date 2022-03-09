@@ -79,6 +79,7 @@ public class Network {
         kryo.register(NumUpgrades.class);
         kryo.register(EnemyHealthHeal.class);
         kryo.register(ArtefactEventState.class);
+        kryo.register(PacketACK.class);
 
     }
     // MAIN
@@ -113,11 +114,8 @@ public class Network {
     }
     public static class MovePlayerInput {
         public int idPacket;
-        public String username;
+        public int idPlayer;
         public boolean up,down,left,right;
-        public MovePlayerInput(){
-            idPacket = getIdPacketC();
-        }
     }
     public static class ArtefactEventState {
         public int idPacket;
@@ -135,11 +133,8 @@ public class Network {
     // PROGRESS ROOM + MAP GENERATION, POST DEATH
     public static class Ready {
         public int idPacket;
-        public String username;
+        public int idPlayer;
         public boolean state;
-        public Ready(){
-            idPacket = getIdPacketC();
-        }
     }
     public static class TransferRoomMap {
         public int[][] roomMap;
@@ -157,7 +152,7 @@ public class Network {
         public byte totalRooms;
     }
     public static class RequestForPlayers {
-        public String exceptUsername; // except origin player
+        public int exceptIdPlayer; // except the origin plaqyer
     }
     public static class ChangeGamestate{
         public int gamestate;
@@ -165,37 +160,25 @@ public class Network {
     // GUNS
     public static class MouseCoords{
         public int idPacket;
-        public String username;
+        public int idPlayer;
         public float x,y;
-        public MouseCoords(){
-            idPacket = getIdPacketC();
-        }
     }
     public static class StartShooting {
-        public String username;
+        public int idPlayer;
         public int idPacket;
-        public StartShooting(){
-            idPacket = getIdPacketC();
-        }
     }
     public static class StopShooting {
-        public String username;
+        public int idPlayer;
         public int idPacket;
-        public StopShooting(){
-            idPacket = getIdPacketC();
-        }
     }
     public static class Ping{
     }
     public static class Reload {
-        public String username;
+        public int idPlayer;
         public int idPacket;
-        public Reload(){
-            idPacket = getIdPacketC();
-        }
     }
     public static class AddBullet {
-        public String username;
+        public int idPlayer;
         public float x,y;
         public float px,py;
         public byte damage;
@@ -277,7 +260,7 @@ public class Network {
         }
     }
     public static class WeaponInfo {
-        public String username;
+        public int idPlayer;
         public short currentAmmo;
         public short currentMagazineAmmo;
         public int idPacket;
@@ -286,23 +269,17 @@ public class Network {
         }
     }
     public static class SwitchWeaponSlot{
-        public String username;
+        public int idPlayer;
         public byte slot;
         public boolean sucessful;
         public int idPacket;
-        public SwitchWeaponSlot(){
-            idPacket = getIdPacketC();
-        }
     }
     public static class PlayerDropWeapon{
-        public String username;
+        public int idPlayer;
         public boolean sucessful;
         public int x, y;
         public byte playerSlot;
         public int idPacket;
-        public PlayerDropWeapon(){
-            idPacket = getIdPacketC();
-        }
     }
     public static class DropWeapon{
         public int x, y;
@@ -318,29 +295,23 @@ public class Network {
         public int x, y;
         public int id;
         public byte slot;
-        public String username;
+        public int idPlayer;
         public int idPacket;
         public DropArtefact(){
             idPacket = getIdPacketS();
         }
     }
     public static class DropInteract {
-        public String username;
+        public int idPlayer;
         public boolean sucessful;
         public int id;
         public int x, y;
         public int idPacket;
-        public DropInteract(){
-            idPacket = getIdPacketC();
-        }
     }
     public static class ObjectInteract {
-        public String username;
+        public int idPlayer;
         public int id;
         public int idPacket;
-        public ObjectInteract(){
-            idPacket = getIdPacketC();
-        }
     }
     public enum TypeRoomObject{
         CHEST,SPIKE,BONES,TORCH,BARREL,POT,SHOPKEEPER,SHOPTABLE,FLAMETHROWER,LADDER,
@@ -406,7 +377,7 @@ public class Network {
         public byte objectSlot;
     }
     public static class PlayerInfo {
-        public String username;
+        public int idPlayer;
         public byte health, maxHealth;
         public short coins;
         public byte armor, maxArmor;
@@ -416,7 +387,7 @@ public class Network {
         }
     }
     public static class Alert {
-        public String username;
+        public int idPlayer;
         public String text;
         public boolean warning;
         public int idPacket;
@@ -433,7 +404,7 @@ public class Network {
         }
     }
     public static class PlayerHit {
-        public String username;
+        public int idPlayer;
         public Player.DamageAbsorbedBy type;
         public int idPacket;
         public PlayerHit(){
@@ -441,7 +412,7 @@ public class Network {
         }
     }
     public static class ArtefactActivate{
-        public String username;
+        public int idPlayer;
         public byte slot;
         public int idPacket;
         public ArtefactActivate(){
@@ -449,7 +420,7 @@ public class Network {
         }
     }
     public static class ArtefactAddBullet{
-        public String username;
+        public int idPlayer;
         public float x, y; // direction
         public float px,py;
         public int id;
@@ -472,7 +443,7 @@ public class Network {
         public byte floor;
     }
     public static class PstatsUpdate {
-        public String username;
+        public int idPlayer;
         public short shootShooted;
         public short enemiesKilled;
         public short bulletsHit;
@@ -553,11 +524,11 @@ public class Network {
         }
     }
     public static class NumUpgrades {
-        public String username;
+        public int idPlayer;
         public int[] numUpgrades;
     }
     public static class NumUpgradesUpdate {
-        public String username;
+        public int idPlayer;
         public String gunName;
         public byte numUpgrades;
     }
@@ -575,7 +546,7 @@ public class Network {
         int id;
     }
 
-    private static int getIdPacketS(){return idPacketServer++;}
-    private static int getIdPacketC(){return idPacketClient++;}
+    public static int getIdPacketS(){return idPacketServer++;}
+    public static int getIdPacketC(){return idPacketClient++;}
 
 }

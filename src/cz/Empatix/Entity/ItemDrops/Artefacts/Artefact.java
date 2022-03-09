@@ -35,7 +35,7 @@ public abstract class Artefact {
 
     public TileMap tm;
     public Player[] p;
-    protected String userMP;
+    protected int idUser;
     // singleplayer
     public Artefact(TileMap tm, Player p){
         this.tm = tm;
@@ -85,21 +85,21 @@ public abstract class Artefact {
 
     /**
      * activates artefact in multiplayer - server side
-     * @param username player name who activated artefact
+     * @param idUser id connection of player who activated artefact
      */
-    public abstract void activate(String username);
+    public abstract void activate(int idUser);
 
     /**
      * activation of artefact in multiplayer - client side
-     * @param user player name who activated artefact
+     * @param idUser id connection of player who activated artefact
      */
-    public void activateClientSide(String user){
+    public void activateClientSide(int idUser){
         if(oneUse){
             ArtefactManager artefactManager = ArtefactManager.getInstance();
             artefactManager.setCurrentArtefact(null); // reseting artefact
             dropped = false;
         }
-        userMP = user;
+        this.idUser = idUser;
     }
 
     /**

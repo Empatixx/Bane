@@ -91,7 +91,7 @@ public class Shotgun extends Weapon {
     }
     // resetting stats of gun of new owner of gun
     @Override
-    public void restat(String username, boolean fullAmmo) {
+    public void restat(int idPlayer, boolean fullAmmo) {
         mindamage = 2;
         maxdamage = 3;
         inaccuracy = 0.7f;
@@ -99,7 +99,7 @@ public class Shotgun extends Weapon {
         maxMagazineAmmo = 6;
         delayTime = 500;
         GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
-        int numUpgrades = gunsManagerMP.getNumUpgrades(username, "Shotgun");
+        int numUpgrades = gunsManagerMP.getNumUpgrades(idPlayer, "Shotgun");
         if(numUpgrades >= 1){
             maxAmmo += 6;
         }
@@ -175,7 +175,7 @@ public class Shotgun extends Weapon {
     }
 
     @Override
-    public void shoot(float x, float y, float px, float py, String username) {
+    public void shoot(float x, float y, float px, float py, int idPlayer) {
         if(MultiplayerManager.multiplayer && !tm.isServerSide()){
             if(isShooting()) {
                 if (currentMagazineAmmo != 0) {
@@ -201,7 +201,7 @@ public class Shotgun extends Weapon {
 
                             Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                             bullet.setPosition(px, py);
-                            bullet.setOwner(username);
+                            bullet.setOwner(idPlayer);
                             bullets.add(bullet);
                             int damage;
                             if(i <= 1){
@@ -213,7 +213,7 @@ public class Shotgun extends Weapon {
                             if (i >= 0) i++;
                             else i--;
                             i = -i;
-                            sendAddBulletPacket(bullet,x,y,px,py,username);
+                            sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
                         }
                         currentMagazineAmmo--;
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();

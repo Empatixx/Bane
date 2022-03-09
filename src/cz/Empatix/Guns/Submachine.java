@@ -90,7 +90,7 @@ public class Submachine extends Weapon{
     }
     // resetting stats of gun of new owner of gun
     @Override
-    public void restat(String username, boolean fullAmmo) {
+    public void restat(int idPlayer, boolean fullAmmo) {
         mindamage = 1;
         maxdamage = 2;
         inaccuracy = 0.5f;
@@ -98,7 +98,7 @@ public class Submachine extends Weapon{
         maxMagazineAmmo = 20;
         delayTime = 150;
         GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
-        int numUpgrades = gunsManagerMP.getNumUpgrades(username, "Uzi");
+        int numUpgrades = gunsManagerMP.getNumUpgrades(idPlayer, "Uzi");
         if(numUpgrades >= 1){
             delayTime = 105;
         }
@@ -178,7 +178,7 @@ public class Submachine extends Weapon{
     }
 
     @Override
-    public void shoot(float x, float y, float px, float py, String username) {
+    public void shoot(float x, float y, float px, float py, int idPlayer) {
         if(MultiplayerManager.multiplayer && !tm.isServerSide()){
             if(isShooting()) {
                 if (currentMagazineAmmo != 0) {
@@ -205,7 +205,7 @@ public class Submachine extends Weapon{
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                         Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
                         bullet.setPosition(px, py);
-                        bullet.setOwner(username);
+                        bullet.setOwner(idPlayer);
 
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                         if(criticalHits){
@@ -216,7 +216,7 @@ public class Submachine extends Weapon{
                         }
                         bullet.setDamage(damage);
                         bullets.add(bullet);
-                        sendAddBulletPacket(bullet,x,y,px,py,username);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
                         if(chanceToNotConsumeAmmo){
                             if(Math.random() <= 0.8){
                                 currentMagazineAmmo--;

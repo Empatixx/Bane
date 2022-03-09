@@ -144,7 +144,7 @@ public class UpgradeMenu {
         if(MultiplayerManager.multiplayer){
             Client c = MultiplayerManager.getInstance().client.getClient();
             Network.NumUpgrades numUpgradesP = new Network.NumUpgrades();
-            numUpgradesP.username = MultiplayerManager.getInstance().getUsername();
+            numUpgradesP.idPlayer = MultiplayerManager.getInstance().getIdConnection();
             numUpgradesP.numUpgrades = getAllNumUpgrades();
             c.sendTCP(numUpgradesP);
         }

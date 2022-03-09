@@ -190,9 +190,12 @@ public class InGameMP extends GameState {
 
         if (k == ControlSettings.getValue(ControlSettings.RELOAD)){
             Network.Reload reload = new Network.Reload();
-            reload.username = MultiplayerManager.getInstance().getUsername();
-            Client client = MultiplayerManager.getInstance().client.getClient();
+            reload.idPacket = Network.getIdPacketC();
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+            reload.idPlayer = mpManager.getIdConnection();
+            Client client = mpManager.client.getClient();
             client.sendUDP(reload);
+            mpManager.client.requestACK(reload,reload.idPacket);
             gunsManager.reload();
         }
     }
@@ -206,7 +209,9 @@ public class InGameMP extends GameState {
         if(postDeath){
             if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT) && !ready && System.currentTimeMillis() - deathTime > 3000){
                 Network.Ready ready = new Network.Ready();
-                ready.username = player[0].getUsername();
+                ready.idPacket = Network.getIdPacketC();
+                mpManager.client.requestACK(ready,ready.idPacket);
+                ready.idPlayer = mpManager.getIdConnection();
                 ready.state = true;
                 Client client = mpManager.client.getClient();
                 client.sendUDP(ready);
@@ -236,19 +241,24 @@ public class InGameMP extends GameState {
         if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT)) {
             Client client = MultiplayerManager.getInstance().client.getClient();
             Network.DropInteract pickup = new Network.DropInteract();
-            pickup.username = player[0].getUsername();
+            pickup.idPacket = Network.getIdPacketC();
+            MultiplayerManager.getInstance().client.requestACK(pickup,pickup.idPacket);
+            pickup.idPlayer = mpManager.getIdConnection();
             pickup.x = (int)(mouseX-mx-px);
             pickup.y = (int)(mouseY-my-py);
             client.sendUDP(pickup);
 
             Network.ObjectInteract interact = new Network.ObjectInteract();
-            interact.username = player[0].getUsername();
+            interact.idPacket = Network.getIdPacketC();
+            MultiplayerManager.getInstance().client.requestACK(pickup,interact.idPacket);
+            interact.idPlayer = mpManager.getIdConnection();
             client.sendUDP(interact);
         }
 
         if(k == ControlSettings.getValue(ControlSettings.ARTEFACT_USE)){
             Network.ArtefactActivate packetAActivate = new Network.ArtefactActivate();
-            packetAActivate.username = mpManager.getUsername();
+            MultiplayerManager.getInstance().client.requestACK(packetAActivate,packetAActivate.idPacket);
+            packetAActivate.idPlayer = mpManager.getIdConnection();
             mpManager.client.getClient().sendUDP(packetAActivate);
 
         }
@@ -302,8 +312,8 @@ public class InGameMP extends GameState {
         player[0] = new PlayerMP(tileMap,username);
         player[0].setOrigin(true);
         player[0].setIdConnection(mpManager.getIdConnection());
-        playerReadies[0] = new PlayerReady(username);
-        mpStatistics.addPlayer(username);
+        playerReadies[0] = new PlayerReady(username,mpManager.getIdConnection());
+        mpStatistics.addPlayer(username,mpManager.getIdConnection());
 
         tileMap.setPlayer(player[0]);
 
@@ -411,7 +421,7 @@ public class InGameMP extends GameState {
             playerMP.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
             playerMP.setIdConnection(player.idPlayer);
             this.player[index] = playerMP;
-            playerReadies[index] = new PlayerReady(packetUsername);
+            playerReadies[index] = new PlayerReady(packetUsername,player.idPlayer);
             index++;
         }
         mpManager.client.setNumPlayers(index);
@@ -516,7 +526,7 @@ public class InGameMP extends GameState {
 
         // remake if all players are dead
         if(postDeath){
-            MPStatistics.PStats pStats = mpStatistics.getPlayerStats(player[0].getUsername());
+            MPStatistics.PStats pStats = mpStatistics.getPlayerStats(player[0].getIdConnection());
             int totalReward = 0;
             int rewardAccuracy = 0;
             int rewardKilledEnemies = (int)Math.sqrt(pStats.getEnemiesKilled())*(int)((tileMap.getFloor()+1)/1.25);
@@ -676,13 +686,12 @@ public class InGameMP extends GameState {
             for (PlayerMP player : player) {
                 if (player != null) player.update();
             }
-            // movement of players
             Object[] playerHitPackets = mpManager.packetHolder.get(PacketHolder.PLAYERHIT);
-            for(PlayerMP p : player) {
-                if (p != null) {
-                    for(Object o : playerHitPackets){
+            for(Object o : playerHitPackets){
+                for(PlayerMP p : player) {
+                    if (p != null) {
                         Network.PlayerHit playerHit = (Network.PlayerHit) o;
-                        if(p.getUsername().equalsIgnoreCase(playerHit.username)){
+                        if(p.getIdConnection() == playerHit.idPlayer){
                             p.fakeHit(playerHit);
                         }
                     }
@@ -714,7 +723,7 @@ public class InGameMP extends GameState {
                 Network.PlayerInfo info = (Network.PlayerInfo) o;
                 for(PlayerMP p : player){
                     if(p == null) continue;
-                    if(p.getUsername().equalsIgnoreCase(info.username)){
+                    if(p.getIdConnection() == info.idPlayer){
                         p.setCoins(info.coins);
                         p.setHealth(info.health);
                         p.setMaxArmor(info.maxArmor);
@@ -780,7 +789,7 @@ public class InGameMP extends GameState {
 
             Client client = mpManager.client.getClient();
             Network.RequestForPlayers request = new Network.RequestForPlayers();
-            request.exceptUsername = mpManager.getUsername();
+            request.exceptIdPlayer = mpManager.getIdConnection();
             client.sendTCP(request);
             return;
 
@@ -832,11 +841,22 @@ public class InGameMP extends GameState {
                     p.setLeft(recent.left);
                 }
             } else {
-                p.update();
+                p.updateLostPacket();
             }
         }
         for(PlayerMP p : player){
             if(p != null)p.update();
+        }
+        Object[] playerHitPackets = mpManager.packetHolder.get(PacketHolder.PLAYERHIT);
+        for(Object o : playerHitPackets){
+            for(PlayerMP p : player) {
+                if (p != null) {
+                    Network.PlayerHit playerHit = (Network.PlayerHit) o;
+                    if(p.getIdConnection() == playerHit.idPlayer){
+                        p.fakeHit(playerHit);
+                    }
+                }
+            }
         }
         tileMap.createRoomObjectsViaPackets();
         tileMap.updateObjects();
@@ -858,7 +878,7 @@ public class InGameMP extends GameState {
         float mx = tileMap.getX();
         float my = tileMap.getY();
         if (!pause) {
-            gunsManager.shoot(mouseX - mx - px, mouseY - my - py, px, py,player[0].getUsername());
+            gunsManager.shoot(mouseX - mx - px, mouseY - my - py, px, py,player[0].getIdConnection());
         }
         // updating if player shoots any enemies
         Object[] hitBulletPackets = mpManager.packetHolder.get(PacketHolder.HITBULLET);
@@ -874,7 +894,7 @@ public class InGameMP extends GameState {
             Network.PlayerInfo info = (Network.PlayerInfo) o;
             for(PlayerMP p : player){
                 if(p == null) continue;
-                if(p.getUsername().equalsIgnoreCase(info.username)){
+                if(p.getIdConnection() == info.idPlayer){
                     p.setCoins(info.coins);
                     p.setHealth(info.health);
                     p.setMaxArmor(info.maxArmor);
@@ -890,7 +910,7 @@ public class InGameMP extends GameState {
         Object[] AlertPackets = mpManager.packetHolder.get(PacketHolder.ALERT);
         for(Object o : AlertPackets){
             Network.Alert alert = (Network.Alert) o;
-            if(mpManager.getUsername().equalsIgnoreCase(alert.username)){
+            if(mpManager.getIdConnection() == alert.idPlayer){
                 AlertManager.add(alert.warning ? AlertManager.WARNING : AlertManager.INFORMATION,alert.text);
             }
         }
@@ -917,6 +937,19 @@ public class InGameMP extends GameState {
                 if(pready != null) pready.setReady(false);
             }
         }
+        Object[] joinPackets = mpManager.packetHolder.get(PacketHolder.JOINPLAYER);
+        for(Object object : joinPackets) {
+            Network.AddPlayer player = (Network.AddPlayer) object;
+            String packetUsername = player.username;
+            PlayerMP playerMP = new PlayerMP(tileMap, packetUsername);
+            playerMP.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
+            playerMP.setIdConnection(player.idPlayer);
+            this.player[index] = playerMP;
+            playerReadies[index] = new PlayerReady(packetUsername,player.idPlayer);
+            index++;
+        }
+        mpManager.client.setNumPlayers(index);
+
         mpManager.client.setNumPlayers(index);
         if(System.currentTimeMillis() - pingTimer > 1000){
             pingTimer+=1000;
@@ -939,8 +972,5 @@ public class InGameMP extends GameState {
         setCursor(Game.CROSSHAIR);
         pause=false;
     }
-
-    public Player getPlayer(){return player[0];}
-
 
 }

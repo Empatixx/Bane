@@ -352,86 +352,86 @@ public class GameServer {
                     Network.PacketACK ack = new Network.PacketACK();
                     ack.id = ((Network.Reload) object).idPacket;
                     connection.sendUDP(ack);
-                    if(!ackCaching.checkDuplicate(reload.idPacket)){
+                    if(!ackCaching.checkDuplicate(connection.getID(),reload.idPacket)){
                         gunsManager.reload(reload.idPlayer);
-                        ackCaching.add(ack);
+                        ackCaching.add(connection.getID(),ack);
                     }
                 } else if (object instanceof Network.SwitchWeaponSlot) {
                     Network.SwitchWeaponSlot switchWeaponSlot = (Network.SwitchWeaponSlot)object;
                     Network.PacketACK ack = new Network.PacketACK();
                     ack.id = switchWeaponSlot.idPacket;
                     connection.sendUDP(ack);
-                    if(!ackCaching.checkDuplicate(switchWeaponSlot.idPacket)){
+                    if(!ackCaching.checkDuplicate(connection.getID(),switchWeaponSlot.idPacket)){
                         gunsManager.switchWeaponSlot(switchWeaponSlot);
-                        ackCaching.add(ack);
+                        ackCaching.add(connection.getID(),ack);
                     }
                 } else if (object instanceof Network.PlayerDropWeapon) {
                     Network.PlayerDropWeapon playerDropWeapon = (Network.PlayerDropWeapon)object;
                     Network.PacketACK ack = new Network.PacketACK();
                     ack.id = playerDropWeapon.idPacket;
                     connection.sendUDP(ack);
-                    if(!ackCaching.checkDuplicate(playerDropWeapon.idPacket)){
+                    if(!ackCaching.checkDuplicate(connection.getID(),playerDropWeapon.idPacket)){
                         gunsManager.handleDropWeaponPacket(playerDropWeapon);
-                        ackCaching.add(ack);
+                        ackCaching.add(connection.getID(),ack);
                     }
                 } else if (object instanceof Network.Ready) {
                     Network.Ready ready = (Network.Ready) object;
                     Network.PacketACK ack = new Network.PacketACK();
                     ack.id = ready.idPacket;
                     connection.sendUDP(ack);
-                    if(!ackCaching.checkDuplicate(ready.idPacket)){
+                    if(!ackCaching.checkDuplicate(connection.getID(),ready.idPacket)){
                         server.sendToAllTCP(object);
                         synchronized (readyCheckPlayers) {
                             for (PlayerReady pready : readyCheckPlayers) {
                                 if (pready.isThisPlayer(ready.idPlayer)) pready.setReady(ready.state);
                             }
                         }
-                        ackCaching.add(ack);
+                        ackCaching.add(connection.getID(),ack);
                     }
                 } else if (object instanceof Network.DropInteract) {
                     Network.DropInteract dropInteract = (Network.DropInteract) object;
                     Network.PacketACK ack = new Network.PacketACK();
                     ack.id = ((Network.DropInteract) object).idPacket;
                     connection.sendUDP(ack);
-                    if(!ackCaching.checkDuplicate(dropInteract.idPacket)){
+                    if(!ackCaching.checkDuplicate(connection.getID(),dropInteract.idPacket)){
                         itemManager.handleDrolpInteractPacket((Network.DropInteract) object);
-                        ackCaching.add(ack);
+                        ackCaching.add(connection.getID(),ack);
                     }
                 } else if (object instanceof Network.ObjectInteract) {
                     Network.ObjectInteract objectInteract = (Network.ObjectInteract)object;
                     Network.PacketACK ack = new Network.PacketACK();
                     ack.id = ((Network.ObjectInteract) object).idPacket;
                     connection.sendUDP(ack);
-                    if(!ackCaching.checkDuplicate(objectInteract.idPacket)){
+                    if(!ackCaching.checkDuplicate(connection.getID(),objectInteract.idPacket)){
                         tileMap.handleObjectInteractPacket(objectInteract);
-                        ackCaching.add(ack);
+                        ackCaching.add(connection.getID(),ack);
                     }
                 } else if (object instanceof Network.StopShooting) {
                     Network.StopShooting shooting = (Network.StopShooting)object;
                     Network.PacketACK ack = new Network.PacketACK();
                     ack.id = shooting.idPacket;
                     connection.sendUDP(ack);
-                    if(!ackCaching.checkDuplicate(shooting.idPacket)){
+                    if(!ackCaching.checkDuplicate(connection.getID(),shooting.idPacket)){
                         gunsManager.stopShooting(shooting.idPlayer);
-                        ackCaching.add(ack);
+                        ackCaching.add(connection.getID(),ack);
                     }
                 } else if (object instanceof Network.StartShooting) {
                     Network.StartShooting shooting = (Network.StartShooting)object;
                     Network.PacketACK ack = new Network.PacketACK();
                     ack.id = shooting.idPacket;
                     connection.sendUDP(ack);
-                    if(!ackCaching.checkDuplicate(shooting.idPacket)){
+                    if(!ackCaching.checkDuplicate(connection.getID(),shooting.idPacket)){
                         gunsManager.startShooting(shooting.idPlayer);
-                        ackCaching.add(ack);
+                        ackCaching.add(connection.getID(),ack);
                     }
                 } else if (object instanceof Network.ArtefactActivate) {
                     Network.ArtefactActivate activate = (Network.ArtefactActivate)object;
                     Network.PacketACK ack = new Network.PacketACK();
                     ack.id = activate.idPacket;
                     connection.sendUDP(ack);
-                    if(!ackCaching.checkDuplicate(activate.idPacket)){
+                    if(!ackCaching.checkDuplicate(connection.getID(),activate.idPacket)){
                         artefactManager.activate(activate);
-                        ackCaching.add(ack);
+                        ackCaching.add(connection.getID(),ack);
                     }
                 } else if (object instanceof Network.Ping) {
                     connection.sendUDP(object);
@@ -584,8 +584,8 @@ public class GameServer {
             }
         }
         private static class PacketWaitingACK{
-            private Object packet;
-            private int id;
+            private final Object packet;
+            private final int id;
             private long timeSent;
             PacketWaitingACK(Object packet, int id){
                 this.id = id;
@@ -593,7 +593,9 @@ public class GameServer {
                 this.packet = packet;
             }
             boolean shouldResend(){
-                return System.nanoTime() - timeSent > 30000;
+                boolean sent = System.nanoTime() - timeSent > 100000000;
+                if(sent) timeSent = System.nanoTime();
+                return sent;
             }
             public Object getPacket() {
                 return packet;
@@ -601,24 +603,34 @@ public class GameServer {
         }
     }
     private static class ACKCaching{
-        private LinkedList<ACKCache> list;
+        private HashMap<Integer,LinkedList<ACKCache>> list;
         private Lock lock;
         ACKCaching(){
-            list = new LinkedList<>();
+            list = new HashMap<>();
             lock = new ReentrantLock();
         }
-        public void update() {
+        public void addPlayer(int idConnection){
             lock.lock();
-            try {
-                list.removeIf(ACKCache::shouldRemove);
+            try{
+                list.put(idConnection,new LinkedList<>());
             } finally {
                 lock.unlock();
             }
         }
-        public boolean checkDuplicate(int id){
+        public void update() {
             lock.lock();
             try {
-                for(ACKCache cache : list){
+                for(LinkedList<ACKCache> cachelist: list.values()){
+                    cachelist.removeIf(ACKCache::shouldRemove);
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+        public boolean checkDuplicate(int idcon, int id){
+            lock.lock();
+            try {
+                for(ACKCache cache : list.get(idcon)){
                     if(cache.ack.id == id) return true;
                 }
             } finally {
@@ -626,10 +638,10 @@ public class GameServer {
             }
             return false;
         }
-        public void add(Network.PacketACK ack){
+        public void add(int idcon, Network.PacketACK ack){
             lock.lock();
             try {
-                list.add(new ACKCache(ack));
+                list.get(idcon).add(new ACKCache(ack));
             } finally {
                 lock.unlock();
             }
@@ -641,7 +653,7 @@ public class GameServer {
                 this.ack = ack;
                 time = System.nanoTime();
             }
-            boolean shouldRemove(){return System.nanoTime() - time > 5000000000L;}
+            public boolean shouldRemove(){return System.nanoTime() - time > 5000000000L;}
         }
     }
 }

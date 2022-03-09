@@ -259,10 +259,12 @@ public class Room {
                 EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
                 enemyManager.addEnemy(xMin,xMax,yMin,yMax);
             }
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
             Network.LockRoom enteringRoom = new Network.LockRoom();
+            mpManager.server.requestACK(enteringRoom,enteringRoom.idPacket);
             enteringRoom.idRoom = (byte)id;
             enteringRoom.lock = true;
-            Server server = MultiplayerManager.getInstance().server.getServer();
+            Server server = mpManager.server.getServer();
             server.sendToAllUDP(enteringRoom);
             lockRoom(true);
         } else if (type == Room.Boss){
@@ -814,111 +816,82 @@ public class Room {
     }
 
     public void sendAddRoomObjectPacket(RoomObject object, TileMap tm){
-        int tileSize = tm.getTileSize();
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+        Network.AddRoomObject roomObject = new Network.AddRoomObject();
+        mpManager.server.requestACK(roomObject,roomObject.idPacket);
         if(!tm.isServerSide()) return;
         if(object instanceof Spike){
-            Network.AddRoomObject roomObject = new Network.AddRoomObject();
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.SPIKE;
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllUDP(roomObject);
         } else if (object instanceof Flag){
-            Network.AddRoomObject roomObject = new Network.AddRoomObject();
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.FLAG;
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllUDP(roomObject);
         } else if (object instanceof Bones){
-            Network.AddRoomObject roomObject = new Network.AddRoomObject();
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.BONES;
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllUDP(roomObject);
         } else if (object instanceof Barrel){
-            Network.AddRoomObject roomObject = new Network.AddRoomObject();
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.BARREL;
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllUDP(roomObject);
         } else if (object instanceof ArrowTrap){
-            Network.AddRoomObject roomObject = new Network.AddRoomObject();
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.ARROWTRAP;
             roomObject.objectType = (byte)((ArrowTrap) object).getType();
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllUDP(roomObject);
         } else if (object instanceof Torch){
-            Network.AddRoomObject roomObject = new Network.AddRoomObject();
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.TORCH;
             roomObject.objectType = (byte)((Torch) object).getType();
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllUDP(roomObject);
         } else if (object instanceof Flamethrower){
-            Network.AddRoomObject roomObject = new Network.AddRoomObject();
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.FLAMETHROWER;
             roomObject.objectType = (byte)((Flamethrower) object).getType();
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllUDP(roomObject);
         } else if (object instanceof Pot){
-            Network.AddRoomObject roomObject = new Network.AddRoomObject();
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.POT;
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllUDP(roomObject);
         } else if (object instanceof Chest){
-            Network.AddRoomObject roomObject = new Network.AddRoomObject();
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.CHEST;
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllUDP(roomObject);
         } else if (object instanceof Shopkeeper){
-            Network.AddRoomObject roomObject = new Network.AddRoomObject();
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.SHOPKEEPER;
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllUDP(roomObject);
         } else if (object instanceof ShopTable){
-            Network.AddRoomObject roomObject = new Network.AddRoomObject();
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.SHOPTABLE;
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllUDP(roomObject);
         }
+        Server server = mpManager.server.getServer();
+        server.sendToAllUDP(roomObject);
     }
 
     public void resetEntering() {

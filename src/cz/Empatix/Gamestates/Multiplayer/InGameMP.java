@@ -190,7 +190,6 @@ public class InGameMP extends GameState {
 
         if (k == ControlSettings.getValue(ControlSettings.RELOAD)){
             Network.Reload reload = new Network.Reload();
-            reload.idPacket = Network.getIdPacketC();
             MultiplayerManager mpManager = MultiplayerManager.getInstance();
             reload.idPlayer = mpManager.getIdConnection();
             Client client = mpManager.client.getClient();
@@ -209,7 +208,6 @@ public class InGameMP extends GameState {
         if(postDeath){
             if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT) && !ready && System.currentTimeMillis() - deathTime > 3000){
                 Network.Ready ready = new Network.Ready();
-                ready.idPacket = Network.getIdPacketC();
                 mpManager.client.requestACK(ready,ready.idPacket);
                 ready.idPlayer = mpManager.getIdConnection();
                 ready.state = true;
@@ -241,7 +239,6 @@ public class InGameMP extends GameState {
         if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT)) {
             Client client = MultiplayerManager.getInstance().client.getClient();
             Network.DropInteract pickup = new Network.DropInteract();
-            pickup.idPacket = Network.getIdPacketC();
             MultiplayerManager.getInstance().client.requestACK(pickup,pickup.idPacket);
             pickup.idPlayer = mpManager.getIdConnection();
             pickup.x = (int)(mouseX-mx-px);
@@ -249,15 +246,15 @@ public class InGameMP extends GameState {
             client.sendUDP(pickup);
 
             Network.ObjectInteract interact = new Network.ObjectInteract();
-            interact.idPacket = Network.getIdPacketC();
             MultiplayerManager.getInstance().client.requestACK(pickup,interact.idPacket);
             interact.idPlayer = mpManager.getIdConnection();
             client.sendUDP(interact);
         }
 
         if(k == ControlSettings.getValue(ControlSettings.ARTEFACT_USE)){
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
             Network.ArtefactActivate packetAActivate = new Network.ArtefactActivate();
-            MultiplayerManager.getInstance().client.requestACK(packetAActivate,packetAActivate.idPacket);
+            mpManager.client.requestACK(packetAActivate,packetAActivate.idPacket);
             packetAActivate.idPlayer = mpManager.getIdConnection();
             mpManager.client.getClient().sendUDP(packetAActivate);
 

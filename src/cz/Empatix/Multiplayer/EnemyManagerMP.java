@@ -119,6 +119,7 @@ public class EnemyManagerMP {
 
             MultiplayerManager mpManager = MultiplayerManager.getInstance();
             Network.AddEnemy addEnemy= new Network.AddEnemy();
+            mpManager.server.requestACK(addEnemy,addEnemy.idPacket);
             addEnemy.type = "kingslime";
             addEnemy.x = x;
             addEnemy.y = y;
@@ -133,6 +134,7 @@ public class EnemyManagerMP {
 
             MultiplayerManager mpManager = MultiplayerManager.getInstance();
             Network.AddEnemy addEnemy= new Network.AddEnemy();
+            mpManager.server.requestACK(addEnemy,addEnemy.idPacket);
             addEnemy.type = "golem";
             addEnemy.x = x;
             addEnemy.y = y;
@@ -249,6 +251,7 @@ public class EnemyManagerMP {
         MultiplayerManager mpManager = MultiplayerManager.getInstance();
 
         Network.AddEnemy addEnemy = new Network.AddEnemy();
+        mpManager.server.requestACK(addEnemy,addEnemy.idPacket);
         addEnemy.type = enemy;
         addEnemy.x = x;
         addEnemy.y = y;
@@ -278,9 +281,11 @@ public class EnemyManagerMP {
             Vector3f position = e.getPosition();
             if(position.x > xMin && position.x < xMax && position.y > yMin && position.y < yMax){
                 e.setDead();
+                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                 Network.RemoveEnemy rEnemy = new Network.RemoveEnemy();
+                mpManager.server.requestACK(rEnemy,rEnemy.idPacket);
                 rEnemy.id = e.id;
-                Server server = MultiplayerManager.getInstance().server.getServer();
+                Server server = mpManager.server.getServer();
                 server.sendToAllUDP(rEnemy);
             }
         }

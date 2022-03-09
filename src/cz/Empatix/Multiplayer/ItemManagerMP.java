@@ -198,8 +198,10 @@ public class ItemManagerMP {
             drop.setPosition(x, y);
             itemDrops.add(drop);
         }
-        Server server = MultiplayerManager.getInstance().server.getServer();
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+        Server server = mpManager.server.getServer();
         Network.DropItem dropItem = new Network.DropItem();
+        mpManager.server.requestACK(dropItem,dropItem.idPacket);
         dropItem.type = (byte)random;
         dropItem.id = drop.getId();
         dropItem.x = (int)x;
@@ -281,8 +283,10 @@ public class ItemManagerMP {
                                 }
                             }
                             if(drop.pickedUp){
-                                Server server = MultiplayerManager.getInstance().server.getServer();
+                                MultiplayerManager mpManager = MultiplayerManager.getInstance();
+                                Server server = mpManager.server.getServer();
                                 Network.RemoveItem item = new Network.RemoveItem();
+                                mpManager.server.requestACK(item,item.idPacket);
                                 item.id = drop.getId();
                                 server.sendToAllUDP(item);
                             }
@@ -310,13 +314,15 @@ public class ItemManagerMP {
         itemDrops.add(drop);
 
         // adding weapon drop to all players
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
         Network.DropWeapon dropWeapon = new Network.DropWeapon();
+        mpManager.server.requestACK(dropWeapon,dropWeapon.idPacket);
         dropWeapon.id = drop.getId();
         dropWeapon.x = x;
         dropWeapon.y = y;
         dropWeapon.slot = (byte)gm.getWeaponSlot(weapon);
 
-        Server server = MultiplayerManager.getInstance().server.getServer();
+        Server server = mpManager.server.getServer();
         server.sendToAllUDP(dropWeapon);
     }
     public void dropWeapon(Weapon weapon, int x, int y, Vector2f speed) {
@@ -337,12 +343,14 @@ public class ItemManagerMP {
         ArtefactDrop drop = new ArtefactDrop(tm, artefact);
         drop.setPosition(x, y);
 
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
         Network.DropArtefact dropArtefact = new Network.DropArtefact();
+        mpManager.server.requestACK(dropArtefact,dropArtefact.idPacket);
         dropArtefact.id = drop.getId();
         dropArtefact.x = x;
         dropArtefact.y = y;
         dropArtefact.slot = (byte)am.getArtefactSlot(artefact);
-        Server server = MultiplayerManager.getInstance().server.getServer();
+        Server server = mpManager.server.getServer();
         server.sendToAllUDP(dropArtefact);
 
         itemDrops.add(drop);
@@ -363,7 +371,9 @@ public class ItemManagerMP {
                 int x = (int)p.getX();
                 int y = (int)p.getY()+30;
                 drop.setPosition((int)p.getX(), (int)p.getY()+30);
+                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                 Network.DropArtefact dropArtefact = new Network.DropArtefact();
+                mpManager.server.requestACK(dropArtefact,dropArtefact.idPacket);
                 dropArtefact.slot = (byte)am.getArtefactSlot(artefact);
                 dropArtefact.x = x;
                 dropArtefact.y = y;
@@ -373,7 +383,7 @@ public class ItemManagerMP {
                 dropArtefact.id = drop.getId();
                 itemDrops.add(drop);
 
-                Server server = MultiplayerManager.getInstance().server.getServer();
+                Server server = mpManager.server.getServer();
                 server.sendToAllUDP(dropArtefact);
                 break;
             }
@@ -454,8 +464,10 @@ public class ItemManagerMP {
             drop.setSpeed(speed.x, speed.y);
             itemDrops.add(drop);
         }
-        Server server = MultiplayerManager.getInstance().server.getServer();
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+        Server server = mpManager.server.getServer();
         Network.DropItem dropItem = new Network.DropItem();
+        mpManager.server.requestACK(dropItem,dropItem.idPacket);
         dropItem.type = (byte)random;
         dropItem.id = drop.getId();
         dropItem.x = (int)x;
@@ -474,13 +486,15 @@ public class ItemManagerMP {
                     drop.setPosition((int) p.getX(), (int) p.getY()+30);
 
                     // adding weapon drop to all players
+                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
                     Network.DropWeapon dropWeapon = new Network.DropWeapon();
+                    mpManager.server.requestACK(dropWeapon,dropWeapon.idPacket);
                     dropWeapon.id = drop.getId();
                     dropWeapon.x = px;
                     dropWeapon.y = py;
                     dropWeapon.slot = (byte)slot;
 
-                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    Server server = mpManager.server.getServer();
                     server.sendToAllUDP(dropWeapon);
 
                     itemDrops.add(drop);
@@ -495,13 +509,15 @@ public class ItemManagerMP {
 
     public void addItemDrop(ItemDrop itemdrop){
         itemDrops.add(itemdrop);
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
         Network.DropItem dropItem = new Network.DropItem();
+        mpManager.server.requestACK(dropItem,dropItem.idPacket);
         dropItem.type = (byte)itemdrop.type;
         dropItem.id = itemdrop.getId();
         dropItem.x = (int)itemdrop.getX();
         dropItem.y = (int)itemdrop.getY();
         dropItem.amount = (byte)itemdrop.getAmount();
-        Server server = MultiplayerManager.getInstance().server.getServer();
+        Server server = mpManager.server.getServer();
         server.sendToAllUDP(dropItem);
     }
 
@@ -554,7 +570,8 @@ public class ItemManagerMP {
                 return true;
             }
             if(shopItem[i] != null){
-                Server server = MultiplayerManager.getInstance().server.getServer();
+                MultiplayerManager mpManager = MultiplayerManager.getInstance();
+                Server server = mpManager.server.getServer();
                 // buying item from shop
                 if(shopItem[i] instanceof WeaponDrop) {
                     if (player.getCoins() >= shopItem[i].getPrice()) {
@@ -568,6 +585,7 @@ public class ItemManagerMP {
                         if(System.currentTimeMillis() - alertCooldown[i] > 2000){
                             alertCooldown[i]  = System.currentTimeMillis();
                             Network.Alert alert = new Network.Alert();
+                            mpManager.server.requestACK(alert,alert.idPacket);
                             alert.text = "You don't have enough coins";
                             alert.warning = true;
                             alert.idPlayer = pickup.idPlayer;
@@ -585,6 +603,7 @@ public class ItemManagerMP {
                         if (System.currentTimeMillis() - alertCooldown[i]  > 2000) {
                             alertCooldown[i]  = System.currentTimeMillis();
                             Network.Alert alert = new Network.Alert();
+                            mpManager.server.requestACK(alert,alert.idPacket);
                             alert.text = "You don't have enough coins";
                             alert.warning = true;
                             alert.idPlayer = pickup.idPlayer;

@@ -360,6 +360,7 @@ public class Bullet extends MapObject implements Serializable {
             MultiplayerManager mpManager = MultiplayerManager.getInstance();
             Server server = mpManager.server.getServer();
             Network.HitBullet hitBullet = new Network.HitBullet();
+            mpManager.server.requestACK(hitBullet,hitBullet.idPacket);
             hitBullet.type = type;
             hitBullet.id = id;
             server.sendToAllUDP(hitBullet);
@@ -388,6 +389,7 @@ public class Bullet extends MapObject implements Serializable {
             MultiplayerManager mpManager = MultiplayerManager.getInstance();
             Server server = mpManager.server.getServer();
             Network.HitBullet hitBullet = new Network.HitBullet();
+            mpManager.server.requestACK(hitBullet,hitBullet.idPacket);
             hitBullet.type = type;
             hitBullet.id = id;
             hitBullet.idHit = idHit;

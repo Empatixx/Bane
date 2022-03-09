@@ -1724,14 +1724,16 @@ public class TileMap {
 		currentRoom.addObject(obj);
 		if(serverSide){
 			if(obj instanceof Chest){
+				MultiplayerManager mpManager = MultiplayerManager.getInstance();
 				Network.AddRoomObject roomObject = new Network.AddRoomObject();
+				mpManager.server.requestACK(roomObject,roomObject.idPacket);
 				roomObject.x = (int)obj.getX();
 				roomObject.y = (int)obj.getY();
 				roomObject.type = Network.TypeRoomObject.CHEST;
 				roomObject.id = obj.getId();
 				roomObject.idRoom = currentRoom.getId();
-				Server server = MultiplayerManager.getInstance().server.getServer();
-				server.sendToAllTCP(roomObject);
+				Server server = mpManager.server.getServer();
+				server.sendToAllUDP(roomObject);
 			}
 		}
 	}
@@ -1754,14 +1756,16 @@ public class TileMap {
 		addObject(ladder, currentRoom.getId());
 
 		if(serverSide){
+			MultiplayerManager mpManager = MultiplayerManager.getInstance();
 			Network.AddRoomObject roomObject = new Network.AddRoomObject();
+			mpManager.server.requestACK(roomObject,roomObject.idPacket);
 			roomObject.x = (int)ladder.getX();
 			roomObject.y = (int)ladder.getY();
 			roomObject.type = Network.TypeRoomObject.LADDER;
 			roomObject.id = ladder.getId();
 			roomObject.idRoom = currentRoom.getId();
-			Server server = MultiplayerManager.getInstance().server.getServer();
-			server.sendToAllTCP(roomObject);
+			Server server = mpManager.server.getServer();
+			server.sendToAllUDP(roomObject);
 		}
 	}
 	public void newMap(){

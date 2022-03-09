@@ -177,20 +177,23 @@ public class Portal extends RoomObject {
         setMapPosition();
         animation.update();
         if(MultiplayerManager.multiplayer && ProgressRoomMP.ready) {
-            MultiplayerManager mpManager = MultiplayerManager.getInstance();
-            Network.Ready ready = new Network.Ready();
-            ready.idPacket = Network.getIdPacketC();
-            mpManager.client.requestACK(ready,ready.idPacket);
-            Client client = mpManager.client.getClient();
-            ready.idPlayer = mpManager.getIdConnection();
             // if players leave portal area
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
             if (!message) {
+                Network.Ready ready = new Network.Ready();
+                mpManager.client.requestACK(ready,ready.idPacket);
+                Client client = mpManager.client.getClient();
+                ready.idPlayer = mpManager.getIdConnection();
                 ProgressRoomMP.ready = false;
                 ready.state = false;
                 client.sendUDP(ready);
                 packetChangeSent = false;
             } else {
                 if(!packetChangeSent){
+                    Network.Ready ready = new Network.Ready();
+                    mpManager.client.requestACK(ready,ready.idPacket);
+                    Client client = mpManager.client.getClient();
+                    ready.idPlayer = mpManager.getIdConnection();
                     ready.state = true;
                     client.sendUDP(ready);
                     packetChangeSent = true;

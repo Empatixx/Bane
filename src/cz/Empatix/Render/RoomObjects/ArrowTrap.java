@@ -269,14 +269,16 @@ public class ArrowTrap extends RoomObject {
                 arrows.add(arrow);
             }
             if(tileMap.isServerSide()){
+                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                 Network.TrapArrowAdd arrowCreate = new Network.TrapArrowAdd();
+                mpManager.server.requestACK(arrowCreate,arrowCreate.idPacket);
                 arrowCreate.idTrap = id;
                 arrowCreate.id = arrow.id;
                 arrowCreate.x = position.x;
                 arrowCreate.y = position.y;
                 arrowCreate.facingRight = arrow.isFacingRight();
                 arrowCreate.horizontal = arrow.horizontal;
-                Server server = MultiplayerManager.getInstance().server.getServer();
+                Server server = mpManager.server.getServer();
                 server.sendToAllUDP(arrowCreate);
             }
 
@@ -672,9 +674,11 @@ public class ArrowTrap extends RoomObject {
             speed.x = 0;
             speed.y = 0;
             if(tileMap.isServerSide()){
+                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                 Network.TrapArrowHit arrowHit = new Network.TrapArrowHit();
+                mpManager.server.requestACK(arrowHit,arrowHit.idPacket);
                 arrowHit.id = id;
-                Server server = MultiplayerManager.getInstance().server.getServer();
+                Server server = mpManager.server.getServer();
                 server.sendToAllUDP(arrowHit);
             }
         }

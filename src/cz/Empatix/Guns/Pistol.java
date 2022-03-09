@@ -100,7 +100,7 @@ public class Pistol extends Weapon {
     @Override
     public void restat(int idPlayer, boolean fullAmmo) {
         mindamage = 1;
-        maxdamage = Byte.MAX_VALUE;
+        maxdamage = 3;
         inaccuracy = 0.8f;
         maxAmmo = 120;
         maxMagazineAmmo = 7;

@@ -302,8 +302,10 @@ public class RingOfFire extends Artefact {
         for(Player p : p){
             if(p == null) continue;
             if(((PlayerMP)p).getIdConnection() == idUser){
+                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                 Network.ArtefactAddBullet addBullet = new Network.ArtefactAddBullet();
-                Server server = MultiplayerManager.getInstance().server.getServer();
+                mpManager.server.requestACK(addBullet,addBullet.idPacket);
+                Server server = mpManager.server.getServer();
                 ArtefactManagerMP artefactManager = ArtefactManagerMP.getInstance();
                 addBullet.slot = (byte)artefactManager.getArtefactSlot(this);
                 addBullet.px = p.getX();

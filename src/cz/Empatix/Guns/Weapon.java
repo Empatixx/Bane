@@ -265,6 +265,7 @@ public abstract class Weapon{
         mpStatistics.addBulletShoot(idPlayer);
         // sending new bullet as packet
         Network.AddBullet response = new Network.AddBullet();
+        mpManager.server.requestACK(response,response.idPacket);
         response.x = x;
         response.y = y;
         response.px = px;

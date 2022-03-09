@@ -428,9 +428,11 @@ public class Golem extends Enemy {
                     int regen = (int)Math.ceil(maxHealth * 0.01 *(1-(float)health/maxHealth));
                     if(tileMap.isServerSide()){
                         Network.EnemyHealthHeal healPacket = new Network.EnemyHealthHeal();
+                        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+                        mpManager.server.requestACK(healPacket,healPacket.idPacket);
                         healPacket.id = id;
                         healPacket.amount = (short) regen;
-                        Server server = MultiplayerManager.getInstance().server.getServer();
+                        Server server = mpManager.server.getServer();
                         server.sendToAllUDP(healPacket);
                     }
                     heal(regen);
@@ -641,9 +643,11 @@ public class Golem extends Enemy {
                         if (object instanceof DestroyableObject) {
                             if (intersects(object) && !((DestroyableObject) object).isDestroyed()) {
                                 ((DestroyableObject) object).setHit(1);
+                                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                                 Network.LaserBeamHit laserBeamHit = new Network.LaserBeamHit();
+                                mpManager.server.requestACK(laserBeamHit,laserBeamHit.idPacket);
                                 laserBeamHit.idHit = object.id;
-                                Server server = MultiplayerManager.getInstance().server.getServer();
+                                Server server = mpManager.server.getServer();
                                 server.sendToAllUDP(laserBeamHit);
                             }
                         }

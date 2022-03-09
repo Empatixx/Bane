@@ -355,8 +355,10 @@ public class GunsManagerMP {
                 stopShooting();
                 current = null;
                 // sending back packet so it will remove weapon in hud from client side
+                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                 Server server = MultiplayerManager.getInstance().server.getServer();
                 Network.PlayerDropWeapon dropWeapon = new Network.PlayerDropWeapon();
+                mpManager.server.requestACK(dropWeapon,dropWeapon.idPacket);
                 if(equipedweapons[slot] != null){
                     ItemManagerMP itemManagerMP = ItemManagerMP.getInstance();
                     itemManagerMP.dropPlayerWeapon(equipedweapons[slot], x, y,weapons.indexOf(equipedweapons[slot]),idPlayer);

@@ -149,8 +149,9 @@ public class ArtefactManagerMP {
                         currentArtefact.activate(artefactActivate.idPlayer);
                         // sending acknowledge of activating artefact
                         Server server = MultiplayerManager.getInstance().server.getServer();
+                        MultiplayerManager.getInstance().server.requestACK(artefactActivate,artefactActivate.idPacket);
                         artefactActivate.slot = (byte)artefacts.indexOf(currentArtefact);
-                        server.sendToAllTCP(artefactActivate);
+                        server.sendToAllUDP(artefactActivate);
                         if(currentArtefact.isOneUse()){
                             currentArtefact = null;
                         }

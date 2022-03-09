@@ -116,6 +116,9 @@ public class Network {
         public int idPacket;
         public int idPlayer;
         public boolean up,down,left,right;
+        public MovePlayerInput(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class ArtefactEventState {
         public int idPacket;
@@ -135,6 +138,9 @@ public class Network {
         public int idPacket;
         public int idPlayer;
         public boolean state;
+        public Ready(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class TransferRoomMap {
         public int[][] roomMap;
@@ -162,20 +168,32 @@ public class Network {
         public int idPacket;
         public int idPlayer;
         public float x,y;
+        public MouseCoords(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class StartShooting {
         public int idPlayer;
         public int idPacket;
+        public StartShooting(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class StopShooting {
         public int idPlayer;
         public int idPacket;
+        public StopShooting(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class Ping{
     }
     public static class Reload {
         public int idPlayer;
         public int idPacket;
+        public Reload(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class AddBullet {
         public int idPlayer;
@@ -273,6 +291,9 @@ public class Network {
         public byte slot;
         public boolean sucessful;
         public int idPacket;
+        public SwitchWeaponSlot(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class PlayerDropWeapon{
         public int idPlayer;
@@ -280,6 +301,9 @@ public class Network {
         public int x, y;
         public byte playerSlot;
         public int idPacket;
+        public PlayerDropWeapon(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class DropWeapon{
         public int x, y;
@@ -307,11 +331,17 @@ public class Network {
         public int id;
         public int x, y;
         public int idPacket;
+        public DropInteract(){
+            idPacket = getIdPacketC();
+        }
     }
     public static class ObjectInteract {
         public int idPlayer;
         public int id;
         public int idPacket;
+        public ObjectInteract(){
+            idPacket = getIdPacketC();
+        }
     }
     public enum TypeRoomObject{
         CHEST,SPIKE,BONES,TORCH,BARREL,POT,SHOPKEEPER,SHOPTABLE,FLAMETHROWER,LADDER,
@@ -416,7 +446,7 @@ public class Network {
         public byte slot;
         public int idPacket;
         public ArtefactActivate(){
-            idPacket = getIdPacketS();
+            idPacket = getIdPacketC();
         }
     }
     public static class ArtefactAddBullet{
@@ -546,7 +576,7 @@ public class Network {
         int id;
     }
 
-    public static int getIdPacketS(){return idPacketServer++;}
-    public static int getIdPacketC(){return idPacketClient++;}
+    private static int getIdPacketS(){return idPacketServer++;}
+    private static int getIdPacketC(){return idPacketClient++;}
 
 }

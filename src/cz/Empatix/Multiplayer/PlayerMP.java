@@ -370,7 +370,6 @@ public class PlayerMP extends Player {
         if(isOrigin()){
             Client client = mpManager.client.getClient();
             Network.MovePlayerInput movePlayer = new Network.MovePlayerInput();
-            movePlayer.idPacket = Network.getIdPacketC();
             movePlayer.idPlayer = idConnection;
             movePlayer.down = down;
             movePlayer.up = up;

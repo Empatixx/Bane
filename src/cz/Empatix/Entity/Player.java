@@ -548,11 +548,13 @@ public class Player extends MapObject {
                 flinching = true;
                 flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
                 lastDamage = DamageAbsorbedBy.IMMUNE;
+                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                 Network.PlayerHit playerHit = new Network.PlayerHit();
+                mpManager.server.requestACK(playerHit,playerHit.idPacket);
                 playerHit.type = lastDamage;
                 playerHit.idPlayer = ((PlayerMP)(this)).getIdConnection();
 
-                Server server = MultiplayerManager.getInstance().server.getServer();
+                Server server = mpManager.server.getServer();
                 server.sendToAllUDP(playerHit);
                 return;
             }
@@ -596,11 +598,13 @@ public class Player extends MapObject {
             }
             source.play(soundPlayerhurt[Random.nextInt(2)]);
         } else {
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
             Network.PlayerHit playerHit = new Network.PlayerHit();
+            mpManager.server.requestACK(playerHit,playerHit.idPacket);
             playerHit.type = lastDamage;
             playerHit.idPlayer = ((PlayerMP)(this)).getIdConnection();
 
-            Server server = MultiplayerManager.getInstance().server.getServer();
+            Server server = mpManager.server.getServer();
             server.sendToAllUDP(playerHit);
         }
         if(health <= 0) setDead();

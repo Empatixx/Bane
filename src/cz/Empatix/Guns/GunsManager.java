@@ -144,7 +144,6 @@ public class GunsManager {
 
         Client client = MultiplayerManager.getInstance().client.getClient();
         Network.MouseCoords mouseCoords = new Network.MouseCoords();
-        mouseCoords.idPacket = Network.getIdPacketC();
         mouseCoords.x = x;
         mouseCoords.y = y;
         mouseCoords.idPlayer = idPlayer;
@@ -238,8 +237,7 @@ public class GunsManager {
                 MultiplayerManager mp = MultiplayerManager.getInstance();
                 Client client = mp.client.getClient();
                 Network.PlayerDropWeapon dropWeapon = new Network.PlayerDropWeapon();
-                dropWeapon.idPacket = Network.getIdPacketC();
-                MultiplayerManager.getInstance().client.requestACK(dropWeapon,dropWeapon.idPacket);
+                mp.client.requestACK(dropWeapon,dropWeapon.idPacket);
                 dropWeapon.idPlayer = mp.getIdConnection();
                 dropWeapon.x = x;
                 dropWeapon.y = y;
@@ -257,7 +255,6 @@ public class GunsManager {
             if(MultiplayerManager.multiplayer){
                 Client client = MultiplayerManager.getInstance().client.getClient();
                 Network.SwitchWeaponSlot switchWeaponSlot = new Network.SwitchWeaponSlot();
-                switchWeaponSlot.idPacket = Network.getIdPacketC();
                 MultiplayerManager.getInstance().client.requestACK(switchWeaponSlot,switchWeaponSlot.idPacket);
                 switchWeaponSlot.idPlayer = MultiplayerManager.getInstance().getIdConnection();
                 switchWeaponSlot.slot = FIRSTSLOT;
@@ -269,7 +266,6 @@ public class GunsManager {
             if(MultiplayerManager.multiplayer){
                 Client client = MultiplayerManager.getInstance().client.getClient();
                 Network.SwitchWeaponSlot switchWeaponSlot = new Network.SwitchWeaponSlot();
-                switchWeaponSlot.idPacket = Network.getIdPacketC();
                 MultiplayerManager.getInstance().client.requestACK(switchWeaponSlot,switchWeaponSlot.idPacket);
                 switchWeaponSlot.idPlayer = MultiplayerManager.getInstance().getIdConnection();
                 switchWeaponSlot.slot = SECONDARYSLOT;
@@ -284,7 +280,6 @@ public class GunsManager {
         current.setShooting(false);
         if(MultiplayerManager.multiplayer){
             Network.StopShooting stopShooting = new Network.StopShooting();
-            stopShooting.idPacket = Network.getIdPacketC();
             MultiplayerManager.getInstance().client.requestACK(stopShooting,stopShooting.idPacket);
             stopShooting.idPlayer = MultiplayerManager.getInstance().getIdConnection();
             Client client = MultiplayerManager.getInstance().client.getClient();
@@ -296,7 +291,6 @@ public class GunsManager {
         current.setShooting(true);
         if(MultiplayerManager.multiplayer){
             Network.StartShooting startShooting = new Network.StartShooting();
-            startShooting.idPacket = Network.getIdPacketC();
             MultiplayerManager.getInstance().client.requestACK(startShooting,startShooting.idPacket);
             startShooting.idPlayer = MultiplayerManager.getInstance().getIdConnection();
             Client client = MultiplayerManager.getInstance().client.getClient();
@@ -387,7 +381,6 @@ public class GunsManager {
         if(MultiplayerManager.multiplayer){
             Client client = MultiplayerManager.getInstance().client.getClient();
             Network.SwitchWeaponSlot switchWeaponSlot = new Network.SwitchWeaponSlot();
-            switchWeaponSlot.idPacket = Network.getIdPacketC();
             MultiplayerManager.getInstance().client.requestACK(switchWeaponSlot,switchWeaponSlot.idPacket);
             switchWeaponSlot.idPlayer = MultiplayerManager.getInstance().getIdConnection();
             switchWeaponSlot.slot = (byte)slot;

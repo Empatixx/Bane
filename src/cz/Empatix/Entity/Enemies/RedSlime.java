@@ -229,8 +229,10 @@ public class RedSlime extends Enemy {
             if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
                 // if bullet hitted wall
                 if(!preHit && redSlimebullet.isHit() && tileMap.isServerSide()){
+                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
                     Server server = MultiplayerManager.getInstance().server.getServer();
                     Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                    mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
                     enemyProjectile.id = redSlimebullet.id;
                     enemyProjectile.idEnemy = getId();
                     server.sendToAllUDP(enemyProjectile);
@@ -253,8 +255,10 @@ public class RedSlime extends Enemy {
                             p.hit(1);
 
                             if(tileMap.isServerSide()){
+                                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                                 Server server = MultiplayerManager.getInstance().server.getServer();
                                 Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                                mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
                                 enemyProjectile.id = redSlimebullet.id;
                                 enemyProjectile.idEnemy = getId();
                                 server.sendToAllUDP(enemyProjectile);
@@ -272,8 +276,10 @@ public class RedSlime extends Enemy {
                                 ((DestroyableObject) object).setHit(1);
 
                                 if (tileMap.isServerSide()) {
+                                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
                                     Server server = MultiplayerManager.getInstance().server.getServer();
                                     Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                                    mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
                                     enemyProjectile.id = redSlimebullet.id;
                                     enemyProjectile.idEnemy = getId();
                                     enemyProjectile.idHit = object.getId();
@@ -284,8 +290,10 @@ public class RedSlime extends Enemy {
                             redSlimebullet.setHit();
 
                             if (tileMap.isServerSide()) {
+                                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                                 Server server = MultiplayerManager.getInstance().server.getServer();
                                 Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                                mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
                                 enemyProjectile.id = redSlimebullet.id;
                                 enemyProjectile.idEnemy = getId();
                                 server.sendToAllUDP(enemyProjectile);
@@ -311,13 +319,15 @@ public class RedSlime extends Enemy {
                 bullets.add(redSlimebullet);
 
                 if(tileMap.isServerSide()){
+                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
                     Network.AddEnemyProjectile addEnemyProjectile = new Network.AddEnemyProjectile();
+                    mpManager.server.requestACK(addEnemyProjectile,addEnemyProjectile.idPacket);
                     addEnemyProjectile.idEnemy = id;
                     addEnemyProjectile.id = redSlimebullet.id;
                     addEnemyProjectile.x = px[index] - position.x;
                     addEnemyProjectile.y = py[index] - position.y;
                     addEnemyProjectile.inaccuracy = 1.3f*i;
-                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    Server server = mpManager.server.getServer();
                     server.sendToAllUDP(addEnemyProjectile);
                 }
             }

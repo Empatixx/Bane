@@ -435,6 +435,8 @@ public class GameServer {
                     }
                 } else if (object instanceof Network.Ping) {
                     connection.sendUDP(object);
+                } else if (object instanceof Network.PacketACK){
+                    ackManager.acknowledged(connection.getID(), ((Network.PacketACK) object).id);
                 }
             }
         }));
@@ -466,6 +468,8 @@ public class GameServer {
                         }
                     }
                     upgrades.removePlayer(player.getIdConnection());
+                    ackCaching.removePlayer(player.getIdConnection());
+                    ackManager.removePlayer(player.getIdConnection());
                     i--;
                 }
             }
@@ -502,6 +506,7 @@ public class GameServer {
             connectedPlayers.add(playerMP);
             readyCheckPlayers.add(new PlayerReady(idConnection));
             upgrades.addPlayer(idConnection);
+            ackCaching.addPlayer(idConnection);
         } else {
             for (PlayerMP otherPlayer : connectedPlayers) {
                 Network.AddPlayer addPlayer = new Network.AddPlayer();
@@ -513,6 +518,8 @@ public class GameServer {
             connectedPlayers.add(playerMP);
             readyCheckPlayers.add(new PlayerReady(idConnection));
             upgrades.addPlayer(idConnection);
+            ackCaching.addPlayer(idConnection);
+            ackManager.addPlayer(idConnection);
             Network.AddPlayer addPlayer = new Network.AddPlayer();
             addPlayer.username = join.username;
             addPlayer.idPlayer = idConnection;
@@ -527,27 +534,44 @@ public class GameServer {
         server.close();
         Random.closeMP();
     }
+    public void requestACK(Object o, int id){
+        ackManager.add(o,id);
+    }
     private static class ACKManager{
-        private ArrayList<PacketWaitingACK> packets;
+        private HashMap<Integer,PlayerACKS> players;
         private ArrayList<PacketWaitingACK> waitingForAdd;
-        private int[] confirmedACKs;
-        private int totalConfirmedACKs;
+        private Lock lock;
         private Lock waitingLock;
-        private Lock ackLock;
         ACKManager(){
-            packets = new ArrayList<>(300);
+            players = new HashMap<>();
+            lock = new ReentrantLock();
             waitingLock = new ReentrantLock();
-            ackLock = new ReentrantLock();
-            confirmedACKs = new int[500];
             waitingForAdd = new ArrayList<>();
         }
-        public void acknowledged(int id){
-            ackLock.lock();
+        public void addPlayer(int idcon){
+            lock.lock();
             try{
-                confirmedACKs[totalConfirmedACKs] = id;
-                totalConfirmedACKs++;
+                players.put(idcon,new PlayerACKS());
             } finally {
-                ackLock.unlock();
+                lock.unlock();
+            }
+        }
+        public void removePlayer(int idcon){
+            lock.lock();
+            try{
+                players.remove(idcon);
+            } finally {
+                lock.unlock();
+            }
+        }
+        public void acknowledged(int idCon, int id){
+            lock.lock();
+            try{
+                PlayerACKS playerACKS = players.get(idCon);
+                playerACKS.confirmedACKs[playerACKS.totalConfirmedACKs] = id;
+                playerACKS.totalConfirmedACKs++;
+            } finally {
+                lock.unlock();
             }
         }
         public void add(Object o,int id){
@@ -559,28 +583,43 @@ public class GameServer {
             }
         }
         public void update(){
-            waitingLock.lock();
+            lock.lock();
             try{
-                packets.addAll(waitingForAdd);
-                waitingForAdd.clear();
-            } finally {
-                waitingLock.unlock();
-            }
-            ackLock.lock();
-            int[] acks;
-            try{
-                acks = Arrays.copyOf(confirmedACKs,totalConfirmedACKs);
-                totalConfirmedACKs = 0;
-            } finally {
-                ackLock.unlock();
-            }
-            for(int ackId : acks){
-                packets.removeIf(ack -> ack.id == ackId);
-            }
-            for(PacketWaitingACK p : packets){
-                if(p.shouldResend()){
-                    MultiplayerManager.getInstance().server.server.sendToAllUDP(p.getPacket());
+                waitingLock.lock();
+                try{
+                    for(PlayerACKS playerACKS : players.values()){
+                        playerACKS.packets.addAll(waitingForAdd);
+                    }
+                    waitingForAdd.clear();
+                } finally {
+                    waitingLock.unlock();
                 }
+
+                for(PlayerACKS playerACKS : players.values()){
+                    for(int i = 0;i<playerACKS.totalConfirmedACKs;i++){
+                        int finalI = i;
+                        playerACKS.packets.removeIf(ack -> playerACKS.confirmedACKs[finalI] == ack.id);
+                    }
+                }
+                for(Map.Entry<Integer, PlayerACKS> entry : players.entrySet()) {
+                    for(PacketWaitingACK p : entry.getValue().packets){
+                        if(p.shouldResend()){
+                            MultiplayerManager.getInstance().server.getServer().sendToUDP(entry.getKey(),p.getPacket());
+                        }
+                    }
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+        private static class PlayerACKS{
+            public LinkedList<PacketWaitingACK> packets;
+            private int[] confirmedACKs;
+            private int totalConfirmedACKs;
+            public PlayerACKS(){
+                packets = new LinkedList<>();
+                confirmedACKs = new int[200];
+                totalConfirmedACKs = 0;
             }
         }
         private static class PacketWaitingACK{
@@ -613,6 +652,14 @@ public class GameServer {
             lock.lock();
             try{
                 list.put(idConnection,new LinkedList<>());
+            } finally {
+                lock.unlock();
+            }
+        }
+        public void removePlayer(int idConnection){
+            lock.lock();
+            try{
+                list.remove(idConnection);
             } finally {
                 lock.unlock();
             }

@@ -310,10 +310,12 @@ public class Chest extends RoomObject {
         if(tileMap.isServerSide()){
             animation = new Animation(4);
             animation.setDelay(175);
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
             Network.OpenChest openChest = new Network.OpenChest();
+            mpManager.server.requestACK(openChest,openChest.idPacket);
             openChest.id = getId();
             openChest.idRoom = (byte)tileMap.getRoomByCoords(position.x,position.y).getId();
-            Server server = MultiplayerManager.getInstance().server.getServer();
+            Server server = mpManager.server.getServer();
             server.sendToAllUDP(openChest);
         } else {
             animation.setFrames(spritesheet.getSprites(OPEN));

@@ -272,8 +272,10 @@ public class KingSlime extends Enemy {
             if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
                 // if bullet hitted wall
                 if(!preHit && slimebullet.isHit() && tileMap.isServerSide()){
+                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
                     Server server = MultiplayerManager.getInstance().server.getServer();
                     Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                    mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
                     enemyProjectile.id = slimebullet.id;
                     enemyProjectile.idEnemy = getId();
                     server.sendToAllUDP(enemyProjectile);
@@ -295,8 +297,10 @@ public class KingSlime extends Enemy {
                             p.hit(1);
 
                             if(tileMap.isServerSide()){
+                                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                                 Server server = MultiplayerManager.getInstance().server.getServer();
                                 Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                                mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
                                 enemyProjectile.id = slimebullet.id;
                                 enemyProjectile.idEnemy = getId();
                                 server.sendToAllUDP(enemyProjectile);
@@ -314,8 +318,10 @@ public class KingSlime extends Enemy {
                                 ((DestroyableObject) object).setHit(1);
 
                                 if (tileMap.isServerSide()) {
+                                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
                                     Server server = MultiplayerManager.getInstance().server.getServer();
                                     Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                                    mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
                                     enemyProjectile.id = slimebullet.id;
                                     enemyProjectile.idEnemy = getId();
                                     enemyProjectile.idHit = object.getId();
@@ -326,8 +332,10 @@ public class KingSlime extends Enemy {
                             slimebullet.setHit();
 
                             if (tileMap.isServerSide()) {
+                                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                                 Server server = MultiplayerManager.getInstance().server.getServer();
                                 Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                                mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
                                 enemyProjectile.id = slimebullet.id;
                                 enemyProjectile.idEnemy = getId();
                                 server.sendToAllUDP(enemyProjectile);
@@ -361,13 +369,15 @@ public class KingSlime extends Enemy {
                 slimebullet.setPosition(position.x, position.y);
                 bullets.add(slimebullet);
                 if(tileMap.isServerSide()){
+                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
                     Network.AddEnemyProjectile addEnemyProjectile = new Network.AddEnemyProjectile();
+                    mpManager.server.requestACK(addEnemyProjectile,addEnemyProjectile.idPacket);
                     addEnemyProjectile.idEnemy = id;
                     addEnemyProjectile.id = slimebullet.id;
                     addEnemyProjectile.x = px[index] - position.x;
                     addEnemyProjectile.y = py[index] - position.y;
                     addEnemyProjectile.inaccuracy = (float)inaccuracy;
-                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    Server server = mpManager.server.getServer();
                     server.sendToAllUDP(addEnemyProjectile);
                 }
                 if (i >= 0) i++;
@@ -415,13 +425,15 @@ public class KingSlime extends Enemy {
                 slimebullet.setPosition(position.x, position.y);
                 bullets.add(slimebullet);
 
+                MultiplayerManager mpManager = MultiplayerManager.getInstance();
                 Network.AddEnemyProjectile addEnemyProjectile = new Network.AddEnemyProjectile();
+                mpManager.server.requestACK(addEnemyProjectile,addEnemyProjectile.idPacket);
                 addEnemyProjectile.idEnemy = id;
                 addEnemyProjectile.id = slimebullet.id;
                 addEnemyProjectile.x = (float)Math.sin(Math.toRadians(angle));
                 addEnemyProjectile.y = (float)Math.sin(Math.toRadians(angle-90));
                 addEnemyProjectile.inaccuracy = (float)(offset+0.05 *(1-Random.nextInt(2)*2));
-                Server server = MultiplayerManager.getInstance().server.getServer();
+                Server server = mpManager.server.getServer();
                 server.sendToAllUDP(addEnemyProjectile);
 
                 slimebullet = new KingSlimebullet(
@@ -433,6 +445,7 @@ public class KingSlime extends Enemy {
                 slimebullet.setPosition(position.x, position.y);
                 bullets.add(slimebullet);
                 addEnemyProjectile = new Network.AddEnemyProjectile();
+                mpManager.server.requestACK(addEnemyProjectile,addEnemyProjectile.idPacket);
                 addEnemyProjectile.idEnemy = id;
                 addEnemyProjectile.id = slimebullet.id;
                 addEnemyProjectile.x = (float)Math.sin(Math.toRadians(angle-180));

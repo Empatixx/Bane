@@ -10,8 +10,8 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -23,6 +23,7 @@ public class GameClient{
     private Client client;
 
     private ACKManager ackManager;
+    private ACKCaching ackCaching;
 
     private int numPlayers;
     private boolean recon;
@@ -39,6 +40,7 @@ public class GameClient{
 
         recon = false;
         ackManager = new ACKManager();
+        ackCaching = new ACKCaching();
 
         new Thread("Client-ACK") {
             @Override
@@ -69,32 +71,39 @@ public class GameClient{
                     packetHolder.add(object,PacketHolder.PLAYERSSTATS);
                 }
                 else if (object instanceof Network.Ready){
-                    boolean state = ((Network.Ready) object).state;
+                    Network.Ready ready = (Network.Ready)object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = ready.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(ready.idPacket)){
+                        boolean state = ((Network.Ready) object).state;
 
-                    GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof ProgressRoomMP) {
-                        for(PlayerReady playerReady : ((ProgressRoomMP) gameState).playerReadies){
-                            if(playerReady == null) continue;
-                            if(playerReady.isEqual(((Network.Ready) object).idPlayer)){
-                                playerReady.setReady(state);
-                                int selfId = mpManager.getIdConnection(); // origin id
-                                if(selfId != ((Network.Ready) object).idPlayer && state){
-                                    Network.Alert alert = new Network.Alert();
-                                    alert.text = playerReady.getUsername()+" is ready!";
-                                    alert.idPlayer = mpManager.getIdConnection();
-                                    alert.warning = false;
-                                    packetHolder.add(alert,PacketHolder.ALERT);
+                        GameState gameState = gsm.getCurrentGamestate();
+                        if(gameState instanceof ProgressRoomMP) {
+                            for(PlayerReady playerReady : ((ProgressRoomMP) gameState).playerReadies){
+                                if(playerReady == null) continue;
+                                if(playerReady.isEqual(((Network.Ready) object).idPlayer)){
+                                    playerReady.setReady(state);
+                                    int selfId = mpManager.getIdConnection(); // origin id
+                                    if(selfId != ((Network.Ready) object).idPlayer && state){
+                                        Network.Alert alert = new Network.Alert();
+                                        alert.text = playerReady.getUsername()+" is ready!";
+                                        alert.idPlayer = mpManager.getIdConnection();
+                                        alert.warning = false;
+                                        packetHolder.add(alert,PacketHolder.ALERT);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if(gameState instanceof InGameMP) {
-                        for(PlayerReady playerReady : ((InGameMP) gameState).playerReadies){
-                            if(playerReady == null) continue;
-                            if(playerReady.isEqual(((Network.Ready) object).idPlayer)){
-                                playerReady.setReady(state);
+                        if(gameState instanceof InGameMP) {
+                            for(PlayerReady playerReady : ((InGameMP) gameState).playerReadies){
+                                if(playerReady == null) continue;
+                                if(playerReady.isEqual(((Network.Ready) object).idPlayer)){
+                                    playerReady.setReady(state);
+                                }
                             }
                         }
+                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.TransferRoomMap){
@@ -114,9 +123,16 @@ public class GameClient{
                     }
                 }
                 else if(object instanceof Network.TrapArrowAdd){
-                    GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.TRAPARROWADD);
+                    Network.TrapArrowAdd packet = (Network.TrapArrowAdd) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)){
+                        GameState gameState = gsm.getCurrentGamestate();
+                        if(gameState instanceof InGameMP) {
+                            packetHolder.add(object,PacketHolder.TRAPARROWADD);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if(object instanceof Network.TrapArrowMove){
@@ -127,38 +143,81 @@ public class GameClient{
                 }
                 else if(object instanceof Network.TrapArrowHit){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.TRAPARROWHIT);
+                    Network.TrapArrowHit packet = (Network.TrapArrowHit) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.TRAPARROWHIT);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if(object instanceof Network.AddBullet){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                       ((InGameMP)gameState).gunsManager.handleAddBulletPacket((Network.AddBullet) object);
+                    Network.AddBullet packet = (Network.AddBullet) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            ((InGameMP) gameState).gunsManager.handleAddBulletPacket((Network.AddBullet) object);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if(object instanceof Network.HitBullet){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.HITBULLET);
+                    Network.HitBullet packet = (Network.HitBullet) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.HITBULLET);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if(object instanceof Network.ArtefactEventState){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.ARTEFACTSTATE);
+                    Network.ArtefactEventState packet = (Network.ArtefactEventState) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            packetHolder.add(object,PacketHolder.ARTEFACTSTATE);
+                        }
+                        ackCaching.add(ack);
                     }
+
                 }
                 else if(object instanceof Network.ArtefactAddBullet){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.ARTEFACTADDBULLET);
+                    Network.ArtefactAddBullet packet = (Network.ArtefactAddBullet) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.ARTEFACTADDBULLET);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if(object instanceof Network.EnemyHealthHeal){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.ENEMYHEAL);
+                    Network.EnemyHealthHeal packet = (Network.EnemyHealthHeal) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            packetHolder.add(object,PacketHolder.ENEMYHEAL);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if(object instanceof Network.WeaponInfo){
@@ -169,8 +228,15 @@ public class GameClient{
                 }
                 else if(object instanceof Network.DropItem){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.DROPITEM);
+                    Network.DropItem packet = (Network.DropItem) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            packetHolder.add(object,PacketHolder.DROPITEM);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if(object instanceof Network.MoveDropItem){
@@ -183,8 +249,15 @@ public class GameClient{
                 }
                 else if(object instanceof Network.RemoveItem){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.REMOVEITEM);
+                    Network.RemoveItem packet = (Network.RemoveItem) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            packetHolder.add(object,PacketHolder.REMOVEITEM);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if(object instanceof Network.NextFloor){
@@ -198,25 +271,44 @@ public class GameClient{
                 }
                 else if(object instanceof Network.AddEnemy){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.ADDENEMY);
+                    Network.AddEnemy packet = (Network.AddEnemy) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            packetHolder.add(object,PacketHolder.ADDENEMY);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.LockRoom){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.LOCKROOM);
+                    Network.LockRoom packet = (Network.LockRoom) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.LOCKROOM);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
 
 
                 else if(object instanceof Network.PlayerHit){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.PLAYERHIT);
-
+                    Network.PlayerHit packet = (Network.PlayerHit) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.PLAYERHIT);
+                        }
+                        ackCaching.add(ack);
                     }
-
                 }
                 else if (object instanceof Network.MoveEnemy){
                     packetHolder.add(object,PacketHolder.MOVEENEMY);
@@ -227,47 +319,103 @@ public class GameClient{
                 }
                 else if (object instanceof Network.SwitchWeaponSlot){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        ((InGameMP)gameState).gunsManager.handleSwitchWeaponPacket((Network.SwitchWeaponSlot)object);
+                    Network.SwitchWeaponSlot packet = (Network.SwitchWeaponSlot) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            ((InGameMP)gameState).gunsManager.handleSwitchWeaponPacket((Network.SwitchWeaponSlot)object);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.PlayerDropWeapon){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        ((InGameMP)gameState).gunsManager.handleDropPlayerWeaponPacket((Network.PlayerDropWeapon)object);
+                    Network.PlayerDropWeapon packet = (Network.PlayerDropWeapon) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            ((InGameMP)gameState).gunsManager.handleDropPlayerWeaponPacket((Network.PlayerDropWeapon)object);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.DropWeapon){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        ((InGameMP)gameState).gunsManager.handleDropWeaponPacket((Network.DropWeapon)object);
+                    Network.DropWeapon packet = (Network.DropWeapon) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            ((InGameMP) gameState).gunsManager.handleDropWeaponPacket((Network.DropWeapon) object);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.DropArtefact){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.DROPARTEFACT);
+                    Network.DropArtefact packet = (Network.DropArtefact) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.DROPARTEFACT);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.DropInteract){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.OBJECTINTERACT);
+                    Network.DropInteract packet = (Network.DropInteract) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.OBJECTINTERACT);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.AddRoomObject){
-                    packetHolder.add(object,PacketHolder.ADDROOMOBJECT);
+                    Network.AddRoomObject packet = (Network.AddRoomObject) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        packetHolder.add(object,PacketHolder.ADDROOMOBJECT);
+                        ackCaching.add(ack);
+                    }
                 }
                 else if (object instanceof Network.AddEnemyProjectile){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.ADD_ENEMYPROJECTION);
+                    Network.AddEnemyProjectile packet = (Network.AddEnemyProjectile) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.ADD_ENEMYPROJECTION);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.RemoveEnemy){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.REMOVEENEMY);
+                    Network.RemoveEnemy packet = (Network.RemoveEnemy) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            packetHolder.add(object,PacketHolder.REMOVEENEMY);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.MoveEnemyProjectile){
@@ -278,15 +426,29 @@ public class GameClient{
                 }
                 else if (object instanceof Network.HitEnemyProjectile){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.HIT_ENEMYPROJECTILE);
+                    Network.HitEnemyProjectile packet = (Network.HitEnemyProjectile) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            packetHolder.add(object,PacketHolder.HIT_ENEMYPROJECTILE);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.ShopDropitem){
                     packetHolder.add(object,PacketHolder.SHOPITEM);
                 }
                 else if (object instanceof Network.Alert){
-                    packetHolder.add(object,PacketHolder.ALERT);
+                    Network.Alert packet = (Network.Alert) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        packetHolder.add(object,PacketHolder.ALERT);
+                        ackCaching.add(ack);
+                    }
                 }
                 else if (object instanceof Network.AllPlayersDeath){
                     GameState gameState = gsm.getCurrentGamestate();
@@ -296,8 +458,15 @@ public class GameClient{
                 }
                 else if (object instanceof Network.OpenChest){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.OPENCHEST);
+                    Network.OpenChest packet = (Network.OpenChest) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            packetHolder.add(object,PacketHolder.OPENCHEST);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.PlayerInfo){
@@ -317,14 +486,28 @@ public class GameClient{
                 }
                 else if (object instanceof Network.LaserBeamHit){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object, PacketHolder.LASERBEAMHIT);
+                    Network.LaserBeamHit packet = (Network.LaserBeamHit) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.LASERBEAMHIT);
+                        }
+                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.ArtefactActivate){
                     GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.ARTEFACTACTIVATED);
+                    Network.ArtefactActivate packet = (Network.ArtefactActivate) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if(gameState instanceof InGameMP) {
+                            packetHolder.add(object,PacketHolder.ARTEFACTACTIVATED);
+                        }
+                        ackCaching.add(ack);
                     }
                 } else if (object instanceof Network.PacketACK){
                     ackManager.acknowledged(((Network.PacketACK) object).id);
@@ -392,18 +575,18 @@ public class GameClient{
         };*/
     }
     private static class ACKManager{
-        private ArrayList<PacketWaitingACK> packets;
-        private ArrayList<PacketWaitingACK> waitingForAdd;
+        private LinkedList<PacketWaitingACK> packets;
+        private LinkedList<PacketWaitingACK> waitingForAdd;
         private int[] confirmedACKs;
         private int totalConfirmedACKs;
         private Lock waitingLock;
         private Lock ackLock;
         ACKManager(){
-            packets = new ArrayList<>(100);
+            packets = new LinkedList<>();
             waitingLock = new ReentrantLock();
             ackLock = new ReentrantLock();
             confirmedACKs = new int[200];
-            waitingForAdd = new ArrayList<>();
+            waitingForAdd = new LinkedList<>();
         }
         public void acknowledged(int id){
             ackLock.lock();
@@ -464,6 +647,50 @@ public class GameClient{
             public Object getPacket() {
                 return packet;
             }
+        }
+    }
+    private static class ACKCaching{
+        private LinkedList<ACKCache> list;
+        private Lock lock;
+        ACKCaching(){
+            list = new LinkedList<>();
+            lock = new ReentrantLock();
+        }
+        public void update() {
+            lock.lock();
+            try {
+                list.removeIf(ACKCache::shouldRemove);
+            } finally {
+                lock.unlock();
+            }
+        }
+        public boolean checkDuplicate(int id){
+            lock.lock();
+            try {
+                for(ACKCache cache : list){
+                    if(cache.ack.id == id) return true;
+                }
+            } finally {
+                lock.unlock();
+            }
+            return false;
+        }
+        public void add(Network.PacketACK ack){
+            lock.lock();
+            try {
+                list.add(new ACKCache(ack));
+            } finally {
+                lock.unlock();
+            }
+        }
+        private static class ACKCache{
+            private final Network.PacketACK ack;
+            private final long time;
+            public ACKCache(Network.PacketACK ack){
+                this.ack = ack;
+                time = System.nanoTime();
+            }
+            public boolean shouldRemove(){return System.nanoTime() - time > 5000000000L;}
         }
     }
 }

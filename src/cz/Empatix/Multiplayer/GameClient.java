@@ -601,6 +601,7 @@ public class GameClient{
             waitingLock.lock();
             try{
                 waitingForAdd.add(new PacketWaitingACK(o,id));
+                waitingForAdd.clear();
             } finally {
                 waitingLock.unlock();
             }

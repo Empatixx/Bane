@@ -506,6 +506,7 @@ public class GameServer {
             connectedPlayers.add(playerMP);
             readyCheckPlayers.add(new PlayerReady(idConnection));
             upgrades.addPlayer(idConnection);
+            ackManager.addPlayer(idConnection);
             ackCaching.addPlayer(idConnection);
         } else {
             for (PlayerMP otherPlayer : connectedPlayers) {

@@ -170,6 +170,10 @@ public class GunsManager {
             for (Player player : players) {
                 if (player != null) totalPlayers++;
             }
+            Object[] infoPackets = packetHolder.get(PacketHolder.WEAPONINFO);
+            for(Object o : infoPackets){
+                handleWeaponInfoPacket((Network.WeaponInfo) o);
+            }
             Object[] addPackets = packetHolder.get(PacketHolder.ADDBULLET);
             for (Object o : addPackets) {
                 Network.AddBullet addBullet = (Network.AddBullet) o;
@@ -401,10 +405,11 @@ public class GunsManager {
     }
 
     public void handleAddBulletPacket(Network.AddBullet response){
-        PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+        PacketHolder packetHolder = mpManager.packetHolder;
         packetHolder.add(response,PacketHolder.ADDBULLET);
         if(current != null){
-            if(MultiplayerManager.getInstance().getIdConnection() == response.idPlayer){
+            if(mpManager.getIdConnection() == response.idPlayer){
                 current.shootSound(response);
             }
         }

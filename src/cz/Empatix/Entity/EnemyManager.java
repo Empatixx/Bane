@@ -134,7 +134,8 @@ public class EnemyManager {
                 }
                 if(theRecent != null)e.handleSync(theRecent);
             }
-            for(Object o : packetHolder.get(PacketHolder.ADD_ENEMYPROJECTION)){
+            Object[] addProjectiles = packetHolder.get(PacketHolder.ADD_ENEMYPROJECTION);
+            for(Object o : addProjectiles){
                 Network.AddEnemyProjectile addEnemyProjectile = (Network.AddEnemyProjectile) o;
                 for(Enemy e : enemies){
                     if(e.getId() == addEnemyProjectile.idEnemy){
@@ -142,7 +143,8 @@ public class EnemyManager {
                     }
                 }
             }
-            for(Object o : packetHolder.get(PacketHolder.HIT_ENEMYPROJECTILE)){
+            Object[] hitProjectiles = packetHolder.get(PacketHolder.HIT_ENEMYPROJECTILE);
+            for(Object o : hitProjectiles){
                 Network.HitEnemyProjectile hit = (Network.HitEnemyProjectile) o;
                 for(Enemy e : enemies){
                     if(e.getId() == hit.idEnemy){
@@ -150,7 +152,8 @@ public class EnemyManager {
                     }
                 }
             }
-            for(Object o : packetHolder.get(PacketHolder.MOVEENEMY)){
+            Object[] moveEnemies = packetHolder.get(PacketHolder.MOVEENEMY);
+            for(Object o : moveEnemies){
                 Network.MoveEnemy moveEnemyPacket = (Network.MoveEnemy) o;
                 for (Enemy e : enemies) {
                     if (e.id == moveEnemyPacket.id) {
@@ -164,7 +167,8 @@ public class EnemyManager {
                     }
                 }
             }
-            for(Object o : packetHolder.get(PacketHolder.MOVE_ENEMYPROJECTILE)){
+            Object[] moveEnemyProjectiles = packetHolder.get(PacketHolder.MOVE_ENEMYPROJECTILE);
+            for(Object o : moveEnemyProjectiles){
                 Network.MoveEnemyProjectile moveProjectile = (Network.MoveEnemyProjectile) o;
                 for(Enemy e : enemies){
                     if(e.getId() == moveProjectile.idEnemy){
@@ -174,7 +178,8 @@ public class EnemyManager {
                 }
             }
             ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
-            for(Object o : packetHolder.get(PacketHolder.LASERBEAMHIT)){
+            Object[] laserHits = packetHolder.get(PacketHolder.LASERBEAMHIT);
+            for(Object o : laserHits){
                 Network.LaserBeamHit lh = (Network.LaserBeamHit) o;
                 for(ArrayList<RoomObject> objects : objectsArray) {
                     if (objects == null) continue;

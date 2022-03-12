@@ -17,13 +17,13 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class GameClient{
 
-    private PacketHolder packetHolder;
-    private MultiplayerManager mpManager;
-    private GameStateManager gsm;
-    private Client client;
+    private final PacketHolder packetHolder;
+    private final MultiplayerManager mpManager;
+    private final GameStateManager gsm;
+    private final Client client;
 
-    private ACKManager ackManager;
-    private ACKCaching ackCaching;
+    private final ACKManager ackManager;
+    private final ACKCaching ackCaching;
 
     private int numPlayers;
     private boolean recon;
@@ -223,7 +223,9 @@ public class GameClient{
                 else if(object instanceof Network.WeaponInfo){
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
-                        if(((InGameMP)gameState).gunsManager != null)((InGameMP)gameState).gunsManager.handleWeaponInfoPacket((Network.WeaponInfo) object);
+                        if(((InGameMP)gameState).gunsManager != null){
+                            packetHolder.add(object,PacketHolder.WEAPONINFO);
+                        }
                     }
                 }
                 else if(object instanceof Network.DropItem){
@@ -575,12 +577,12 @@ public class GameClient{
         };*/
     }
     private static class ACKManager{
-        private LinkedList<PacketWaitingACK> packets;
-        private LinkedList<PacketWaitingACK> waitingForAdd;
-        private int[] confirmedACKs;
+        private final LinkedList<PacketWaitingACK> packets;
+        private final LinkedList<PacketWaitingACK> waitingForAdd;
+        private final int[] confirmedACKs;
         private int totalConfirmedACKs;
-        private Lock waitingLock;
-        private Lock ackLock;
+        private final Lock waitingLock;
+        private final Lock ackLock;
         ACKManager(){
             packets = new LinkedList<>();
             waitingLock = new ReentrantLock();
@@ -601,7 +603,6 @@ public class GameClient{
             waitingLock.lock();
             try{
                 waitingForAdd.add(new PacketWaitingACK(o,id));
-                waitingForAdd.clear();
             } finally {
                 waitingLock.unlock();
             }
@@ -609,8 +610,10 @@ public class GameClient{
         public void update(){
             waitingLock.lock();
             try{
-                packets.addAll(waitingForAdd);
-                waitingForAdd.clear();
+                if(waitingForAdd.size() != 0) { // optimization
+                    packets.addAll(waitingForAdd);
+                    waitingForAdd.clear();
+                }
             } finally {
                 waitingLock.unlock();
             }
@@ -632,8 +635,8 @@ public class GameClient{
             }
         }
         private static class PacketWaitingACK{
-            private Object packet;
-            private int id;
+            private final Object packet;
+            private final int id;
             private long timeSent;
             PacketWaitingACK(Object packet, int id){
                 this.id = id;
@@ -651,8 +654,8 @@ public class GameClient{
         }
     }
     private static class ACKCaching{
-        private LinkedList<ACKCache> list;
-        private Lock lock;
+        private final LinkedList<ACKCache> list;
+        private final Lock lock;
         ACKCaching(){
             list = new LinkedList<>();
             lock = new ReentrantLock();

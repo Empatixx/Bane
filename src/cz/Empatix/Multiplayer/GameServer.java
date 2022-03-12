@@ -588,8 +588,10 @@ public class GameServer {
             try{
                 waitingLock.lock();
                 try{
-                    for(PlayerACKS playerACKS : players.values()){
-                        playerACKS.packets.addAll(waitingForAdd);
+                    if(waitingForAdd.size() != 0) { // optimization
+                        for (PlayerACKS playerACKS : players.values()) {
+                            playerACKS.packets.addAll(waitingForAdd);
+                        }
                     }
                     waitingForAdd.clear();
                 } finally {
@@ -597,10 +599,11 @@ public class GameServer {
                 }
 
                 for(PlayerACKS playerACKS : players.values()){
-                    for(int i = 0;i<playerACKS.totalConfirmedACKs;i++){
-                        int finalI = i;
-                        playerACKS.packets.removeIf(ack -> playerACKS.confirmedACKs[finalI] == ack.id);
+                    int[] acks = Arrays.copyOf(playerACKS.confirmedACKs,playerACKS.totalConfirmedACKs);
+                    for(int i : acks){
+                        playerACKS.packets.removeIf(ack -> i == ack.id);
                     }
+                    playerACKS.clearAcks();
                 }
                 for(Map.Entry<Integer, PlayerACKS> entry : players.entrySet()) {
                     for(PacketWaitingACK p : entry.getValue().packets){
@@ -620,6 +623,10 @@ public class GameServer {
             public PlayerACKS(){
                 packets = new LinkedList<>();
                 confirmedACKs = new int[200];
+                totalConfirmedACKs = 0;
+            }
+
+            public void clearAcks() {
                 totalConfirmedACKs = 0;
             }
         }

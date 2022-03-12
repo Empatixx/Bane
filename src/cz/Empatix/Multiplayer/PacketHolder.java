@@ -6,7 +6,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class PacketHolder {
-    private ArrayList<PacketArray> packetArrays;
+    private final ArrayList<PacketArray> packetArrays;
 
     public final static int DROPITEM = 0;
     public final static int DROPWEAPON = 1;
@@ -51,9 +51,10 @@ public class PacketHolder {
     public static final int LASERBEAMHIT = 40;
     public static final int ENEMYHEAL = 41; // INCREASE IN HEALTH
     public static final int ARTEFACTSTATE = 42; // ARTEFACT EVENTS
+    public static final int WEAPONINFO = 43;
 
     public PacketHolder(){
-        final int size = 43;
+        final int size = 44;
 
         packetArrays = new ArrayList<>(size);
         for(int i = 0;i<size;i++){
@@ -87,8 +88,7 @@ public class PacketHolder {
         PacketArray packetArray = packetArrays.get(id);
         packetArray.lock();
         try {
-            Object[] packets =  packetArray.packets.toArray();
-            return packets;
+            return packetArray.packets.toArray();
         } finally {
             packetArray.unlock();
         }

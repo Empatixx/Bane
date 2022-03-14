@@ -75,7 +75,7 @@ public class Shotgun extends Weapon {
         }
 
     }
-    public Shotgun(TileMap tm, Player player){
+    public Shotgun(TileMap tm, Player[] player){
         super(tm, player);
         mindamage = 2;
         maxdamage = 3;

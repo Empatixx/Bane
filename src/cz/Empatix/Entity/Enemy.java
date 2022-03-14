@@ -10,6 +10,7 @@ import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Room;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
@@ -285,6 +286,14 @@ public abstract class Enemy extends MapObject{
             }
             for (int k = 0; k < player.length; k++) {
                 if (player[k] != null && !player[k].isDead()) {
+
+                    Room croom = tileMap.getRoomByCoords(px[k],py[k]);
+                    int xMax = croom.getxMax();
+                    int xMin = croom.getxMin();
+                    // getting Y max/min of room
+                    int yMax = croom.getyMax();
+                    int yMin = croom.getyMin();
+                    if (px[k] < xMin || px[k] > xMax || py[k] < yMin || py[k] > yMax) continue; // player is in anothe room than this enemy
 
                     int enemyTileX = (int) position.x / tileSize;
                     int enemyTileY = (int) position.y / tileSize;
@@ -826,16 +835,14 @@ public abstract class Enemy extends MapObject{
      */
     public int theClosestPlayerIndex(){
         int theClosest = 0;
-        float prevDistance = -1,distance;
-        for(int i = 0;i<player.length;i++){
-            Player curPlayer = player[i];
-            if(curPlayer == null) break;
-            distance = (float)Math.sqrt(Math.pow(getX()-curPlayer.getX(),2)+Math.pow(getY()-curPlayer.getY(),2));
-            if(prevDistance == -1){
-                prevDistance = distance;
-            } else if (prevDistance > distance){
-                prevDistance = distance;
+        float dist = position.distance(player[0].getPosition());
+        for(int i = 1;i<player.length;i++){
+            if(player[i] == null) continue;
+            if(player[i].isDead()) continue;
+            float newDist = position.distance(player[i].getPosition());
+            if(dist > newDist){
                 theClosest = i;
+                dist = newDist;
             }
         }
         return theClosest;
@@ -846,15 +853,14 @@ public abstract class Enemy extends MapObject{
      */
     public int theFarthestPlayerIndex(){
         int theClosest = 0;
-        float distance,prevDistance = (float)Math.sqrt(Math.pow(getX()-player[0].getX(),2)+Math.pow(getY()-player[0].getY(),2));;
+        float dist = position.distance(player[0].getPosition());
         for(int i = 1;i<player.length;i++){
-            Player curPlayer = player[i];
-            if(curPlayer == null) continue;
-            if(curPlayer.isDead()) continue;
-            distance = (float)Math.sqrt(Math.pow(getX()-curPlayer.getX(),2)+Math.pow(getY()-curPlayer.getY(),2));
-            if (prevDistance < distance){
-                prevDistance = distance;
+            if(player[i] == null) continue;
+            if(player[i].isDead()) continue;
+            float newDist = position.distance(player[i].getPosition());
+            if(dist < newDist){
                 theClosest = i;
+                dist = newDist;
             }
         }
         return theClosest;

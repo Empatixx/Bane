@@ -75,7 +75,7 @@ public class Submachine extends Weapon{
             criticalHits = true;
         }
     }
-    public Submachine(TileMap tm, Player player){
+    public Submachine(TileMap tm, Player[] player){
         super(tm,player);
         mindamage = 1;
         maxdamage = 2;

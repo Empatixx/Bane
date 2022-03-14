@@ -541,6 +541,8 @@ public class Network {
         public double angle;
         public long packetTime;
         public int idPacket;
+        public int lastTarget;
+
         public LaserBeamSync(){
             packetTime = System.nanoTime();
             idPacket = getIdPacketS();

@@ -28,7 +28,7 @@ public abstract class Weapon{
     private boolean shooting;
     //ammo vars
     protected final TileMap tm;
-    protected final Player player;
+    protected final Player player[];
     protected GunsManager gunsManager;
     // dmg
     protected int mindamage;
@@ -72,14 +72,14 @@ public abstract class Weapon{
     Weapon(TileMap tm, Player player, GunsManager gunsManager) {
         this.tm = tm;
         this.gunsManager = gunsManager;
-        this.player = player;
+        this.player = new Player[]{player};
         source = AudioManager.createSource(Source.EFFECTS, 0.35f);
         reloadsource = AudioManager.createSource(Source.EFFECTS, 0.35f);
 
         textRender = new TextRender();
     }
 
-    public Weapon(TileMap tm, Player player) {
+    public Weapon(TileMap tm, Player[] player) {
         this.tm = tm;
         this.player = player;
     }
@@ -218,10 +218,13 @@ public abstract class Weapon{
                     continue;
                 }
                 if(bullet.isFriendlyFire()){
-                    if(bullet.intersects(player) && !bullet.isHit() && !player.isDead() && !player.isFlinching()){
-                        player.hit(bullet.getDamage());
-                        bullet.setHit(Bullet.TypeHit.PLAYER);
-                        GunsManager.hitBullets++;
+                    for(Player p : player){
+                        if(p == null) continue;
+                        if(bullet.intersects(p) && !bullet.isHit() && !p.isDead() && !p.isFlinching()){
+                            p.hit(bullet.getDamage());
+                            bullet.setHit(Bullet.TypeHit.PLAYER);
+                            GunsManager.hitBullets++;
+                        }
                     }
                 }
                 else if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {

@@ -32,15 +32,15 @@ public class GunsManagerMP {
 
         weapons = new ArrayList<>();
         for(int i = 0;i < p.length;i++){
-            weapons.add(new Pistol(tileMap,p[0]));
+            weapons.add(new Pistol(tileMap,p));
         }
-        weapons.add(new Shotgun(tileMap,p[0]));
-        weapons.add(new Submachine(tileMap,p[0]));
-        weapons.add(new Revolver(tileMap,p[0]));
-        weapons.add(new Grenadelauncher(tileMap,p[0]));
-        weapons.add(new Luger(tileMap,p[0]));
-        weapons.add(new M4(tileMap,p[0]));
-        weapons.add(new Thompson(tileMap,p[0]));
+        weapons.add(new Shotgun(tileMap,p));
+        weapons.add(new Submachine(tileMap,p));
+        weapons.add(new Revolver(tileMap,p));
+        weapons.add(new Grenadelauncher(tileMap,p));
+        weapons.add(new Luger(tileMap,p));
+        weapons.add(new M4(tileMap,p));
+        weapons.add(new Thompson(tileMap,p));
 
         playerWeapons = new PlayerWeapons[p.length];
         for(int i = 0;i<p.length;i++){

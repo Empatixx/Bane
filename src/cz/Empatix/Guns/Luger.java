@@ -86,7 +86,7 @@ public class Luger extends Weapon {
         }
     }
 
-    public Luger(TileMap tm, Player player){
+    public Luger(TileMap tm, Player[] player){
         super(tm,player);
         mindamage = 1;
         maxdamage = 2;

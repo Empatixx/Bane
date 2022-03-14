@@ -299,10 +299,12 @@ public class MenuState extends GameState{
         inputBar = new InputBar("Textures\\Menu\\input_bar.tga",new Vector3f(960,400,0),1.8f,300,100,"Your name:");
         inputBar.setType(0);
         mpJoinInputHuds[0] = inputBar;
-        inputBar = new InputBar("Textures\\Menu\\input_bar.tga",new Vector3f(960,625,0),1.8f,300,100,"IP adress:");
-        inputBar.setType(1);
-        inputBar.setDefaultValue("127.0.0.1");
-        mpJoinInputHuds[1] = inputBar;
+        if(mpJoinInputHuds[1] == null){
+            inputBar = new InputBar("Textures\\Menu\\input_bar.tga",new Vector3f(960,625,0),1.8f,300,100,"IP adress:");
+            inputBar.setType(1);
+            inputBar.setDefaultValue("127.0.0.1");
+            mpJoinInputHuds[1] = inputBar;
+        }
 
         mpHostHuds[0] = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(735,850,0),1.8f,200,100,true);
         mpHostHuds[0].setType(EXIT);

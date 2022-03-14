@@ -394,7 +394,7 @@ public class GameServer {
                     ack.id = ((Network.DropInteract) object).idPacket;
                     connection.sendUDP(ack);
                     if(!ackCaching.checkDuplicate(connection.getID(),dropInteract.idPacket)){
-                        itemManager.handleDrolpInteractPacket((Network.DropInteract) object);
+                        itemManager.handleDropInteractPacket((Network.DropInteract) object);
                         ackCaching.add(connection.getID(),ack);
                     }
                 } else if (object instanceof Network.ObjectInteract) {

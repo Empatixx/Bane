@@ -11,6 +11,7 @@ import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PacketHolder;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -244,10 +245,15 @@ public class EyeBat extends Enemy {
                 } else {
                     laserBeam.setPosition(position.x,position.y+20);
                 }
+                laserBeam.setLastPlayerTargetIndex(indexPlayer);
                 laserBeam.resetAnimation();
                 beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
             } else if (currentAction == BEAM && (laserBeam.hasEnded() || !canShot())){
                 currentAction = IDLE;
+            }
+            if(currentAction == BEAM){
+                if (player[laserBeam.getLastPlayerTargetIndex()].getX() > position.x) facingRight = true;
+                else if (player[laserBeam.getLastPlayerTargetIndex()].getX() < position.x) facingRight = false;
             }
             if(facingRight != laserBeam.isFacingRight()){
                 laserBeam.setPosition(position.x,position.y);
@@ -281,6 +287,8 @@ public class EyeBat extends Enemy {
                 left = false;
                 up = false;
                 down = false;
+                if (player[laserBeam.getLastPlayerTargetIndex()].getX() > position.x) facingRight = true;
+                else if (player[laserBeam.getLastPlayerTargetIndex()].getX() < position.x) facingRight = false;
                 laserBeam.update();
             }
         }
@@ -350,7 +358,9 @@ public class EyeBat extends Enemy {
         private Vector3f originalPos;
         double angle;
         private Player[] player;
-        private long lastTimeBeamSync;
+
+        private long lastTimeBeamSync = -1;
+        private int lastPlayerTargetIndex;
 
         LaserBeam(TileMap tm, Player[] p) {
             super(tm);
@@ -430,6 +440,12 @@ public class EyeBat extends Enemy {
                 cheight *= scale;
             }
         }
+        public int getLastPlayerTargetIndex() {
+            return lastPlayerTargetIndex;
+        }
+        public void setLastPlayerTargetIndex(int lastPlayerTargetIndex) {
+            this.lastPlayerTargetIndex = lastPlayerTargetIndex;
+        }
 
         boolean hasEnded(){return animation.hasPlayedOnce();}
 
@@ -440,10 +456,9 @@ public class EyeBat extends Enemy {
                 animation = new Animation(14);
                 animation.setDelay(125);
             }
-            int indexPlayer = theClosestPlayerIndex();
 
-            float y = originalPos.y - player[indexPlayer].getY();
-            float x = originalPos.x - player[indexPlayer].getX();
+            float y = originalPos.y - player[lastPlayerTargetIndex].getY();
+            float x = originalPos.x - player[lastPlayerTargetIndex].getX();
             float angle = (float) Math.atan(y / x);
             this.angle += (angle - this.angle);
             position.x = originalPos.x + (width / 2 - 50) * (float) Math.cos(this.angle);
@@ -455,10 +470,9 @@ public class EyeBat extends Enemy {
         public void update() {
             animation.update();
             setMapPosition();
-            int playerrIndex = theClosestPlayerIndex();
             if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
-                float y = originalPos.y- player[playerrIndex].getY();
-                float x = originalPos.x- player[playerrIndex].getX();
+                float y = originalPos.y- player[lastPlayerTargetIndex].getY();
+                float x = originalPos.x- player[lastPlayerTargetIndex].getX();
                 float angle = (float)Math.atan(y/x);
                 if(!facingRight){
                     angle+=Math.PI;
@@ -489,8 +503,12 @@ public class EyeBat extends Enemy {
                 position.x = originalPos.x + (width/2-65) * (float)Math.cos(this.angle);
                 position.y = originalPos.y + (width/2-65) * (float)Math.sin(this.angle);
 
-                if(intersects(player[playerrIndex]) && canHit()){
-                    player[playerrIndex].hit(1);
+                for(Player p : player){
+                    if(p != null){
+                        if(intersects(p) && canHit()){
+                            p.hit(1);
+                        }
+                    }
                 }
                 ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
                 for(ArrayList<RoomObject> objects : objectsArray) {
@@ -517,6 +535,7 @@ public class EyeBat extends Enemy {
                     LBSync.x = position.x;
                     LBSync.y = position.y;
                     LBSync.time = animation.getTime();
+                    LBSync.lastTarget = lastPlayerTargetIndex;
                     Server server = MultiplayerManager.getInstance().server.getServer();
                     server.sendToAllUDP(LBSync);
                 }
@@ -545,6 +564,15 @@ public class EyeBat extends Enemy {
                 position.x = sync.x;
                 position.y = sync.y;
                 lastTimeBeamSync = sync.packetTime;
+                int index = 0;
+                for(Player p : player){
+                    if(p != null){
+                        if(((PlayerMP)p).getIdConnection() == sync.lastTarget){
+                            lastPlayerTargetIndex = index;
+                        }
+                    }
+                    index++;
+                }
             }
         }
         @Override
@@ -768,34 +796,19 @@ public class EyeBat extends Enemy {
 
             return true;
         }
-        /**
-         *
-         * @return index of the closest player to enemy
-         */
-        public int theClosestPlayerIndex(){
-            int theClosest = 0;
-            float prevDistance = -1,distance;
-            for(int i = 0;i<player.length-1;i++){
-                Player secPlayer = player[i+1];
-                Player curPlayer = player[i];
-                if(secPlayer == null) break;
-                distance = (float)Math.sqrt(Math.pow(secPlayer.getX()-curPlayer.getX(),2)+Math.pow(secPlayer.getY()-curPlayer.getY(),2));
-                if(prevDistance == -1){
-                    prevDistance = distance;
-                } else if (prevDistance > distance){
-                    prevDistance = distance;
-                    theClosest = i+1;
-                }
-            }
-            return theClosest;
-        }
     }
     private boolean canShot(){
         Vector2f[] tilePoints = new Vector2f[4];
         for(int i = 0;i<4;i++){
             tilePoints[i] = new Vector2f();
         }
-        Room currentRoom = tileMap.getCurrentRoom();
+        Room currentRoom;
+        if(MultiplayerManager.multiplayer){
+            int playerrIndex = laserBeam.lastPlayerTargetIndex;
+            currentRoom = tileMap.getRoomByCoords(player[playerrIndex].getX(),player[playerrIndex].getY());
+        } else {
+            currentRoom = tileMap.getCurrentRoom();
+        }
 
         int xMin = currentRoom.getxMin();
         int yMin = currentRoom.getyMin();

@@ -615,7 +615,7 @@ public class ItemManagerMP {
         }
         return false;
     }
-    public void handleDrolpInteractPacket(Network.DropInteract dropInteract){
+    public void handleDropInteractPacket(Network.DropInteract dropInteract){
         dropInteractPackets.add(dropInteract);
     }
 

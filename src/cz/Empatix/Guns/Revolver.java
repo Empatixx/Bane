@@ -81,7 +81,7 @@ public class Revolver extends Weapon {
             increasedCritDamage=true;
         }
     }
-    public Revolver(TileMap tm, Player player){
+    public Revolver(TileMap tm, Player[] player){
         super(tm,player);
         mindamage = 4;
         maxdamage = 6;

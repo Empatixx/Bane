@@ -85,7 +85,7 @@ public class M4 extends Weapon {
         }
     }
 
-    public M4(TileMap tm, Player player){
+    public M4(TileMap tm, Player[] player){
         super(tm,player);
         mindamage = 2;
         maxdamage = 2;

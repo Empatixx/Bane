@@ -71,7 +71,7 @@ public class Grenadelauncher extends Weapon {
             criticalHits=true;
         }
     }
-    public Grenadelauncher(TileMap tm, Player player){
+    public Grenadelauncher(TileMap tm, Player[] player){
         super(tm,player);
         mindamage = 4;
         maxdamage = 7;

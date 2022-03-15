@@ -2,18 +2,8 @@
 00:00  INFO: Connecting: localhost/127.0.0.1:54555/54777
 00:00  INFO: [kryonet] Connection 1 connected: /127.0.0.1
 00:00  INFO: [kryonet] Connection 1 connected: localhost/127.0.0.1
-00:12  INFO: [kryonet] Closing server connections...
-00:12  INFO: [kryonet] Connection 1 disconnected.
-00:12  INFO: [kryonet] Connection 1 disconnected.
-00:12  INFO: [kryonet] Server closed.
-Exception in thread "pool-1-thread-1" java.lang.NullPointerException: Cannot invoke "cz.Empatix.Multiplayer.GameServer.requestACK(Object, int)" because "mpManager.server" is null
-	at cz.Empatix.Multiplayer.ItemManagerMP.dropPlayerWeapon(ItemManagerMP.java:491)
-	at cz.Empatix.Multiplayer.GunsManagerMP$PlayerWeapons.dropPlayerWeapon(GunsManagerMP.java:364)
-	at cz.Empatix.Multiplayer.GunsManagerMP.dropPlayerWeapon(GunsManagerMP.java:150)
-	at cz.Empatix.Multiplayer.PlayerMP.setDead(PlayerMP.java:430)
-	at cz.Empatix.Multiplayer.GameServer$2.disconnected(GameServer.java:286)
-	at com.esotericsoftware.kryonet.Listener$QueuedListener$2.run(Listener.java:94)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1130)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:630)
-	at java.base/java.lang.Thread.run(Thread.java:831)
+01:52  INFO: [kryonet] Closing server connections...
+01:52  INFO: [kryonet] Connection 1 disconnected.
+01:52  INFO: [kryonet] Connection 1 disconnected.
+01:52  INFO: [kryonet] Server closed.
 AL lib: (EE) alc_cleanup: 1 device not closed

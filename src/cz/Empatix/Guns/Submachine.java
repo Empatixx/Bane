@@ -114,6 +114,9 @@ public class Submachine extends Weapon{
         if(!fullAmmo){
             if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
             if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
+        } else {
+            currentAmmo = maxAmmo;
+            currentMagazineAmmo = maxMagazineAmmo;
         }
     }
     @Override

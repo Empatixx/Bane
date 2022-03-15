@@ -344,10 +344,6 @@ public class InGame extends GameState {
         skullPlayerdead.setAlpha(0f);
 
         console = new Console(gunsManager,player,itemManager,enemyManager);
-
-        itemManager.dropArtefact((int)player.getX(),(int)player.getY());
-        itemManager.dropArtefact((int)player.getX(),(int)player.getY());
-        itemManager.dropArtefact((int)player.getX(),(int)player.getY());
     }
 
     @Override

@@ -122,6 +122,7 @@ public class ReviveBook extends Artefact {
     }
     @Override
     public void activate(int idUser) {
+        charge = 0;
         for(Player player : p){
             if(player != null){
                 if(player.isDead()){

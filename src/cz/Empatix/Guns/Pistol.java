@@ -88,7 +88,7 @@ public class Pistol extends Weapon {
         maxdamage = 3;
         inaccuracy = 0.8f;
         maxAmmo = 120;
-        maxMagazineAmmo = 7;
+        maxMagazineAmmo = 71;
         delayTime = 250;
         currentAmmo = maxAmmo;
         currentMagazineAmmo = maxMagazineAmmo;
@@ -99,8 +99,8 @@ public class Pistol extends Weapon {
     // resetting stats of gun of new owner of gun
     @Override
     public void restat(int idPlayer, boolean fullAmmo) {
-        mindamage = 111;
-        maxdamage = 113;
+        mindamage = 1;
+        maxdamage = 3;
         inaccuracy = 0.8f;
         maxAmmo = 120;
         maxMagazineAmmo = 7;
@@ -123,6 +123,9 @@ public class Pistol extends Weapon {
         if(!fullAmmo){
             if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;
             if(currentMagazineAmmo > maxMagazineAmmo) currentMagazineAmmo = maxMagazineAmmo;
+        } else {
+            currentAmmo = maxAmmo;
+            currentMagazineAmmo = maxMagazineAmmo;
         }
     }
 

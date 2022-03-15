@@ -80,6 +80,7 @@ public class Network {
         kryo.register(EnemyHealthHeal.class);
         kryo.register(ArtefactEventState.class);
         kryo.register(PacketACK.class);
+        kryo.register(ExplosionDamage.class);
 
     }
     // MAIN
@@ -224,6 +225,14 @@ public class Network {
         public int idHit;
         public int idPacket;
         public HitBullet(){
+            idPacket = getIdPacketS();
+        }
+    }
+    public static class ExplosionDamage{
+        public int id;
+        public int[] idHit;
+        public int idPacket;
+        public ExplosionDamage(){
             idPacket = getIdPacketS();
         }
     }

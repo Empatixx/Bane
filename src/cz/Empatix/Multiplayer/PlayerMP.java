@@ -98,6 +98,7 @@ public class PlayerMP extends Player {
                 }
             }
         }
+        setCoins(100);
     }
 
     public void setOrigin(boolean origin) {

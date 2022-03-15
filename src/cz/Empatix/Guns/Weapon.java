@@ -282,6 +282,26 @@ public abstract class Weapon{
         Server server = mpManager.server.getServer();
         server.sendToAllUDP(response);
     }
-
+    public void sendAddBulletPacket(Grenadebullet bullet, float x, float y, float px, float py, int idPlayer){
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+        // increasing statistic of shooted bullets so we can calculate accuracy
+        MPStatistics mpStatistics = mpManager.server.getMpStatistics();
+        mpStatistics.addBulletShoot(idPlayer);
+        // sending new bullet as packet
+        Network.AddBullet response = new Network.AddBullet();
+        mpManager.server.requestACK(response,response.idPacket);
+        response.x = x;
+        response.y = y;
+        response.px = px;
+        response.py = py;
+        response.critical = bullet.isCritical();
+        response.speed = 30;
+        response.damage = (byte)bullet.getDamage();
+        response.id = bullet.getId();
+        response.idPlayer = idPlayer;
+        response.slot = (byte)GunsManagerMP.getInstance().getWeaponSlot(this);
+        Server server = mpManager.server.getServer();
+        server.sendToAllUDP(response);
+    }
     public abstract void restat(int idPlayer, boolean fullAmmo);
 }

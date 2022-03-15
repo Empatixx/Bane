@@ -288,6 +288,8 @@ public abstract class Enemy extends MapObject{
                 if (player[k] != null && !player[k].isDead()) {
 
                     Room croom = tileMap.getRoomByCoords(px[k],py[k]);
+                    // player is in path room
+                    if(croom == null) continue;
                     int xMax = croom.getxMax();
                     int xMin = croom.getxMin();
                     // getting Y max/min of room

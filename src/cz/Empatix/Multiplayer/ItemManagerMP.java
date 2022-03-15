@@ -280,6 +280,7 @@ public class ItemManagerMP {
                             } else if (type == ItemDrop.ARMOR) {
                                 if (player.getArmor() != player.getMaxArmor()) {
                                     player.addArmor(2);
+                                    drop.pickedUp = true;
                                 }
                             }
                             if(drop.pickedUp){

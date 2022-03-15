@@ -303,13 +303,8 @@ public class RingOfFire extends Artefact {
             if(p == null) continue;
             if(((PlayerMP)p).getIdConnection() == idUser){
                 MultiplayerManager mpManager = MultiplayerManager.getInstance();
-                Network.ArtefactAddBullet addBullet = new Network.ArtefactAddBullet();
-                mpManager.server.requestACK(addBullet,addBullet.idPacket);
                 Server server = mpManager.server.getServer();
                 ArtefactManagerMP artefactManager = ArtefactManagerMP.getInstance();
-                addBullet.slot = (byte)artefactManager.getArtefactSlot(this);
-                addBullet.px = p.getX();
-                addBullet.py = p.getY();
                 for (int i = 1; i <= 50; ) {
                     double inaccuracy = 0.155 * i;
                     Bullet bullet = new Bullet(tm, 0, 0, inaccuracy, 30);
@@ -319,6 +314,11 @@ public class RingOfFire extends Artefact {
                     if (i >= 0) i++;
                     else i--;
                     i = -i;
+                    Network.ArtefactAddBullet addBullet = new Network.ArtefactAddBullet();
+                    mpManager.server.requestACK(addBullet,addBullet.idPacket);
+                    addBullet.slot = (byte)artefactManager.getArtefactSlot(this);
+                    addBullet.px = p.getX();
+                    addBullet.py = p.getY();
                     addBullet.inaccuracy = (float)inaccuracy;
                     addBullet.id = bullet.getId();
                     server.sendToAllUDP(addBullet);

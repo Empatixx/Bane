@@ -236,6 +236,9 @@ public class GameServer {
                                         ready.setReady(false);
                                     }
                                 }
+                                itemManager.dropArtefact((int)tileMap.getPlayerStartX(),(int)tileMap.getPlayerStartY());
+                                itemManager.dropArtefact((int)tileMap.getPlayerStartX(),(int)tileMap.getPlayerStartY());
+                                itemManager.dropArtefact((int)tileMap.getPlayerStartX(),(int)tileMap.getPlayerStartY());
                             }
                         }
                         updates++;

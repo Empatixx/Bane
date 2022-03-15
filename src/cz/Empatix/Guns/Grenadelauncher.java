@@ -4,6 +4,7 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
@@ -161,7 +162,49 @@ public class Grenadelauncher extends Weapon {
 
     @Override
     public void shoot(float x, float y, float px, float py, int idPlayer) {
-
+        if(MultiplayerManager.multiplayer && !tm.isServerSide()){
+            if(isShooting()) {
+                if (currentMagazineAmmo != 0) {
+                } else if (currentAmmo != 0) {
+                    reload();
+                } else {
+                    source.play(soundEmptyShoot);
+                    outOfAmmo();
+                }
+                setShooting(false);
+            }
+        } else {
+            if(isShooting()) {
+                if (currentMagazineAmmo != 0) {
+                    if (reloading) return;
+                    // delta - time between shoots
+                    long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
+                    if (delta > 450) {
+                        double inaccuracy = 0;
+                        delay = System.currentTimeMillis() - InGame.deltaPauseTime();
+                        Grenadebullet bullet = new Grenadebullet(tm, x, y, inaccuracy,30);
+                        int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
+                        if(criticalHits){
+                            if(Math.random() > 0.9){
+                                damage*=2;
+                                bullet.setCritical(true);
+                            }
+                        }
+                        bullet.setDamage(damage);
+                        bullet.setPosition(px, py);
+                        bullets.add(bullet);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
+                        currentMagazineAmmo--;
+                    }
+                } else if (currentAmmo != 0) {
+                    reload();
+                } else {
+                    source.play(soundEmptyShoot);
+                    outOfAmmo();
+                }
+                setShooting(false);
+            }
+        }
     }
 
     @Override
@@ -260,20 +303,22 @@ public class Grenadelauncher extends Weapon {
 
     @Override
     public void handleBulletPacket(Network.AddBullet response) {
-
     }
     @Override
     public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
-
+        for(Grenadebullet b : bullets){
+            if(b.getId() == moveBullet.id){
+                b.setPosition(moveBullet.x, moveBullet.y);
+            }
+        }
     }
 
     @Override
     public void handleHitBulletPacket(Network.HitBullet hitBullet) {
-
     }
 
     @Override
     public void shootSound(Network.AddBullet response) {
-
+        source.play(soundShoot);
     }
 }

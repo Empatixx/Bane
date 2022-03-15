@@ -816,10 +816,10 @@ public class Room {
     }
 
     public void sendAddRoomObjectPacket(RoomObject object, TileMap tm){
+        if(!tm.isServerSide()) return;
         MultiplayerManager mpManager = MultiplayerManager.getInstance();
         Network.AddRoomObject roomObject = new Network.AddRoomObject();
         mpManager.server.requestACK(roomObject,roomObject.idPacket);
-        if(!tm.isServerSide()) return;
         if(object instanceof Spike){
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();

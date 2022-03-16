@@ -47,10 +47,137 @@ public class Grenadebullet extends MapObject implements Serializable {
     private boolean crit;
 
     public Grenadebullet(TileMap tm, double x, double y, double inaccuracy, int speed) {
+        super(tm);
+        if(tm.isServerSide()){
+            facingRight = true;
 
+            width = 64;
+            height = 64;
+
+            cwidth = 32;
+            cheight = 32;
+
+            scale = 1;
+
+            // load sprites
+            spriteSheetCols = 12;
+            spriteSheetRows = 2;
+
+            double atan = Math.atan2(y,x) + inaccuracy;
+            // 30 - speed of bullet
+            this.speed.x = (float)(Math.cos(atan) * speed);
+            this.speed.y = (float)(Math.sin(atan) * speed);
+
+            // because of scaling image by 2x
+            width *= 2;
+            height *= 2;
+            cwidth *= 2;
+            cheight *= 2;
+
+            shotTime = System.currentTimeMillis() - InGame.deltaPauseTime();
+            originalspeed = new Vector2f(this.speed.x,this.speed.y);
+
+        }else {
+            facingRight = true;
+
+            width = 64;
+            height = 64;
+
+            cwidth = 32;
+            cheight = 32;
+
+            scale = 1;
+
+            // load sprites
+            spriteSheetCols = 12;
+            spriteSheetRows = 2;
+
+            double atan = Math.atan2(y,x) + inaccuracy;
+            // 30 - speed of bullet
+            this.speed.x = (float)(Math.cos(atan) * speed);
+            this.speed.y = (float)(Math.sin(atan) * speed);
+
+            // try to find spritesheet if it was created once
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\explosion.tga");
+
+            // creating a new spritesheet
+            if (spritesheet == null){
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Player\\explosion.tga");
+
+                Sprite[] images = new Sprite[4];
+
+                for(int i = 0; i < images.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float)i/spriteSheetCols,0,
+
+                                    (float)i/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                    (i+1.0f)/spriteSheetCols,1.0f/spriteSheetRows,
+
+                                    (i+1.0f)/spriteSheetCols,0
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+
+                    images[i] = sprite;
+
+                }
+                spritesheet.addSprites(images);
+
+                images = new Sprite[12];
+
+                for(int i = 0; i < images.length; i++) {
+                    float[] texCoords =
+                            {
+                                    (float)i/spriteSheetCols,0.5f,
+
+                                    (float)i/spriteSheetCols,1.0f,
+
+                                    (i+1.0f)/spriteSheetCols,1.0f,
+
+                                    (i+1.0f)/spriteSheetCols,0.5f
+                            };
+                    Sprite sprite = new Sprite(texCoords);
+
+                    images[i] = sprite;
+
+                }
+                spritesheet.addSprites(images);
+            }
+
+            vboVertices = ModelManager.getModel(width,height);
+            if (vboVertices == -1){
+                vboVertices = ModelManager.createModel(width,height);
+            }
+
+            animation = new Animation();
+            animation.setFrames(spritesheet.getSprites(sprites));
+            animation.setDelay(70);
+
+            shader = ShaderManager.getShader("shaders\\shader");
+            if (shader == null){
+                shader = ShaderManager.createShader("shaders\\shader");
+            }
+
+            // because of scaling image by 2x
+            width *= 2;
+            height *= 2;
+            cwidth *= 2;
+            cheight *= 2;
+
+            // audio
+            soundhit = AudioManager.loadSound("guns\\explosion.ogg");
+            source = AudioManager.createSource(Source.EFFECTS,0.35f);
+
+            light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f((float)x+xmap,(float)y+ymap), 1.25f,this);
+
+            shotTime = System.currentTimeMillis() - InGame.deltaPauseTime();
+            originalspeed = new Vector2f(this.speed.x,this.speed.y);
+        }
+    }
+    public Grenadebullet(TileMap tm, int id) {
         super(tm);
         facingRight = true;
-
 
         width = 64;
         height = 64;
@@ -63,11 +190,9 @@ public class Grenadebullet extends MapObject implements Serializable {
         // load sprites
         spriteSheetCols = 12;
         spriteSheetRows = 2;
-
-        double atan = Math.atan2(y,x) + inaccuracy;
-        // 30 - speed of bullet
-        this.speed.x = (float)(Math.cos(atan) * speed);
-        this.speed.y = (float)(Math.sin(atan) * speed);
+        
+        speed.x = 1;
+        speed.y = 1;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\explosion.tga");
@@ -145,7 +270,7 @@ public class Grenadebullet extends MapObject implements Serializable {
 
         shotTime = System.currentTimeMillis() - InGame.deltaPauseTime();
         originalspeed = new Vector2f(this.speed.x,this.speed.y);
-
+        this.id = id;
     }
     public void loadSave(){
         width = 64;

@@ -473,7 +473,6 @@ public class Golem extends Enemy {
                 if (player[laserBeam.getLastPlayerTargetIndex()].getX() > position.x) facingRight = true;
                 else if (player[laserBeam.getLastPlayerTargetIndex()].getX() < position.x) facingRight = false;
                 laserBeam.update();
-                System.out.println("INDEX: "+laserBeam.getLastPlayerTargetIndex());
             }
         }
         movePacket();

@@ -1,9 +1,1 @@
-00:00  INFO: [kryonet] Server opened.
-00:00  INFO: Connecting: localhost/127.0.0.1:54555/54777
-00:00  INFO: [kryonet] Connection 1 connected: /127.0.0.1
-00:00  INFO: [kryonet] Connection 1 connected: localhost/127.0.0.1
-01:52  INFO: [kryonet] Closing server connections...
-01:52  INFO: [kryonet] Connection 1 disconnected.
-01:52  INFO: [kryonet] Connection 1 disconnected.
-01:52  INFO: [kryonet] Server closed.
 AL lib: (EE) alc_cleanup: 1 device not closed

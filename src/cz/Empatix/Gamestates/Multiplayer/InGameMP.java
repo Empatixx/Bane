@@ -5,6 +5,7 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Database.Database;
+import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
@@ -13,6 +14,7 @@ import cz.Empatix.Gamestates.GameState;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
@@ -30,12 +32,17 @@ import cz.Empatix.Render.Hud.Minimap.MiniMap;
 import cz.Empatix.Render.Postprocessing.Fade;
 import cz.Empatix.Render.Postprocessing.GaussianBlur;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
+import cz.Empatix.Render.RoomObjects.DestroyableObject;
+import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import cz.Empatix.Utility.Console;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.ArrayList;
 
 import static cz.Empatix.Main.Game.ARROW;
 import static cz.Empatix.Main.Game.setCursor;
@@ -527,7 +534,7 @@ public class InGameMP extends GameState {
             int totalReward = 0;
             int rewardAccuracy = 0;
             int rewardKilledEnemies = (int)Math.sqrt(pStats.getEnemiesKilled())*(int)((tileMap.getFloor()+1)/1.25);
-            int rewardFloor = (int)Math.pow(tileMap.getFloor(),1.5);
+            int rewardFloor = (int)Math.pow(tileMap.getFloor(),2);
             if(pStats.getBulletShooted() != 0){
                 int accuracy = (int)(pStats.getAccuracy()*100);
                 if(accuracy > 90){
@@ -711,6 +718,8 @@ public class InGameMP extends GameState {
             enemyManager.update();
             artefactManager.update(hitBulletPackets);
             gunsManager.update(hitBulletPackets);
+            handleExplosionDamage();
+            handleTrapRODamage();
 
             damageIndicator.update();
             console.update();
@@ -882,6 +891,8 @@ public class InGameMP extends GameState {
         enemyManager.update();
         artefactManager.update(hitBulletPackets);
         gunsManager.update(hitBulletPackets);
+        handleExplosionDamage();
+        handleTrapRODamage();
 
         damageIndicator.update();
         console.update();
@@ -968,6 +979,65 @@ public class InGameMP extends GameState {
     public void resume(){
         setCursor(Game.CROSSHAIR);
         pause=false;
+    }
+    public void handleExplosionDamage(){
+        ArrayList<RoomObject>[] roomObjects = tileMap.getRoomMapObjects();
+        Object[] explosionPackets = mpManager.packetHolder.get(PacketHolder.EXPLOSIONDAMAGE);
+        ArrayList<Enemy> enemies = enemyManager.getEnemies();
+        for(Object o : explosionPackets){
+            Network.ExplosionDamage packet = (Network.ExplosionDamage) o;
+            A: for(int i = 0;i<packet.idHit.length;i++){
+                if(packet.typeHit[i]){ // typehit is enemy
+                    for(Enemy e : enemies){
+                        if(e.id == packet.idHit[i]){
+                            int cwidth = e.getCwidth();
+                            int cheight = e.getCheight();
+                            int x = -cwidth/4+ Random.nextInt(cwidth/2);
+                            if(packet.critical){
+                                DamageIndicator.addCriticalDamageShow(packet.damage,(int)e.getX()-x,(int)e.getY()-cheight/3
+                                        ,new Vector2f(-x/25f,-1f));
+                            } else {
+                                DamageIndicator.addDamageShow(packet.damage,(int)e.getX()-x,(int)e.getY()-cheight/3
+                                        ,new Vector2f(-x/25f,-1f));
+                            }
+                            e.hit(packet.damage);
+                            continue A;
+                        }
+                    }
+                } else { // typehit is room object
+                    for(ArrayList<RoomObject> objects : roomObjects) {
+                        if (objects == null) continue;
+                        for (RoomObject roomObject : objects) {
+                            if (roomObject instanceof DestroyableObject) {
+                                if(roomObject.id == packet.idHit[i]){
+                                    ((DestroyableObject) roomObject).setHit(packet.damage);
+                                    continue A;
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public void handleTrapRODamage(){
+        Object[] damagePackets = mpManager.packetHolder.get(PacketHolder.TRAPRODAMAGE);
+        ArrayList<RoomObject>[] roomObjects = tileMap.getRoomMapObjects();
+        A: for(Object o : damagePackets){
+            Network.TrapRoomObjectDamage packet = (Network.TrapRoomObjectDamage) o;
+            for(ArrayList<RoomObject> objects : roomObjects) {
+                if (objects == null) continue;
+                for (RoomObject roomObject : objects) {
+                    if (roomObject instanceof DestroyableObject) {
+                        if(roomObject.id == packet.idHit){
+                            ((DestroyableObject) roomObject).setHit(1);
+                            continue A;
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

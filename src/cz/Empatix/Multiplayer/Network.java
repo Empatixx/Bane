@@ -22,6 +22,7 @@ public class Network {
         kryo.register(Ready.class);
         kryo.register(int[][].class);
         kryo.register(int[].class);
+        kryo.register(boolean[].class);
         kryo.register(TransferRoomMap.class);
         kryo.register(TransferRoom.class);
         kryo.register(MapLoaded.class);
@@ -81,6 +82,7 @@ public class Network {
         kryo.register(ArtefactEventState.class);
         kryo.register(PacketACK.class);
         kryo.register(ExplosionDamage.class);
+        kryo.register(TrapRoomObjectDamage.class);
 
     }
     // MAIN
@@ -228,10 +230,19 @@ public class Network {
             idPacket = getIdPacketS();
         }
     }
+
+    /**
+     * typeHit
+     * true - enemy
+     * false - room object
+     */
     public static class ExplosionDamage{
-        public int id;
         public int[] idHit;
+        public boolean[] typeHit;
         public int idPacket;
+        public byte damage;
+        public boolean critical;
+
         public ExplosionDamage(){
             idPacket = getIdPacketS();
         }
@@ -242,6 +253,8 @@ public class Network {
         public int x, y;
         public byte amount;
         public int idPacket;
+        public boolean despawn;
+
         public DropItem(){
             idPacket = getIdPacketS();
         }
@@ -346,7 +359,6 @@ public class Network {
     }
     public static class ObjectInteract {
         public int idPlayer;
-        public int id;
         public int idPacket;
         public ObjectInteract(){
             idPacket = getIdPacketC();
@@ -527,6 +539,13 @@ public class Network {
         public int id;
         public int idPacket;
         public TrapArrowHit(){
+            idPacket = getIdPacketS();
+        }
+    }
+    public static class TrapRoomObjectDamage{
+        public int idHit;
+        public int idPacket;
+        public TrapRoomObjectDamage(){
             idPacket = getIdPacketS();
         }
     }

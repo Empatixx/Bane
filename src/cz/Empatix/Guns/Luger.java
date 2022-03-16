@@ -48,7 +48,7 @@ public class Luger extends Weapon {
         mindamage = 1;
         maxdamage = 2;
         inaccuracy = 0.8f;
-        maxAmmo = 120;
+        maxAmmo = 150;
         maxMagazineAmmo = 9;
         delayTime = 250;
         currentAmmo = maxAmmo;
@@ -91,7 +91,7 @@ public class Luger extends Weapon {
         mindamage = 1;
         maxdamage = 2;
         inaccuracy = 0.8f;
-        maxAmmo = 120;
+        maxAmmo = 150;
         maxMagazineAmmo = 9;
         delayTime = 250;
         currentAmmo = maxAmmo;
@@ -108,7 +108,7 @@ public class Luger extends Weapon {
         mindamage = 1;
         maxdamage = 2;
         inaccuracy = 0.8f;
-        maxAmmo = 120;
+        maxAmmo = 150;
         maxMagazineAmmo = 9;
         delayTime = 250;
 

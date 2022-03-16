@@ -10,7 +10,7 @@ public class LugerUpgrade extends UpgradeBar {
         super("Textures\\lahti.tga",2,row);
 
         info = new WeaponInfo();
-        info.maxAmmo = 120;
+        info.maxAmmo = 150;
         info.maxMagazineAmmo = 9;
         info.maxDamage = 2;
         info.minDamage = 1;

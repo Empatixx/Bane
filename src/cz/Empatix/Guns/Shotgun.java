@@ -42,7 +42,7 @@ public class Shotgun extends Weapon {
         mindamage = 2;
         maxdamage = 3;
         inaccuracy = 0.7f;
-        maxAmmo = 36;
+        maxAmmo = 48;
         maxMagazineAmmo = 6;
         type = 3;
         delayTime = 500;
@@ -80,7 +80,7 @@ public class Shotgun extends Weapon {
         mindamage = 2;
         maxdamage = 3;
         inaccuracy = 0.7f;
-        maxAmmo = 36;
+        maxAmmo = 48;
         maxMagazineAmmo = 6;
         type = 3;
         delayTime = 500;
@@ -95,7 +95,7 @@ public class Shotgun extends Weapon {
         mindamage = 2;
         maxdamage = 3;
         inaccuracy = 0.7f;
-        maxAmmo = 36;
+        maxAmmo = 48;
         maxMagazineAmmo = 6;
         delayTime = 500;
         GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();

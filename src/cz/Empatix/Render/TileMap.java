@@ -2041,7 +2041,7 @@ public class TileMap {
 			for(Player p : player){
 				if(p == null) continue;
 				int idPlayer = ((PlayerMP) p).getIdConnection();
-				if(idPlayer == objectInteract.id || !p.isDead()){
+				if(idPlayer == objectInteract.idPlayer && !p.isDead()){
 					for(ItemManagerMP.InteractionAcknowledge ack : acknowledges){
 						if(ack.isThisAckOfPlayer(idPlayer)){
 							if (ack.didInteract()) continue A;

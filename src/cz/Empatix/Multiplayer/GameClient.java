@@ -499,15 +499,39 @@ public class GameClient{
                         ackCaching.add(ack);
                     }
                 }
-                else if (object instanceof Network.ArtefactActivate){
+                else if (object instanceof Network.ArtefactActivate) {
                     GameState gameState = gsm.getCurrentGamestate();
                     Network.ArtefactActivate packet = (Network.ArtefactActivate) object;
                     Network.PacketACK ack = new Network.PacketACK();
                     ack.id = packet.idPacket;
                     connection.sendUDP(ack);
-                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
-                        if(gameState instanceof InGameMP) {
-                            packetHolder.add(object,PacketHolder.ARTEFACTACTIVATED);
+                    if (!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.ARTEFACTACTIVATED);
+                        }
+                        ackCaching.add(ack);
+                    }
+                } else if (object instanceof Network.ExplosionDamage) {
+                    GameState gameState = gsm.getCurrentGamestate();
+                    Network.ExplosionDamage packet = (Network.ExplosionDamage) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if (!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.EXPLOSIONDAMAGE);
+                        }
+                        ackCaching.add(ack);
+                    }
+                } else if (object instanceof Network.TrapRoomObjectDamage){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    Network.TrapRoomObjectDamage packet = (Network.TrapRoomObjectDamage) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if (!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.TRAPRODAMAGE);
                         }
                         ackCaching.add(ack);
                     }

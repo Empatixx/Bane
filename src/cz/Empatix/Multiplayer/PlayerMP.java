@@ -2,6 +2,7 @@ package cz.Empatix.Multiplayer;
 
 import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.Enemy;
+import cz.Empatix.Entity.ItemDrops.Coin;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
@@ -410,6 +411,17 @@ public class PlayerMP extends Player {
         down=false;
         left=false;
         flinching = false;
+
+        deathRoom = tileMap.getRoomByCoords(position.x,position.y);
+        cwidth = width = 32;
+        cheight = height = 32;
+        scale = 3;
+        cheight *= scale;
+        cwidth *= scale;
+        height *= scale;
+        width *= scale;
+        ghost = true;
+
         if(!tileMap.isServerSide()){
             if(sourcehealth.isPlaying()) sourcehealth.stop();
             lowHealth = false;
@@ -435,16 +447,29 @@ public class PlayerMP extends Player {
             x = -100 + Random.nextInt(201);
             y = -100 + Random.nextInt(201);
             artefactManagerMP.setCurrentArtefact(null,x,y,idConnection);
+            for(int i = 0;i<3 && coins > 0;i++){
+                int amount;
+                if(i != 2){
+                    amount = coins / 3;
+                    if(amount <= 0){
+                        i=2;
+                        amount = coins;
+                    }
+                } else {
+                    amount = coins / 3 + coins % 3;
+                }
+                x = -100 + Random.nextInt(201);
+                y = -100 + Random.nextInt(201);
+                Coin coin = new Coin(tileMap);
+                coin.setAmount(amount);
+                coin.setSpeed(x/10f,y/10f);
+                coin.canDespawn = false;
+                coin.setPosition(position.x,position.y);
+                ItemManagerMP itemManagerMP = ItemManagerMP.getInstance();
+                itemManagerMP.addItemDrop(coin);
+            }
+            coins = 0;
         }
-        deathRoom = tileMap.getRoomByCoords(position.x,position.y);
-        cwidth = width = 32;
-        cheight = height = 32;
-        scale = 3;
-        cheight *= scale;
-        cwidth *= scale;
-        height *= scale;
-        width *= scale;
-        ghost = true;
     }
 
     public boolean isGhost() {

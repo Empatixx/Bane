@@ -194,6 +194,7 @@ public class GunsManager {
         current.update();
     }
 
+
     public void draw(){
         for(Weapon weapon : weapons){
             weapon.drawAmmo();

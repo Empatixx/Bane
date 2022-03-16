@@ -19,11 +19,10 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 
-public class Bullet extends MapObject implements Serializable {
+public class Bullet extends MapObject {
     public static void load(){
         Loader.loadImage("Textures\\Sprites\\Player\\bullet64.tga");
     }

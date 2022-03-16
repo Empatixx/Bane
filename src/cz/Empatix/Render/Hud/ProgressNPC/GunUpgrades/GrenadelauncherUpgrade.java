@@ -9,11 +9,11 @@ public class GrenadelauncherUpgrade extends UpgradeBar {
     public GrenadelauncherUpgrade(int row){
         super("Textures\\grenadelauncher.tga",2,row);
         info = new WeaponInfo();
-        info.maxAmmo = 24;
+        info.maxAmmo = 36;
         info.maxMagazineAmmo = 6;
         info.maxDamage = 7;
         info.minDamage = 4;
-        info.firerate = 1f/0.450f;
+        info.firerate = 1f/0.550f;
         info.name = "Grenade Launcher";
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("grenadelauncher","upgrades");
@@ -21,7 +21,7 @@ public class GrenadelauncherUpgrade extends UpgradeBar {
 
 
         UpgradeSideBar bar = new UpgradeSideBar(sideBars.size(),"grenadelauncher");
-        String[] text = new String[]{"Increase maximum capacity of ammo by 4"};
+        String[] text = new String[]{"Increase maximum capacity of ammo by 8"};
         bar.setText(text);
         bar.setType(UpgradeSideBar.AMMOUPGRADE);
         bar.setPrice(20);
@@ -29,7 +29,7 @@ public class GrenadelauncherUpgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
-            info.maxAmmo+=4;
+            info.maxAmmo+=8;
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"grenadelauncher");

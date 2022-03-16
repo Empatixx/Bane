@@ -517,6 +517,7 @@ public class ItemManagerMP {
         dropItem.id = itemdrop.getId();
         dropItem.x = (int)itemdrop.getX();
         dropItem.y = (int)itemdrop.getY();
+        dropItem.despawn = itemdrop.canDespawn;
         dropItem.amount = (byte)itemdrop.getAmount();
         Server server = mpManager.server.getServer();
         server.sendToAllUDP(dropItem);
@@ -583,10 +584,29 @@ public class ItemManagerMP {
                         pickup.id = shopItem[i].getId();
                         server.sendToAllUDP(pickup);
                     } else {
-                        if(System.currentTimeMillis() - alertCooldown[i] > 2000){
-                            alertCooldown[i]  = System.currentTimeMillis();
+                        if (System.currentTimeMillis() - alertCooldown[i] > 2000) {
+                            alertCooldown[i] = System.currentTimeMillis();
                             Network.Alert alert = new Network.Alert();
-                            mpManager.server.requestACK(alert,alert.idPacket);
+                            mpManager.server.requestACK(alert, alert.idPacket);
+                            alert.text = "You don't have enough coins";
+                            alert.warning = true;
+                            alert.idPlayer = pickup.idPlayer;
+                            server.sendToAllUDP(alert);
+                        }
+                    }
+                } else if(shopItem[i] instanceof ArtefactDrop) {
+                    if (player.getCoins() >= shopItem[i].getPrice()) {
+                        player.removeCoins(shopItem[i].getPrice());
+                        am.setCurrentArtefact(((ArtefactDrop) shopItem[i]).getArtefact(),x,y, player.getIdConnection());
+                        shopItem[i].pickedUp = true;
+                        pickup.sucessful = true;
+                        pickup.id = shopItem[i].getId();
+                        server.sendToAllUDP(pickup);
+                    } else {
+                        if (System.currentTimeMillis() - alertCooldown[i] > 2000) {
+                            alertCooldown[i] = System.currentTimeMillis();
+                            Network.Alert alert = new Network.Alert();
+                            mpManager.server.requestACK(alert, alert.idPacket);
                             alert.text = "You don't have enough coins";
                             alert.warning = true;
                             alert.idPlayer = pickup.idPlayer;
@@ -629,7 +649,11 @@ public class ItemManagerMP {
         }
         for(Network.DropInteract dropInteract : dropInteractPackets){
             boolean interact = pickup(dropInteract);
-            if(interact) for(InteractionAcknowledge acknowledge : interactionAcknowledges) acknowledge.pickup(dropInteract.idPlayer);
+            if(interact){
+                for(InteractionAcknowledge acknowledge : interactionAcknowledges) {
+                    acknowledge.pickup(dropInteract.idPlayer);
+                }
+            }
         }
         dropInteractPackets.clear();
         return interactionAcknowledges;

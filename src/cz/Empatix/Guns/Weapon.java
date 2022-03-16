@@ -122,8 +122,8 @@ public abstract class Weapon{
         return type;
     }
 
-    public void addAmmo(int amountprocent) {
-        currentAmmo += Math.ceil((float) (amountprocent) / 100 * maxAmmo);
+    public void addAmmo(int amountpercent) {
+        currentAmmo += Math.ceil((float) (amountpercent) / 100 * maxAmmo);
         if (currentAmmo > maxAmmo) currentAmmo = maxAmmo;
     }
 
@@ -215,7 +215,7 @@ public abstract class Weapon{
                     speed.x = -speed.x;
                     speed.y = -speed.y;
                     bullet.setFriendlyFire(true);
-                    continue;
+                    continue A;
                 }
                 if(bullet.isFriendlyFire()){
                     for(Player p : player){

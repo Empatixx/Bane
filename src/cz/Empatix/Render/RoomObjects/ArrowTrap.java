@@ -240,6 +240,14 @@ public class ArrowTrap extends RoomObject {
                                 if (roomObject instanceof DestroyableObject) {
                                     if (!((DestroyableObject) roomObject).isDestroyed()) {
                                         ((DestroyableObject) roomObject).setHit(1);
+                                        if(tileMap.isServerSide()){
+                                            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+                                            Network.TrapRoomObjectDamage damage = new Network.TrapRoomObjectDamage();
+                                            mpManager.server.requestACK(damage,damage.idPacket);
+                                            damage.idHit = roomObject.id;
+                                            Server server = mpManager.server.getServer();
+                                            server.sendToAllUDP(damage);
+                                        }
                                     }
                                 }
                             }

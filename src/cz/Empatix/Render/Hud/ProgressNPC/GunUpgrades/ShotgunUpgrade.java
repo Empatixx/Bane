@@ -10,7 +10,7 @@ public class ShotgunUpgrade extends UpgradeBar {
         super("Textures\\shotgun.tga",2,row);
 
         info = new WeaponInfo();
-        info.maxAmmo = 36;
+        info.maxAmmo = 48;
         info.maxMagazineAmmo = 6;
         info.maxDamage = 3;
         info.minDamage = 2;
@@ -75,7 +75,7 @@ public class ShotgunUpgrade extends UpgradeBar {
 
         textRender[0].draw("Min. damage: " +info.minDamage,new Vector3f(295,400,0),1, new Vector3f(0.686f,0.4f,0.258f));
         textRender[1].draw("Max. damage: " +info.maxDamage,new Vector3f(295,430,0),1, new Vector3f(0.686f,0.4f,0.258f));
-        textRender[2].draw("Fire rate: " +String.format("%.2f",info.firerate),new Vector3f(295,460,0),1, new Vector3f(0.686f,0.4f,0.258f));
+        textRender[2].draw("Fire rate: 3x" +String.format("%.2f",info.firerate),new Vector3f(295,460,0),1, new Vector3f(0.686f,0.4f,0.258f));
         textRender[3].draw("Max ammo: " +info.maxMagazineAmmo+"/"+info.maxAmmo,new Vector3f(295,490,0),1, new Vector3f(0.686f,0.4f,0.258f));
         textRender[4].draw("Critical hits: " +info.areCritical_hits_enabled(),new Vector3f(295,520,0),1, new Vector3f(0.686f,0.4f,0.258f));
 

@@ -614,6 +614,7 @@ public class ItemManager {
         }
         drop.setId(item.id);
         drop.setAmount(item.amount);
+        drop.canDespawn = item.despawn;
         itemDrops.add(drop);
     }
 

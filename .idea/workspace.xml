@@ -30,26 +30,32 @@
     <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="golem fixes,eyebat laser fix, player outside room enemy AI">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crashlog.log" beforeDir="false" afterPath="$PROJECT_DIR$/crashlog.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Damage/RingOfFire.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Damage/RingOfFire.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Special/ReviveBook.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Special/ReviveBook.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Singleplayer/InGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Singleplayer/InGame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Golem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Golem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Multiplayer/InGameMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Multiplayer/InGameMP.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Bullet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Grenadebullet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Grenadebullet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Grenadelauncher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Grenadelauncher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Luger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Luger.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/M4.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/M4.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Revolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Revolver.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Shotgun.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Submachine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Thompson.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Thompson.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/GameClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/GameClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/GameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/GameServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/ItemManagerMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/ItemManagerMP.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/Network.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/Network.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/PacketHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/PacketHolder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/PlayerMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/PlayerMP.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/GrenadelauncherUpgrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/GrenadelauncherUpgrade.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/LugerUpgrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/LugerUpgrade.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/ShotgunUpgrade.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ProgressNPC/GunUpgrades/ShotgunUpgrade.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/RoomObjects/ArrowTrap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/RoomObjects/ArrowTrap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

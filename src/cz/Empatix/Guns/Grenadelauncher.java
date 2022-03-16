@@ -38,7 +38,7 @@ public class Grenadelauncher extends Weapon {
         mindamage = 4;
         maxdamage = 7;
         inaccuracy = 0.7f;
-        maxAmmo = 24;
+        maxAmmo = 36;
         maxMagazineAmmo = 6;
         type = 4;
         currentAmmo = maxAmmo;
@@ -57,7 +57,7 @@ public class Grenadelauncher extends Weapon {
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("grenadelauncher","upgrades");
         if(numUpgrades >= 1){
-            maxAmmo+=4;
+            maxAmmo+=8;
             currentAmmo=maxAmmo;
         }
         if(numUpgrades >= 2){
@@ -77,7 +77,7 @@ public class Grenadelauncher extends Weapon {
         mindamage = 4;
         maxdamage = 7;
         inaccuracy = 0.7f;
-        maxAmmo = 24;
+        maxAmmo = 36;
         maxMagazineAmmo = 6;
         type = 4;
         currentAmmo = maxAmmo;
@@ -90,12 +90,12 @@ public class Grenadelauncher extends Weapon {
         mindamage = 4;
         maxdamage = 7;
         inaccuracy = 0.7f;
-        maxAmmo = 24;
+        maxAmmo = 36;
         maxMagazineAmmo = 6;
         GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
         int numUpgrades = gunsManagerMP.getNumUpgrades(idPlayer, "Grenade Launcher");
         if(numUpgrades >= 1){
-            maxAmmo+=4;
+            maxAmmo+=8;
         }
         if(numUpgrades >= 2){
             maxMagazineAmmo+=3;
@@ -116,7 +116,7 @@ public class Grenadelauncher extends Weapon {
     public void reload() {
         if (!reloading && currentAmmo != 0 && currentMagazineAmmo != maxMagazineAmmo){
             reloadDelay = System.currentTimeMillis() - InGame.deltaPauseTime();
-            reloadsource.play(soundReload);
+            if(!tm.isServerSide())reloadsource.play(soundReload);
             reloading = true;
 
             dots = 0;
@@ -179,7 +179,7 @@ public class Grenadelauncher extends Weapon {
                     if (reloading) return;
                     // delta - time between shoots
                     long delta = System.currentTimeMillis() - delay - InGame.deltaPauseTime();
-                    if (delta > 450) {
+                    if (delta > 550) {
                         double inaccuracy = 0;
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
                         Grenadebullet bullet = new Grenadebullet(tm, x, y, inaccuracy,30);
@@ -198,9 +198,6 @@ public class Grenadelauncher extends Weapon {
                     }
                 } else if (currentAmmo != 0) {
                     reload();
-                } else {
-                    source.play(soundEmptyShoot);
-                    outOfAmmo();
                 }
                 setShooting(false);
             }
@@ -261,7 +258,6 @@ public class Grenadelauncher extends Weapon {
         A: for(Grenadebullet bullet:bullets){
             for(Enemy enemy:enemies){
                 if (bullet.intersects(enemy) && !bullet.isHit() && !enemy.isDead() && !enemy.isSpawning()) {
-                    bullet.playEnemyHit();
                     bullet.setHit();
                     GunsManager.hitBullets++;
                     continue A;
@@ -273,7 +269,6 @@ public class Grenadelauncher extends Weapon {
                 for(RoomObject object: objects){
                     if(object instanceof DestroyableObject) {
                         if (bullet.intersects(object) && !bullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                            bullet.playEnemyHit();
                             bullet.setHit();
                             continue A;
                         }
@@ -303,7 +298,7 @@ public class Grenadelauncher extends Weapon {
 
     @Override
     public void handleBulletPacket(Network.AddBullet response) {
-        Grenadebullet bullet = new Bullet(tm, response.id);
+        Grenadebullet bullet = new Grenadebullet(tm, response.id);
         bullet.setPosition(response.px, response.py);
         bullet.setCritical(response.critical);
         bullet.setDamage(response.damage);
@@ -312,7 +307,7 @@ public class Grenadelauncher extends Weapon {
     @Override
     public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
         for(Grenadebullet b : bullets){
-            if(b.getId() == moveBullet.id){
+            if(b.getId() == moveBullet.id && !b.isHit()){
                 b.setPosition(moveBullet.x, moveBullet.y);
             }
         }

@@ -303,6 +303,11 @@ public class Grenadelauncher extends Weapon {
 
     @Override
     public void handleBulletPacket(Network.AddBullet response) {
+        Grenadebullet bullet = new Bullet(tm, response.id);
+        bullet.setPosition(response.px, response.py);
+        bullet.setCritical(response.critical);
+        bullet.setDamage(response.damage);
+        bullets.add(bullet);
     }
     @Override
     public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
@@ -315,6 +320,11 @@ public class Grenadelauncher extends Weapon {
 
     @Override
     public void handleHitBulletPacket(Network.HitBullet hitBullet) {
+         for(Grenadebullet b : bullets){
+            if(b.id == hitBullet.id && !b.isHit()){
+                b.setHit();
+            }
+         }
     }
 
     @Override

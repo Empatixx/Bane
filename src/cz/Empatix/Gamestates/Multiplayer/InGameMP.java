@@ -46,7 +46,7 @@ import java.util.ArrayList;
 
 import static cz.Empatix.Main.Game.ARROW;
 import static cz.Empatix.Main.Game.setCursor;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 
@@ -87,11 +87,12 @@ public class InGameMP extends GameState {
     private float mouseY;
 
     // ingame huds
-    private HealthBar healthBar;
-    private ArmorBar armorBar;
+    private HealthBar[] healthBar;
+    private ArmorBar[] armorBar;
     private MiniMap miniMap;
     private DamageIndicator damageIndicator;
     private Image coin;
+    private Image deathIcon;
     private Console console;
     private AlertManager alertManager;
 
@@ -123,6 +124,7 @@ public class InGameMP extends GameState {
     private Source source;
 
     private TextRender[] textRender;
+    private TextRender[] barName;
 
     private MultiplayerManager mpManager;
     private MPStatistics mpStatistics;
@@ -175,8 +177,12 @@ public class InGameMP extends GameState {
     }
     @Override
     protected void keyReleased(int k) {
-        if (k == GLFW_KEY_ESCAPE){
+        if (k == GLFW_KEY_ESCAPE && !postDeath){
             pause = !pause;
+            if(player[0].isGhost()){
+                if(!pause)glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_HIDDEN);
+                else glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
+            }
             if(pause){
                 setCursor(ARROW);
             } else {
@@ -208,10 +214,6 @@ public class InGameMP extends GameState {
 
     @Override
     protected void keyPressed(int k) {
-        if(!player[0].isDead() || player[0].isGhost()){
-            player[0].keyPressed(k);
-            miniMap.keyPressed(k);
-        }
         if(postDeath){
             if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT) && !ready && System.currentTimeMillis() - deathTime > 3000){
                 Network.Ready ready = new Network.Ready();
@@ -222,6 +224,9 @@ public class InGameMP extends GameState {
                 client.sendUDP(ready);
                 this.ready = true;
             }
+        } else {
+            player[0].keyPressed(k);
+            miniMap.keyPressed(k);
         }
         if(player[0].isDead()) return;
         if(pause) return;
@@ -334,12 +339,19 @@ public class InGameMP extends GameState {
         itemManager = new ItemManager(tileMap,gunsManager,artefactManager,player[0]);
         ItemManager.init(itemManager);
 
+        healthBar = new HealthBar[2];
+        armorBar = new ArmorBar[2];
+        barName = new TextRender[1];
         //health bar
-        healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,45,3);
-        healthBar.initHealth(player[0].getHealth(),player[0].getMaxHealth());
+        healthBar[0] = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,56,4);
+        healthBar[0].setOffsetsBar(19,1);
+        healthBar[0].initHealth(player[0].getHealth(),player[0].getMaxHealth());
+
+        //health bar
         //armor bar
-        armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3);
-        armorBar.initArmor(player[0].getArmor(),player[0].getMaxArmor());
+        armorBar[0] = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3,54,4);
+        armorBar[0].setOffsetsBar(14,2);
+        armorBar[0].initArmor(player[0].getArmor(),player[0].getMaxArmor());
         damageIndicator = new DamageIndicator();
         // coin
         coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
@@ -425,6 +437,17 @@ public class InGameMP extends GameState {
             playerMP.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
             playerMP.setIdConnection(player.idPlayer);
             this.player[index] = playerMP;
+            healthBar[index] = new HealthBar("Textures\\mphealthBar",new Vector3f(200,300,0),4,35,3);
+            healthBar[index].setOffsetsBar(3,0);
+            healthBar[index].initHealth(this.player[index].getHealth(),this.player[index].getMaxHealth());
+
+            armorBar[index] = new ArmorBar("Textures\\mparmorBar",new Vector3f(200,325,0),4,25,3);
+            armorBar[index].initArmor(this.player[index].getArmor(),this.player[index].getMaxArmor());
+            armorBar[index].setOffsetsBar(3,0);
+            barName[index-1] = new TextRender();
+
+            deathIcon = new Image("Textures\\skull.tga",new Vector3f(100,315,0),2f);
+
             playerReadies[index] = new PlayerReady(packetUsername,player.idPlayer);
             index++;
         }
@@ -438,6 +461,8 @@ public class InGameMP extends GameState {
             player[index].remove();
             player[index] = null;
             playerReadies[index] = null;
+            healthBar[index] = null;
+            armorBar[index] = null;
             if(idOrigin != packet.idPlayer){
                 AlertManager.add(AlertManager.WARNING,player[1].getUsername()+" has left the game!");
             }
@@ -496,6 +521,10 @@ public class InGameMP extends GameState {
         gunsManager.draw();
 
         objectsFramebuffer.unbindFBO();
+        if(postDeath){
+            fadeFramebuffer.bindFBO();
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
 
         if(pause){
             pauseBlurFramebuffer.bindFBO();
@@ -517,8 +546,26 @@ public class InGameMP extends GameState {
 
         tileMap.drawTitle();
 
-        healthBar.draw();
-        armorBar.draw();
+        int otherBars = 0;
+        for(int i =0;i<healthBar.length;i++){
+            if(healthBar[i] != null){
+                healthBar[i].draw();
+                if(!player[i].isOrigin()){
+                    Vector3f color = new Vector3f();
+                    if(player[i].isGhost()){
+                        color.set(0.760f);
+                        deathIcon.draw();
+                    } else {
+                        color.set(0.874f,0.443f,0.149f);
+                    }
+                    barName[otherBars].draw(player[i].getUsername(),new Vector3f(125,280,0),1,color);
+                    otherBars++;
+                }
+            }
+        }
+        for(ArmorBar armorBar : armorBar){
+            if(armorBar != null) armorBar.draw();
+        }
         miniMap.draw();
         damageIndicator.draw();
         console.draw();
@@ -530,6 +577,8 @@ public class InGameMP extends GameState {
 
         // remake if all players are dead
         if(postDeath){
+            fadeFramebuffer.unbindFBO();
+            fade.draw(fadeFramebuffer);
             MPStatistics.PStats pStats = mpStatistics.getPlayerStats(player[0].getIdConnection());
             int totalReward = 0;
             int rewardAccuracy = 0;
@@ -553,9 +602,7 @@ public class InGameMP extends GameState {
                 db.setValue("money",totalReward+storedMoney);
             }
             if(transitionContinue) return;
-            if(player[0].isDead()){
-                skullPlayerdead.draw();
-            }
+            skullPlayerdead.draw();
             float time = System.currentTimeMillis()-deathTime;
             if(time > 1000){
                 char[] gameOverTitle = "GAME OVER".toCharArray();
@@ -662,7 +709,6 @@ public class InGameMP extends GameState {
                     p.update();
                 }
             }
-            EnemyManager.getInstance().updateOnlyAnimations();
 
             mouseX = gsm.getMouseX();
             mouseY = gsm.getMouseY();
@@ -738,67 +784,123 @@ public class InGameMP extends GameState {
                     }
                 }
             }
-
-            healthBar.update(player[0].getHealth(), player[0].getMaxHealth());
-            armorBar.update(player[0].getArmor(),player[0].getMaxArmor());
-
+            for(int i = 0;i<player.length;i++){
+                if(player[i] != null){
+                    healthBar[i].update(player[i].getHealth(), player[i].getMaxHealth());
+                    armorBar[i].update(player[i].getArmor(),player[i].getMaxArmor());
+                }
+            }
             alertManager.update();
 
             gaussianBlur.update(pause);
             lightManager.update();
             return;
         }
-        // entering new floor
-        Object[] nextFloor = mpManager.packetHolder.get(PacketHolder.NEXTFLOOR);
-        if(nextFloor.length >= 1){
-            tileMap.handleNextFloorPacket((Network.NextFloor)nextFloor[0]);
-
-            mapLoaded = false;
-            long delay = System.currentTimeMillis();
-            while(!mapLoaded){
-                if(System.currentTimeMillis() > delay) {
-                    delay+=1000;
-                    System.out.println("STILL NOT LOADED MAP");
+        if (postDeath){
+            fade.update(transitionContinue);
+            readyNumPlayers = 0;
+            int totalConPlayers = 0;
+            for(PlayerReady playerReady : playerReadies){
+                if(playerReady != null){
+                    if(playerReady.isReady()) readyNumPlayers++;
+                    totalConPlayers++;
                 }
-                Object[] packets = mpManager.packetHolder.get(PacketHolder.MAPLOADED);
-                if(packets.length >= 1) mapLoaded = true;
             }
-            tileMap.setTween(1);
-            tileMap.loadMapViaPackets();
-            tileMap.fillMiniMap();
-            // move player to starter room
-            mpManager.packetHolder.clear(PacketHolder.MOVEPLAYER);
-            player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
-            tileMap.setTween(0.10);
-        }
-        Object[] allPlayersDead = mpManager.packetHolder.get(PacketHolder.ALLPLAYERDEAD);
-        if(allPlayersDead.length >= 1 && !postDeath){
-            postDeath = true;
-            deathTime = System.currentTimeMillis();
-        }
-        readyNumPlayers = 0;
-        int totalConPlayers = 0;
-        for(PlayerReady playerReady : playerReadies){
-            if(playerReady != null){
-                if(playerReady.isReady()) readyNumPlayers++;
-                totalConPlayers++;
+            // all players are ready => enter game
+            if(totalConPlayers == readyNumPlayers){
+                transitionContinue = true;
             }
-        }
-        // all players are ready => enter game
-        if(totalConPlayers == readyNumPlayers){
-            mpManager.client.setNumPlayers(1);
+            if(fade.isTransitionDone()){
+                mpManager.client.setNumPlayers(1);
 
-            gsm.setState(GameStateManager.PROGRESSROOMMP);
+                gsm.setState(GameStateManager.PROGRESSROOMMP);
+                glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
 
-            mpManager.packetHolder.get(PacketHolder.MOVEPLAYER); // CLEARING ARRAY
+                mpManager.packetHolder.get(PacketHolder.MOVEPLAYER); // CLEARING ARRAY
 
+                Client client = mpManager.client.getClient();
+                Network.RequestForPlayers request = new Network.RequestForPlayers();
+                request.exceptIdPlayer = mpManager.getIdConnection();
+                client.sendTCP(request);
+                return;
+            }
+            float time = (System.currentTimeMillis()-deathTime);
+            if(time > 500){
+                Vector3f pos = skullPlayerdead.getPos();
+                float y = pos.y() + (140-pos.y()) * time/15000;
+                Vector3f newpos = new Vector3f(pos.x(),y,0);
+                skullPlayerdead.setPosition(newpos);
+            }
+            skullPlayerdead.setAlpha(time/3500f);
+            for(PlayerMP player : player) if(player!= null)player.update();
+        } else {
+            // entering new floor
+            Object[] nextFloor = mpManager.packetHolder.get(PacketHolder.NEXTFLOOR);
+            if(nextFloor.length >= 1){
+                tileMap.handleNextFloorPacket((Network.NextFloor)nextFloor[0]);
 
-            Client client = mpManager.client.getClient();
-            Network.RequestForPlayers request = new Network.RequestForPlayers();
-            request.exceptIdPlayer = mpManager.getIdConnection();
-            client.sendTCP(request);
-            return;
-
+                mapLoaded = false;
+                long delay = System.currentTimeMillis();
+                while(!mapLoaded){
+                    if(System.currentTimeMillis() > delay) {
+                        delay+=1000;
+                        System.out.println("STILL NOT LOADED MAP");
+                    }
+                    Object[] packets = mpManager.packetHolder.get(PacketHolder.MAPLOADED);
+                    if(packets.length >= 1) mapLoaded = true;
+                }
+                tileMap.setTween(1);
+                tileMap.loadMapViaPackets();
+                tileMap.fillMiniMap();
+                // move player to starter room
+                mpManager.packetHolder.clear(PacketHolder.MOVEPLAYER);
+                player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
+                tileMap.setTween(0.10);
+            }
+            Object[] allPlayersDead = mpManager.packetHolder.get(PacketHolder.ALLPLAYERDEAD);
+            if(allPlayersDead.length >= 1 && !postDeath){
+                postDeath = true;
+                pause = false;
+                deathTime = System.currentTimeMillis();
+            }
+            Object[] objects = mpManager.packetHolder.get(PacketHolder.MOVEPLAYER);
+            for(PlayerMP p : player) {
+                if(p == null) continue;
+                Network.MovePlayer recent=null;
+                for (Object o : objects) {
+                    Network.MovePlayer move = (Network.MovePlayer) o;
+                    if (p.getIdConnection() == move.idPlayer) {
+                        if (recent == null) recent = move;
+                        if (recent.time < move.time) recent = move;
+                    }
+                }
+                if(recent != null){
+                    p.setPosition(recent.x,recent.y);
+                    if(!p.isOrigin()){
+                        p.setUp(recent.up);
+                        p.setDown(recent.down);
+                        p.setRight(recent.right);
+                        p.setLeft(recent.left);
+                    }
+                } else {
+                    p.updateLostPacket();
+                }
+            }
+            for(PlayerMP p : player){
+                if(p != null)p.update();
+            }
+            Object[] playerHitPackets = mpManager.packetHolder.get(PacketHolder.PLAYERHIT);
+            for(Object o : playerHitPackets){
+                for(PlayerMP p : player) {
+                    if (p != null) {
+                        Network.PlayerHit playerHit = (Network.PlayerHit) o;
+                        if(p.getIdConnection() == playerHit.idPlayer){
+                            p.fakeHit(playerHit);
+                        }
+                    }
+                }
+            }
+            tileMap.createRoomObjectsViaPackets();
         }
         AudioManager.update();
         // loc of mouse
@@ -827,44 +929,6 @@ public class InGameMP extends GameState {
                 }
             }
         }
-        Object[] objects = mpManager.packetHolder.get(PacketHolder.MOVEPLAYER);
-        for(PlayerMP p : player) {
-            if(p == null) continue;
-            Network.MovePlayer recent=null;
-            for (Object o : objects) {
-                Network.MovePlayer move = (Network.MovePlayer) o;
-                if (p.getIdConnection() == move.idPlayer) {
-                    if (recent == null) recent = move;
-                    if (recent.time < move.time) recent = move;
-                }
-            }
-            if(recent != null){
-                p.setPosition(recent.x,recent.y);
-                if(!p.isOrigin()){
-                    p.setUp(recent.up);
-                    p.setDown(recent.down);
-                    p.setRight(recent.right);
-                    p.setLeft(recent.left);
-                }
-            } else {
-                p.updateLostPacket();
-            }
-        }
-        for(PlayerMP p : player){
-            if(p != null)p.update();
-        }
-        Object[] playerHitPackets = mpManager.packetHolder.get(PacketHolder.PLAYERHIT);
-        for(Object o : playerHitPackets){
-            for(PlayerMP p : player) {
-                if (p != null) {
-                    Network.PlayerHit playerHit = (Network.PlayerHit) o;
-                    if(p.getIdConnection() == playerHit.idPlayer){
-                        p.fakeHit(playerHit);
-                    }
-                }
-            }
-        }
-        tileMap.createRoomObjectsViaPackets();
         tileMap.updateObjects();
 
         // updating if player entered some another room
@@ -912,8 +976,12 @@ public class InGameMP extends GameState {
             }
         }
 
-        healthBar.update(player[0].getHealth(), player[0].getMaxHealth());
-        armorBar.update(player[0].getArmor(),player[0].getMaxArmor());
+        for(int i = 0;i<player.length;i++){
+            if(player[i] != null){
+                healthBar[i].update(player[i].getHealth(), player[i].getMaxHealth());
+                armorBar[i].update(player[i].getArmor(),player[i].getMaxArmor());
+            }
+        }
 
         Object[] AlertPackets = mpManager.packetHolder.get(PacketHolder.ALERT);
         for(Object o : AlertPackets){
@@ -941,6 +1009,8 @@ public class InGameMP extends GameState {
             }
             player[index] = null;
             playerReadies[index] = null;
+            healthBar[index] = null;
+            armorBar[index] = null;
             for(PlayerReady pready : playerReadies){
                 if(pready != null) pready.setReady(false);
             }
@@ -953,6 +1023,17 @@ public class InGameMP extends GameState {
             playerMP.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
             playerMP.setIdConnection(player.idPlayer);
             this.player[index] = playerMP;
+            healthBar[index] = new HealthBar("Textures\\mphealthBar",new Vector3f(200,300,0),4,35,3);
+            healthBar[index].setOffsetsBar(3,0);
+            healthBar[index].initHealth(this.player[index].getHealth(),this.player[index].getMaxHealth());
+
+            armorBar[index] = new ArmorBar("Textures\\mparmorBar",new Vector3f(200,325,0),4,25,3);
+            armorBar[index].initArmor(this.player[index].getArmor(),this.player[index].getMaxArmor());
+            armorBar[index].setOffsetsBar(3,-0.5f);
+            barName[index-1] = new TextRender();
+
+            deathIcon = new Image("Textures\\skull.tga",new Vector3f(100,315,0),2f);
+
             playerReadies[index] = new PlayerReady(packetUsername,player.idPlayer);
             index++;
         }

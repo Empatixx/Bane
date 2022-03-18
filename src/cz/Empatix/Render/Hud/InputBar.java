@@ -10,6 +10,7 @@ import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Text.TextRender;
+import cz.Empatix.Utility.CopyImagetoClipBoard;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -48,6 +49,7 @@ public class InputBar {
 
     private TextRender[] textRender;
     private String title;
+
 
     /**
      *
@@ -142,6 +144,15 @@ public class InputBar {
             }
             for(int i = 0; i< keys.length; i++){
                 if(!used[i]){
+                    if((k == GLFW.GLFW_KEY_C && keys[i] == GLFW.GLFW_KEY_LEFT_CONTROL) || (k == GLFW.GLFW_KEY_LEFT_CONTROL && keys[i] == GLFW.GLFW_KEY_C)){
+                        CopyImagetoClipBoard copyImagetoClipBoard = new CopyImagetoClipBoard();
+                        String copy = copyImagetoClipBoard.getStringCopy();
+                        if(copy != null) stringbuilder.append(copy);
+                        if(stringbuilder.length() > 20){
+                            stringbuilder.delete(21,stringbuilder.length());
+                        }
+                        return;
+                    }
                     keys[i] = k;
                     used[i] = true;
                     if ((k >= '0' && k <= '9') || (k >= 'a' && k <= 'z') || (k >= 'A' && k <= 'Z') || k == ':' || k == '.') {
@@ -157,6 +168,17 @@ public class InputBar {
                     }
                     globalDelay = System.currentTimeMillis();
                     return;
+                } else {
+                    if((k == GLFW.GLFW_KEY_C && keys[i] == GLFW.GLFW_KEY_LEFT_CONTROL) || (k == GLFW.GLFW_KEY_LEFT_CONTROL && keys[i] == GLFW.GLFW_KEY_C)){
+                        CopyImagetoClipBoard copyImagetoClipBoard = new CopyImagetoClipBoard();
+                        String copy = copyImagetoClipBoard.getStringCopy();
+                        if(copy != null) stringbuilder.append(copy);
+                        if(stringbuilder.length() > 20){
+                            stringbuilder.delete(21,stringbuilder.length());
+                        }
+                        used[i] = false;
+                        return;
+                    }
                 }
             }
         }

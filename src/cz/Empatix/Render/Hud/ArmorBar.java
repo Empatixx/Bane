@@ -4,7 +4,6 @@ import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -20,14 +19,13 @@ import static org.lwjgl.opengl.GL20.*;
 public class ArmorBar extends HUD{
     public static void load(){
         Loader.loadImage("Textures\\armorbar.tga");
-        Loader.loadImage("Textures\\armorbar-bar.tga");
     }
     private int armor;
     private int maxArmor;
 
     private int vboVerticesBar;
-    private final int width;
-    private final int height;
+    private final float width;
+    private final float height;
     private int scale;
     private Vector3f pos;
 
@@ -35,62 +33,64 @@ public class ArmorBar extends HUD{
     private long armorChangeTime;
 
     private Shader barShader;
-    private final Matrix4f matrixPos;
+    private Matrix4f matrixPos;
 
-    public ArmorBar(String file, Vector3f pos, int scale){
+    public ArmorBar(String file, Vector3f pos, int scale, float widthBar, float heightBar){
         super(file+".tga", pos, scale);
         barShader = ShaderManager.getShader("shaders\\healthbar");
         if (barShader == null){
             barShader = ShaderManager.createShader("shaders\\healthbar");
         }
 
-        ByteBufferImage decoder = Loader.getImage("Textures\\armorbar-bar.tga");
-
-        int width = decoder.getWidth();
-        int height = decoder.getHeight();
-
-
-        vboVerticesBar = ModelManager.getModel(width,height);
+        vboVerticesBar = ModelManager.getModel(widthBar,heightBar);
         if (vboVerticesBar == -1){
-            vboVerticesBar = ModelManager.createModel(width,height);
+            vboVerticesBar = ModelManager.createModel(widthBar,heightBar);
         }
 
-        pos.x+=18;
-        pos.y+=4;
         matrixPos = new Matrix4f().translate(pos).scale(scale);
         Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
 
-        this.width = width;
-        this.height = height;
+        this.width = widthBar;
+        this.height = heightBar;
         this.pos = pos;
         this.scale = scale;
 
     }
-
+    /**
+     * bar inside health bar is not centered in middle in texture, so we must little bit offset the bar so it can totally fit inside healthbar
+     * @param x - offset X of bar
+     * @param y - offset Y of bar
+     */
+    public void setOffsetsBar(float x, float y){
+        pos.x+=(x/2f)*scale;
+        pos.y+=(y/2f)*scale;
+        matrixPos = new Matrix4f().translate(pos).scale(scale);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
+    }
     @Override
     public void draw() {
 
         // rendering bar
         barShader.bind();
         barShader.setUniformm4f("projection",matrixPos);
-        float minX = pos.x * (float)Settings.WIDTH/1920 - (float)(width * scale)/2*(float)Settings.WIDTH/1920;
-        float maxX = minX + (width*scale) * ((float)armor/maxArmor)*(float)Settings.WIDTH/1920;
-        float premaxX = minX + (float)Math.floor((width*scale) * (delayedArmor/maxArmor)*(float)Settings.WIDTH/1920);
+        double minX = pos.x * (double)Settings.WIDTH/1920 - (double)(width * scale)/2*(double)Settings.WIDTH/1920;
+        double maxX = minX + (width*scale) * ((double)armor/maxArmor)*(double)Settings.WIDTH/1920;
+        double premaxX = minX + Math.floor((width*scale) * (delayedArmor/maxArmor)*(double)Settings.WIDTH/1920);
         // revert height coords because opengl is from down to up 0-1
-        float maxY = Settings.HEIGHT - pos.y * (float)Settings.HEIGHT/1080 + (float)((height * scale)/2)*(float)Settings.HEIGHT/1080;
+        double maxY = Settings.HEIGHT - pos.y * (double)Settings.HEIGHT/1080 + (double)((height * scale)/2)*(double)Settings.HEIGHT/1080;
 
-        barShader.setUniformf("maxX",maxX);
+        barShader.setUniformf("maxX",(float)maxX);
         // new health removed or added visual
-        barShader.setUniformf("premaxX",premaxX);
-        barShader.setUniformf("maxY",maxY);
+        barShader.setUniformf("premaxX",(float)premaxX);
+        barShader.setUniformf("maxY",(float)maxY);
         barShader.setUniformf("stepSize",(float)height*scale/4*(float)Settings.HEIGHT/1080);
         barShader.setUniform3f("color", new Vector3f(0.603f, 0.670f, 0.709f));
-        
+
 
         glEnableVertexAttribArray(0);
 
         glBindBuffer(GL_ARRAY_BUFFER,vboVerticesBar);
-        glVertexAttribPointer(0,2,GL_INT,false,0,0);
+        glVertexAttribPointer(0,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 

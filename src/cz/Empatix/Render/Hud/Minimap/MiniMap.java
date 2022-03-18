@@ -1,6 +1,7 @@
 package cz.Empatix.Render.Hud.Minimap;
 
 import cz.Empatix.Entity.Animation;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Multiplayer.PlayerMP;
@@ -32,6 +33,8 @@ public class MiniMap {
         Loader.loadImage("Textures\\player-icon.tga");
         Loader.loadImage("Textures\\minimap-icons.tga");
         Loader.loadImage("Textures\\minimap-trans.tga");
+        Loader.loadImage("Textures\\mmparrow.tga");
+
     }
     private Image minimapBorders;
     private int idTexture;
@@ -52,6 +55,7 @@ public class MiniMap {
     private Animation playerIconAnimation;
     private Spritesheet playerIcon;
     private Vector3f playerIconPos;
+    private MMPlayerArrow playerArrow;
 
     public MiniMap(boolean serverSide){
         // only for multiplayer server side
@@ -164,6 +168,9 @@ public class MiniMap {
         }
         playerIconPos.x = 1770;
         playerIconPos.y = 150;
+        if(MultiplayerManager.multiplayer){
+            playerArrow = new MMPlayerArrow();
+        }
     }
     public void update(TileMap tm){
         Room room = tm.getCurrentRoom();
@@ -177,7 +184,6 @@ public class MiniMap {
             playerIconPos.y = 150+y*20;
         }
         playerIconAnimation.update();
-
     }
     public void update(PlayerMP[] players,TileMap tm){
         for(PlayerMP player : players){
@@ -193,7 +199,7 @@ public class MiniMap {
                 }
             }
         }
-
+        if(players[1] != null) playerArrow.update(players[1],tm);
     }
     public void draw() {
         minimapBorders.draw();
@@ -333,6 +339,8 @@ public class MiniMap {
             geometryShader.unbind();
         }
         drawPlayerIcon();
+
+        playerArrow.draw();
     }
     public void addRoom(MMRoom room, int number){
         rooms[number] = room;

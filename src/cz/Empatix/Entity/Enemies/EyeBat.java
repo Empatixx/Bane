@@ -457,10 +457,10 @@ public class EyeBat extends Enemy {
                 animation.setDelay(125);
             }
 
-            float y = originalPos.y - player[lastPlayerTargetIndex].getY();
-            float x = originalPos.x - player[lastPlayerTargetIndex].getX();
-            float angle = (float) Math.atan(y / x);
-            this.angle += (angle - this.angle);
+            float y = player[lastPlayerTargetIndex].getY() - originalPos.y;
+            float x = player[lastPlayerTargetIndex].getX() - originalPos.x;
+            angle = (float)Math.atan2(y,x);
+
             position.x = originalPos.x + (width / 2 - 50) * (float) Math.cos(this.angle);
             position.y = originalPos.y + (width / 2 - 50) * (float) Math.sin(this.angle);
         }

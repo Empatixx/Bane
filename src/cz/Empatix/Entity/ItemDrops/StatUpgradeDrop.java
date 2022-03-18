@@ -12,23 +12,28 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class HealingPot extends ItemDrop{
+public class StatUpgradeDrop extends ItemDrop{
+    public static final byte ARMOR = 0;
+    public static final byte HEALTH = 1;
+    private byte upgradeType;
     public static void load(){
-        Loader.loadImage("Textures\\healingpot.tga");
+        Loader.loadImage("Textures\\healthupgrade.tga");
+        Loader.loadImage("Textures\\armorupgrade.tga");
     }
-    public HealingPot(TileMap tm){
+    public StatUpgradeDrop(TileMap tm, byte upgradeType){
         super(tm);
+        this.upgradeType = upgradeType;
         if(tm.isServerSide()){
-            type = HP;
+            type = STATUPGRADE;
             canDespawn = true;
-            liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
+            liveTime = System.currentTimeMillis()- InGame.deltaPauseTime();
             pickedUp = false;
 
             width = 32;
             height = 32;
             cwidth = 32;
             cheight = 32;
-            scale = 2;
+            scale = 3;
             facingRight = true;
 
             animation = new Animation(1);
@@ -40,7 +45,7 @@ public class HealingPot extends ItemDrop{
             cheight *= scale;
             stopSpeed = 0.35f;
         } else {
-            type = HP;
+            type = STATUPGRADE;
             canDespawn = true;
             liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
             pickedUp = false;
@@ -49,17 +54,23 @@ public class HealingPot extends ItemDrop{
             height = 32;
             cwidth = 32;
             cheight = 32;
-            scale = 2;
+            scale = 3;
             facingRight = true;
 
-            //amount = Random.nextInt(3) + 1;
+
+            String txt;
+            if(upgradeType == ARMOR){
+                txt = "Textures\\armorupgrade.tga";
+            } else {
+                txt = "Textures\\healthupgrade.tga";
+            }
 
             // try to find spritesheet if it was created once
-            spritesheet = SpritesheetManager.getSpritesheet("Textures\\healingpot.tga");
+            spritesheet = SpritesheetManager.getSpritesheet(txt);
 
             // creating a new spritesheet
             if (spritesheet == null){
-                spritesheet = SpritesheetManager.createSpritesheet("Textures\\healingpot.tga");
+                spritesheet = SpritesheetManager.createSpritesheet(txt);
                 Sprite[] sprites = new Sprite[1];
                 float[] texCoords =
                         {
@@ -95,7 +106,7 @@ public class HealingPot extends ItemDrop{
             cwidth *= scale;
             cheight *= scale;
 
-            light = LightManager.createLight(new Vector3f(1.f,0.f,.0f),new Vector2f(0,0),1.25f,this);
+            light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
 
             stopSpeed = 0.35f;
         }
@@ -125,4 +136,9 @@ public class HealingPot extends ItemDrop{
         }
         super.draw();
     }
+
+    public byte getUpgradeType() {
+        return upgradeType;
+    }
 }
+

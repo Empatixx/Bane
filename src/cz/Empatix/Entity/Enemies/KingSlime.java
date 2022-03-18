@@ -118,7 +118,8 @@ public class KingSlime extends Enemy {
         angle=0;
         chestCreated=false;
 
-        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,49,3);
+        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,56,4);
+        healthBar.setOffsetsBar(14,1);
         healthBar.initHealth(health,maxHealth);
 
         createShadow();
@@ -229,7 +230,8 @@ public class KingSlime extends Enemy {
             angle=0;
             chestCreated=false;
 
-            healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,49,3);
+            healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,56,4);
+            healthBar.setOffsetsBar(14,1);
             healthBar.initHealth(health,maxHealth);
 
             createShadow();
@@ -569,7 +571,8 @@ public class KingSlime extends Enemy {
         width *= scale;
         height *= scale;
 
-        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,49,3);
+        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,56,4);
+        healthBar.setOffsetsBar(14,1);
         healthBar.initHealth(health,maxHealth);
 
         createShadow();

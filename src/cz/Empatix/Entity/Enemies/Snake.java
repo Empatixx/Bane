@@ -189,12 +189,6 @@ public class Snake extends Enemy {
 
         if(dead) return;
 
-        float dist = position.distance(player[0].getPosition());
-        if(dist < 600){
-            maxSpeed = 4.6f + 8.5f * (1f - dist/600);
-        } else {
-            maxSpeed = 4.6f;
-        }
         super.update();
         movePacket();
 

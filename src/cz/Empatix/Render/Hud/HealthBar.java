@@ -4,31 +4,28 @@ import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Text.TextRender;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-
-import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
 
 public class HealthBar extends HUD{
     public static void load(){
         Loader.loadImage("Textures\\bosshealthbar.tga");
-        Loader.loadImage("Textures\\bosshealthbar-bar.tga");
         Loader.loadImage("Textures\\healthBar.tga");
-        Loader.loadImage("Textures\\healthBar-bar.tga");
+        Loader.loadImage("Textures\\mphealthBar.tga");
+        Loader.loadImage("Textures\\mparmorBar.tga");
     }
     private int health;
     private int maxHealth;
 
     private int vboVerticesBar;
-    private final int idTextureBar;
-    private final int width;
-    private final int height;
+    private final float width;
+    private final float height;
     private final int scale;
     private Vector3f pos;
 
@@ -36,51 +33,47 @@ public class HealthBar extends HUD{
     private long healthChangeTime;
 
     private Shader barShader;
-    private final Matrix4f matrixPos;
+    private Matrix4f matrixPos;
 
-    public HealthBar(String file, Vector3f pos, int scale, int xFix, int yFix){
+    private boolean showDisplayValues;
+    private TextRender valueTextRender;
+
+    public HealthBar(String file, Vector3f pos, int scale, float widthBar, float heightBar){
         super(file+".tga", pos, scale);
         barShader = ShaderManager.getShader("shaders\\healthbar");
         if (barShader == null){
             barShader = ShaderManager.createShader("shaders\\healthbar");
         }
 
-        ByteBufferImage decoder = Loader.getImage(file+"-bar.tga");
-        ByteBuffer spritesheetImage = decoder.getBuffer();
-
-        int width = decoder.getWidth();
-        int height = decoder.getHeight();
-
-        idTextureBar = glGenTextures();
-
-        glBindTexture(GL_TEXTURE_2D, idTextureBar);
-
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, spritesheetImage);
-
-        vboVerticesBar = ModelManager.getModel(width,height);
+        vboVerticesBar = ModelManager.getModel(widthBar,heightBar);
         if (vboVerticesBar == -1){
-            vboVerticesBar = ModelManager.createModel(width,height);
+            vboVerticesBar = ModelManager.createModel(widthBar,heightBar);
         }
+        //pos.y+=yFix;
 
-        pos.x+=xFix;
-        pos.y+=yFix;
-        matrixPos = new Matrix4f().translate(pos).scale(scale);
-        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
-
-        this.width = width;
-        this.height = height;
+        this.width = widthBar;
+        this.height = heightBar;
         this.scale = scale;
         this.pos = pos;
 
-
+        matrixPos = new Matrix4f().translate(pos).scale(scale);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
     }
     public void initHealth(int health,int maxHealth){
         this.health = health;
         this.maxHealth = maxHealth;
+    }
 
+    /**
+     * bar inside health bar is not centered in middle in texture, so we must little bit offset the bar so it can totally fit inside healthbar
+     * @param x - offset X of bar
+     * @param y - offset Y of bar
+     */
+    public void setOffsetsBar(int x, int y){
+        pos.x+=(x/2f)*scale;
+        pos.y+=(y/2f)*scale;
+        matrixPos = new Matrix4f().translate(pos).scale(scale);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
     }
 
     public void draw() {
@@ -103,13 +96,10 @@ public class HealthBar extends HUD{
         barShader.setUniformf("stepSize",((float)height*scale/4)*(float)Settings.HEIGHT/1080);
         barShader.setUniform3f("color", new Vector3f(0.529f, 0.298f, 0.262f));
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D,idTextureBar);
-
         glEnableVertexAttribArray(0);
 
         glBindBuffer(GL_ARRAY_BUFFER,vboVerticesBar);
-        glVertexAttribPointer(0,2,GL_INT,false,0,0);
+        glVertexAttribPointer(0,2,GL_FLOAT,false,0,0);
 
         glDrawArrays(GL_QUADS, 0, 4);
 
@@ -135,4 +125,5 @@ public class HealthBar extends HUD{
 
         this.maxHealth = maxHealth;
     }
+
 }

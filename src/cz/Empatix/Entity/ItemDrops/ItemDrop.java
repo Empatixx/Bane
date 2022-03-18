@@ -6,9 +6,7 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.TileMap;
 
-import java.io.Serializable;
-
-public abstract class ItemDrop extends MapObject implements Serializable {
+public abstract class ItemDrop extends MapObject {
     int amount;
 
     public static final int PISTOLAMMO = 1;
@@ -22,6 +20,7 @@ public abstract class ItemDrop extends MapObject implements Serializable {
     public static final int GUN = 6;
     public static final int COIN = 5;
     public static final int AMMOBOX = 9;
+    public static final int STATUPGRADE = 10;
 
     public int type;
     public boolean pickedUp;

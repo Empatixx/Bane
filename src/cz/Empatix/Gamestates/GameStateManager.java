@@ -70,6 +70,8 @@ public class GameStateManager {
         gameStates.get(currentState).init();
         if(previousState == INGAME && currentState == PROGRESSROOM){
             ((ProgressRoom)gameStates.get(currentState)).transition();
+        } else if (previousState == INGAMEMP && currentState == PROGRESSROOMMP) {
+            ((ProgressRoomMP)gameStates.get(currentState)).transition();
         }
     }
 
@@ -82,46 +84,40 @@ public class GameStateManager {
     public void setStateInitMP(int state, boolean host, String username, String ip) {
         int previousState = currentState;
         currentState = state;
-        if (currentState == PROGRESSROOMMP) {
 
-            mpManager = new MultiplayerManager(host,this,ip);
+        mpManager = new MultiplayerManager(host,this,ip);
 
-            Client client = mpManager.client.getClient();
-            Network.Join join = new Network.Join();
-            join.username = username;
-            join.host = mpManager.isHost();
-            client.sendTCP(join);
+        Client client = mpManager.client.getClient();
+        Network.Join join = new Network.Join();
+        join.username = username;
+        join.host = mpManager.isHost();
+        client.sendTCP(join);
 
-            while(client.isConnected()){
-                Object[] objects = mpManager.packetHolder.get(PacketHolder.CANJOIN);
-                if(objects.length >= 1){
-                    Network.CanJoin canJoin = (Network.CanJoin) objects[0];
-                    if(canJoin.can){
-                        mpManager.setIdConnection(canJoin.idPlayer);
-                        break;
-                    }
-                    else{
-                        currentState = previousState;
-                        mpManager.close();
-                        return;
-                    }
+        while(client.isConnected()){
+            Object[] objects = mpManager.packetHolder.get(PacketHolder.CANJOIN);
+            if(objects.length >= 1){
+                Network.CanJoin canJoin = (Network.CanJoin) objects[0];
+                if(canJoin.can){
+                    mpManager.setIdConnection(canJoin.idPlayer);
+                    break;
+                }
+                else{
+                    currentState = previousState;
+                    mpManager.close();
+                    return;
                 }
             }
-            // if packet never arrived and client was closed
-            if(mpManager.isNotConnected()){
-                currentState = previousState;
-                mpManager.close();
-                return;
-            }
-            mpManager.setUsername(username);
-
-            gameStates.get(currentState).init();
-            if (previousState == INGAME) {
-                ((ProgressRoomMP) gameStates.get(currentState)).transition();
-            }
-        } else {
-            gameStates.get(currentState).init();
         }
+        // if packet never arrived and client was closed
+        if(mpManager.isNotConnected()){
+            currentState = previousState;
+            mpManager.close();
+            return;
+        }
+        mpManager.setUsername(username);
+
+        gameStates.get(currentState).init();
+
     }
     public void update() {
         timeUpdate = System.currentTimeMillis();

@@ -16,7 +16,7 @@ public class CopyImagetoClipBoard implements ClipboardOwner {
             Dimension screenSize  = Toolkit.getDefaultToolkit().getScreenSize();
             Rectangle screen = new Rectangle( screenSize );
             BufferedImage i = robot.createScreenCapture( screen );
-            TransferableImage trans = new TransferableImage( i );
+            TransferableImage trans = new TransferableImage(i);
             Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
             c.setContents( trans, this );
         }
@@ -26,15 +26,22 @@ public class CopyImagetoClipBoard implements ClipboardOwner {
     }
 
     public void lostOwnership( Clipboard clip, Transferable trans ) {
-        System.out.println( "Lost Clipboard Ownership" );
     }
     public void copyImage(BufferedImage bi)
     {
-        TransferableImage trans = new TransferableImage( bi );
+        TransferableImage trans = new TransferableImage(bi);
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
         c.setContents( trans, this );
     }
-    private class TransferableImage implements Transferable {
+    public String getStringCopy(){
+        Clipboard c= Toolkit.getDefaultToolkit().getSystemClipboard();
+        try{
+           return (String)c.getData(DataFlavor.stringFlavor);
+        } catch (Exception e){
+            return null;
+        }
+    }
+    private static class TransferableImage implements Transferable {
 
         Image i;
 

@@ -77,11 +77,11 @@ public class GameServer {
 
                 gameState = GameStateManager.PROGRESSROOM;
 
+                boolean apdPacket = false; // all players dead
                 while (MultiplayerManager.multiplayer) {
                     long now = System.nanoTime();
                     delta += (now - lastTime) / ns;
                     lastTime = now;
-                    boolean apdPacket = false; // all players dead
                     while (delta >= 1) {
                         if (gameState == GameStateManager.INGAME) {
                             itemManager.update();

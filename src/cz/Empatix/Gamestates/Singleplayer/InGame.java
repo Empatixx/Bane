@@ -292,10 +292,13 @@ public class InGame extends GameState {
         tileMap.setTween(0.10);
 
         //health bar
-        healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,45,3);
+        healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,56,4);
+        healthBar.setOffsetsBar(19,1);
+
         healthBar.initHealth(player.getHealth(),player.getMaxHealth());
         //armor bar
-        armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3);
+        armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3,54,4);
+        armorBar.setOffsetsBar(14,2);
         armorBar.initArmor(player.getArmor(),player.getMaxArmor());
         //minimap
         tileMap.fillMiniMap();
@@ -440,9 +443,7 @@ public class InGame extends GameState {
             fadeFramebuffer.unbindFBO();
             fade.draw(fadeFramebuffer);
             if(transitionContinue) return;
-            if(player.isDead()){
-                skullPlayerdead.draw();
-            }
+            skullPlayerdead.draw();
             float time = (System.currentTimeMillis()-player.getDeathTime());
             if(time > 3500){
                 char[] gameOverTitle = "GAME OVER".toCharArray();

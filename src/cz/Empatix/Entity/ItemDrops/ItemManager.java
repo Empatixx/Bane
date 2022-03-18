@@ -13,6 +13,7 @@ import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PacketHolder;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
@@ -38,6 +39,7 @@ public class ItemManager {
         ShotgunAmmo.load();
         PistolAmmo.load();
         AmmoBox.load();
+        StatUpgradeDrop.load();
     }
     private ArrayList<ItemDrop> itemDrops;
     private TileMap tm;
@@ -100,8 +102,8 @@ public class ItemManager {
 
     // singeplayer shop item
     public void createShopDrop(float x, float y) {
-        int drops = 4;
-        int random = cz.Empatix.Java.Random.nextInt(drops);
+        int drops = 5;
+        int random = Random.nextInt(drops);
 
         ItemDrop drop;
         if (random == 0) {
@@ -115,14 +117,19 @@ public class ItemManager {
             drop = new ArmorPot(tm);
         } else if (random == 2) {
             drop = new HealingPot(tm);
+        }else if (random == 3) {
+            drop = new StatUpgradeDrop(tm, (byte) Random.nextInt(2));
+            drop.setPosition(x, y-15);
+            drop.setShop(Random.nextInt(5+tm.getFloor()*2) + 5+tm.getFloor()*2);
+            itemDrops.add(drop);
+            return;
         } else {
             Weapon weapon = gm.randomGun();
             weapon.drop();
             drop = new WeaponDrop(tm, weapon);
         }
         if(drop instanceof WeaponDrop){
-            drop.setShop(Random.nextInt(5+tm.getFloor()*2)
-                    +5+tm.getFloor()*2);
+            drop.setShop(Random.nextInt(5+tm.getFloor()*2) + 5+tm.getFloor()*2);
         } else {
             drop.setShop(Random.nextInt(3+tm.getFloor()) + 2+tm.getFloor()*2);
         }
@@ -273,7 +280,7 @@ public class ItemManager {
             else if (drop.type == ItemDrop.ARTEFACT) {
                 ((ArtefactDrop) drop).setCanPick(false);
             }
-            if (drop.intersects(player)) {
+            if (drop.intersects(player) && !player.isDead()) {
                 int type = drop.type;
                 if (drop.isShop()) {
                     showShopHud = true;
@@ -282,7 +289,7 @@ public class ItemManager {
                 } else {
                     if(MultiplayerManager.multiplayer){
                         if(type == ItemDrop.PISTOLAMMO || type == ItemDrop.SHOTGUNAMMO || type == ItemDrop.EXPLOSIVEAMMO || type == ItemDrop.COIN ||
-                        type == ItemDrop.ARMOR) continue;
+                        type == ItemDrop.ARMOR || type == ItemDrop.STATUPGRADE || type == ItemDrop.HP) continue;
                     }
                     if (type == ItemDrop.PISTOLAMMO || type == ItemDrop.SHOTGUNAMMO || type == ItemDrop.EXPLOSIVEAMMO) {
                         boolean done = gm.addAmmo(drop.getAmount(), type);
@@ -293,17 +300,26 @@ public class ItemManager {
                     } else if (type == ItemDrop.AMMOBOX) {
                         int[] ammotypes = new int[]{1,3,4};
                         for(int atype : ammotypes){
-                            boolean done = gm.addAmmo(drop.getAmount(), atype);
-                            if (done) {
-                                drop.pickedUp = true;
-                                source.play(pickupSound);
-                                break;
-                            }
+                            gm.addAmmo(drop.getAmount(), atype);
                         }
-
-                    } else if (type == ItemDrop.HP && !MultiplayerManager.multiplayer) {
+                        drop.pickedUp = true;
+                        source.play(pickupSound);
+                    } else if (type == ItemDrop.HP) {
                         if (player.getHealth() != player.getMaxHealth()) {
                             player.addHealth(2);
+                            drop.pickedUp = true;
+                            source.play(pickupSound);
+                        }
+                    } else if (type == ItemDrop.STATUPGRADE) {
+                        byte subType = ((StatUpgradeDrop)drop).getUpgradeType();
+                        if(subType == StatUpgradeDrop.HEALTH){
+                            player.setMaxHealth(player.getMaxHealth()+1);
+                            player.addHealth(1);
+                            drop.pickedUp = true;
+                            source.play(pickupSound);
+                        } else {
+                            player.setMaxArmor(player.getMaxArmor()+2);
+                            player.addArmor(2);
                             drop.pickedUp = true;
                             source.play(pickupSound);
                         }
@@ -335,6 +351,7 @@ public class ItemManager {
 
             }
         }
+        if(MultiplayerManager.multiplayer) if(((PlayerMP)player).isGhost()) selectedDrop = null;
         if (selectedDrop != null) {
             if(selectedDrop instanceof WeaponDrop){
                 ((WeaponDrop) selectedDrop).setCanPick(true);
@@ -647,6 +664,10 @@ public class ItemManager {
             artefact.dropped = true;
             drop = new ArtefactDrop(tm, artefact);
             drop.setPosition(x, y);
+        }else if (random == 4) {
+            drop = new StatUpgradeDrop(tm, packet.subType);
+            drop.setPosition(x, y);
+            itemDrops.add(drop);
         } else {
             // converting indexing from server to client ones
             int totalPlayers = MultiplayerManager.getInstance().client.getTotalPlayers();

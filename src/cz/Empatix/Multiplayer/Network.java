@@ -426,6 +426,7 @@ public class Network {
         public short price;
         public byte amount;
         public byte objectSlot;
+        public byte subType;
     }
     public static class PlayerInfo {
         public int idPlayer;

@@ -21,6 +21,8 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
+import static cz.Empatix.Main.Game.window;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
@@ -99,7 +101,6 @@ public class PlayerMP extends Player {
                 }
             }
         }
-        setCoins(100);
     }
 
     public void setOrigin(boolean origin) {
@@ -429,6 +430,7 @@ public class PlayerMP extends Player {
             animation.setFrames(ghostSpritesheet.getSprites(0));
             animation.setDelay(100);
 
+            if(isOrigin())glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
             light.setIntensity(2f);
         } else {
             GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
@@ -555,6 +557,8 @@ public class PlayerMP extends Player {
             animation.setFrames(spritesheet.getSprites(IDLE));
             animation.setDelay(100);
             light.setIntensity(4f);
+
+            if(isOrigin())glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
         }
     }
 /*

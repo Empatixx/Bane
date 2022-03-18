@@ -1,0 +1,126 @@
+package cz.Empatix.Render.Hud.Minimap;
+
+import cz.Empatix.Entity.Animation;
+import cz.Empatix.Entity.Player;
+import cz.Empatix.Java.Loader;
+import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Graphics.Model.ModelManager;
+import cz.Empatix.Render.Graphics.Shaders.Shader;
+import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Graphics.Sprites.Sprite;
+import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
+import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.TileMap;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+
+import static org.lwjgl.opengl.GL20.*;
+
+public class MMPlayerArrow {
+    public static void load(){
+        Loader.loadImage("Textures\\mmparrow.tga");
+    }
+    private Vector3f originalPos;
+    double angle;
+    private Spritesheet spritesheet;
+    private int vboVertices;
+    protected Shader shader;
+    protected Animation animation;
+    private Vector3f position;
+
+    public MMPlayerArrow(){
+        int width = 32;
+        int height = 32;
+
+        // try to find spritesheet if it was created once
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\mmparrow.tga");
+
+        // creating a new spritesheet
+        if (spritesheet == null){
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\mmparrow.tga");
+            Sprite[] sprites = new Sprite[1];
+            Sprite sprite = new Sprite(new float[]
+                    {
+                            0f, 0,
+
+                            0f, 1,
+
+                            1f, 1,
+
+                            1f, 0
+                    }
+            );
+            sprites[0] = sprite;
+            spritesheet.addSprites(sprites);
+        }
+        vboVertices = ModelManager.getModel(width,height);
+        if (vboVertices == -1){
+            vboVertices = ModelManager.createModel(width,height);
+        }
+        animation = new Animation();
+        animation.setFrames(spritesheet.getSprites(0));
+        animation.setDelay(145);
+
+        position = new Vector3f();
+        originalPos = new Vector3f();
+
+        shader = ShaderManager.getShader("shaders\\shader");
+        if (shader == null){
+            shader = ShaderManager.createShader("shaders\\shader");
+        }
+
+        setPosition(960,540);
+    }
+    public void update(Player player, TileMap tm){
+        animation.update();
+        float y = player.getY() + tm.getY() - originalPos.y;
+        float x = player.getX() + tm.getX() - originalPos.x;
+        float angle = (float)Math.atan2(y,x);
+
+        position.x = originalPos.x + 450 * (float)Math.cos(angle);
+        position.y = originalPos.y + 450 * (float)Math.sin(angle);
+    }
+    public void draw() {
+        Matrix4f target;
+        target = new Matrix4f().translate(position)
+                .scale(4)
+                .rotateZ((float)angle);
+
+        Camera.getInstance().hardProjection().mul(target,target);
+
+        shader.bind();
+        shader.setUniformi("sampler",0);
+        glActiveTexture(GL_TEXTURE0);
+        shader.setUniformm4f("projection",target);
+
+        spritesheet.bindTexture();
+
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
+        glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+
+        glBindBuffer(GL_ARRAY_BUFFER,animation.getFrame().getVbo());
+        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
+
+        glDrawArrays(GL_QUADS, 0, 4);
+
+        glBindBuffer(GL_ARRAY_BUFFER,0);
+
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+
+        shader.unbind();
+        glBindTexture(GL_TEXTURE_2D,0);
+        glActiveTexture(GL_TEXTURE0);
+
+    }
+
+    private void setPosition(float x, float y) {
+        this.originalPos.x = x;
+        this.originalPos.y = y;
+    }
+}

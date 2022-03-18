@@ -73,7 +73,7 @@ public class Game{
 
 
         // Create the window
-        window = glfwCreateWindow(Settings.WIDTH, Settings.HEIGHT, "Bane",/*NULL*/ glfwGetPrimaryMonitor(), NULL);
+        window = glfwCreateWindow(Settings.WIDTH, Settings.HEIGHT, "Bane",NULL /*glfwGetPrimaryMonitor()*/, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 

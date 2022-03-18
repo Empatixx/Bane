@@ -62,8 +62,8 @@ public class ItemManagerMP {
     }
 
     public void createShopDrop(float x, float y, int idObject) {
-        int drops = 5;
-        int random = cz.Empatix.Java.Random.nextInt(drops);
+        int drops = 6;
+        int random = Random.nextInt(drops);
         ItemDrop drop;
         int slot = -1;
 
@@ -82,21 +82,26 @@ public class ItemManagerMP {
             itemDrops.add(drop);
         } else if (random == 3) {
             Artefact artefact = am.randomShopArtefact();
-            if(artefact == null){
+            if (artefact == null) {
                 Weapon weapon = gm.randomGun();
                 weapon.drop();
                 drop = new WeaponDrop(tm, weapon);
                 drop.setPosition(x, y);
                 itemDrops.add(drop);
                 slot = gm.getWeaponSlot(weapon);
-                random = 4;
+                random = 5;
             } else {
-                drop = new ArtefactDrop(tm,artefact);
+                drop = new ArtefactDrop(tm, artefact);
                 drop.setPosition(x, y);
                 itemDrops.add(drop);
                 slot = am.getArtefactSlot(artefact);
             }
-        } else  {
+        }else if (random == 4) {
+            int subType = Random.nextInt(2);
+            drop = new StatUpgradeDrop(tm, (byte)subType);
+            drop.setPosition(x, y-15);
+            itemDrops.add(drop);
+        } else {
             Weapon weapon = gm.randomGun();
             weapon.drop();
             drop = new WeaponDrop(tm, weapon);
@@ -105,7 +110,7 @@ public class ItemManagerMP {
             slot = gm.getWeaponSlot(weapon);
         }
         int price;
-        if(drop instanceof WeaponDrop){
+        if(drop instanceof WeaponDrop || drop instanceof StatUpgradeDrop){
             price = Random.nextInt(5+tm.getFloor()*2) +5+tm.getFloor()*2;
             drop.setShop(price);
         }
@@ -122,6 +127,7 @@ public class ItemManagerMP {
         shopPacket.type = (byte)random;
         shopPacket.price = (short) drop.getPrice();
         shopPacket.objectSlot = (byte)slot;
+        if(drop instanceof StatUpgradeDrop) shopPacket.subType = ((StatUpgradeDrop) drop).getUpgradeType();
         Server server = MultiplayerManager.getInstance().server.getServer();
         server.sendToAllTCP(shopPacket);
     }
@@ -249,13 +255,9 @@ public class ItemManagerMP {
                             } else if (type == ItemDrop.AMMOBOX) {
                                 int[] ammotypes = new int[]{1,3,4};
                                 for(int atype : ammotypes){
-                                    boolean done = gm.addAmmo(drop.getAmount(), atype,player.getIdConnection());
-                                    if (done) {
-                                        drop.pickedUp = true;
-                                        break;
-                                    }
+                                    gm.addAmmo(drop.getAmount(), atype,player.getIdConnection());
                                 }
-
+                                drop.pickedUp = true;
                             } else if (type == ItemDrop.HP) {
                                 if (player.getHealth() != player.getMaxHealth()) {
                                     player.addHealth(2);
@@ -270,6 +272,17 @@ public class ItemManagerMP {
                                 if (distance > newDist || distance == -1) {
                                     distance = newDist;
                                     selectedDrop = drop;
+                                }
+                            } else if (type == ItemDrop.STATUPGRADE) {
+                                byte subType = ((StatUpgradeDrop)drop).getUpgradeType();
+                                if(subType == StatUpgradeDrop.HEALTH){
+                                    player.setMaxHealth(player.getMaxHealth()+1);
+                                    player.addHealth(1);
+                                    drop.pickedUp = true;
+                                } else {
+                                    player.setMaxArmor(player.getMaxArmor()+2);
+                                    player.addArmor(2);
+                                    drop.pickedUp = true;
                                 }
                             } else if (type == ItemDrop.ARTEFACT) {
                                 float newDist = (float) ((ArtefactDrop) drop).distance(player.getX(), player.getY());

@@ -112,7 +112,6 @@ public class GunsManager {
         source = AudioManager.createSource(Source.EFFECTS,0.35f);
 
         equipedweapons = new Weapon[2];
-
         equipedweapons[0] = weapons.get(0);
 
         current = equipedweapons[FIRSTSLOT];

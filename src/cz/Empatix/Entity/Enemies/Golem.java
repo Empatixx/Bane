@@ -43,12 +43,9 @@ public class Golem extends Enemy {
     private static final int BARRIER = 6;
     private static final int DEAD = 7;
 
-    private boolean disableDraw;
-
     private boolean chestCreated;
 
     private LaserBeam laserBeam;
-
 
     private HealthBar healthBar;
 
@@ -135,7 +132,8 @@ public class Golem extends Enemy {
 
         chestCreated=false;
 
-        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,49,3);
+        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,56,4);
+        healthBar.setOffsetsBar(14,1);
         healthBar.initHealth(health,maxHealth);
 
         createShadow();
@@ -262,7 +260,8 @@ public class Golem extends Enemy {
 
             chestCreated=false;
 
-            healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,49,3);
+            healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,56,4);
+            healthBar.setOffsetsBar(14,1);
             healthBar.initHealth(health,maxHealth);
 
             createShadow();
@@ -479,12 +478,9 @@ public class Golem extends Enemy {
     }
 
     public void draw() {
-
-        if(!disableDraw){
-            super.draw();
-            if(currentAction == EYE_BEAM){
-                laserBeam.draw();
-            }
+        super.draw();
+        if(currentAction == EYE_BEAM){
+            laserBeam.draw();
         }
 
 
@@ -514,7 +510,7 @@ public class Golem extends Enemy {
 
     @Override
     public void drawShadow() {
-        if(!disableDraw) drawShadow(11f,65);
+        drawShadow(11f,65);
     }
 
 
@@ -617,34 +613,9 @@ public class Golem extends Enemy {
             animation.update();
             setMapPosition();
             if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
-                float y = originalPos.y- player[lastPlayerTargetIndex].getY();
-                float x = originalPos.x- player[lastPlayerTargetIndex].getX();
-                float angle = (float)Math.atan(y/x);
-                if(!facingRight){
-                    angle+=Math.PI;
-                }
-                boolean reverseDir = false;
-                if(Math.PI*2-Math.abs(this.angle - angle) < Math.abs(this.angle - angle)){
-                    reverseDir = true;
-                }
-                if(!reverseDir){
-                    this.angle += (angle - this.angle) * .07;
-                } else {
-                    if(this.angle >= 0){
-                        this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * .035;
-                        if(this.angle >= Math.PI*3/2.){
-                            this.angle-=Math.PI*3/2.;
-                            this.angle=-Math.PI/2. - this.angle;
-                        }
-                    } else {
-                        this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * .035;
-                        if(this.angle <= -Math.PI/2.){
-                            this.angle+=Math.PI/2;
-                            this.angle=Math.PI*3/2.-this.angle;
-                        }
-                    }
-
-                }
+                float y = player[lastPlayerTargetIndex].getY() - originalPos.y;
+                float x = player[lastPlayerTargetIndex].getX() - originalPos.x;
+                angle = (float)Math.atan2(y,x);
 
                 position.x = originalPos.x + (width/2-65) * (float)Math.cos(this.angle);
                 position.y = originalPos.y + (width/2-65) * (float)Math.sin(this.angle);

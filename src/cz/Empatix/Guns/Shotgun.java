@@ -282,7 +282,6 @@ public class Shotgun extends Weapon {
     @Override
     public void updateAmmo() {
         for(int i = 0; i < bullets.size(); i++) {
-            System.out.println("UPDATED: "+bullets.get(i).id);
             bullets.get(i).update();
             if(bullets.get(i).shouldRemove()) {
                 bullets.remove(i);

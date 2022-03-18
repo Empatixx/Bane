@@ -22,7 +22,7 @@ public class Demoneye extends Enemy {
         super(tm,player);
 
         moveSpeed = 2f;
-        maxSpeed = 8.5f;
+        maxSpeed = 6.5f;
         stopSpeed = 1.6f;
 
         width = 76;
@@ -92,7 +92,7 @@ public class Demoneye extends Enemy {
         super(tm,player);
         if(tm.isServerSide()){
             moveSpeed = 2f;
-            maxSpeed = 8.5f;
+            maxSpeed = 6.5f;
             stopSpeed = 1.6f;
 
             width = 76;
@@ -115,7 +115,7 @@ public class Demoneye extends Enemy {
             cheight *= 2;
         } else {
             moveSpeed = 2f;
-            maxSpeed = 8.5f;
+            maxSpeed = 6.5f;
             stopSpeed = 1.6f;
 
             width = 76;

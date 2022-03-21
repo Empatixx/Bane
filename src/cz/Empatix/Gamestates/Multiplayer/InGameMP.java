@@ -446,6 +446,8 @@ public class InGameMP extends GameState {
             armorBar[index].setOffsetsBar(3,0);
             barName[index-1] = new TextRender();
 
+            miniMap.addPlayerArrow(this.player[index]);
+
             deathIcon = new Image("Textures\\skull.tga",new Vector3f(100,315,0),2f);
 
             playerReadies[index] = new PlayerReady(packetUsername,player.idPlayer);
@@ -459,6 +461,7 @@ public class InGameMP extends GameState {
             Network.Disconnect packet = (Network.Disconnect) object;
             int idOrigin = mpManager.getIdConnection();
             player[index].remove();
+            miniMap.removePlayerArrow(player[index].getIdConnection());
             player[index] = null;
             playerReadies[index] = null;
             healthBar[index] = null;
@@ -1007,6 +1010,7 @@ public class InGameMP extends GameState {
             if(idOrigin != packet.idPlayer){
                 AlertManager.add(AlertManager.WARNING,player[1].getUsername()+" has left the game!");
             }
+            miniMap.removePlayerArrow(this.player[index].getIdConnection());
             player[index] = null;
             playerReadies[index] = null;
             healthBar[index] = null;
@@ -1031,6 +1035,8 @@ public class InGameMP extends GameState {
             armorBar[index].initArmor(this.player[index].getArmor(),this.player[index].getMaxArmor());
             armorBar[index].setOffsetsBar(3,-0.5f);
             barName[index-1] = new TextRender();
+
+            miniMap.addPlayerArrow(this.player[index]);
 
             deathIcon = new Image("Textures\\skull.tga",new Vector3f(100,315,0),2f);
 

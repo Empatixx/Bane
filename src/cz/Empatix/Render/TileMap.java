@@ -2086,7 +2086,19 @@ public class TileMap {
 		return true;
 	}
 
-	public void setFloor(int floor) {
-		this.floor = floor;
+	private static class FloorAffixes{
+		private static final int LOWHPPOTS = 0;
+		private static final int INFLATION = 1;
+		private static final int BOOSTHP = 2;
+		private static final int BERSERKS = 3;
+		private static final int ENEMYREGEN = 4;
+		private boolean[] affixes;
+		private int firstAffix;
+		private int secondAffix;
+		private int thirdAffix;
+		private FloorAffixes(){
+			affixes = new boolean[5];
+		}
+
 	}
 }

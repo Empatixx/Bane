@@ -1,7 +1,6 @@
 package cz.Empatix.Render.Hud.Minimap;
 
 import cz.Empatix.Entity.Animation;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Multiplayer.PlayerMP;
@@ -55,7 +54,7 @@ public class MiniMap {
     private Animation playerIconAnimation;
     private Spritesheet playerIcon;
     private Vector3f playerIconPos;
-    private MMPlayerArrow playerArrow;
+    private MMPlayerArrow playerArrows[];
 
     public MiniMap(boolean serverSide){
         // only for multiplayer server side
@@ -168,16 +167,15 @@ public class MiniMap {
         }
         playerIconPos.x = 1770;
         playerIconPos.y = 150;
-        if(MultiplayerManager.multiplayer){
-            playerArrow = new MMPlayerArrow();
-        }
+
+        playerArrows = new MMPlayerArrow[1];
     }
     public void update(TileMap tm){
         Room room = tm.getCurrentRoom();
         int x = room.getX() - 10;
         int y = room.getY() - 10;
         if(displayBigMap){
-            playerIconPos.x = 1000+x*64;
+            playerIconPos.x = 960+x*64;
             playerIconPos.y = 500+y*64;
         } else {
             playerIconPos.x = 1770+x*20;
@@ -199,7 +197,27 @@ public class MiniMap {
                 }
             }
         }
-        if(players[1] != null) playerArrow.update(players[1],tm);
+        if(players[1] != null) playerArrows[0].update(tm);
+    }
+    // MP function that makes arrow that follows defined player
+    public void addPlayerArrow(PlayerMP player){
+        for(int i = 0;i<playerArrows.length;i++){
+            if(playerArrows[i] == null){
+                playerArrows[i] = new MMPlayerArrow(player);
+                break;
+            }
+        }
+    }
+    // MP function - clearup after disconnect
+    public void removePlayerArrow(int idCon){
+        for(int i = 0;i<playerArrows.length;i++){
+            if(playerArrows[i] != null){
+                if(playerArrows[i].isThisHim(idCon)){
+                    playerArrows[i] = null;
+                    break;
+                }
+            }
+        }
     }
     public void draw() {
         minimapBorders.draw();
@@ -210,7 +228,7 @@ public class MiniMap {
         if (displayBigMap) {
             for (MMRoom room : rooms) {
                 if (room.isDiscovered()) {
-                    drawRoom(room,1000 + room.getX() * 64,500 + room.getY() * 64,4);
+                    drawRoom(room,960 + room.getX() * 64,500 + room.getY() * 64,4);
                 }
             }
             //shader.bind();
@@ -221,22 +239,22 @@ public class MiniMap {
                     MMRoom[] sideRooms = room.getSideRooms();
                     if(sideRooms[1] != null) {
                         if (room.isBottom()) {
-                            drawPathUnentered(sideRooms[1],1000 + room.getX() * 64,500 + room.getY() * 64 + 32,4,0);
+                            drawPathUnentered(sideRooms[1],960 + room.getX() * 64,500 + room.getY() * 64 + 32,4,0);
                         }
                     }
                     if(sideRooms[0] != null) {
                         if (room.isTop()) {
-                            drawPathUnentered(sideRooms[0],1000 + room.getX() * 64,500 + room.getY() * 64 - 32,4,1);
+                            drawPathUnentered(sideRooms[0],960 + room.getX() * 64,500 + room.getY() * 64 - 32,4,1);
                         }
                     }
                     if(sideRooms[2] != null) {
                         if (room.isLeft()) {
-                            drawPathUnentered(sideRooms[2],1000 + room.getX() * 64 - 32,500 + room.getY() * 64 ,4,2);
+                            drawPathUnentered(sideRooms[2],960 + room.getX() * 64 - 32,500 + room.getY() * 64 ,4,2);
                         }
                     }
                     if(sideRooms[3] != null) {
                         if (room.isRight()) {
-                            drawPathUnentered(sideRooms[3],1000 + room.getX() * 64 + 32,500 + room.getY() * 64,4,3);
+                            drawPathUnentered(sideRooms[3],960 + room.getX() * 64 + 32,500 + room.getY() * 64,4,3);
                         }
                     }
                 }
@@ -251,23 +269,23 @@ public class MiniMap {
                     MMRoom[] sideRooms = room.getSideRooms();
                     if(sideRooms[1] != null) {
                         if (room.isBottom()) {
-                            drawPathEntered(sideRooms[1],1000 + room.getX() * 64,500 + room.getY() * 64 + 32,4,0);
+                            drawPathEntered(sideRooms[1],960 + room.getX() * 64,500 + room.getY() * 64 + 32,4,0);
 
                         }
                     }
                     if(sideRooms[0] != null) {
                         if (room.isTop()) {
-                            drawPathEntered(sideRooms[0],1000 + room.getX() * 64,500 + room.getY() * 64 - 32,4,1);
+                            drawPathEntered(sideRooms[0],960 + room.getX() * 64,500 + room.getY() * 64 - 32,4,1);
                         }
                     }
                     if(sideRooms[2] != null) {
                         if (room.isLeft()) {
-                            drawPathEntered(sideRooms[2],1000 + room.getX() * 64 - 32,500 + room.getY() * 64,4,2);
+                            drawPathEntered(sideRooms[2],960 + room.getX() * 64 - 32,500 + room.getY() * 64,4,2);
                         }
                     }
                     if(sideRooms[3] != null) {
                         if (room.isRight()) {
-                            drawPathEntered(sideRooms[3],1000 + room.getX() * 64 + 32,500 + room.getY() * 64,4,3);
+                            drawPathEntered(sideRooms[3],960 + room.getX() * 64 + 32,500 + room.getY() * 64,4,3);
                         }
                     }
                 }
@@ -340,7 +358,9 @@ public class MiniMap {
         }
         drawPlayerIcon();
 
-        playerArrow.draw();
+        for(MMPlayerArrow arrow : playerArrows){
+            if(arrow != null)arrow.draw();
+        }
     }
     public void addRoom(MMRoom room, int number){
         rooms[number] = room;
@@ -350,7 +370,7 @@ public class MiniMap {
         if(k == ControlSettings.getValue(ControlSettings.MAP)){
             displayBigMap = true;
             minimapBorders.setScale(7f);
-            minimapBorders.setPosition(new Vector3f(1000,500,0));
+            minimapBorders.setPosition(new Vector3f(960,500,0));
         }
     }
     public void keyReleased(int k){

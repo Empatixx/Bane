@@ -3,6 +3,7 @@ package cz.Empatix.Render.Hud.Minimap;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -28,7 +29,10 @@ public class MMPlayerArrow {
     protected Animation animation;
     private Vector3f position;
 
-    public MMPlayerArrow(){
+    private Player followedPlayer; // player that is followed by arrow
+
+    public MMPlayerArrow(PlayerMP player){
+        this.followedPlayer = player;
         int width = 32;
         int height = 32;
 
@@ -69,24 +73,24 @@ public class MMPlayerArrow {
             shader = ShaderManager.createShader("shaders\\shader");
         }
 
-        setPosition(960,540);
     }
-    public void update(Player player, TileMap tm){
+    public void update(TileMap tm){
         animation.update();
-        float y = player.getY() + tm.getY() - originalPos.y;
-        float x = player.getX() + tm.getX() - originalPos.x;
-        float angle = (float)Math.atan2(y,x);
-
-        position.x = originalPos.x + 450 * (float)Math.cos(angle);
-        position.y = originalPos.y + 450 * (float)Math.sin(angle);
+        float y = followedPlayer.getY() + tm.getY() - position.y;
+        float x = followedPlayer.getX() + tm.getX() - position.x;
+        angle = (float)Math.atan2(y,x);
+        position.x = 960  + 400 *(float)Math.cos(angle);
+        position.y = 500 + 400 *(float)Math.sin(angle);
     }
     public void draw() {
+        if(!followedPlayer.isNotOnScrean()) return;
         Matrix4f target;
         target = new Matrix4f().translate(position)
                 .scale(4)
                 .rotateZ((float)angle);
 
         Camera.getInstance().hardProjection().mul(target,target);
+        System.out.println("ANGLE "+angle);
 
         shader.bind();
         shader.setUniformi("sampler",0);
@@ -119,8 +123,7 @@ public class MMPlayerArrow {
 
     }
 
-    private void setPosition(float x, float y) {
-        this.originalPos.x = x;
-        this.originalPos.y = y;
+    public boolean isThisHim(int idCon) {
+        return followedPlayer.id == idCon;
     }
 }

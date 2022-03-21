@@ -427,204 +427,35 @@ public class Room {
 
             // spikes
             for(int i = 0;i<num;i++){
-                int tileSize = tm.getTileSize();
-
-                int xMinTile = xMin/tileSize + 3;
-                int yMinTile = yMin/tileSize + 3;
-
-                int xMaxTile = xMax/tileSize - 3;
-                int yMaxTile = yMax/tileSize - 3;
-
-                int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-
-                boolean done = false;
-                while(!done){
-                    boolean collision = false;
-
-                    x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                    y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-                    A: for(int j = -1;j<2;j++){
-                        for(int k = -1;k<2;k++){
-                            if(tm.getType(y+j,x+k) == Tile.BLOCKED){
-                                collision=true;
-                                break A;
-                            }
-                        }
-                    }
-                    if(!collision) done = true;
-                }
-                Spike spike = new Spike(tm);
-                spike.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
-                addObject(spike);
-                sendAddRoomObjectPacket(spike,tm);
-
+                addSpike(tm);
             }
             // flags
             num = cz.Empatix.Java.Random.nextInt(3);
             for(int i = 0;i<num;i++) {
-                int tileSize = tm.getTileSize();
-
-                int xMinTile = xMin/tileSize + 1;
-                int yMinTile = yMin/tileSize + 1;
-
-                int xMaxTile = xMax/tileSize - 1;
-                int yMaxTile = yMax/tileSize - 1;
-
-                int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-                while(tm.getType(y-1,x) != Tile.BLOCKED || tm.getType(y,x) == Tile.BLOCKED){
-                    x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                    y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-                }
-                Flag flag = new Flag(tm);
-                flag.setPosition(x*tileSize+tileSize/2,y*tileSize-tileSize/2);
-                this.addObject(flag);
-                sendAddRoomObjectPacket(flag,tm);
-
+                addFlag(tm);
             }
             for(int i = 0;i<3;i++){
                 if(Math.random() > 0.5){
-                    int tileSize = tm.getTileSize();
-
-                    int xMinTile = xMin/tileSize + 1;
-                    int yMinTile = yMin/tileSize + 1;
-
-                    int xMaxTile = xMax/tileSize - 1;
-                    int yMaxTile = yMax/tileSize - 1;
-
-                    int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                    int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-                    while(tm.getType(y,x) == Tile.BLOCKED){
-                        x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                        y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-                    }
-                    Bones bones = new Bones(tm);
-                    bones.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
-                    this.addObject(bones);
-                    sendAddRoomObjectPacket(bones,tm);
-
+                    addBones(tm);
                 }
             }
             for(int i = 0;i<2;i++){
                 if(Math.random() > 0.5){
-                    int tileSize = tm.getTileSize();
-
-                    int xMinTile = xMin/tileSize + 3;
-                    int yMinTile = yMin/tileSize + 3;
-
-                    int xMaxTile = xMax/tileSize - 3;
-                    int yMaxTile = yMax/tileSize - 3;
-
-                    int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                    int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-                    while(tm.getType(y,x) == Tile.BLOCKED){
-                        x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                        y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-                    }
-                    Barrel barrel = new Barrel(tm);
-                    barrel.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
-                    this.addObject(barrel);
-                    sendAddRoomObjectPacket(barrel,tm);
-
+                    addBarrel(tm);
                 }
             }
             // arrows traps
             for(int i = 0; i< cz.Empatix.Java.Random.nextInt(2); i++) {
-                int tileSize = tm.getTileSize();
-
-                int xMinTile = xMin/tileSize + 1;
-                int yMinTile = yMin/tileSize + 1;
-
-                int xMaxTile = xMax/tileSize - 2;
-                int yMaxTile = yMax/tileSize - 2;
-
-                int x;
-                int y;
-                ArrowTrap arrowTrap = new ArrowTrap(tm,player);
-                do{
-                    x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                    y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-                    if(tm.getType(y-1,x) == Tile.BLOCKED && tm.getType(y,x) != Tile.BLOCKED){
-                        arrowTrap.setPosition(x*tileSize+tileSize/2,y*tileSize-tileSize/2);
-                        arrowTrap.setType(ArrowTrap.TOP);
-                    } else if (tm.getType(y, x - 1) == Tile.BLOCKED && tm.getType(y +1, x - 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
-                        arrowTrap.setType(ArrowTrap.LEFT);
-                        arrowTrap.setPosition(x * tileSize - tileSize/6, y * tileSize + tileSize / 2);
-                    } else if (tm.getType(y, x + 1) == Tile.BLOCKED && tm.getType(y +1, x + 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
-                        arrowTrap.setType(ArrowTrap.RIGHT);
-                        arrowTrap.setPosition(x * tileSize + 6*tileSize/5 , y * tileSize + tileSize / 2);
-                    }
-                }while ((tm.getType(y-1,x) != Tile.BLOCKED || tm.getType(y,x) == Tile.BLOCKED) &&
-                        (tm.getType(y, x - 1) != Tile.BLOCKED || tm.getType(y +1, x - 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) &&
-                        (tm.getType(y, x + 1) != Tile.BLOCKED || tm.getType(y +1, x + 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED)  ||
-                        intersectsObjects(arrowTrap));
-                this.addObject(arrowTrap);
-                sendAddRoomObjectPacket(arrowTrap,tm);
-
+                addArrowTrap(tm,player);
             }
             // torches
             for(int i = 0;i<5;i++) {
-                int tileSize = tm.getTileSize();
-
-                int xMinTile = xMin / tileSize + 1;
-                int yMinTile = yMin / tileSize + 1;
-
-                int xMaxTile = xMax / tileSize - 1;
-                int yMaxTile = yMax / tileSize - 1;
-
-                Torch torch = new Torch(tm);
-
-                int x;
-                int y;
-                do{
-                    x = cz.Empatix.Java.Random.nextInt(xMaxTile - xMinTile + 1) + xMinTile;
-                    y = cz.Empatix.Java.Random.nextInt(yMaxTile - yMinTile + 1) + yMinTile;
-                    if (tm.getType(y - 1, x) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
-                        int type = Torch.TOP;
-                        torch.setType(type);
-                        torch.setPosition(x * tileSize + tileSize / 2, y * tileSize - tileSize / 2);
-                    } else if (tm.getType(y, x - 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
-                        int type = Torch.SIDERIGHT;
-                        torch.setType(type);
-                        torch.setPosition(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2);
-                    } else if (tm.getType(y, x + 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
-                        int type = Torch.SIDELEFT;
-                        torch.setType(type);
-                        torch.setPosition(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2);
-                    }
-                } while ((tm.getType(y - 1, x) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) &&
-                        (tm.getType(y, x - 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) &&
-                        (tm.getType(y, x + 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) ||
-                        intersectsObjects(torch)) ;
-                addObject(torch);
-                sendAddRoomObjectPacket(torch,tm);
-
+                addTorch(tm);
             }
 
             if(Math.random() < 0.2){
                 if(left){
-                    int tileSize = tm.getTileSize();
-
-                    int xMinTile = xMin/tileSize - 2;
-                    int yMinTile = yMin/tileSize + 1;
-
-                    int xMaxTile = xMin/tileSize - 1;
-                    int yMaxTile = yMax/tileSize - 1;
-
-                    int x;
-                    int y;
-                    Flamethrower flamethrower = new Flamethrower(tm,player);
-                    flamethrower.setType(Flamethrower.VERTICAL);
-                    do{
-                        x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                        y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-                        flamethrower.setPosition(x*tileSize+tileSize/2,y*tileSize);
-                    } while ((tm.getType(y - 1, x) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) ||
-                            intersectsObjects(flamethrower)) ;
-                    addObject(flamethrower);
-                    sendAddRoomObjectPacket(flamethrower,tm);
-
+                    addFlamethrower(tm,player);
                 }
             }
         }
@@ -765,6 +596,98 @@ public class Room {
 
     }
 
+    private void addFlamethrower(TileMap tm, Player[] player) {
+        int tileSize = tm.getTileSize();
+
+        int xMinTile = xMin/tileSize - 2;
+        int yMinTile = yMin/tileSize + 1;
+
+        int xMaxTile = xMin/tileSize - 1;
+        int yMaxTile = yMax/tileSize - 1;
+
+        int x;
+        int y;
+        Flamethrower flamethrower = new Flamethrower(tm,player);
+        flamethrower.setType(Flamethrower.VERTICAL);
+        do{
+            x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+            y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+            flamethrower.setPosition(x*tileSize+tileSize/2,y*tileSize);
+        } while ((tm.getType(y - 1, x) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) ||
+                intersectsObjects(flamethrower)) ;
+        addObject(flamethrower);
+        sendAddRoomObjectPacket(flamethrower,tm);
+    }
+
+    private void addTorch(TileMap tm) {
+        int tileSize = tm.getTileSize();
+
+        int xMinTile = xMin / tileSize + 1;
+        int yMinTile = yMin / tileSize + 1;
+
+        int xMaxTile = xMax / tileSize - 1;
+        int yMaxTile = yMax / tileSize - 1;
+
+        Torch torch = new Torch(tm);
+
+        int x;
+        int y;
+        do{
+            x = cz.Empatix.Java.Random.nextInt(xMaxTile - xMinTile + 1) + xMinTile;
+            y = cz.Empatix.Java.Random.nextInt(yMaxTile - yMinTile + 1) + yMinTile;
+            if (tm.getType(y - 1, x) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
+                int type = Torch.TOP;
+                torch.setType(type);
+                torch.setPosition(x * tileSize + tileSize / 2, y * tileSize - tileSize / 2);
+            } else if (tm.getType(y, x - 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
+                int type = Torch.SIDERIGHT;
+                torch.setType(type);
+                torch.setPosition(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2);
+            } else if (tm.getType(y, x + 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
+                int type = Torch.SIDELEFT;
+                torch.setType(type);
+                torch.setPosition(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2);
+            }
+        } while ((tm.getType(y - 1, x) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) &&
+                (tm.getType(y, x - 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) &&
+                (tm.getType(y, x + 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) ||
+                intersectsObjects(torch)) ;
+        addObject(torch);
+        sendAddRoomObjectPacket(torch,tm);
+    }
+
+    private void addArrowTrap(TileMap tm,Player[] player) {
+        int tileSize = tm.getTileSize();
+
+        int xMinTile = xMin/tileSize + 1;
+        int yMinTile = yMin/tileSize + 1;
+
+        int xMaxTile = xMax/tileSize - 2;
+        int yMaxTile = yMax/tileSize - 2;
+
+        int x;
+        int y;
+        ArrowTrap arrowTrap = new ArrowTrap(tm,player);
+        do{
+            x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+            y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+            if(tm.getType(y-1,x) == Tile.BLOCKED && tm.getType(y,x) != Tile.BLOCKED){
+                arrowTrap.setPosition(x*tileSize+tileSize/2,y*tileSize-tileSize/2);
+                arrowTrap.setType(ArrowTrap.TOP);
+            } else if (tm.getType(y, x - 1) == Tile.BLOCKED && tm.getType(y +1, x - 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
+                arrowTrap.setType(ArrowTrap.LEFT);
+                arrowTrap.setPosition(x * tileSize - tileSize/6, y * tileSize + tileSize / 2);
+            } else if (tm.getType(y, x + 1) == Tile.BLOCKED && tm.getType(y +1, x + 1) == Tile.BLOCKED && tm.getType(y, x) != Tile.BLOCKED){
+                arrowTrap.setType(ArrowTrap.RIGHT);
+                arrowTrap.setPosition(x * tileSize + 6*tileSize/5 , y * tileSize + tileSize / 2);
+            }
+        }while ((tm.getType(y-1,x) != Tile.BLOCKED || tm.getType(y,x) == Tile.BLOCKED) &&
+                (tm.getType(y, x - 1) != Tile.BLOCKED || tm.getType(y +1, x - 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED) &&
+                (tm.getType(y, x + 1) != Tile.BLOCKED || tm.getType(y +1, x + 1) != Tile.BLOCKED || tm.getType(y, x) == Tile.BLOCKED)  ||
+                intersectsObjects(arrowTrap));
+        this.addObject(arrowTrap);
+        sendAddRoomObjectPacket(arrowTrap,tm);
+    }
 
     public ArrayList<RoomObject> getMapObjects(){return mapObjects;}
 
@@ -898,4 +821,99 @@ public class Room {
         entered = false;
     }
     public boolean hasBeenEntered(){return entered;}
+
+    private void addSpike(TileMap tm){
+        int tileSize = tm.getTileSize();
+
+        int xMinTile = xMin/tileSize + 3;
+        int yMinTile = yMin/tileSize + 3;
+
+        int xMaxTile = xMax/tileSize - 3;
+        int yMaxTile = yMax/tileSize - 3;
+
+        int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+        int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+
+        boolean done = false;
+        while(!done){
+            boolean collision = false;
+
+            x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+            y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+            A: for(int j = -1;j<2;j++){
+                for(int k = -1;k<2;k++){
+                    if(tm.getType(y+j,x+k) == Tile.BLOCKED){
+                        collision=true;
+                        break A;
+                    }
+                }
+            }
+            if(!collision) done = true;
+        }
+        Spike spike = new Spike(tm);
+        spike.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
+        addObject(spike);
+        sendAddRoomObjectPacket(spike,tm);
+    }
+    private void addFlag(TileMap tm) {
+        int tileSize = tm.getTileSize();
+
+        int xMinTile = xMin/tileSize + 1;
+        int yMinTile = yMin/tileSize + 1;
+
+        int xMaxTile = xMax/tileSize - 1;
+        int yMaxTile = yMax/tileSize - 1;
+
+        int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+        int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+        while(tm.getType(y-1,x) != Tile.BLOCKED || tm.getType(y,x) == Tile.BLOCKED){
+            x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+            y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+        }
+        Flag flag = new Flag(tm);
+        flag.setPosition(x*tileSize+tileSize/2,y*tileSize-tileSize/2);
+        this.addObject(flag);
+        sendAddRoomObjectPacket(flag,tm);
+    }
+    private void addBones(TileMap tm) {
+        int tileSize = tm.getTileSize();
+
+        int xMinTile = xMin/tileSize + 1;
+        int yMinTile = yMin/tileSize + 1;
+
+        int xMaxTile = xMax/tileSize - 1;
+        int yMaxTile = yMax/tileSize - 1;
+
+        int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+        int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+        while(tm.getType(y,x) == Tile.BLOCKED){
+            x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+            y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+        }
+        Bones bones = new Bones(tm);
+        bones.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
+        this.addObject(bones);
+        sendAddRoomObjectPacket(bones,tm);
+    }
+    private void addBarrel(TileMap tm) {
+        int tileSize = tm.getTileSize();
+
+        int xMinTile = xMin/tileSize + 3;
+        int yMinTile = yMin/tileSize + 3;
+
+        int xMaxTile = xMax/tileSize - 3;
+        int yMaxTile = yMax/tileSize - 3;
+
+        int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+        int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+        while(tm.getType(y,x) == Tile.BLOCKED){
+            x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+            y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+        }
+        Barrel barrel = new Barrel(tm);
+        barrel.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
+        this.addObject(barrel);
+        sendAddRoomObjectPacket(barrel,tm);
+    }
+
 }

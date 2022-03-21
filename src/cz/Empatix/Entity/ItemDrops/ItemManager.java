@@ -300,10 +300,10 @@ public class ItemManager {
                     } else if (type == ItemDrop.AMMOBOX) {
                         int[] ammotypes = new int[]{1,3,4};
                         for(int atype : ammotypes){
-                            gm.addAmmo(drop.getAmount(), atype);
+                            boolean picked = gm.addAmmo(drop.getAmount(), atype);
+                            if(picked) drop.pickedUp = true;
                         }
-                        drop.pickedUp = true;
-                        source.play(pickupSound);
+                        if(drop.pickedUp) source.play(pickupSound);
                     } else if (type == ItemDrop.HP) {
                         if (player.getHealth() != player.getMaxHealth()) {
                             player.addHealth(2);

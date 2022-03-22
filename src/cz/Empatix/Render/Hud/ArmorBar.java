@@ -7,6 +7,7 @@ import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Text.TextRender;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -35,6 +36,12 @@ public class ArmorBar extends HUD{
     private Shader barShader;
     private Matrix4f matrixPos;
 
+    private boolean showDisplayValues;
+    private TextRender valueTextRender;
+
+    private float minX, maxX, minY, maxY;
+    private boolean canHover;
+
     public ArmorBar(String file, Vector3f pos, int scale, float widthBar, float heightBar){
         super(file+".tga", pos, scale);
         barShader = ShaderManager.getShader("shaders\\healthbar");
@@ -55,6 +62,14 @@ public class ArmorBar extends HUD{
         this.pos = pos;
         this.scale = scale;
 
+        valueTextRender = new TextRender();
+        minX = (int)pos.x - width*scale/2;
+        minY = (int)pos.y - height*scale/2;
+
+        maxY = (int)pos.y + height*scale/2;
+        maxX = (int)pos.x + width*scale/2;
+
+        showDisplayValues = false;
     }
     /**
      * bar inside health bar is not centered in middle in texture, so we must little bit offset the bar so it can totally fit inside healthbar
@@ -64,6 +79,11 @@ public class ArmorBar extends HUD{
     public void setOffsetsBar(float x, float y){
         pos.x+=(x/2f)*scale;
         pos.y+=(y/2f)*scale;
+        minX = (int)pos.x - width*scale/2;
+        minY = (int)pos.y - height*scale/2;
+
+        maxY = (int)pos.y + height*scale/2;
+        maxX = (int)pos.x + width*scale/2;
         matrixPos = new Matrix4f().translate(pos).scale(scale);
         Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
     }
@@ -83,7 +103,7 @@ public class ArmorBar extends HUD{
         // new health removed or added visual
         barShader.setUniformf("premaxX",(float)premaxX);
         barShader.setUniformf("maxY",(float)maxY);
-        barShader.setUniformf("stepSize",(float)height*scale/4*(float)Settings.HEIGHT/1080);
+        barShader.setUniformf("stepSize",height*scale/4*(float)Settings.HEIGHT/1080);
         barShader.setUniform3f("color", new Vector3f(0.603f, 0.670f, 0.709f));
 
 
@@ -104,6 +124,14 @@ public class ArmorBar extends HUD{
 
         // rendering hud of healthbar
         super.draw();
+        if(showDisplayValues && canHover){
+            Vector3f tpos = new Vector3f(pos);
+            System.out.println("X: "+pos.x);
+            tpos.y -= 5 * scale;
+            String s = armor+"/"+maxArmor;
+            tpos.x = TextRender.getHorizontalCenter((int)this.minX,(int)this.maxX,s,1);
+            valueTextRender.draw(s,tpos,1,new Vector3f(0.207f, 0.603f, 0.815f));
+        }
     }
     public void update(int currentArmor, int maxArmor){
         if(currentArmor != armor){
@@ -120,5 +148,13 @@ public class ArmorBar extends HUD{
         this.armor = armor;
         this.maxArmor = maxArmor;
 
+    }
+    public void showDisplayValues(boolean value) {
+        this.showDisplayValues = value;
+    }
+    public void enableHoverValuesShow(){canHover = true;}
+
+    public boolean intersects(float x, float y){
+        return (x >= minX && x <= maxX && y >= minY && y <= maxY);
     }
 }

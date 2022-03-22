@@ -23,6 +23,7 @@ public class Network {
         kryo.register(int[][].class);
         kryo.register(int[].class);
         kryo.register(boolean[].class);
+        kryo.register(byte[].class);
         kryo.register(TransferRoomMap.class);
         kryo.register(TransferRoom.class);
         kryo.register(MapLoaded.class);
@@ -493,6 +494,7 @@ public class Network {
     }
     public static class NextFloor{
         public byte floor;
+        public byte[] affixes;
     }
     public static class PstatsUpdate {
         public int idPlayer;

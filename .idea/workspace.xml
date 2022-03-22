@@ -30,16 +30,17 @@
     <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="mp fixes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crashlog.log" beforeDir="false" afterPath="$PROJECT_DIR$/crashlog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/MenuState.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Gamestates/MenuState.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HealthBar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Hud/HealthBar.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/ItemManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Room.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/EyeBat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/EyeBat.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Golem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Golem.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Multiplayer/InGameMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Multiplayer/InGameMP.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/GunsManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/ItemManagerMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/ItemManagerMP.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Minimap/MMPlayerArrow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Minimap/MMPlayerArrow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Minimap/MiniMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/Minimap/MiniMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Room.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Singleplayer/InGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Singleplayer/InGame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/Network.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/Network.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ArmorBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/ArmorBar.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Hud/HealthBar.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/RoomObjects/ShopTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/RoomObjects/ShopTable.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

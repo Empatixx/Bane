@@ -344,12 +344,15 @@ public class InGameMP extends GameState {
         barName = new TextRender[1];
         //health bar
         healthBar[0] = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,56,4);
+        healthBar[0].enableHoverValuesShow();
         healthBar[0].setOffsetsBar(19,1);
+        healthBar[0].enableHoverValuesShow();
         healthBar[0].initHealth(player[0].getHealth(),player[0].getMaxHealth());
 
         //health bar
         //armor bar
         armorBar[0] = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3,54,4);
+        armorBar[0].enableHoverValuesShow();
         armorBar[0].setOffsetsBar(14,2);
         armorBar[0].initArmor(player[0].getArmor(),player[0].getMaxArmor());
         damageIndicator = new DamageIndicator();
@@ -789,8 +792,13 @@ public class InGameMP extends GameState {
             }
             for(int i = 0;i<player.length;i++){
                 if(player[i] != null){
+                    healthBar[i].showDisplayValues(false);
+                    armorBar[i].showDisplayValues(false);
+
                     healthBar[i].update(player[i].getHealth(), player[i].getMaxHealth());
+                    if(healthBar[i].intersects(mouseX,mouseY)) healthBar[i].showDisplayValues(true);
                     armorBar[i].update(player[i].getArmor(),player[i].getMaxArmor());
+                    if(armorBar[i].intersects(mouseX,mouseY)) armorBar[i].showDisplayValues(true);
                 }
             }
             alertManager.update();
@@ -981,8 +989,13 @@ public class InGameMP extends GameState {
 
         for(int i = 0;i<player.length;i++){
             if(player[i] != null){
+                healthBar[i].showDisplayValues(false);
+                armorBar[i].showDisplayValues(false);
+
                 healthBar[i].update(player[i].getHealth(), player[i].getMaxHealth());
+                if(healthBar[i].intersects(mouseX,mouseY)) healthBar[i].showDisplayValues(true);
                 armorBar[i].update(player[i].getArmor(),player[i].getMaxArmor());
+                if(armorBar[i].intersects(mouseX,mouseY)) armorBar[i].showDisplayValues(true);
             }
         }
 

@@ -694,18 +694,6 @@ public class Golem extends Enemy {
         }
         @Override
         public void draw() {
-            // blikání - po hitu - hráč
-            if (flinching){
-                long elapsed = (System.nanoTime() - flinchingTimer) / 1000000;
-                if (elapsed / 100 % 2 == 0){
-                    shader.unbind();
-                    glBindTexture(GL_TEXTURE_2D,0);
-                    glActiveTexture(GL_TEXTURE0);
-
-                    return;
-                }
-            }
-
             Matrix4f target;
             target = new Matrix4f().translate(position)
                         .scale(scale)

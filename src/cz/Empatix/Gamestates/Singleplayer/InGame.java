@@ -293,11 +293,12 @@ public class InGame extends GameState {
 
         //health bar
         healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,56,4);
+        healthBar.enableHoverValuesShow();
         healthBar.setOffsetsBar(19,1);
-
         healthBar.initHealth(player.getHealth(),player.getMaxHealth());
         //armor bar
         armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3,54,4);
+        armorBar.enableHoverValuesShow();
         armorBar.setOffsetsBar(14,2);
         armorBar.initArmor(player.getArmor(),player.getMaxArmor());
         //minimap
@@ -609,7 +610,12 @@ public class InGame extends GameState {
             player.checkCollision(enemies);
 
             healthBar.update(player.getHealth(), player.getMaxHealth());
+            healthBar.showDisplayValues(false);
+            if(healthBar.intersects(mouseX,mouseY)) healthBar.showDisplayValues(true);
+
             armorBar.update(player.getArmor(),player.getMaxArmor());
+            armorBar.showDisplayValues(false);
+            if(armorBar.intersects(mouseX,mouseY)) armorBar.showDisplayValues(true);
 
             alertManager.update();
         }

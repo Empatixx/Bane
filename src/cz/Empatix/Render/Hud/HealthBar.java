@@ -36,7 +36,10 @@ public class HealthBar extends HUD{
     private Matrix4f matrixPos;
 
     private boolean showDisplayValues;
-    private TextRender valueTextRender;
+    private final TextRender valueTextRender;
+
+    private float minX, maxX, minY, maxY;
+    private boolean canHover;
 
     public HealthBar(String file, Vector3f pos, int scale, float widthBar, float heightBar){
         super(file+".tga", pos, scale);
@@ -58,10 +61,24 @@ public class HealthBar extends HUD{
 
         matrixPos = new Matrix4f().translate(pos).scale(scale);
         Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
+        valueTextRender = new TextRender();
+        minX = (int)pos.x - width*scale/2;
+        minY = (int)pos.y - height*scale/2;
+
+        maxY = (int)pos.y + height*scale/2;
+        maxX = (int)pos.x + width*scale/2;
+
+        showDisplayValues = false;
     }
     public void initHealth(int health,int maxHealth){
         this.health = health;
         this.maxHealth = maxHealth;
+    }
+    public void showDisplayValues(boolean value) {
+        this.showDisplayValues = value;
+    }
+    public boolean intersects(float x, float y){
+        return (x >= minX && x <= maxX && y >= minY && y <= maxY);
     }
 
     /**
@@ -72,17 +89,21 @@ public class HealthBar extends HUD{
     public void setOffsetsBar(int x, int y){
         pos.x+=(x/2f)*scale;
         pos.y+=(y/2f)*scale;
+        minX = (int)pos.x - width*scale/2;
+        minY = (int)pos.y - height*scale/2;
+
+        maxY = (int)pos.y + height*scale/2;
+        maxX = (int)pos.x + width*scale/2;
         matrixPos = new Matrix4f().translate(pos).scale(scale);
         Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
     }
 
     public void draw() {
-
         // rendering bar
         barShader.bind();
         barShader.setUniformm4f("projection",matrixPos);
 
-        float minX = pos.x * (float)Settings.WIDTH/1920 - (float)(width * scale)/2*(float)Settings.WIDTH/1920;
+        float minX = pos.x * (float)Settings.WIDTH/1920 - (width * scale)/2*(float)Settings.WIDTH/1920;
         float maxX = minX + (width*scale) * ((float)health/maxHealth)*(float)Settings.WIDTH/1920;
         float premaxX = minX + (float)Math.floor((width*scale) * (delayedHealth/maxHealth)*(float)Settings.WIDTH/1920);
         // revert height coords because opengl is from down to up 0-1
@@ -113,7 +134,15 @@ public class HealthBar extends HUD{
 
         // rendering hud of healthbar
         super.draw();
+        if(showDisplayValues && canHover){
+            Vector3f tpos = new Vector3f(pos);
+            tpos.y -= 5 * scale;
+            String s = health+"/"+maxHealth;
+            tpos.x = TextRender.getHorizontalCenter((int)this.minX,(int)this.maxX,s,2);
+            valueTextRender.draw(s,tpos,2,new Vector3f(0.9686f,0.4f,0.09803f));
+        }
     }
+    public void enableHoverValuesShow(){canHover = true;}
     public void update(int currentHealth, int maxHealth){
         if(currentHealth != health){
             health = currentHealth;

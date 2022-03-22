@@ -16,8 +16,12 @@ import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.*;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
+import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Graphics.Sprites.Sprite;
+import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
+import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.Hud.Minimap.MiniMap;
 import cz.Empatix.Render.RoomObjects.*;
@@ -37,17 +41,20 @@ import java.util.List;
 import static org.lwjgl.opengl.GL45.*;
 
 public class TileMap {
-	private Room sideRoom;
-
 	public static void load(){
 		Loader.loadImage("Textures\\tileset64.tga");
+		Loader.loadImage("Textures\\affixes.tga");
+
 	}
+	// affixes
+	private FloorAffixes floorAffixes;
+
 	// gamestate
 	private int floor;
 
 	// instances
 	private MiniMap miniMap;
-	private Player[] player;
+	private final Player[] player;
 
 	// position
 	private Vector3f position;
@@ -136,6 +143,8 @@ public class TileMap {
 		}
 		player = new Player[1];
 		currentRoom = new Room[1];
+
+		floorAffixes = new FloorAffixes(this);
 	}
 	public TileMap(int tileSize) {
 		this.tileSize = tileSize;
@@ -168,6 +177,7 @@ public class TileMap {
 		objectInteractPackets = Collections.synchronizedList(new ArrayList<>());
 
 		serverSide = true;
+		floorAffixes = new FloorAffixes(this);
 	}
 	public void setPlayer(Player p){
 		this.player[0] = p;
@@ -259,8 +269,6 @@ public class TileMap {
 		return idGen;
 	}
 	public void loadProgressRoom(){
-		sideRoom = null;
-
 		tween = 1;
 		floor = 0;
 
@@ -636,7 +644,7 @@ public class TileMap {
 											else sideRooms[k*4+1] = null;
 											if(roomX > j+1 && currentRoom[k].isRight()){
 												duplicate = false;
-												sideRoom = getRoom(roomMap[i][j+1]);
+												Room sideRoom = getRoom(roomMap[i][j+1]);
 												for(int c = 0;c<currentRoom.length;c++){
 													if(c == k) continue;
 													if (sideRooms[c*4+2] == sideRoom || sideRoom == currentRoom[c]) {
@@ -652,7 +660,7 @@ public class TileMap {
 											else sideRooms[k*4+2] = null;
 											if(0 <= j-1 && currentRoom[k].isLeft()){
 												duplicate = false;
-												sideRoom = getRoom(roomMap[i][j-1]);
+												Room sideRoom = getRoom(roomMap[i][j-1]);
 												for(int c = 0;c<currentRoom.length;c++){
 													if(c == k) continue;
 													if (sideRooms[c*4+3] == sideRoom || sideRoom == currentRoom[c]) {
@@ -1789,15 +1797,23 @@ public class TileMap {
 		setTween(0.10);
 
 		floor++;
+		if(floor == 2 || floor == 4 || floor == 6){
+			floorAffixes.newAffix();
+		}
 		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();
 
 		DiscordRP.getInstance().update("In-Game","Floor "+RomanNumber.toRoman(floor+1));
 	}
 	public void newMapMP(){
 		floor++;
+		if(floor == 2 || floor == 4 || floor == 6){
+			floorAffixes.newAffix();
+		}
 		Server server = MultiplayerManager.getInstance().server.getServer();
 		Network.NextFloor nextFloor = new Network.NextFloor();
 		nextFloor.floor = (byte)floor;
+		nextFloor.affixes = floorAffixes.getChoosenAffixes();
+
 		server.sendToAllTCP(nextFloor);
 
 		ItemManagerMP itemManager = ItemManagerMP.getInstance();
@@ -1820,15 +1836,14 @@ public class TileMap {
 		}
 	}
 	public void drawTitle(){
-		if(System.currentTimeMillis() - InGame.deltaPauseTime() - nextFloorEnterTime < 1750){
-			float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
+		if(System.currentTimeMillis() - InGame.deltaPauseTime() - nextFloorEnterTime < 2250){
 
-			 title[0].draw("Floor "+RomanNumber.toRoman(floor+1),new Vector3f(TextRender.getHorizontalCenter(0,1920,"Floor "+RomanNumber.toRoman(floor+1),5),240,0),5,
-					 new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+			 title[0].draw("Floor "+RomanNumber.toRoman(floor+1),new Vector3f(TextRender.getHorizontalCenter(0,1920,"Floor "+RomanNumber.toRoman(floor+1),5),140,0),5,
+					 new Vector3f(0.9686f,0.4f,0.09803f));
 
-			 title[1].draw("Enemies health is increased by "+12*floor*floor+"%",new Vector3f(TextRender.getHorizontalCenter(0,1920,"Enemies health is increased by "+12*floor*floor+"%",2),350,0),2,
-					 new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
-
+			 title[1].draw("Enemies health is increased by "+12*floor*floor+"%",new Vector3f(TextRender.getHorizontalCenter(0,1920,"Enemies health is increased by "+12*floor*floor+"%",2),220,0),2,
+					 new Vector3f(0.6784f,0.2901f,0.0941f)); //0.9686f,0.5067f,0.09803f)
+			 floorAffixes.draw();
 		}
 	}
 	public int getFloor() {
@@ -2016,6 +2031,7 @@ public class TileMap {
 	}
 
 	public void handleNextFloorPacket(Network.NextFloor nextFloor) {
+		floorAffixes.handleNewMapPacket(nextFloor);
 		ItemManager itemManager = ItemManager.getInstance();
 		EnemyManager enemyManager = EnemyManager.getInstance();
 		itemManager.clear();
@@ -2087,18 +2103,161 @@ public class TileMap {
 	}
 
 	private static class FloorAffixes{
-		private static final int LOWHPPOTS = 0;
-		private static final int INFLATION = 1;
-		private static final int BOOSTHP = 2;
-		private static final int BERSERKS = 3;
-		private static final int ENEMYREGEN = 4;
-		private boolean[] affixes;
-		private int firstAffix;
-		private int secondAffix;
-		private int thirdAffix;
-		private FloorAffixes(){
-			affixes = new boolean[5];
+		private static final byte LOWHPPOTS = 0;
+		private static final byte INFLATION = 1;
+		private static final byte BOOSTHP = 2;
+		private static final byte BERSERKS = 3;
+		private static final byte ENEMYREGEN = 4;
+		private final boolean[] affixes;
+		private byte[] choosenAffixes;
+
+		private Spritesheet affixesSpritesheet;
+		private int vboVertices;
+		private Shader shader;
+
+		private int totalAffixes;
+		private TextRender[] nameAffix;
+
+		private FloorAffixes(TileMap tm) {
+			int totalAffixes = 5;
+			if (!tm.isServerSide()) {
+				nameAffix = new TextRender[3];
+				for (int i = 0; i < nameAffix.length; i++) {
+					nameAffix[i] = new TextRender();
+				}
+				// try to find spritesheet if it was created once
+				affixesSpritesheet = SpritesheetManager.getSpritesheet("Textures\\affixes.tga");
+
+				// creating a new spritesheet
+				if (affixesSpritesheet == null) {
+					affixesSpritesheet = SpritesheetManager.createSpritesheet("Textures\\affixes.tga");
+					Sprite[] sprites = new Sprite[totalAffixes];
+					for (int i = 0; i < sprites.length; i++) {
+						float[] texCoords =
+								{
+										(float) i / totalAffixes, 0,
+
+										(float) i / totalAffixes, 1,
+
+										(1.0f + i) / totalAffixes, 1,
+
+										(1.0f + i) / totalAffixes, 0
+								};
+						Sprite sprite = new Sprite(texCoords);
+						sprites[i] = sprite;
+
+					}
+					affixesSpritesheet.addSprites(sprites);
+				}
+				vboVertices = ModelManager.getModel(32, 32);
+				if (vboVertices == -1) {
+					vboVertices = ModelManager.createModel(32, 32);
+				}
+
+				shader = ShaderManager.getShader("shaders\\shader");
+				if (shader == null) {
+					shader = ShaderManager.createShader("shaders\\shader");
+				}
+			}
+			affixes = new boolean[totalAffixes];
+			choosenAffixes = new byte[3];
+			this.totalAffixes = 0;
+			Arrays.fill(choosenAffixes,(byte)-1);
+		}
+		private void newAffix() {
+			chooseAffix();
+			totalAffixes++;
+			if(totalAffixes > 3) totalAffixes = 3;
+		}
+		private void chooseAffix(){
+			boolean duplicate;
+			do{
+				duplicate = false;
+				choosenAffixes[totalAffixes] = (byte)Random.nextInt(5);
+				for(int i = 0;i<totalAffixes;i++){
+					if(choosenAffixes[i] == choosenAffixes[totalAffixes]) duplicate = true;
+				}
+			} while(duplicate);
+		}
+		private String convertToString(int affix){
+			switch(affix){
+				case 0:{
+					return "Rare potions";
+				}
+				case 1:{
+					return "Inflation";
+				}
+				case 2:{
+					return "Fortified";
+				}
+				case 3:{
+					return "Raging";
+				}
+				case 4:{
+					return "Regeneration";
+				}
+			}
+			return null;
+		}
+		public void draw(){
+			for(int i = 0;i<totalAffixes;i++){
+				Matrix4f target;
+				if(totalAffixes == 1){
+					target = new Matrix4f().translate(new Vector3f(960,365,0)).scale(5);
+					float x = TextRender.getHorizontalCenter(960-50,960+50,convertToString(choosenAffixes[i]),2);
+					nameAffix[i].draw(convertToString(choosenAffixes[i]),new Vector3f(x,285,0),2,
+							new Vector3f(0.9686f,0.2f,0.09803f));
+
+				} else if (totalAffixes == 2){
+					target = new Matrix4f().translate(new Vector3f(810+300*i,365,0)).scale(5);
+					float x = TextRender.getHorizontalCenter(810+300*i-50,810+300*i+50,convertToString(choosenAffixes[i]),2);
+					nameAffix[i].draw(convertToString(choosenAffixes[i]),new Vector3f(x,285,0),2,
+							new Vector3f(0.9686f,0.2f,0.09803f));
+				} else {
+					target = new Matrix4f().translate(new Vector3f(660+300*i,365,0)).scale(5);
+					float x = TextRender.getHorizontalCenter(660+300*i-50,660+300*i+50,convertToString(choosenAffixes[i]),2);
+					nameAffix[i].draw(convertToString(choosenAffixes[i]),new Vector3f(x,285,0),2,
+							new Vector3f(0.9686f,0.2f,0.09803f));
+				}
+				shader.bind();
+				shader.setUniformi("sampler",0);
+				glActiveTexture(GL_TEXTURE0);
+				affixesSpritesheet.bindTexture();
+				Camera.getInstance().hardProjection().mul(target,target);
+
+				shader.setUniformm4f("projection",target);
+
+				glEnableVertexAttribArray(0);
+				glEnableVertexAttribArray(1);
+
+				glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
+				glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+
+				glBindBuffer(GL_ARRAY_BUFFER,affixesSpritesheet.getSprites(0)[choosenAffixes[i]].getVbo());
+				glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
+
+				glDrawArrays(GL_QUADS, 0, 4);
+
+				glBindBuffer(GL_ARRAY_BUFFER,0);
+
+				glDisableVertexAttribArray(0);
+				glDisableVertexAttribArray(1);
+			}
+			shader.unbind();
+			glBindTexture(GL_TEXTURE_2D,0);
+			glActiveTexture(0);
 		}
 
+		public byte[] getChoosenAffixes() {
+			return choosenAffixes;
+		}
+
+		public void handleNewMapPacket(Network.NextFloor nextFloor) {
+			choosenAffixes = nextFloor.affixes;
+			for(byte i : choosenAffixes){
+				if(i != -1) totalAffixes++;
+			}
+		}
 	}
 }

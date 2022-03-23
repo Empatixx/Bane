@@ -111,16 +111,17 @@ public class ItemManagerMP {
         }
         int price;
         if(drop instanceof WeaponDrop || drop instanceof StatUpgradeDrop){
-            price = Random.nextInt(5+tm.getFloor()*2) +5+tm.getFloor()*2;
-            drop.setShop(price);
+            price = Random.nextInt(5+tm.getFloor()*2) +5+tm.getFloor()*2;;
         }
         else if(drop instanceof ArtefactDrop){
             price = Random.nextInt(7+tm.getFloor()*2) +7+tm.getFloor()*2;
-            drop.setShop(price);
         } else {
             price = Random.nextInt(3+tm.getFloor()) + 2+tm.getFloor()*2;
-            drop.setShop(price);
         }
+        if(tm.isActiveAffix(TileMap.INFLATION)){
+            price *= 1.5f;
+        }
+        drop.setShop(price);
         Network.ShopDropitem shopPacket = new Network.ShopDropitem();
         shopPacket.id = drop.getId();
         shopPacket.idObject = idObject;

@@ -67,6 +67,7 @@ public class EyeBat extends Enemy {
         animation.setDelay(125);
 
         health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        tryBoostHealth();
         damage = 1;
 
         type = melee;
@@ -133,6 +134,7 @@ public class EyeBat extends Enemy {
 
 
             health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            tryBoostHealth();
             damage = 1;
 
             type = melee;
@@ -166,6 +168,7 @@ public class EyeBat extends Enemy {
 
 
             health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            tryBoostHealth();
             damage = 1;
 
             type = melee;
@@ -429,9 +432,9 @@ public class EyeBat extends Enemy {
                 animation.setFrames(spritesheet.getSprites(0));
                 animation.setDelay(95);
 
-                shader = ShaderManager.getShader("shaders\\rotation");
+                shader = ShaderManager.getShader("shaders\\shader");
                 if (shader == null){
-                    shader = ShaderManager.createShader("shaders\\rotation");
+                    shader = ShaderManager.createShader("shaders\\shader");
                 }
                 // because of scaling image by 2x
                 width *= scale;

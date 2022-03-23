@@ -33,6 +33,7 @@ public class Bat extends Enemy {
 
 
         health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        tryBoostHealth();
         damage = 2;
 
         type = melee;
@@ -103,6 +104,7 @@ public class Bat extends Enemy {
             animation.setDelay(125);
 
             health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            tryBoostHealth();
             damage = 2;
 
             type = melee;
@@ -126,6 +128,7 @@ public class Bat extends Enemy {
 
 
             health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            tryBoostHealth();
             damage = 2;
 
             type = melee;

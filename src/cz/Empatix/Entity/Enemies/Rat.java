@@ -36,6 +36,7 @@ public class Rat extends Enemy {
         scale = 2;
 
         health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        tryBoostHealth();
         damage = 1;
 
         type = melee;
@@ -106,6 +107,7 @@ public class Rat extends Enemy {
             animation.setDelay(120);
 
             health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            tryBoostHealth();
             damage = 1;
 
             type = melee;
@@ -134,6 +136,7 @@ public class Rat extends Enemy {
             scale = 2;
 
             health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            tryBoostHealth();
             damage = 1;
 
             type = melee;

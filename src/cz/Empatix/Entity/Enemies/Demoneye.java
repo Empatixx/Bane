@@ -33,6 +33,7 @@ public class Demoneye extends Enemy {
 
 
         health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        tryBoostHealth();
         damage = 3;
 
         type = melee;
@@ -105,6 +106,7 @@ public class Demoneye extends Enemy {
             animation.setDelay(125);
 
             health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            tryBoostHealth();
             damage = 3;
 
             type = melee;
@@ -126,6 +128,7 @@ public class Demoneye extends Enemy {
 
 
             health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            tryBoostHealth();
             damage = 3;
 
             type = melee;

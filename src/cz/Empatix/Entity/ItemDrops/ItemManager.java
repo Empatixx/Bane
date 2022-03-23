@@ -110,30 +110,32 @@ public class ItemManager {
             drop = new AmmoBox(tm);
             drop.setAmount(60);
             drop.setPosition(x, y-30);
-            drop.setShop(Random.nextInt(3+tm.getFloor()) + 2+tm.getFloor()*2);
-            itemDrops.add(drop);
-            return;
         } else if (random == 1) {
             drop = new ArmorPot(tm);
+            drop.setPosition(x, y);
         } else if (random == 2) {
             drop = new HealingPot(tm);
+            drop.setPosition(x, y);
         }else if (random == 3) {
             drop = new StatUpgradeDrop(tm, (byte) Random.nextInt(2));
             drop.setPosition(x, y-15);
-            drop.setShop(Random.nextInt(5+tm.getFloor()*2) + 5+tm.getFloor()*2);
             itemDrops.add(drop);
-            return;
         } else {
             Weapon weapon = gm.randomGun();
             weapon.drop();
             drop = new WeaponDrop(tm, weapon);
+            drop.setPosition(x, y);
         }
-        if(drop instanceof WeaponDrop){
-            drop.setShop(Random.nextInt(5+tm.getFloor()*2) + 5+tm.getFloor()*2);
+        int price;
+        if(drop instanceof WeaponDrop || drop instanceof StatUpgradeDrop){
+            price = Random.nextInt(5+tm.getFloor()*2) + 5+tm.getFloor()*2;
         } else {
-            drop.setShop(Random.nextInt(3+tm.getFloor()) + 2+tm.getFloor()*2);
+            price = Random.nextInt(3+tm.getFloor()) + 2+tm.getFloor()*2;
         }
-        drop.setPosition(x, y);
+        if(tm.isActiveAffix(TileMap.INFLATION)){
+            price *= 1.5f;
+        }
+        drop.setShop(price);
         itemDrops.add(drop);
 
     }
@@ -315,14 +317,12 @@ public class ItemManager {
                         if(subType == StatUpgradeDrop.HEALTH){
                             player.setMaxHealth(player.getMaxHealth()+1);
                             player.addHealth(1);
-                            drop.pickedUp = true;
-                            source.play(pickupSound);
                         } else {
                             player.setMaxArmor(player.getMaxArmor()+2);
                             player.addArmor(2);
-                            drop.pickedUp = true;
-                            source.play(pickupSound);
                         }
+                        drop.pickedUp = true;
+                        source.play(pickupSound);
                     } else if (type == ItemDrop.COIN) {
                         player.addCoins(drop.getAmount());
                         totalCoins+=drop.getAmount();
@@ -667,7 +667,6 @@ public class ItemManager {
         }else if (random == 4) {
             drop = new StatUpgradeDrop(tm, packet.subType);
             drop.setPosition(x, y);
-            itemDrops.add(drop);
         } else {
             // converting indexing from server to client ones
             int totalPlayers = MultiplayerManager.getInstance().client.getTotalPlayers();

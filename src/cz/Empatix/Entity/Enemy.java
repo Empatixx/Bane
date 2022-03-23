@@ -54,6 +54,8 @@ public abstract class Enemy extends MapObject{
 
     private long lastTimeSync = -1;
 
+    private boolean ragingActivated;
+
     public Enemy(TileMap tm, Player player) {
         super(tm);
         this.player = new Player[1];
@@ -713,6 +715,7 @@ public abstract class Enemy extends MapObject{
 
     public void update() {
         if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
+            tryEnrage();
             // ENEMY AI
             EnemyAI();
 
@@ -720,7 +723,6 @@ public abstract class Enemy extends MapObject{
             getNextPosition();
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
-
         }
     }
     public void movePacket(){
@@ -889,5 +891,25 @@ public abstract class Enemy extends MapObject{
 
     public void setHealth(short health) {
         this.health = health;
+    }
+
+    // raging affix
+    public void tryEnrage(){
+        if(tileMap.isActiveAffix(TileMap.BERSERKS)){
+            if((float)health/maxHealth <= 0.2f){
+                if(!ragingActivated){
+                    maxSpeed *= 1.3f;
+                    moveSpeed *= 1.3f;
+                    ragingActivated = true;
+                }
+            }
+        }
+    }
+    // fortified affix
+    public void tryBoostHealth(){
+        if(tileMap.isActiveAffix(TileMap.BOOSTHP)){
+            maxHealth *= 1.4f;
+            health *= 1.4;
+        }
     }
 }

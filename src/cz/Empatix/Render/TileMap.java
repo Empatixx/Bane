@@ -61,7 +61,6 @@ public class TileMap {
 	private Camera camera;
 	private Shader shader;
 
-
 	// bounds
 	private float xmin;
 	private float ymin;
@@ -118,6 +117,13 @@ public class TileMap {
 
 	// mutliplayer
 	private List<Network.ObjectInteract> objectInteractPackets;
+
+	// affixes constants
+	public static final byte LOWHPPOTS = 0;
+	public static final byte INFLATION = 1;
+	public static final byte BOOSTHP = 2;
+	public static final byte BERSERKS = 3;
+	public static final byte ENEMYREGEN = 4;
 
 	// if tilemap is server-side
 	private boolean serverSide;
@@ -1790,6 +1796,12 @@ public class TileMap {
 				obj.delete();
 			}
 		}
+		floorAffixes.newAffix();
+		floorAffixes.newAffix();
+		floorAffixes.newAffix();
+		if(floor == 2 || floor == 4 || floor == 6){
+			floorAffixes.newAffix();
+		}
 		loadMap();
 
 		fillMiniMap();
@@ -1797,9 +1809,6 @@ public class TileMap {
 		setTween(0.10);
 
 		floor++;
-		if(floor == 2 || floor == 4 || floor == 6){
-			floorAffixes.newAffix();
-		}
 		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();
 
 		DiscordRP.getInstance().update("In-Game","Floor "+RomanNumber.toRoman(floor+1));
@@ -2102,12 +2111,10 @@ public class TileMap {
 		return true;
 	}
 
+	public boolean isActiveAffix(byte affix){
+		return floorAffixes.isActiveAffix(affix);
+	}
 	private static class FloorAffixes{
-		private static final byte LOWHPPOTS = 0;
-		private static final byte INFLATION = 1;
-		private static final byte BOOSTHP = 2;
-		private static final byte BERSERKS = 3;
-		private static final byte ENEMYREGEN = 4;
 		private final boolean[] affixes;
 		private byte[] choosenAffixes;
 
@@ -2159,13 +2166,14 @@ public class TileMap {
 					shader = ShaderManager.createShader("shaders\\shader");
 				}
 			}
-			affixes = new boolean[totalAffixes];
+			affixes = new boolean	[totalAffixes];
 			choosenAffixes = new byte[3];
 			this.totalAffixes = 0;
 			Arrays.fill(choosenAffixes,(byte)-1);
 		}
 		private void newAffix() {
 			chooseAffix();
+			affixes[choosenAffixes[totalAffixes]] = true;
 			totalAffixes++;
 			if(totalAffixes > 3) totalAffixes = 3;
 		}
@@ -2181,23 +2189,26 @@ public class TileMap {
 		}
 		private String convertToString(int affix){
 			switch(affix){
-				case 0:{
+				case LOWHPPOTS:{
 					return "Rare potions";
 				}
-				case 1:{
+				case INFLATION:{
 					return "Inflation";
 				}
-				case 2:{
+				case BOOSTHP:{
 					return "Fortified";
 				}
-				case 3:{
+				case BERSERKS:{
 					return "Raging";
 				}
-				case 4:{
+				case ENEMYREGEN:{
 					return "Regeneration";
 				}
 			}
 			return null;
+		}
+		public boolean isActiveAffix(byte affix){
+			return affixes[affix];
 		}
 		public void draw(){
 			for(int i = 0;i<totalAffixes;i++){

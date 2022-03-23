@@ -37,6 +37,7 @@ public class Ghost extends Enemy {
 
 
         health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        tryBoostHealth();
         damage = 2;
 
         type = melee;
@@ -104,6 +105,7 @@ public class Ghost extends Enemy {
             scale = 5;
 
             health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            tryBoostHealth();
             damage = 2;
 
             type = melee;
@@ -129,6 +131,7 @@ public class Ghost extends Enemy {
             scale = 5;
 
             health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            tryBoostHealth();
             damage = 2;
 
             type = melee;

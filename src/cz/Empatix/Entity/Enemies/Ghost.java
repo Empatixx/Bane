@@ -36,7 +36,7 @@ public class Ghost extends Enemy {
         scale = 5;
 
 
-        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
         tryBoostHealth();
         damage = 2;
 
@@ -104,7 +104,7 @@ public class Ghost extends Enemy {
             cheight = 28;
             scale = 5;
 
-            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             tryBoostHealth();
             damage = 2;
 
@@ -130,7 +130,7 @@ public class Ghost extends Enemy {
             cheight = 28;
             scale = 5;
 
-            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             tryBoostHealth();
             damage = 2;
 
@@ -293,5 +293,7 @@ public class Ghost extends Enemy {
     @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
 
+    }
+    public void forceRemove(){
     }
 }

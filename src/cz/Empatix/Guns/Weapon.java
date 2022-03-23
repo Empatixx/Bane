@@ -12,7 +12,7 @@ import cz.Empatix.Multiplayer.GunsManagerMP;
 import cz.Empatix.Multiplayer.MPStatistics;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Alerts.AlertManager;
-import cz.Empatix.Render.Damageindicator.DamageIndicator;
+import cz.Empatix.Render.Damageindicator.CombatIndicator;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.RoomObjects.DestroyableObject;
 import cz.Empatix.Render.RoomObjects.RoomObject;
@@ -191,10 +191,10 @@ public abstract class Weapon{
         int cheight = enemy.getCheight();
         int x = -cwidth/4+ Random.nextInt(cwidth/2);
         if(critical){
-            DamageIndicator.addCriticalDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+            CombatIndicator.addCriticalDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
                     ,new Vector2f(-x/25f,-1f));
         } else {
-            DamageIndicator.addDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+            CombatIndicator.addDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
                     ,new Vector2f(-x/25f,-1f));
         }
     }

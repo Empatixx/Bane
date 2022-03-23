@@ -521,6 +521,16 @@ public class Room {
             pot.setPosition(xMax-2*tileSize-tileSize/2,yMax-2*tileSize-tileSize/2);
             addObject(pot);
             sendAddRoomObjectPacket(pot,tm);
+
+            Crystal crystal = new Crystal(tm);
+            crystal.setPosition(xMin+4*tileSize+tileSize/2,yMin+3*tileSize+tileSize/2);
+            addObject(crystal);
+            sendAddRoomObjectPacket(pot,tm);
+
+            crystal = new Crystal(tm);
+            crystal.setPosition(xMax-4*tileSize-tileSize/2,yMin+3*tileSize+tileSize/2);
+            addObject(crystal);
+            sendAddRoomObjectPacket(pot,tm);
         }
         if(type == Boss){
             int tileSize = tm.getTileSize();
@@ -810,6 +820,12 @@ public class Room {
             roomObject.x = (int)object.getX();
             roomObject.y = (int)object.getY();
             roomObject.type = Network.TypeRoomObject.SHOPTABLE;
+            roomObject.id = object.getId();
+            roomObject.idRoom = this.id;
+        } else if (object instanceof Crystal){
+            roomObject.x = (int)object.getX();
+            roomObject.y = (int)object.getY();
+            roomObject.type = Network.TypeRoomObject.CRYSTAL;
             roomObject.id = object.getId();
             roomObject.idRoom = this.id;
         }

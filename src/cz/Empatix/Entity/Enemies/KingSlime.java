@@ -62,7 +62,7 @@ public class KingSlime extends Enemy {
         cheight = 48;
         scale = 5;
 
-        health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
         damage = 1;
 
         type = melee;
@@ -145,7 +145,7 @@ public class KingSlime extends Enemy {
             animation = new Animation(4);
             animation.setDelay(175);
 
-            health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             damage = 1;
 
             type = melee;
@@ -174,7 +174,7 @@ public class KingSlime extends Enemy {
             cheight = 48;
             scale = 5;
 
-            health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             damage = 1;
 
             type = melee;
@@ -617,6 +617,11 @@ public class KingSlime extends Enemy {
                     }
                 }
             }
+        }
+    }
+    public void forceRemove(){
+        for(KingSlimebullet b : bullets){
+            b.forceRemove();
         }
     }
 }

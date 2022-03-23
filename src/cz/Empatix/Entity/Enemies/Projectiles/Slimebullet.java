@@ -279,4 +279,7 @@ public class Slimebullet extends MapObject {
         light = LightManager.createLight(new Vector3f(0.474f,0.8745f,0.0f), new Vector2f(position.x+xmap,position.y+ymap), 1.25f,this);
 
     }
+    public void forceRemove(){
+        light.remove();
+    }
 }

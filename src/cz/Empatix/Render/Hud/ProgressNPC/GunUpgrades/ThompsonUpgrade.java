@@ -6,8 +6,10 @@ import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
 public class ThompsonUpgrade extends UpgradeBar {
+    boolean fastFireUnlocked;
     public ThompsonUpgrade(int row){
         super("Textures\\thompson.tga",2,row);
+        fastFireUnlocked = false;
         info = new WeaponInfo();
         info.maxAmmo = 300;
         info.maxMagazineAmmo = 50;
@@ -62,6 +64,7 @@ public class ThompsonUpgrade extends UpgradeBar {
         sideBars.add(bar);
         if(numUpgrades > 0){
             bar.setBought(true);
+            fastFireUnlocked = true;
         }
     }
     @Override
@@ -71,7 +74,11 @@ public class ThompsonUpgrade extends UpgradeBar {
 
         textRender[0].draw("Min. damage: " +info.minDamage,new Vector3f(295,400,0),1, new Vector3f(0.686f,0.4f,0.258f));
         textRender[1].draw("Max. damage: " +info.maxDamage,new Vector3f(295,430,0),1, new Vector3f(0.686f,0.4f,0.258f));
-        textRender[2].draw("Fire rate: " +String.format("%.2f",info.firerate),new Vector3f(295,460,0),1, new Vector3f(0.686f,0.4f,0.258f));
+        if(fastFireUnlocked){
+            textRender[2].draw("Fire rate: " +String.format("%.2f",info.firerate)+" ("+info.firerate*1.35+")",new Vector3f(295,460,0),1, new Vector3f(0.686f,0.4f,0.258f));
+        } else {
+            textRender[2].draw("Fire rate: " +String.format("%.2f",info.firerate),new Vector3f(295,460,0),1, new Vector3f(0.686f,0.4f,0.258f));
+        }
         textRender[3].draw("Max ammo: " +info.maxMagazineAmmo+"/"+info.maxAmmo,new Vector3f(295,490,0),1, new Vector3f(0.686f,0.4f,0.258f));
         textRender[4].draw("Critical hits: " +info.areCritical_hits_enabled(),new Vector3f(295,520,0),1, new Vector3f(0.686f,0.4f,0.258f));
 
@@ -90,6 +97,9 @@ public class ThompsonUpgrade extends UpgradeBar {
         }
         if(numUpgrades == 3){
             info.maxAmmo+=100;
+        }
+        if(numUpgrades == 4){
+            fastFireUnlocked = true;
         }
     }
 }

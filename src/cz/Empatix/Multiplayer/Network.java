@@ -367,7 +367,7 @@ public class Network {
     }
     public enum TypeRoomObject{
         CHEST,SPIKE,BONES,TORCH,BARREL,POT,SHOPKEEPER,SHOPTABLE,FLAMETHROWER,LADDER,
-        FLAG,ARROWTRAP
+        FLAG,ARROWTRAP, CRYSTAL
     }
     public static class AddRoomObject{
         public int id;

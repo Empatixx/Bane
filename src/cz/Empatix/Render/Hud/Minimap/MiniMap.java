@@ -14,6 +14,7 @@ import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Room;
+import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -33,7 +34,6 @@ public class MiniMap {
         Loader.loadImage("Textures\\minimap-icons.tga");
         Loader.loadImage("Textures\\minimap-trans.tga");
         Loader.loadImage("Textures\\mmparrow.tga");
-
     }
     private Image minimapBorders;
     private int idTexture;
@@ -54,7 +54,18 @@ public class MiniMap {
     private Animation playerIconAnimation;
     private Spritesheet playerIcon;
     private Vector3f playerIconPos;
-    private MMPlayerArrow playerArrows[];
+    private MMPlayerArrow[] playerArrows;
+
+    private Spritesheet affixesSpritesheet;
+    private int affixesVboVertices;
+    private TextRender[] textRenderAffixes;
+    private byte[] affixes;
+    private int totalAffixes;
+    private String[] affixesNames;
+
+    private int[] xMin,xMax,yMin,yMax;
+    private TextRender affixDesc;
+    private byte hoverAffix;
 
     public MiniMap(boolean serverSide){
         // only for multiplayer server side
@@ -169,7 +180,66 @@ public class MiniMap {
         playerIconPos.y = 150;
 
         playerArrows = new MMPlayerArrow[1];
+
+        int totalAffixes = 5;
+        textRenderAffixes = new TextRender[3];
+        for (int i = 0; i < textRenderAffixes.length; i++) {
+            textRenderAffixes[i] = new TextRender();
+        }
+        // try to find spritesheet if it was created once
+        affixesSpritesheet = SpritesheetManager.getSpritesheet("Textures\\affixes.tga");
+
+        // creating a new spritesheet
+        if (affixesSpritesheet == null) {
+            affixesSpritesheet = SpritesheetManager.createSpritesheet("Textures\\affixes.tga");
+            Sprite[] sprites = new Sprite[totalAffixes];
+            for (int i = 0; i < sprites.length; i++) {
+                texCoords =
+                        new float[]{
+                                (float) i / totalAffixes, 0,
+
+                                (float) i / totalAffixes, 1,
+
+                                (1.0f + i) / totalAffixes, 1,
+
+                                (1.0f + i) / totalAffixes, 0
+                        };
+                Sprite sprite = new Sprite(texCoords);
+                sprites[i] = sprite;
+
+            }
+            affixesSpritesheet.addSprites(sprites);
+        }
+        affixesVboVertices = ModelManager.getModel(32, 32);
+        if (affixesVboVertices == -1) {
+            affixesVboVertices = ModelManager.createModel(32, 32);
+        }
+        affixesNames = new String[3];
+        yMin = new int[3];
+        yMax = new int[3];
+        xMin = new int[3];
+        xMax = new int[3];
+        for(int i = 0;i<3;i++){
+            xMin[i] = 1420;
+            xMax[i] = 1580;
+            yMin[i] = 220 + i*200;
+            yMax[i] = 380 + i*200;
+        }
+        affixDesc = new TextRender();
+
     }
+    public boolean intersects(float x, float y, int i){
+        return (x >= xMin[i] && x <= xMax[i] && y >= yMin[i] && y <= yMax[i]);
+    }
+    public void hover(float mouseX, float mouseY){
+        hoverAffix = -1;
+        for(int i = 0;i<totalAffixes;i++){
+            if(intersects(mouseX,mouseY,i)){
+                hoverAffix = affixes[i];
+            }
+        }
+    }
+
     public void update(TileMap tm){
         Room room = tm.getCurrentRoom();
         int x = room.getX() - 10;
@@ -177,6 +247,11 @@ public class MiniMap {
         if(displayBigMap){
             playerIconPos.x = 960+x*64;
             playerIconPos.y = 500+y*64;
+            affixes = tm.getAffixes();
+            totalAffixes = tm.getTotalAffixes();
+            for(int i = 0;i<totalAffixes;i++){
+                affixesNames[i] = tm.affixConvertToString(affixes[i]);
+            }
         } else {
             playerIconPos.x = 1770+x*20;
             playerIconPos.y = 150+y*20;
@@ -221,11 +296,74 @@ public class MiniMap {
     }
     public void draw() {
         minimapBorders.draw();
-        shader.bind();
-        shader.setUniformi("sampler", 0);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, idTexture);
         if (displayBigMap) {
+            if(hoverAffix != -1){
+                String desc = null;
+                switch(hoverAffix){
+                    case TileMap.BOOSTHP:{
+                        desc = "Health of non-boss enemies is increased by 40%";
+                        break;
+                    }
+                    case TileMap.ENEMYREGEN:{
+                        desc = "Enemies have got regeneration 1 hp per 5 seconds";
+                        break;
+                    }
+                    case TileMap.INFLATION:{
+                        desc = "Shop prices are increased by 50%";
+                        break;
+                    }
+                    case TileMap.BERSERKS:{
+                        desc = "Enemies below 20% health are 30% faster";
+                        break;
+                    }
+                    case TileMap.LOWHPPOTS:{
+                        desc = "Drop rate for health potions is drastically reduced";
+                        break;
+                    }
+                }
+                float x = TextRender.getHorizontalCenter(860,1060,desc,2);
+                affixDesc.draw(desc,new Vector3f(x,900,0),2,
+                        new Vector3f(0.6784f,0.2901f,0.0941f));
+            }
+            for(int i = 0;i<totalAffixes;i++){
+                Matrix4f target;
+                target = new Matrix4f().translate(new Vector3f(1500,300+i*200,0)).scale(5);
+                float x = TextRender.getHorizontalCenter(1500-50,1500+50,affixesNames[i],2);
+                textRenderAffixes[i].draw(affixesNames[i],new Vector3f(x,225+i*200,0),2,
+                            new Vector3f(0.9686f,0.2f,0.09803f));
+
+                shader.bind();
+                shader.setUniformi("sampler",0);
+                glActiveTexture(GL_TEXTURE0);
+                affixesSpritesheet.bindTexture();
+                Camera.getInstance().hardProjection().mul(target,target);
+
+                shader.setUniformm4f("projection",target);
+
+                glEnableVertexAttribArray(0);
+                glEnableVertexAttribArray(1);
+
+                glBindBuffer(GL_ARRAY_BUFFER, affixesVboVertices);
+                glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+                glBindBuffer(GL_ARRAY_BUFFER,affixesSpritesheet.getSprites(0)[affixes[i]].getVbo());
+                glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
+
+                glDrawArrays(GL_QUADS, 0, 4);
+
+                glBindBuffer(GL_ARRAY_BUFFER,0);
+
+                glDisableVertexAttribArray(0);
+                glDisableVertexAttribArray(1);
+            }
+            shader.unbind();
+            glBindTexture(GL_TEXTURE_2D,0);
+            glActiveTexture(0);
+
+            shader.bind();
+            shader.setUniformi("sampler", 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, idTexture);
             for (MMRoom room : rooms) {
                 if (room.isDiscovered()) {
                     drawRoom(room,960 + room.getX() * 64,500 + room.getY() * 64,4);
@@ -292,6 +430,10 @@ public class MiniMap {
             }
             geometryShader.unbind();
         } else {
+            shader.bind();
+            shader.setUniformi("sampler", 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, idTexture);
             for (MMRoom room : rooms) {
                 if (room.isDiscovered()) {
                     drawRoom(room,1770 + room.getX() * 20,150 + room.getY() * 20,1.25f);
@@ -506,5 +648,9 @@ public class MiniMap {
         shader.unbind();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    public boolean isDisplayBigMap() {
+        return displayBigMap;
     }
 }

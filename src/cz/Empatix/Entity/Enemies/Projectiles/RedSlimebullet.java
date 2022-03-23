@@ -277,4 +277,7 @@ public class RedSlimebullet extends MapObject {
         light = LightManager.createLight(new Vector3f(0.980f, 0.839f, 0.078f), new Vector2f(position.x+xmap,position.y+ymap), 1.25f,this);
 
     }
+    public void forceRemove(){
+        light.remove();
+    }
 }

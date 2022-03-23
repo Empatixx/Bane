@@ -4,7 +4,7 @@ import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.Network;
-import cz.Empatix.Render.Damageindicator.DamageIndicator;
+import cz.Empatix.Render.Damageindicator.CombatIndicator;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -153,10 +153,10 @@ public abstract class Artefact {
         int cheight = enemy.getCheight();
         int x = -cwidth/4+ Random.nextInt(cwidth/2);
         if(critical){
-            DamageIndicator.addCriticalDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+            CombatIndicator.addCriticalDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
                     ,new Vector2f(-x/25f,-1f));
         } else {
-            DamageIndicator.addDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
+            CombatIndicator.addDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
                     ,new Vector2f(-x/25f,-1f));
         }
     }

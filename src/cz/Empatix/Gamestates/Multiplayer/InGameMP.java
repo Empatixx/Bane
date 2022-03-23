@@ -22,7 +22,7 @@ import cz.Empatix.Multiplayer.*;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Damageindicator.DamageIndicator;
+import cz.Empatix.Render.Damageindicator.CombatIndicator;
 import cz.Empatix.Render.Graphics.Framebuffer;
 import cz.Empatix.Render.Hud.ArmorBar;
 import cz.Empatix.Render.Hud.HealthBar;
@@ -90,7 +90,7 @@ public class InGameMP extends GameState {
     private HealthBar[] healthBar;
     private ArmorBar[] armorBar;
     private MiniMap miniMap;
-    private DamageIndicator damageIndicator;
+    private CombatIndicator damageIndicator;
     private Image coin;
     private Image deathIcon;
     private Console console;
@@ -355,7 +355,7 @@ public class InGameMP extends GameState {
         armorBar[0].enableHoverValuesShow();
         armorBar[0].setOffsetsBar(14,2);
         armorBar[0].initArmor(player[0].getArmor(),player[0].getMaxArmor());
-        damageIndicator = new DamageIndicator();
+        damageIndicator = new CombatIndicator();
         // coin
         coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
 
@@ -765,6 +765,7 @@ public class InGameMP extends GameState {
             miniMap.update(tileMap);
             // update rooms like shop/loot if they were discovered, bcs locks are only for classic/boss
             miniMap.update(player,tileMap);
+            miniMap.hover(mouseX,mouseY);
 
             Object[] hitBulletPackets = mpManager.packetHolder.get(PacketHolder.HITBULLET);
             enemyManager.update();
@@ -800,6 +801,10 @@ public class InGameMP extends GameState {
                     armorBar[i].update(player[i].getArmor(),player[i].getMaxArmor());
                     if(armorBar[i].intersects(mouseX,mouseY)) armorBar[i].showDisplayValues(true);
                 }
+            }
+            if(miniMap.isDisplayBigMap()){
+                armorBar[0].showDisplayValues(true);
+                healthBar[0].showDisplayValues(true);
             }
             alertManager.update();
 
@@ -952,6 +957,7 @@ public class InGameMP extends GameState {
         miniMap.update(tileMap);
         // update rooms like shop/loot if they were discovered, bcs locks are only for classic/boss
         miniMap.update(player,tileMap);
+        miniMap.hover(mouseX,mouseY);
 
         // updating bullets(ammo)
         float px = player[0].getX();
@@ -1094,10 +1100,10 @@ public class InGameMP extends GameState {
                             int cheight = e.getCheight();
                             int x = -cwidth/4+ Random.nextInt(cwidth/2);
                             if(packet.critical){
-                                DamageIndicator.addCriticalDamageShow(packet.damage,(int)e.getX()-x,(int)e.getY()-cheight/3
+                                CombatIndicator.addCriticalDamageShow(packet.damage,(int)e.getX()-x,(int)e.getY()-cheight/3
                                         ,new Vector2f(-x/25f,-1f));
                             } else {
-                                DamageIndicator.addDamageShow(packet.damage,(int)e.getX()-x,(int)e.getY()-cheight/3
+                                CombatIndicator.addDamageShow(packet.damage,(int)e.getX()-x,(int)e.getY()-cheight/3
                                         ,new Vector2f(-x/25f,-1f));
                             }
                             e.hit(packet.damage);

@@ -20,7 +20,7 @@ import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Camera;
-import cz.Empatix.Render.Damageindicator.DamageIndicator;
+import cz.Empatix.Render.Damageindicator.CombatIndicator;
 import cz.Empatix.Render.Graphics.Framebuffer;
 import cz.Empatix.Render.Hud.ArmorBar;
 import cz.Empatix.Render.Hud.HealthBar;
@@ -83,7 +83,7 @@ public class InGame extends GameState {
     private HealthBar healthBar;
     private ArmorBar armorBar;
     private MiniMap miniMap;
-    private DamageIndicator damageIndicator;
+    private CombatIndicator damageIndicator;
     private cz.Empatix.Render.Hud.Image coin;
     private Console console;
     private AlertManager alertManager;
@@ -303,7 +303,7 @@ public class InGame extends GameState {
         armorBar.initArmor(player.getArmor(),player.getMaxArmor());
         //minimap
         tileMap.fillMiniMap();
-        damageIndicator = new DamageIndicator();
+        damageIndicator = new CombatIndicator();
         // coin
         coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
 
@@ -588,7 +588,7 @@ public class InGame extends GameState {
 
             // update player icon location by new room
             miniMap.update(tileMap);
-
+            miniMap.hover(mouseX,mouseY);
 
             // updating bullets(ammo)
             float px = player.getX();
@@ -617,6 +617,10 @@ public class InGame extends GameState {
             armorBar.showDisplayValues(false);
             if(armorBar.intersects(mouseX,mouseY)) armorBar.showDisplayValues(true);
 
+            if(miniMap.isDisplayBigMap()){
+                armorBar.showDisplayValues(true);
+                healthBar.showDisplayValues(true);
+            }
             alertManager.update();
         }
 

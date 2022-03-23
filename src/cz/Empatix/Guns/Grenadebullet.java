@@ -13,7 +13,7 @@ import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.EnemyManagerMP;
 import cz.Empatix.Multiplayer.Network;
-import cz.Empatix.Render.Damageindicator.DamageIndicator;
+import cz.Empatix.Render.Damageindicator.CombatIndicator;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -450,10 +450,10 @@ public class Grenadebullet extends MapObject {
                     int cheight = e.getCheight();
                     int x = -cwidth/4+ Random.nextInt(cwidth/2);
                     if(!isCritical()){
-                        DamageIndicator.addDamageShow(damage,(int)e.getX()-x,(int)e.getY()-cheight/3
+                        CombatIndicator.addDamageShow(damage,(int)e.getX()-x,(int)e.getY()-cheight/3
                                 ,new Vector2f(-x/25f,-1f));
                     } else {
-                        DamageIndicator.addCriticalDamageShow(damage,(int)e.getX()-x,(int)e.getY()-cheight/3
+                        CombatIndicator.addCriticalDamageShow(damage,(int)e.getX()-x,(int)e.getY()-cheight/3
                                 ,new Vector2f(-x/25f,-1f));
                     }
                 }

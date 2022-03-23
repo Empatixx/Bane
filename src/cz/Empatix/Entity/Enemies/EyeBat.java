@@ -66,7 +66,7 @@ public class EyeBat extends Enemy {
         animation = new Animation(5);
         animation.setDelay(125);
 
-        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
         tryBoostHealth();
         damage = 1;
 
@@ -133,7 +133,7 @@ public class EyeBat extends Enemy {
             scale = 2;
 
 
-            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             tryBoostHealth();
             damage = 1;
 
@@ -167,7 +167,7 @@ public class EyeBat extends Enemy {
             scale = 2;
 
 
-            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             tryBoostHealth();
             damage = 1;
 
@@ -240,17 +240,18 @@ public class EyeBat extends Enemy {
         int indexPlayer = theFarthestPlayerIndex();
         if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
             if(currentAction == IDLE && System.currentTimeMillis() - InGame.deltaPauseTime() - beamCooldown > 5000 && position.distance(player[indexPlayer].getPosition()) > 550
-                    && position.distance(player[indexPlayer].getPosition()) < 1500
-                    && canShot()){
-                currentAction = BEAM;
-                if(facingRight){
-                    laserBeam.setPosition(position.x,position.y);
-                } else {
-                    laserBeam.setPosition(position.x,position.y+20);
-                }
+                    && position.distance(player[indexPlayer].getPosition()) < 1500){
                 laserBeam.setLastPlayerTargetIndex(indexPlayer);
-                laserBeam.resetAnimation();
-                beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+                if(canShot()){
+                    currentAction = BEAM;
+                    if(facingRight){
+                        laserBeam.setPosition(position.x,position.y);
+                    } else {
+                        laserBeam.setPosition(position.x,position.y+20);
+                    }
+                    laserBeam.resetAnimation();
+                    beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
+                }
             } else if (currentAction == BEAM && (laserBeam.hasEnded() || !canShot())){
                 currentAction = IDLE;
             }
@@ -462,7 +463,9 @@ public class EyeBat extends Enemy {
 
             float y = player[lastPlayerTargetIndex].getY() - originalPos.y;
             float x = player[lastPlayerTargetIndex].getX() - originalPos.x;
-            angle = (float)Math.atan2(y,x);
+            float angle = (float)Math.atan2(y,x);
+            this.angle += (angle - this.angle) * 0.035f;
+
 
             position.x = originalPos.x + (width / 2 - 50) * (float) Math.cos(this.angle);
             position.y = originalPos.y + (width / 2 - 50) * (float) Math.sin(this.angle);
@@ -476,32 +479,8 @@ public class EyeBat extends Enemy {
             if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
                 float y = originalPos.y- player[lastPlayerTargetIndex].getY();
                 float x = originalPos.x- player[lastPlayerTargetIndex].getX();
-                float angle = (float)Math.atan(y/x);
-                if(!facingRight){
-                    angle+=Math.PI;
-                }
-                boolean reverseDir = false;
-                if(Math.PI*2-Math.abs(this.angle - angle) < Math.abs(this.angle - angle)){
-                    reverseDir = true;
-                }
-                if(!reverseDir){
-                    this.angle += (angle - this.angle) * .07;
-                } else {
-                    if(this.angle >= 0){
-                        this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * .035;
-                        if(this.angle >= Math.PI*3/2.){
-                            this.angle-=Math.PI*3/2.;
-                            this.angle=-Math.PI/2. - this.angle;
-                        }
-                    } else {
-                        this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * .035;
-                        if(this.angle <= -Math.PI/2.){
-                            this.angle+=Math.PI/2;
-                            this.angle=Math.PI*3/2.-this.angle;
-                        }
-                    }
-
-                }
+                float angle = (float)Math.atan2(y,x);
+                this.angle += (angle - this.angle) * 0.035f;
 
                 position.x = originalPos.x + (width/2-65) * (float)Math.cos(this.angle);
                 position.y = originalPos.y + (width/2-65) * (float)Math.sin(this.angle);
@@ -865,5 +844,8 @@ public class EyeBat extends Enemy {
         animation.setTime(sync.time);
         currentAction = sync.currAction;
         animation.setFrame(sync.sprite);
+    }
+    public void forceRemove(){
+
     }
 }

@@ -5,25 +5,20 @@ import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class DamageShow {
+public class HealShow {
     private final long time;
-    private final int dmg;
-    private boolean crit;
+    private final int amount;
     private final Vector3f pos;
     private final Vector2f dir;
 
     private final TextRender textRender;
-    DamageShow(int dmg, int x, int y, Vector2f dir){
-        this.dmg = dmg;
+    HealShow(int amount, int x, int y, Vector2f dir){
+        this.amount = amount;
         pos = new Vector3f(x,y,0);
         time = System.currentTimeMillis() - InGame.deltaPauseTime();
         this.dir = dir;
 
         textRender = new TextRender();
-    }
-
-    void setCrit() {
-        this.crit = true;
     }
 
     boolean shouldRemove(){
@@ -34,12 +29,8 @@ public class DamageShow {
         pos.y+=dir.y;
     }
     void draw(){
-        if(crit){
-            textRender.drawMap(Integer.toString(dmg),pos,2,new Vector3f(0.917f, 0.631f, 0.121f));
-        } else {
-            textRender.drawMap(Integer.toString(dmg),pos,2,new Vector3f(0.937f, 0.223f, 0.223f));
+        textRender.drawMap("+"+amount,pos,2,new Vector3f(0.050f, 0.729f, 0.290f));
 
-        }
     }
 
 }

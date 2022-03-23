@@ -337,6 +337,7 @@ public class TileMap {
 		// converting 1 and 0 into tiles id textures
 		autoTile();
 
+
 		// server created map -> send packet to all clients
 		if(serverSide){
 			Server server = MultiplayerManager.getInstance().server.getServer();
@@ -1815,6 +1816,9 @@ public class TileMap {
 	}
 	public void newMapMP(){
 		floor++;
+		floorAffixes.newAffix();
+		floorAffixes.newAffix();
+		floorAffixes.newAffix();
 		if(floor == 2 || floor == 4 || floor == 6){
 			floorAffixes.newAffix();
 		}
@@ -1930,6 +1934,10 @@ public class TileMap {
 				switch (addRoomPacket.type){
 					case POT:{
 						roomObject = new Pot(this);
+						break;
+					}
+					case CRYSTAL:{
+						roomObject = new Crystal(this);
 						break;
 					}
 					case FLAG:{
@@ -2270,5 +2278,12 @@ public class TileMap {
 				if(i != -1) totalAffixes++;
 			}
 		}
+
+		public int getTotalAffixes() {
+			return totalAffixes;
+		}
 	}
+	public byte[] getAffixes(){return floorAffixes.getChoosenAffixes();}
+	public int getTotalAffixes(){return floorAffixes.totalAffixes;}
+	public String affixConvertToString(byte index){return floorAffixes.convertToString(index);}
 }

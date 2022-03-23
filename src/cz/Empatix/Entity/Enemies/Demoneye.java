@@ -32,7 +32,7 @@ public class Demoneye extends Enemy {
         scale = 2;
 
 
-        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
         tryBoostHealth();
         damage = 3;
 
@@ -105,7 +105,7 @@ public class Demoneye extends Enemy {
             animation = new Animation(4);
             animation.setDelay(125);
 
-            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             tryBoostHealth();
             damage = 3;
 
@@ -127,7 +127,7 @@ public class Demoneye extends Enemy {
             scale = 2;
 
 
-            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             tryBoostHealth();
             damage = 3;
 
@@ -275,5 +275,7 @@ public class Demoneye extends Enemy {
     @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
 
+    }
+    public void forceRemove(){
     }
 }

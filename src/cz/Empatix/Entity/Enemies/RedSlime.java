@@ -49,7 +49,7 @@ public class RedSlime extends Enemy {
         cheight = 48;
         scale = 2;
 
-        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
         tryBoostHealth();
         damage = 1;
 
@@ -125,7 +125,7 @@ public class RedSlime extends Enemy {
             animation = new Animation(4);
             animation.setDelay(145);
 
-            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             tryBoostHealth();
             damage = 1;
 
@@ -153,7 +153,7 @@ public class RedSlime extends Enemy {
             cheight = 48;
             scale = 2;
 
-            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             tryBoostHealth();
             damage = 1;
 
@@ -462,6 +462,11 @@ public class RedSlime extends Enemy {
                 }
             }
 
+        }
+    }
+    public void forceRemove(){
+        for(RedSlimebullet b : bullets){
+            b.forceRemove();
         }
     }
 }

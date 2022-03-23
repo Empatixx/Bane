@@ -35,7 +35,7 @@ public class Rat extends Enemy {
         cheight=37;
         scale = 2;
 
-        health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
         tryBoostHealth();
         damage = 1;
 
@@ -106,7 +106,7 @@ public class Rat extends Enemy {
             animation = new Animation(4);
             animation.setDelay(120);
 
-            health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             tryBoostHealth();
             damage = 1;
 
@@ -135,7 +135,7 @@ public class Rat extends Enemy {
             cheight=37;
             scale = 2;
 
-            health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             tryBoostHealth();
             damage = 1;
 
@@ -283,6 +283,9 @@ public class Rat extends Enemy {
 
     @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
+
+    }
+    public void forceRemove(){
 
     }
 }

@@ -107,7 +107,7 @@ public class EnemyManagerMP {
     }
 
     public void spawnBoss(int x, int y) {
-        int randombosses = 111;
+        int randombosses = 1;
         if (tileMap.getFloor() >= 1) {
             randombosses++;
         }

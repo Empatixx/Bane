@@ -48,7 +48,7 @@ public class Slime extends Enemy {
         cheight = 48;
         scale = 2;
 
-        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
         tryBoostHealth();
         damage = 1;
 
@@ -122,7 +122,7 @@ public class Slime extends Enemy {
             animation = new Animation(4);
             animation.setDelay(175);
 
-            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             tryBoostHealth();
             damage = 1;
 
@@ -146,7 +146,7 @@ public class Slime extends Enemy {
             cheight = 48;
             scale = 2;
 
-            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             tryBoostHealth();
             damage = 1;
 
@@ -464,6 +464,11 @@ public class Slime extends Enemy {
                 }
             }
 
+        }
+    }
+    public void forceRemove(){
+        for(Slimebullet b : bullets){
+            b.forceRemove();
         }
     }
 }

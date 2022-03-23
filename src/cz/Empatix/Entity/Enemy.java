@@ -5,9 +5,11 @@ import cz.Empatix.Entity.AI.Path;
 import cz.Empatix.Entity.AI.PathNode;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
+import cz.Empatix.Java.Random;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Camera;
+import cz.Empatix.Render.Damageindicator.CombatIndicator;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Room;
@@ -55,6 +57,8 @@ public abstract class Enemy extends MapObject{
     private long lastTimeSync = -1;
 
     private boolean ragingActivated;
+
+    private long lastReg;
 
     public Enemy(TileMap tm, Player player) {
         super(tm);
@@ -716,6 +720,7 @@ public abstract class Enemy extends MapObject{
     public void update() {
         if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
             tryEnrage();
+            tryRegen();
             // ENEMY AI
             EnemyAI();
 
@@ -887,6 +892,23 @@ public abstract class Enemy extends MapObject{
     public void heal(int amount){
         health+=amount;
         if(health > maxHealth) health = maxHealth;
+        else {
+            if(!tileMap.isServerSide()){
+                int cwidth = getCwidth();
+                int cheight = getCheight();
+                int x = -cwidth/4+ Random.nextInt(cwidth/2);
+                CombatIndicator.addHealShow(amount,(int)getX()-x,(int)getY()-cheight/3
+                        ,new Vector2f(-x/25f,-1f));
+            } else {
+                Network.EnemyHealthHeal healPacket = new Network.EnemyHealthHeal();
+                MultiplayerManager mpManager = MultiplayerManager.getInstance();
+                mpManager.server.requestACK(healPacket,healPacket.idPacket);
+                healPacket.id = id;
+                healPacket.amount = (short) amount;
+                Server server = mpManager.server.getServer();
+                server.sendToAllUDP(healPacket);
+            }
+        }
     }
 
     public void setHealth(short health) {
@@ -912,4 +934,13 @@ public abstract class Enemy extends MapObject{
             health *= 1.4;
         }
     }
+    public void tryRegen(){
+        if(tileMap.isActiveAffix(TileMap.ENEMYREGEN)){
+            if(System.currentTimeMillis() - lastReg - InGame.deltaPauseTime() > 5000){
+                lastReg = System.currentTimeMillis() - InGame.deltaPauseTime();
+                heal(1);
+            }
+        }
+    }
+    public abstract void forceRemove();
 }

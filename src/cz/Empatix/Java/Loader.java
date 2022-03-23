@@ -148,6 +148,7 @@ public class Loader {
         Torch.load();
         TileMap.load();
         Bookshelf.load();
+        Crystal.load();
         // states
         InGame.load();
         MenuState.load();

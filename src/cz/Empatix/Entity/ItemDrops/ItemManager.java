@@ -119,7 +119,6 @@ public class ItemManager {
         }else if (random == 3) {
             drop = new StatUpgradeDrop(tm, (byte) Random.nextInt(2));
             drop.setPosition(x, y-15);
-            itemDrops.add(drop);
         } else {
             Weapon weapon = gm.randomGun();
             weapon.drop();
@@ -145,52 +144,27 @@ public class ItemManager {
         if (player.getHealth() == player.getMaxHealth()) {
             drops--;
         }
-        int random = cz.Empatix.Java.Random.nextInt(drops);
+        int random = Random.nextInt(drops);
 
-        int[] weaponTypes = gm.getWeaponTypes();
         ItemDrop drop = null;
         if (random == 0) {
-            int numWeapons = 0;
-            for(int type : weaponTypes) {
-                if(type != -1){
-                    numWeapons++;
-                }
-            }
-            if(numWeapons == 1){
-                for(int type : weaponTypes) {
-                    if(type != -1){
-                        if (type == ItemDrop.PISTOLAMMO) {
-                            drop = new PistolAmmo(tm);
-                            drop.setPosition(x, y);
-                        } else if (type == ItemDrop.EXPLOSIVEAMMO){
-                            drop = new ExplosiveAmmo(tm);
-                            drop.setPosition(x, y);
-                        } else{
-                            drop = new ShotgunAmmo(tm);
-                            drop.setPosition(x, y);
-                        }
-                        itemDrops.add(drop);
-
-                    }
-                }
-            } else {
-                int type = weaponTypes[Random.nextInt(numWeapons)];
-                while(type == -1) {
-                    type = weaponTypes[Random.nextInt(numWeapons)];
-                }
-                if (type == ItemDrop.PISTOLAMMO) {
-                    drop = new PistolAmmo(tm);
-                    drop.setPosition(x, y);
-                } else if (type == ItemDrop.EXPLOSIVEAMMO){
-                    drop = new ExplosiveAmmo(tm);
-                    drop.setPosition(x, y);
-                } else {
-                    drop = new ShotgunAmmo(tm);
-                    drop.setPosition(x, y);
-                }
-                itemDrops.add(drop);
-            }
+            drop = dropAmmo(x,y);
         } else if (random == 2) {
+            if(tm.isActiveAffix(TileMap.LOWHPPOTS)){
+                int tries = 0;
+                do{
+                    random = Random.nextInt(drops);
+                    tries++;
+                } while (random == 2 && tries <= 2);
+                if(random == 0){
+                    return dropAmmo(x,y);
+                } else if (random != 2) {
+                    drop = new Coin(tm);
+                    drop.setPosition(x, y);
+                    itemDrops.add(drop);
+                    return drop;
+                }
+            }
             drop = new HealingPot(tm);
             drop.setPosition(x, y);
             itemDrops.add(drop);
@@ -202,6 +176,51 @@ public class ItemManager {
         return drop;
     }
 
+    private ItemDrop dropAmmo(float x, float y){
+        int[] weaponTypes = gm.getWeaponTypes();
+        ItemDrop drop = null;
+
+        int numWeapons = 0;
+        for(int type : weaponTypes) {
+            if(type != -1){
+                numWeapons++;
+            }
+        }
+        if(numWeapons == 1){
+            for(int type : weaponTypes) {
+                if(type != -1){
+                    if (type == ItemDrop.PISTOLAMMO) {
+                        drop = new PistolAmmo(tm);
+                        drop.setPosition(x, y);
+                    } else if (type == ItemDrop.EXPLOSIVEAMMO){
+                        drop = new ExplosiveAmmo(tm);
+                        drop.setPosition(x, y);
+                    } else{
+                        drop = new ShotgunAmmo(tm);
+                        drop.setPosition(x, y);
+                    }
+                    itemDrops.add(drop);
+                }
+            }
+        } else {
+            int type = weaponTypes[Random.nextInt(numWeapons)];
+            while(type == -1) {
+                type = weaponTypes[Random.nextInt(numWeapons)];
+            }
+            if (type == ItemDrop.PISTOLAMMO) {
+                drop = new PistolAmmo(tm);
+                drop.setPosition(x, y);
+            } else if (type == ItemDrop.EXPLOSIVEAMMO){
+                drop = new ExplosiveAmmo(tm);
+                drop.setPosition(x, y);
+            } else {
+                drop = new ShotgunAmmo(tm);
+                drop.setPosition(x, y);
+            }
+            itemDrops.add(drop);
+        }
+        return drop;
+    }
     public void update() {
         if(MultiplayerManager.multiplayer){
             PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
@@ -426,58 +445,8 @@ public class ItemManager {
         itemDrops.add(drop);
     }
     public void createDrop(float x, float y, Vector2f speed) {
-        int random = cz.Empatix.Java.Random.nextInt(3);
-        ItemDrop drop;
-        int[] weaponTypes = gm.getWeaponTypes();
-        if (random == 0) {
-            int numWeapons = 0;
-            for(int type : weaponTypes) {
-                if(type != -1){
-                    numWeapons++;
-                }
-            }
-            if(numWeapons == 1){
-                for(int type : weaponTypes) {
-                    if(type != -1){
-                        if (type == ItemDrop.PISTOLAMMO) {
-                            drop = new PistolAmmo(tm);
-                        } else if (type == ItemDrop.EXPLOSIVEAMMO){
-                            drop = new ExplosiveAmmo(tm);
-                        } else{
-                            drop = new ShotgunAmmo(tm);
-                        }
-                        drop.setPosition(x, y);
-                        drop.setSpeed(speed.x, speed.y);
-                        itemDrops.add(drop);
-                    }
-                }
-            } else {
-                int type = weaponTypes[Random.nextInt(numWeapons)];
-                while(type == -1) {
-                    type = weaponTypes[Random.nextInt(numWeapons)];
-                }
-                if (type == ItemDrop.PISTOLAMMO) {
-                    drop = new PistolAmmo(tm);
-                } else if (type == ItemDrop.EXPLOSIVEAMMO){
-                    drop = new ExplosiveAmmo(tm);
-                } else {
-                    drop = new ShotgunAmmo(tm);
-                }
-                drop.setPosition(x, y);
-                drop.setSpeed(speed.x, speed.y);
-                itemDrops.add(drop);
-            }
-        } else if (random == 2) {
-            drop = new HealingPot(tm);
-            drop.setPosition(x, y);
-            drop.setSpeed(speed.x, speed.y);
-            itemDrops.add(drop);
-        } else {
-            drop = new Coin(tm);
-            drop.setPosition(x, y);
-            drop.setSpeed(speed.x, speed.y);
-            itemDrops.add(drop);
-        }
+        ItemDrop drop = createDrop(x,y);
+        drop.setSpeed(speed.x,speed.y);
     }
 
     public void dropWeapon(Weapon weapon, int x, int y) {

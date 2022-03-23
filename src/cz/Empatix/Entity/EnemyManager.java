@@ -89,6 +89,10 @@ public class EnemyManager {
         return true;
     }
     public void clear(){
+        // preventing to keeping lights of enemies when we remove them
+        for(Enemy e : enemies){
+            e.forceRemove();
+        }
         enemies.clear();
     }
 

@@ -75,7 +75,7 @@ public class Golem extends Enemy {
         cheight = 40;
         scale = 6;
 
-        health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+        health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
         damage = 2;
 
         type = melee;
@@ -163,7 +163,7 @@ public class Golem extends Enemy {
             cheight = 40;
             scale = 6;
 
-            health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             damage = 2;
 
             type = melee;
@@ -203,7 +203,7 @@ public class Golem extends Enemy {
             cheight = 40;
             scale = 6;
 
-            health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.5)*0.12)));
+            health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
             damage = 2;
 
             type = melee;
@@ -434,16 +434,8 @@ public class Golem extends Enemy {
                 if(System.currentTimeMillis() - lastRegen - InGame.deltaPauseTime() > 600){
                     lastRegen = System.currentTimeMillis()- InGame.deltaPauseTime();
                     int regen = (int)Math.ceil(maxHealth * 0.01 *(1-(float)health/maxHealth));
-                    if(tileMap.isServerSide()){
-                        Network.EnemyHealthHeal healPacket = new Network.EnemyHealthHeal();
-                        MultiplayerManager mpManager = MultiplayerManager.getInstance();
-                        mpManager.server.requestACK(healPacket,healPacket.idPacket);
-                        healPacket.id = id;
-                        healPacket.amount = (short) regen;
-                        Server server = mpManager.server.getServer();
-                        server.sendToAllUDP(healPacket);
-                    }
                     heal(regen);
+
                 }
                 right = false;
                 left = false;
@@ -615,7 +607,8 @@ public class Golem extends Enemy {
             if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
                 float y = player[lastPlayerTargetIndex].getY() - originalPos.y;
                 float x = player[lastPlayerTargetIndex].getX() - originalPos.x;
-                angle = (float)Math.atan2(y,x);
+                float angle = (float)Math.atan2(y,x);
+                this.angle += (angle - this.angle) * 0.035f;
 
                 position.x = originalPos.x + (width/2-65) * (float)Math.cos(this.angle);
                 position.y = originalPos.y + (width/2-65) * (float)Math.sin(this.angle);
@@ -931,5 +924,7 @@ public class Golem extends Enemy {
     @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
 
+    }
+    public void forceRemove(){
     }
 }

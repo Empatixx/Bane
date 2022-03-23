@@ -164,6 +164,10 @@ public class KingSlimebullet extends MapObject {
 
     public boolean shouldRemove() { return remove; }
 
+    public void forceRemove(){
+        light.remove();
+    }
+
     public void update() {
         // server side update
         setMapPosition();

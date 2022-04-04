@@ -880,12 +880,12 @@ public abstract class Enemy extends MapObject{
 
     public void handleSync(Network.EnemySync sync){
         // packet sync is not old
-        if(lastTimeSync < sync.packetTime){
+        if(lastTimeSync < sync.idPacket){
             animation.setTime(sync.time);
             currentAction = sync.currAction;
             animation.setFrames(spritesheet.getSprites(currentAction));
             animation.setFrame(sync.sprite);
-            lastTimeSync = sync.packetTime;
+            lastTimeSync = sync.idPacket;
         }
     }
     // increase health of enemy

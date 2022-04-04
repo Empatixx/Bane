@@ -126,7 +126,6 @@ public class ArmorBar extends HUD{
         super.draw();
         if(showDisplayValues && canHover){
             Vector3f tpos = new Vector3f(pos);
-            System.out.println("X: "+pos.x);
             tpos.y -= 5 * scale;
             String s = armor+"/"+maxArmor;
             tpos.x = TextRender.getHorizontalCenter((int)this.minX,(int)this.maxX,s,1);

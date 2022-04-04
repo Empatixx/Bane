@@ -20,6 +20,7 @@ public class PacketHolder {
     public final static int HITBULLET = 9;
     public final static int MOVE_ENEMYPROJECTILE = 10;
     public final static int MOVEPLAYER = 11;
+    public final static int ORIGINMOVEPLAYER = 46;
     public final static int ADDROOMOBJECT = 12;
     public final static int MOVEITEM = 13;
     public final static int MOVEROOMOBJECT = 14;
@@ -54,9 +55,11 @@ public class PacketHolder {
     public static final int WEAPONINFO = 43;
     public static final int EXPLOSIONDAMAGE = 44;
     public static final int TRAPRODAMAGE = 45;
+    public static final int PMOVEMENTSYNC = 47;
+
 
     public PacketHolder(){
-        final int size = 46;
+        final int size = 48;
 
         packetArrays = new ArrayList<>(size);
         for(int i = 0;i<size;i++){

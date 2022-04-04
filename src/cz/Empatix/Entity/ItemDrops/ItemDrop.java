@@ -31,16 +31,9 @@ public abstract class ItemDrop extends MapObject {
     public boolean canDespawn;
     public long liveTime;
 
-    private static int idGen = 0;
-    private int idDrop;
-
     public ItemDrop(TileMap tm){
         super(tm);
         shop = false;
-
-        if(tm.isServerSide()){
-            idDrop = idGen++;
-        }
     }
 
     public void setAmount(int amount) {
@@ -58,7 +51,7 @@ public abstract class ItemDrop extends MapObject {
             getMovementSpeed();
             if(tileMap.isServerSide()){
                 Network.MoveDropItem moveDropItem = new Network.MoveDropItem();
-                moveDropItem.id = idDrop;
+                moveDropItem.id = id;
                 moveDropItem.x = position.x;
                 moveDropItem.y = position.y;
                 Server server = MultiplayerManager.getInstance().server.getServer();
@@ -114,11 +107,4 @@ public abstract class ItemDrop extends MapObject {
         canDespawn = false;
     }
 
-    public int getId() {
-        return idDrop;
-    }
-
-    public void setId(int id) {
-        this.idDrop = id;
-    }
 }

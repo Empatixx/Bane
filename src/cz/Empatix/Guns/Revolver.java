@@ -107,9 +107,6 @@ public class Revolver extends Weapon {
         GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
         int numUpgrades = gunsManagerMP.getNumUpgrades(idPlayer, "Revolver");
         if(numUpgrades >= 1){
-            maxMagazineAmmo+=2;
-        }
-        if(numUpgrades >= 1){
             criticalHits = true;
         }
         if(numUpgrades >= 2){

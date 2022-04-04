@@ -29,7 +29,6 @@ public class Flamethrower extends RoomObject {
     public static final int HORIZONTAl = 1;
 
     private int type;
-
     public Flamethrower(TileMap tm, Player[] player){
         super(tm);
         if(tm.isServerSide()){
@@ -207,10 +206,9 @@ public class Flamethrower extends RoomObject {
             roomObjectAnimationSync.id = id;
             roomObjectAnimationSync.sprite = (byte)animation.getIndexOfFrame();
             roomObjectAnimationSync.time = animation.getTime();
-            roomObjectAnimationSync.cooldown = cooldownTime;
             server.sendToAllUDP(roomObjectAnimationSync);
         }
-        if(System.currentTimeMillis() - cooldownTime - InGame.deltaPauseTime() > 1500){
+        if(System.currentTimeMillis() - cooldownTime - InGame.deltaPauseTime() > 1500 && (!MultiplayerManager.multiplayer || tileMap.isServerSide())){
             ready = true;
             cooldownTime = System.currentTimeMillis() - InGame.deltaPauseTime();
         }
@@ -290,11 +288,5 @@ public class Flamethrower extends RoomObject {
 
     public int getType() {
         return type;
-    }
-    @Override
-    public void animationSync(Network.RoomObjectAnimationSync packet) {
-        animation.setTime(packet.time);
-        animation.setFrame(packet.sprite);
-        cooldownTime = packet.cooldown;
     }
 }

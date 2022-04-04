@@ -331,7 +331,6 @@ public class Shotgun extends Weapon {
     @Override
     public void handleHitBulletPacket(Network.HitBullet hitBullet) {
         for(Bullet b : bullets){
-            System.out.println("ID: "+b.id+ " ?= "+hitBullet.id);
             if(b.getId() == hitBullet.id && !b.isHit()){
                 b.setHit(hitBullet.type);
                 if(hitBullet.type == Bullet.TypeHit.ENEMY){

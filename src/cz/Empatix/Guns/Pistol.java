@@ -45,8 +45,8 @@ public class Pistol extends Weapon {
 
     Pistol(TileMap tm, Player player, GunsManager gunsManager){
         super(tm,player,gunsManager);
-        mindamage = 111;
-        maxdamage = 333;
+        mindamage = 1;
+        maxdamage = 3;
         inaccuracy = 0.8f;
         maxAmmo = 120;
         maxMagazineAmmo = 7;
@@ -84,8 +84,8 @@ public class Pistol extends Weapon {
     }
     public Pistol(TileMap tm, Player[] player){
         super(tm,player);
-        mindamage = 111;
-        maxdamage = 333;
+        mindamage = 1;
+        maxdamage = 3;
         inaccuracy = 0.8f;
         maxAmmo = 120;
         maxMagazineAmmo = 71;
@@ -99,8 +99,8 @@ public class Pistol extends Weapon {
     // resetting stats of gun of new owner of gun
     @Override
     public void restat(int idPlayer, boolean fullAmmo) {
-        mindamage = 111;
-        maxdamage = 333;
+        mindamage = 1;
+        maxdamage = 3;
         inaccuracy = 0.8f;
         maxAmmo = 120;
         maxMagazineAmmo = 7;

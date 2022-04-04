@@ -156,17 +156,17 @@ public class ItemManagerMP {
                     tries++;
                 } while (random == 2 && tries <= 2);
                 if(random == 0){
-                    return dropAmmo(x,y,randomIndexPlayer);
+                    drop = dropAmmo(x,y,randomIndexPlayer);
                 } else if (random != 2) {
                     drop = new Coin(tm);
                     drop.setPosition(x, y);
                     itemDrops.add(drop);
-                    return drop;
                 }
+            } else {
+                drop = new HealingPot(tm);
+                drop.setPosition(x, y);
+                itemDrops.add(drop);
             }
-            drop = new HealingPot(tm);
-            drop.setPosition(x, y);
-            itemDrops.add(drop);
         } else {
             drop = new Coin(tm);
             drop.setPosition(x, y);
@@ -181,6 +181,7 @@ public class ItemManagerMP {
         dropItem.x = (int)x;
         dropItem.y = (int)y;
         dropItem.amount = (byte)drop.getAmount();
+        dropItem.despawn = drop.canDespawn;
         server.sendToAllUDP(dropItem);
         return drop;
     }

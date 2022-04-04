@@ -137,7 +137,6 @@ public class InGameMP extends GameState {
     private long connectionAlert;
     private int ping;
     private long pingTimer;
-
     public InGameMP(GameStateManager gsm){
         this.gsm = gsm;
     }
@@ -478,6 +477,7 @@ public class InGameMP extends GameState {
         }
         mpManager.client.setNumPlayers(index);
         pingTimer = System.currentTimeMillis();
+
     }
 
     @Override
@@ -832,7 +832,8 @@ public class InGameMP extends GameState {
                 gsm.setState(GameStateManager.PROGRESSROOMMP);
                 glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
 
-                mpManager.packetHolder.get(PacketHolder.MOVEPLAYER); // CLEARING ARRAY
+                mpManager.packetHolder.clear(PacketHolder.MOVEPLAYER);
+                mpManager.packetHolder.clear(PacketHolder.ORIGINMOVEPLAYER);
 
                 Client client = mpManager.client.getClient();
                 Network.RequestForPlayers request = new Network.RequestForPlayers();
@@ -879,15 +880,19 @@ public class InGameMP extends GameState {
                 pause = false;
                 deathTime = System.currentTimeMillis();
             }
+            player[0].updateOrigin();
             Object[] objects = mpManager.packetHolder.get(PacketHolder.MOVEPLAYER);
-            for(PlayerMP p : player) {
+            for(int i = 1;i<player.length;i++) {
+                PlayerMP p = player[i];
                 if(p == null) continue;
                 Network.MovePlayer recent=null;
                 for (Object o : objects) {
                     Network.MovePlayer move = (Network.MovePlayer) o;
                     if (p.getIdConnection() == move.idPlayer) {
                         if (recent == null) recent = move;
-                        if (recent.time < move.time) recent = move;
+                        if (recent.idPacket < move.idPacket){
+                            recent = move;
+                        }
                     }
                 }
                 if(recent != null){
@@ -898,8 +903,6 @@ public class InGameMP extends GameState {
                         p.setRight(recent.right);
                         p.setLeft(recent.left);
                     }
-                } else {
-                    p.updateLostPacket();
                 }
             }
             for(PlayerMP p : player){
@@ -1004,6 +1007,10 @@ public class InGameMP extends GameState {
                 if(armorBar[i].intersects(mouseX,mouseY)) armorBar[i].showDisplayValues(true);
             }
         }
+        if(miniMap.isDisplayBigMap()){
+            armorBar[0].showDisplayValues(true);
+            healthBar[0].showDisplayValues(true);
+        }
 
         Object[] AlertPackets = mpManager.packetHolder.get(PacketHolder.ALERT);
         for(Object o : AlertPackets){
@@ -1069,7 +1076,7 @@ public class InGameMP extends GameState {
             pingTimer+=1000;
             Client client = MultiplayerManager.getInstance().client.getClient();
             client.sendUDP(new Network.Ping());
-            ping = client.getReturnTripTime();
+            ping = client.getReturnTripTime()/2;
         }
     }
     public void pause(){

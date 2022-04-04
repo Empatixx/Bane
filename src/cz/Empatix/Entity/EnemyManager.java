@@ -131,7 +131,7 @@ public class EnemyManager {
                     Network.EnemySync sync = (Network.EnemySync) o;
                     if(e.id == sync.id) {
                         if(theRecent == null) theRecent = sync;
-                        else if (theRecent.packetTime < sync.packetTime){
+                        else if (theRecent.idPacket < sync.idPacket){
                             theRecent = sync;
                         }
                     }

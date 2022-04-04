@@ -43,14 +43,17 @@ public class PlayerMP extends Player {
     private Spritesheet ghostSpritesheet;
     private int vboGhostVertices;
 
-    //private long lastTimeMove;
-    //private long lastTimePacket;
-
-    //private Network.MovePlayer currentMove;
-    //private Network.MovePlayer previousMove;
+    // INTERPOLATION
+    /*private long lastTimeMove;
+    private Network.MovePlayer currentMove;
+    private Network.MovePlayer previousMove;
+    */
+    private final ArrayList<Network.MovePlayer> movePackets;
+    private int idMove;
+    private static int currentIdMove;
+    private boolean movementSync;
 
     private Room deathRoom;
-    //private int totalMoves;
 
     public PlayerMP(TileMap tm, String username){
         super(tm);
@@ -101,6 +104,7 @@ public class PlayerMP extends Player {
                 }
             }
         }
+        movePackets = new ArrayList<>(5);
     }
 
     public void setOrigin(boolean origin) {
@@ -198,14 +202,14 @@ public class PlayerMP extends Player {
             super.draw();
         }
         if(textRender == null) textRender = new TextRender();
-        float centerX = TextRender.getHorizontalCenter((int)(position.x+xmap),(int)(position.x+xmap),username,2);
+        float centerX = TextRender.getHorizontalCenter((int)(position.x),(int)(position.x),username,2);
         Vector3f color = new Vector3f();
         if(isGhost()){
             color.set(0.760f);
         } else {
             color.set(0.874f,0.443f,0.149f);
         }
-        textRender.draw(username,new Vector3f(centerX,position.y+ymap-cheight/2-10,0),2,color);
+        textRender.drawMap(username,new Vector3f(centerX,position.y-cheight/2-10,0),2,color);
     }
 
     public String getUsername() {
@@ -297,29 +301,23 @@ public class PlayerMP extends Player {
         else checkGhostRestrictions();
         checkTileMapCollision();
         if(tileMap.isServerSide())setPosition(temp.x, temp.y);
-        /*else if(currentMove != null){
-            float timeSinceLastInput = (System.currentTimeMillis() - lastTimeMove)/1000f;
-            final double ns = 1 / 60.0;
-            float t = (float) (timeSinceLastInput/totalMoves / (ns));
-            if(t<1){
-                Vector3f finalPos = new Vector3f();
-                if(previousMove != null){
-                    finalPos.x = previousMove.x;
-                    finalPos.y = previousMove.y;
-                    finalPos.lerp(new Vector3f(currentMove.x,currentMove.y,0),t);
-                }
-                else {
-                    finalPos.x = currentMove.x;
-                    finalPos.y = currentMove.y;
-                }
-                setPosition(finalPos.x,finalPos.y);
-
-            } else {
-                //finalPos.x = currentMove.x;
-                //finalPos.y = currentMove.y;
-                setLastTimePacket(System.nanoTime());
-                setPosition(currentMove.x+speed.x,currentMove.y+speed.y);
+        //TODO: INTERPOLATION CLIENT-MOVEMENT
+        /*else if(currentMove != null && origin){
+            long timeSinceLastInput = System.nanoTime() - lastTimeMove;
+            final double ns = 1_000_000_000.0 / 60.0;
+            float t = (float) (timeSinceLastInput / (ns));
+            System.out.println("DELTA: "+t);
+            Vector3f finalPos = new Vector3f();
+            if(previousMove != null){
+                finalPos.x = previousMove.x;
+                finalPos.y = previousMove.y;
+                finalPos.lerp(new Vector3f(currentMove.x,currentMove.y,0),t);
             }
+            else {
+                finalPos.x = currentMove.x;
+                finalPos.y = currentMove.y;
+            }
+            setPosition(finalPos.x,finalPos.y);
 
         }*/
         if(!tileMap.isServerSide()){
@@ -380,13 +378,6 @@ public class PlayerMP extends Player {
             movePlayer.right = right;
             client.sendUDP(movePlayer);
         }
-    }
-    public void updateLostPacket(){
-        getMovementSpeed();
-        if(!ghost) checkRoomObjectsCollision();
-        else checkGhostRestrictions();
-        checkTileMapCollision();
-        setPosition(temp.x, temp.y);
     }
 
     public void fakeHit(Network.PlayerHit playerHit){
@@ -561,29 +552,21 @@ public class PlayerMP extends Player {
             if(isOrigin())glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
         }
     }
-/*
+    //TODO: INTERPOLATION CLIENT-MOVEMENT
+    /*
     public void setPosition(Network.MovePlayer move)
     {
         RefreshToPosition(move, currentMove);
-        setLastTimePacket(move.time);
     }
 
     private void RefreshToPosition(Network.MovePlayer move, Network.MovePlayer prevData)
     {
-        previousMove = prevData;
-        this.currentMove = move;
-        lastTimeMove = GameStateManager.timeUpdate;
+        if(prevData == null || prevData.idPacket < move.idPacket){
+            previousMove = prevData;
+            this.currentMove = move;
+            lastTimeMove = GameStateManager.timeUpdate - mpManager.client.getClient().getReturnTripTime()/500_000L;
+        }
         //if(prevData != null) System.out.println("CHANGE X: "+(move.x-prevData.x));
-    }
-    private Vector3f lerp(Vector3f pos, Vector3f dest, float t){
-        Vector3f finalPos = new Vector3f();
-        finalPos.x=pos.x+(dest.x-pos.x)*t;
-        finalPos.y=pos.y+(dest.y-pos.y)*t;
-        return finalPos;
-    }
-
-    public void setTotalMoves(int totalMoves) {
-        this.totalMoves = totalMoves;
     }
 */
     public void setIdConnection(int idConnection) {
@@ -593,12 +576,67 @@ public class PlayerMP extends Player {
     public int getIdConnection() {
         return idConnection;
     }
-/*
-    public void setLastTimePacket(long lastTimePacket) {
-        this.lastTimePacket = lastTimePacket;
+
+    public int getIdMove() {
+        return idMove++;
     }
 
-    public long getLastTimePacket() {
-        return lastTimePacket;
-    }*/
+    public void updateOrigin() {
+        if(!isAlreadySynced()){
+            Object[] sync = mpManager.packetHolder.get(PacketHolder.PMOVEMENTSYNC);
+            if(sync.length >= 1){
+                Client c = mpManager.client.getClient();
+                c.sendUDP(sync[0]);
+                synced();
+            }
+            return;
+        }
+        Object[] newPackets = mpManager.packetHolder.get(PacketHolder.ORIGINMOVEPLAYER);
+        for(Object o : newPackets){ movePackets.add((Network.MovePlayer) o);}
+        boolean found = false;
+        //System.out.println("FINDING: "+currentIdMove);
+        for(int i = 0;i<movePackets.size();i++){
+            Network.MovePlayer p = movePackets.get(i);
+            if(p.idPacket == currentIdMove){
+                currentIdMove++;
+                setPosition(p.x,p.y);
+                movePackets.remove(i);
+                found = true;
+                break;
+            } else if (p.idPacket < currentIdMove){
+                //System.out.println(p.idPacket+ "!= "+currentIdMove);
+                movePackets.remove(i);
+                i--;
+            } else {
+                //System.out.println("W: ("+p.idPacket+")"+currentIdMove);
+            }
+        }
+        /*if(!found && currentIdMove != 0){
+            currentIdMove++;
+            getMovementSpeed();
+            if(!ghost) checkRoomObjectsCollision();
+            else checkGhostRestrictions();
+            checkTileMapCollision();
+            setPosition(temp.x, temp.y);
+            System.out.println("NULL");
+        }*/
+    }
+    public boolean isAlreadySynced(){
+        return movementSync;
+    }
+
+    public void synced() {
+        if(!movementSync){
+            movementSync = true;
+            if(!tileMap.isServerSide())currentIdMove = 0;
+            idMove = 0;
+        }
+    }
+    public void unSynced() {
+        movementSync = false;
+    }
+    public void alreadySynced(){
+        //mpManager.packetHolder.clear(PacketHolder.ORIGINMOVEPLAYER);
+        movementSync = true;
+    }
 }

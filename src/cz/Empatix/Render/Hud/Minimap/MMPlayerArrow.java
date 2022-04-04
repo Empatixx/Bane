@@ -29,7 +29,7 @@ public class MMPlayerArrow {
     protected Animation animation;
     private Vector3f position;
 
-    private Player followedPlayer; // player that is followed by arrow
+    private final Player followedPlayer; // player that is followed by arrow
 
     public MMPlayerArrow(PlayerMP player){
         this.followedPlayer = player;
@@ -90,7 +90,6 @@ public class MMPlayerArrow {
                 .rotateZ((float)angle);
 
         Camera.getInstance().hardProjection().mul(target,target);
-        System.out.println("ANGLE "+angle);
 
         shader.bind();
         shader.setUniformi("sampler",0);

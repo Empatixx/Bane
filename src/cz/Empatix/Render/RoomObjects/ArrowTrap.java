@@ -25,11 +25,10 @@ public class ArrowTrap extends RoomObject {
     public final static int RIGHT = 1;
     public final static int LEFT = 2;
     private int type;
-
     public boolean remove;
     private ArrayList<Arrow> arrows;
     public long arrowShootCooldown;
-    private Player player[];
+    private Player[] player;
     public ArrowTrap(TileMap tm, Player[] p){
         super(tm);
         if(tm.isServerSide()){
@@ -222,10 +221,10 @@ public class ArrowTrap extends RoomObject {
                 i--;
             }
             if(!MultiplayerManager.multiplayer || tileMap.isServerSide()) {
-                for (int j = 0; j < player.length; j++) {
-                    if (player[j] != null) {
-                        if (arrow.intersects(player[j]) && !player[j].isFlinching() && !player[j].isDead() && !arrow.isHit()) {
-                            player[j].hit(1);
+                for (Player player : player) {
+                    if (player != null) {
+                        if (arrow.intersects(player) && !player.isFlinching() && !player.isDead() && !arrow.isHit()) {
+                            player.hit(1);
                             arrow.setHit();
                         }
                     }
@@ -298,7 +297,6 @@ public class ArrowTrap extends RoomObject {
             roomObjectAnimationSync.id = id;
             roomObjectAnimationSync.sprite = (byte)animation.getIndexOfFrame();
             roomObjectAnimationSync.time = animation.getTime();
-            roomObjectAnimationSync.cooldown = arrowShootCooldown;
             server.sendToAllUDP(roomObjectAnimationSync);
         }
     }
@@ -748,8 +746,6 @@ public class ArrowTrap extends RoomObject {
     }
     @Override
     public void animationSync(Network.RoomObjectAnimationSync packet) {
-        animation.setTime(packet.time);
-        animation.setFrame(packet.sprite);
-        arrowShootCooldown = packet.cooldown;
+        super.animationSync(packet);
     }
 }

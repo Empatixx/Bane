@@ -500,8 +500,10 @@ public class MiniMap {
         }
         drawPlayerIcon();
 
-        for(MMPlayerArrow arrow : playerArrows){
-            if(arrow != null)arrow.draw();
+        if(displayBigMap){
+            for(MMPlayerArrow arrow : playerArrows){
+                if(arrow != null)arrow.draw();
+            }
         }
     }
     public void addRoom(MMRoom room, int number){

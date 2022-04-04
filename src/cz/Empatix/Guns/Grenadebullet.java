@@ -370,9 +370,7 @@ public class Grenadebullet extends MapObject {
             hitBullet.type = null;
             hitBullet.id = id;
             server.sendToAllUDP(hitBullet);
-            System.out.println("POS Y: "+position.y);
             setPosition(position.x,position.y-100);
-            System.out.println("POS Y: "+position.y);
             explosion();
             scale = 5;
         } else {
@@ -380,9 +378,7 @@ public class Grenadebullet extends MapObject {
             if(!MultiplayerManager.multiplayer){
                 explosion();
             }
-            System.out.println("C POS Y: "+position.y);
             setPosition(position.x,position.y-100);
-            System.out.println("C POS Y: "+position.y);
             animation.setFrames(spritesheet.getSprites(explosion));
             animation.setDelay(50);
             light.setIntensity(0f);

@@ -1,5 +1,6 @@
 package cz.Empatix.Entity;
 
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 
@@ -13,6 +14,9 @@ public class Animation{
 
     private boolean playedOnce;
     private boolean reverse;
+
+    private long syncElapsedMP;
+    private boolean syncMP;
 
     public Animation() {
         playedOnce = false;
@@ -51,6 +55,9 @@ public class Animation{
         if(delay == -1) return;
 
         long elapsed = System.currentTimeMillis() - InGame.deltaPauseTime() - startTime;
+        if(syncMP){
+            elapsed = syncElapsedMP;
+        }
         if(reverse){
             if (elapsed > delay) {
                 currentFrame--;
@@ -84,8 +91,16 @@ public class Animation{
     }
     public boolean isPlayingLastFrame(){return currentFrame == frames.length-1;}
 
+    /**
+     * only for multiplayer purpose
+     * @return elapsed time from start of current frame to next
+     */
     public long getTime() {
-        return startTime;
+        return System.currentTimeMillis() - InGame.deltaPauseTime() - startTime;
     }
-    public void setTime(long time){startTime = time;}
+    public void setTime(long time){
+        syncMP = true;
+        float latency = MultiplayerManager.getInstance().client.getClient().getReturnTripTime()/2f;
+        syncElapsedMP = (long) (time+latency);
+    }
 }

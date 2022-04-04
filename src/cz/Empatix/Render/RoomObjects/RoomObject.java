@@ -65,10 +65,13 @@ public abstract class RoomObject extends MapObject{
 
 
     public void animationSync(Network.RoomObjectAnimationSync sync) {
-        if(lastTimeSync < sync.packetTime) {
+        if(lastTimeSync < sync.idPacket) {
             animation.setTime(sync.time);
             animation.setFrame(sync.sprite);
-            lastTimeSync = sync.packetTime;
+            lastTimeSync = sync.idPacket;
         }
+    }
+    protected boolean validPacketSync(int packetId){
+        return lastTimeSync < packetId;
     }
 }

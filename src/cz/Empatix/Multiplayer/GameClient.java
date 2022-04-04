@@ -62,7 +62,12 @@ public class GameClient{
                     packetHolder.add(object,PacketHolder.DISCONNECTPLAYER);
                 }
                 else if (object instanceof Network.MovePlayer){
-                    packetHolder.add(object,PacketHolder.MOVEPLAYER);
+                    if(((Network.MovePlayer)object).idPlayer == mpManager.getIdConnection()){
+                        packetHolder.add(object,PacketHolder.ORIGINMOVEPLAYER);
+                        //System.out.println("CURRENT:" +((Network.MovePlayer)object).idPlayer + "|"+((Network.MovePlayer)object).idPacket);
+                    } else {
+                        packetHolder.add(object,PacketHolder.MOVEPLAYER);
+                    }
                 }
                 else if (object instanceof Network.CanJoin){
                     packetHolder.add(object,PacketHolder.CANJOIN);
@@ -522,6 +527,14 @@ public class GameClient{
                             packetHolder.add(object, PacketHolder.EXPLOSIONDAMAGE);
                         }
                         ackCaching.add(ack);
+                    }
+                } else if (object instanceof Network.PMovementSync) {
+                    /*Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);*/
+                    if (/*!ackCaching.checkDuplicate(packet.idPacket)*/ true) {
+                        packetHolder.add(object, PacketHolder.PMOVEMENTSYNC);
+                        //ackCaching.add(ack);
                     }
                 } else if (object instanceof Network.TrapRoomObjectDamage){
                     GameState gameState = gsm.getCurrentGamestate();

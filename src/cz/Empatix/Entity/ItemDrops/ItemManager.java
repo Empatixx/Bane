@@ -558,7 +558,6 @@ public class ItemManager {
             if(numWeapons <= 0){
                 drop = new Coin(tm);
                 drop.setPosition(x, y);
-                itemDrops.add(drop);
             }
             else if(numWeapons == 1){
                 for(int type : weaponTypes) {

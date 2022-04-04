@@ -91,14 +91,19 @@ public class GameServer {
                                     player.update();
                                     Network.MovePlayer movePlayer = new Network.MovePlayer();
                                     movePlayer.idPlayer = player.getIdConnection();
+                                    movePlayer.idPacket = player.getIdMove();
                                     movePlayer.x = player.getX();
                                     movePlayer.y = player.getY();
                                     movePlayer.up = player.isMovingUp();
                                     movePlayer.down = player.isMovingDown();
                                     movePlayer.right = player.isMovingRight();
                                     movePlayer.left = player.isMovingLeft();
-                                    movePlayer.time = System.nanoTime();
                                     server.sendToAllUDP(movePlayer);
+                                    if(!player.isAlreadySynced()) {
+                                        Network.PMovementSync sync = new Network.PMovementSync();
+                                        sync.idPlayer = player.getIdConnection();
+                                        server.sendToUDP(sync.idPlayer,sync);
+                                    }
                                 }
                             }
                             tileMap.updateCurrentRoom();
@@ -184,14 +189,19 @@ public class GameServer {
                                     player.update();
                                     Network.MovePlayer movePlayer = new Network.MovePlayer();
                                     movePlayer.idPlayer = player.getIdConnection();
+                                    movePlayer.idPacket = player.getIdMove();
                                     movePlayer.x = player.getX();
                                     movePlayer.y = player.getY();
                                     movePlayer.up = player.isMovingUp();
                                     movePlayer.down = player.isMovingDown();
                                     movePlayer.right = player.isMovingRight();
                                     movePlayer.left = player.isMovingLeft();
-                                    movePlayer.time = System.nanoTime();
                                     server.sendToAllUDP(movePlayer);
+                                    if(!player.isAlreadySynced()) {
+                                        Network.PMovementSync sync = new Network.PMovementSync();
+                                        sync.idPlayer = player.getIdConnection();
+                                        server.sendToUDP(sync.idPlayer,sync);
+                                    }
                                 }
                             }
                             boolean allReady = true;
@@ -212,6 +222,7 @@ public class GameServer {
                                     for (int i = 0; i < players.length; i++) {
                                         players[i] = connectedPlayers.get(i);
                                         players[i].reset();
+                                        players[i].unSynced();
                                         connectedPlayers.set(i, players[i]);
                                     }
                                 }
@@ -347,6 +358,17 @@ public class GameServer {
                     if (gameState == GameStateManager.INGAME) {
                         gunsManager.handleMouseCoords((Network.MouseCoords) object);
                     }
+                } else if (object instanceof Network.PMovementSync) {
+                    synchronized (connectedPlayers){
+                        for(PlayerMP player : connectedPlayers){
+                            if(player.getIdConnection() == ((Network.PMovementSync)object).idPlayer){
+                                System.out.println("SYNCED: "+player.getIdConnection());
+                                player.synced();
+                                break;
+                            }
+                        }
+                    }
+
                 } else if (object instanceof Network.Reload) {
                     Network.Reload reload = (Network.Reload) object;
                     Network.PacketACK ack = new Network.PacketACK();
@@ -383,7 +405,10 @@ public class GameServer {
                         server.sendToAllTCP(object);
                         synchronized (readyCheckPlayers) {
                             for (PlayerReady pready : readyCheckPlayers) {
-                                if (pready.isThisPlayer(ready.idPlayer)) pready.setReady(ready.state);
+                                if (pready.isThisPlayer(ready.idPlayer)){
+                                    pready.setReady(ready.state);
+                                    break;
+                                }
                             }
                         }
                         ackCaching.add(connection.getID(),ack);
@@ -483,13 +508,13 @@ public class GameServer {
     private void handleMove(Network.MovePlayerInput movePlayer) {
         // player is already connceted
         synchronized (connectedPlayers){
-            for(int i = 0;i<connectedPlayers.size();i++){
-                PlayerMP player = connectedPlayers.get(i);
+            for (PlayerMP player : connectedPlayers) {
                 if (player.getIdConnection() == movePlayer.idPlayer) {
                     player.setUp(movePlayer.up);
                     player.setDown(movePlayer.down);
                     player.setRight(movePlayer.right);
                     player.setLeft(movePlayer.left);
+                    break;
                 }
             }
         }

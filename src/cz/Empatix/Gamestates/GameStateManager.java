@@ -120,7 +120,7 @@ public class GameStateManager {
 
     }
     public void update() {
-        timeUpdate = System.currentTimeMillis();
+        timeUpdate = System.nanoTime();
         gameStates.get(currentState).update();
     }
 

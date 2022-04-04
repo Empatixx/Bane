@@ -67,7 +67,6 @@ public class MPStatistics {
                 Network.PstatsUpdate pu = new Network.PstatsUpdate();
                 pu.bulletsHit = (short)stats.bulletsHit;
                 pu.shootShooted = (short)stats.bulletShooted;
-                pu.deathTime = stats.deathTime;
                 pu.enemiesKilled = (short)stats.enemiesKilled;
                 pu.idPlayer = stats.idPlayer;
                 server.sendToAllUDP(pu);

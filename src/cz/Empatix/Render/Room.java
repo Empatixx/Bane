@@ -525,12 +525,12 @@ public class Room {
             Crystal crystal = new Crystal(tm);
             crystal.setPosition(xMin+4*tileSize+tileSize/2,yMin+3*tileSize+tileSize/2);
             addObject(crystal);
-            sendAddRoomObjectPacket(pot,tm);
+            sendAddRoomObjectPacket(crystal,tm);
 
             crystal = new Crystal(tm);
             crystal.setPosition(xMax-4*tileSize-tileSize/2,yMin+3*tileSize+tileSize/2);
             addObject(crystal);
-            sendAddRoomObjectPacket(pot,tm);
+            sendAddRoomObjectPacket(crystal,tm);
         }
         if(type == Boss){
             int tileSize = tm.getTileSize();

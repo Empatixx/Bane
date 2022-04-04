@@ -146,7 +146,7 @@ public class UpgradeMenu {
             Network.NumUpgrades numUpgradesP = new Network.NumUpgrades();
             numUpgradesP.idPlayer = MultiplayerManager.getInstance().getIdConnection();
             numUpgradesP.numUpgrades = getAllNumUpgrades();
-            c.sendTCP(numUpgradesP);
+            c.sendTCP(numUpgradesP); // TEST
         }
     }
 }

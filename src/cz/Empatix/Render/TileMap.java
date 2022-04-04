@@ -698,40 +698,6 @@ public class TileMap {
 		}
 	}
 	public void updateObjects(){
-		for(int j = 0;j<currentRoom.length;j++){
-			Room currentRoom = this.currentRoom[j];
-			if(currentRoom == null) continue;
-			currentRoom.updateObjects(this);
-			ArrayList<RoomObject> objects = currentRoom.getMapObjects();
-			for(int k = j*4;k<j*4+4;k++){
-				Room r = sideRooms[k];
-				if(r != null){
-					r.updateObjects(this);
-					for(int i = 0;i<objects.size();i++){
-						for (Player p : player) {
-							if (p != null) {
-								RoomObject object = objects.get(i);
-
-								int x = (int) object.getX();
-								int y = (int) object.getY();
-
-								int cwidth = object.getCwidth() / 2;
-								int cheight = object.getCheight() / 2;
-
-								int pcheight = p.getCheight() / 2;
-								int pcwidth = p.getCwidth() / 2;
-
-								if (x - cwidth - pcwidth >= r.getxMin() && x + cwidth + pcwidth <= r.getxMax() && y - cheight - pcheight >= r.getyMin() && y + cheight + pcheight <= r.getyMax()) {
-									currentRoom.removeObject(object);
-									r.addObject(object);
-									i--;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
 		if(!serverSide && MultiplayerManager.multiplayer){
 			//
 			Object[] movePackets = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.MOVEROOMOBJECT);
@@ -768,6 +734,40 @@ public class TileMap {
 				for (RoomObject object : objects) {
 					if (object.getId() == openChest.id) {
 						((Chest) object).open();
+					}
+				}
+			}
+		}
+		for(int j = 0;j<currentRoom.length;j++){
+			Room currentRoom = this.currentRoom[j];
+			if(currentRoom == null) continue;
+			currentRoom.updateObjects(this);
+			ArrayList<RoomObject> objects = currentRoom.getMapObjects();
+			for(int k = j*4;k<j*4+4;k++){
+				Room r = sideRooms[k];
+				if(r != null){
+					r.updateObjects(this);
+					for(int i = 0;i<objects.size();i++){
+						for (Player p : player) {
+							if (p != null) {
+								RoomObject object = objects.get(i);
+
+								int x = (int) object.getX();
+								int y = (int) object.getY();
+
+								int cwidth = object.getCwidth() / 2;
+								int cheight = object.getCheight() / 2;
+
+								int pcheight = p.getCheight() / 2;
+								int pcwidth = p.getCwidth() / 2;
+
+								if (x - cwidth - pcwidth >= r.getxMin() && x + cwidth + pcwidth <= r.getxMax() && y - cheight - pcheight >= r.getyMin() && y + cheight + pcheight <= r.getyMax()) {
+									currentRoom.removeObject(object);
+									r.addObject(object);
+									i--;
+								}
+							}
+						}
 					}
 				}
 			}
@@ -836,7 +836,7 @@ public class TileMap {
 					Network.RoomObjectAnimationSync sync = (Network.RoomObjectAnimationSync) o;
 					if(roomObject.id == sync.id) {
 						if(theRecent == null) theRecent = sync;
-						else if (theRecent.packetTime < sync.packetTime){
+						else if (theRecent.idPacket < sync.idPacket){
 							theRecent = sync;
 						}
 					}
@@ -855,7 +855,7 @@ public class TileMap {
 					Network.RoomObjectAnimationSync sync = (Network.RoomObjectAnimationSync) o;
 					if(roomObject.id == sync.id) {
 						if(theRecent == null) theRecent = sync;
-						else if (theRecent.packetTime < sync.packetTime){
+						else if (theRecent.idPacket < sync.idPacket){
 							theRecent = sync;
 						}
 					}
@@ -2070,27 +2070,29 @@ public class TileMap {
 		objectInteractPackets.add(object);
 	}
 	public void checkObjectsInteractions(ItemManagerMP.InteractionAcknowledge[] acknowledges){
-		A: for(Network.ObjectInteract objectInteract : objectInteractPackets){
-			for(Player p : player){
-				if(p == null) continue;
-				int idPlayer = ((PlayerMP) p).getIdConnection();
-				if(idPlayer == objectInteract.idPlayer && !p.isDead()){
-					for(ItemManagerMP.InteractionAcknowledge ack : acknowledges){
-						if(ack.isThisAckOfPlayer(idPlayer)){
-							if (ack.didInteract()) continue A;
+		synchronized (objectInteractPackets){
+			A: for(Network.ObjectInteract objectInteract : objectInteractPackets){
+				for(Player p : player){
+					if(p == null) continue;
+					int idPlayer = ((PlayerMP) p).getIdConnection();
+					if(idPlayer == objectInteract.idPlayer && !p.isDead()){
+						for(ItemManagerMP.InteractionAcknowledge ack : acknowledges){
+							if(ack.isThisAckOfPlayer(idPlayer)){
+								if (ack.didInteract()) continue A;
+							}
 						}
-					}
-					Room room = getRoomByCoords(p.getX(),p.getY());
-					if(room == null) continue A;
-					for(RoomObject object : room.getMapObjects()){
-						if(p.intersects(object)){
-							object.keyPress();
+						Room room = getRoomByCoords(p.getX(),p.getY());
+						if(room == null) continue A;
+						for(RoomObject object : room.getMapObjects()){
+							if(p.intersects(object)){
+								object.keyPress();
+							}
 						}
 					}
 				}
 			}
+			objectInteractPackets.clear();
 		}
-		objectInteractPackets.clear();
 	}
 
 	// only for multiplayer purpose - after dying - clearing all mobs
@@ -2174,7 +2176,7 @@ public class TileMap {
 					shader = ShaderManager.createShader("shaders\\shader");
 				}
 			}
-			affixes = new boolean	[totalAffixes];
+			affixes = new boolean[totalAffixes];
 			choosenAffixes = new byte[3];
 			this.totalAffixes = 0;
 			Arrays.fill(choosenAffixes,(byte)-1);
@@ -2274,8 +2276,12 @@ public class TileMap {
 
 		public void handleNewMapPacket(Network.NextFloor nextFloor) {
 			choosenAffixes = nextFloor.affixes;
+			Arrays.fill(affixes,false);
 			for(byte i : choosenAffixes){
-				if(i != -1) totalAffixes++;
+				if(i != -1){
+					affixes[choosenAffixes[totalAffixes]] = true;
+					totalAffixes++;
+				}
 			}
 		}
 

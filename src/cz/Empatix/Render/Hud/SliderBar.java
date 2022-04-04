@@ -157,10 +157,8 @@ public class SliderBar {
             value = (pos.x- sliderMin)/(sliderMax - sliderMin);
         } else {
             pos.y += (y-pos.y) * .3f;
-            System.out.println("PRE: "+pos.y);
             if(pos.y> sliderMax) pos.y = sliderMax;
             if(pos.y< sliderMin) pos.y = sliderMin;
-            System.out.println("POST: "+pos.y);
             value = (pos.y- sliderMin)/(sliderMax - sliderMin);
         }
 

@@ -15,6 +15,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Arrays;
+
 import static org.lwjgl.opengl.GL20.*;
 
 public class InputBar {
@@ -144,7 +146,7 @@ public class InputBar {
             }
             for(int i = 0; i< keys.length; i++){
                 if(!used[i]){
-                    if((k == GLFW.GLFW_KEY_C && keys[i] == GLFW.GLFW_KEY_LEFT_CONTROL) || (k == GLFW.GLFW_KEY_LEFT_CONTROL && keys[i] == GLFW.GLFW_KEY_C)){
+                    if((k == GLFW.GLFW_KEY_V && keys[i] == GLFW.GLFW_KEY_LEFT_CONTROL) || (k == GLFW.GLFW_KEY_LEFT_CONTROL && keys[i] == GLFW.GLFW_KEY_V)){
                         CopyImagetoClipBoard copyImagetoClipBoard = new CopyImagetoClipBoard();
                         String copy = copyImagetoClipBoard.getStringCopy();
                         if(copy != null) stringbuilder.append(copy);
@@ -169,7 +171,7 @@ public class InputBar {
                     globalDelay = System.currentTimeMillis();
                     return;
                 } else {
-                    if((k == GLFW.GLFW_KEY_C && keys[i] == GLFW.GLFW_KEY_LEFT_CONTROL) || (k == GLFW.GLFW_KEY_LEFT_CONTROL && keys[i] == GLFW.GLFW_KEY_C)){
+                    if((k == GLFW.GLFW_KEY_V && keys[i] == GLFW.GLFW_KEY_LEFT_CONTROL) || (k == GLFW.GLFW_KEY_LEFT_CONTROL && keys[i] == GLFW.GLFW_KEY_V)){
                         CopyImagetoClipBoard copyImagetoClipBoard = new CopyImagetoClipBoard();
                         String copy = copyImagetoClipBoard.getStringCopy();
                         if(copy != null) stringbuilder.append(copy);
@@ -270,8 +272,6 @@ public class InputBar {
     public String getValue(){return stringbuilder.toString();}
 
     public void clearKeys() {
-        for(int i = 0;i<used.length;i++){
-            used[i] = false;
-        }
+        Arrays.fill(used, false);
     }
 }

@@ -84,6 +84,7 @@ public class Network {
         kryo.register(PacketACK.class);
         kryo.register(ExplosionDamage.class);
         kryo.register(TrapRoomObjectDamage.class);
+        kryo.register(PMovementSync.class);
 
     }
     // MAIN
@@ -93,6 +94,10 @@ public class Network {
     }
     public static class CanJoin {
         public boolean can;
+        public int idPlayer;
+    }
+    public static class PMovementSync {
+        public int idPacket;
         public int idPlayer;
     }
     public static class AllPlayersDeath {
@@ -111,18 +116,10 @@ public class Network {
         public float x;
         public float y;
         public boolean up,down,left,right;
-        public long time;
-        public MovePlayer(){
-            idPacket = getIdPacketS();
-        }
     }
     public static class MovePlayerInput {
-        public int idPacket;
         public int idPlayer;
         public boolean up,down,left,right;
-        public MovePlayerInput(){
-            idPacket = getIdPacketC();
-        }
     }
     public static class ArtefactEventState {
         public int idPacket;
@@ -169,12 +166,8 @@ public class Network {
     }
     // GUNS
     public static class MouseCoords{
-        public int idPacket;
         public int idPlayer;
         public float x,y;
-        public MouseCoords(){
-            idPacket = getIdPacketC();
-        }
     }
     public static class StartShooting {
         public int idPlayer;
@@ -255,7 +248,6 @@ public class Network {
         public byte amount;
         public int idPacket;
         public boolean despawn;
-
         public DropItem(){
             idPacket = getIdPacketS();
         }
@@ -511,11 +503,9 @@ public class Network {
         public int id;
         public byte sprite;
         public long time;
-        public long cooldown; // like in flamethrower, arrowtrap
-        public long packetTime;
         public int idPacket;
+        public long cooldown;
         public RoomObjectAnimationSync(){
-            packetTime = System.nanoTime();
             idPacket = getIdPacketS();
         }
     }
@@ -557,10 +547,8 @@ public class Network {
         public byte currAction;
         public byte sprite;
         public long time;
-        public long packetTime;
         public int idPacket;
         public EnemySync(){
-            packetTime = System.nanoTime();
             idPacket = getIdPacketS();
         }
     }
@@ -570,12 +558,9 @@ public class Network {
         public float x,y;
         public long time;
         public double angle;
-        public long packetTime;
         public int idPacket;
         public int lastTarget;
-
         public LaserBeamSync(){
-            packetTime = System.nanoTime();
             idPacket = getIdPacketS();
         }
     }

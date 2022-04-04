@@ -657,7 +657,7 @@ public class Golem extends Enemy {
                     Network.LaserBeamSync sync = (Network.LaserBeamSync) o;
                     if(sync.id == id){
                         if(theRecent == null) theRecent = sync;
-                        else if (theRecent.packetTime < sync.packetTime){
+                        else if (theRecent.idPacket < sync.idPacket){
                             theRecent = sync;
                         }
                     }
@@ -667,13 +667,13 @@ public class Golem extends Enemy {
         }
         public void handleSync(Network.LaserBeamSync sync){
             MultiplayerManager.getInstance().packetHolder.remove(PacketHolder.LASERBEAMSYNC,sync);
-            if(lastTimeBeamSync < sync.packetTime) {
+            if(lastTimeBeamSync < sync.idPacket) {
                 angle = sync.angle;
                 animation.setFrame(sync.sprite);
                 animation.setTime(sync.time);
                 position.x = sync.x;
                 position.y = sync.y;
-                lastTimeBeamSync = sync.packetTime;
+                lastTimeBeamSync = sync.idPacket;
                 int index = 0;
                 for(Player p : player){
                     if(p != null){

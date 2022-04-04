@@ -66,8 +66,6 @@ public class ProgressRoomMP extends GameState {
     private int ping;
     private long pingTimer;
 
-    private long lastMoveTime;
-
     public ProgressRoomMP(GameStateManager gsm){
         this.gsm = gsm;
         textRender = new TextRender[2];
@@ -154,6 +152,7 @@ public class ProgressRoomMP extends GameState {
         }
         mpManager.client.setNumPlayers(index);
         pingTimer = System.currentTimeMillis();
+
     }
 
     @Override
@@ -308,7 +307,8 @@ public class ProgressRoomMP extends GameState {
         if(totalConPlayers == readyNumPlayers){
             mpManager.client.setNumPlayers(1);
             gsm.setState(GameStateManager.INGAMEMP);
-            mpManager.packetHolder.get(PacketHolder.MOVEPLAYER); // CLEARING ARRAY
+            mpManager.packetHolder.clear(PacketHolder.MOVEPLAYER);
+            mpManager.packetHolder.clear(PacketHolder.ORIGINMOVEPLAYER);
 
             Client client = mpManager.client.getClient();
             Network.RequestForPlayers request = new Network.RequestForPlayers();
@@ -319,16 +319,21 @@ public class ProgressRoomMP extends GameState {
 
         }
 
+
         tileMap.updateObjects();
+        player[0].updateOrigin();
         Object[] objects = mpManager.packetHolder.get(PacketHolder.MOVEPLAYER);
-        for(PlayerMP p : player) {
+        for(int i = 1;i<player.length;i++) {
+            PlayerMP p = player[i];
             if(p == null) continue;
             Network.MovePlayer recent=null;
             for (Object o : objects) {
                 Network.MovePlayer move = (Network.MovePlayer) o;
                 if (p.getIdConnection() == move.idPlayer) {
                     if (recent == null) recent = move;
-                    if (recent.time < move.time) recent = move;
+                    if (recent.idPacket < move.idPacket){
+                        recent = move;
+                    }
                 }
             }
             if(recent != null){
@@ -339,8 +344,6 @@ public class ProgressRoomMP extends GameState {
                     p.setRight(recent.right);
                     p.setLeft(recent.left);
                 }
-            } else {
-                p.updateLostPacket();
             }
         }
         for(PlayerMP p : player){
@@ -406,7 +409,7 @@ public class ProgressRoomMP extends GameState {
             pingTimer+=1000;
             Client client = MultiplayerManager.getInstance().client.getClient();
             client.sendUDP(new Network.Ping());
-            ping = client.getReturnTripTime();
+            ping = client.getReturnTripTime()/2;
         }
     }
     @Override

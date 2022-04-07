@@ -233,7 +233,7 @@ public class GameServer {
                             } finally {
                                 readyLock.readLock().unlock();
                             }
-                            //TODO: for less then 1 player not//if (size <= 1) allReady = false;
+                            if (size <= 1) allReady = false;
                             if (allReady) {
                                 PlayerMP[] players;
                                 playerLock.writeLock().lock();
@@ -445,7 +445,7 @@ public class GameServer {
                         } finally {
                             playerLock.readLock().unlock();
                         }
-                        if(totalPlayers > 0){//todo: not 1 guy playing mp
+                        if(totalPlayers > 0){
                             server.sendToAllTCP(object);
                             readyLock.writeLock().lock();
                             try{

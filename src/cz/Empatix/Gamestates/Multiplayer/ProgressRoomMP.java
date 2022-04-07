@@ -311,7 +311,7 @@ public class ProgressRoomMP extends GameState {
             }
         }
         // all players are ready => enter game
-        if(totalConPlayers == readyNumPlayers /*&& totalConPlayers != 1*/){ // TODO: for less than 1 guy not
+        if(totalConPlayers == readyNumPlayers && totalConPlayers != 1){
             mpManager.client.setNumPlayers(1);
             gsm.setState(GameStateManager.INGAMEMP);
             mpManager.packetHolder.clear(PacketHolder.MOVEPLAYER);

@@ -317,47 +317,6 @@ public class EyeBat extends Enemy {
         drawShadow(5.5f);
     }
 
-    @Override
-    public void loadSave() {
-        super.loadSave();
-        width = 80;
-        height = 80;
-
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\eyebat.tga");
-
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\eyebat.tga");
-            Sprite[] sprites = new Sprite[5];
-            for(int i = 0; i < sprites.length; i++) {
-                //Sprite sprite = new Sprite(texCoords);
-                Sprite sprite = new Sprite(5,i,0,width,height,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
-
-        }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(125);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 2x
-        width *= scale;
-        height *= scale;
-
-        createShadow();
-    }
     private static class LaserBeam extends MapObject {
         private Vector3f originalPos;
         double angle;

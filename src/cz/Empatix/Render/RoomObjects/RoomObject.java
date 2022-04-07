@@ -46,8 +46,6 @@ public abstract class RoomObject extends MapObject{
 
     public boolean isBehindCollision(){return behindCollision;}
 
-    public abstract void loadSave();
-
     public float getMaxMovement() {
         return maxMovement;
     }

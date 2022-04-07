@@ -12,7 +12,6 @@ public class MPStatistics {
         private int bulletShooted;
         private int enemiesKilled;
         private int bulletsHit;
-        private long deathTime;
 
         private String username;
         private int idPlayer;
@@ -29,10 +28,6 @@ public class MPStatistics {
             bulletsHit = 0;
             this.username = username;
             this.idPlayer = idPlayer;
-        }
-
-        public long getDeathTime() {
-            return deathTime;
         }
 
         public int getBulletShooted() {
@@ -75,7 +70,7 @@ public class MPStatistics {
         }
     }
     // client side
-    public void reveicePackets(){
+    public void receivePackets(){
         Object[] packets = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.PLAYERSSTATS);
         for(PStats pStats : playersStats){
             for(Object o : packets){
@@ -83,17 +78,8 @@ public class MPStatistics {
                 if(p.idPlayer == pStats.idPlayer){
                     pStats.bulletsHit = p.bulletsHit;
                     pStats.bulletShooted = p.shootShooted;
-                    pStats.deathTime = p.deathTime;
                     pStats.enemiesKilled = p.enemiesKilled;
                 }
-            }
-        }
-    }
-    public void setTimeDeath(int idPlayer, long time){
-        for(PStats stats : playersStats){
-            if(idPlayer == stats.idPlayer){
-                stats.deathTime = time;
-                break;
             }
         }
     }

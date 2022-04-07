@@ -243,7 +243,7 @@ public class Luger extends Weapon {
                         bullet.setOwner(idPlayer);
                         bullets.add(bullet);
                         bonusShots--;
-                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer,true);
                     }
                     if (delta > delayTime) {
                         double inaccuracy = 0;
@@ -267,7 +267,7 @@ public class Luger extends Weapon {
                         bullet.setOwner(idPlayer);
                         bullets.add(bullet);
                         currentMagazineAmmo--;
-                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer,true);
                         while(Math.random() > 1-chanceBonusShots && currentMagazineAmmo != 0 && bonusShots < 9){
                             bonusShots++;
                             if(!bonusShotsAntiConsume)currentMagazineAmmo--;
@@ -351,26 +351,16 @@ public class Luger extends Weapon {
     }
 
     @Override
-    public void loadSave() {
-        super.loadSave();
-
-        // shooting
-        soundShoot = new int[2];
-        soundShoot[0] = AudioManager.loadSound("guns\\shootpistol_1.ogg");
-        soundShoot[1] = AudioManager.loadSound("guns\\shootpistol_2.ogg");
-        // shooting without ammo
-        soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
-        soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
-        reloadsource.setPitch(1.3f);
-
-        weaponHud = new Image("Textures\\lahti.tga",new Vector3f(1600,975,0),2f);
-        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
-        for(Bullet bullet : bullets){
-            bullet.loadSave();
+    public void handleAddBulletPacket(Network.AddBullet response) {
+        if(response.makeSound) {
+            source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
+            if(response.idPlayer == MultiplayerManager.getInstance().getIdConnection()){
+                double atan = Math.atan2(response.y, response.x);
+                push = 30;
+                pushX = Math.cos(atan);
+                pushY = Math.sin(atan);
+            }
         }
-    }
-    @Override
-    public void handleBulletPacket(Network.AddBullet response) {
         Bullet bullet = new Bullet(tm, response.id);
         bullet.setPosition(response.px, response.py);
         bullet.setCritical(response.critical);
@@ -379,7 +369,7 @@ public class Luger extends Weapon {
     }
 
     @Override
-    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
+    public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
         for(Bullet b : bullets){
             if(b.getId() == moveBullet.id){
                 b.setPosition(moveBullet.x, moveBullet.y);
@@ -407,14 +397,5 @@ public class Luger extends Weapon {
                 }
             }
         }
-    }
-
-    @Override
-    public void shootSound(Network.AddBullet response) {
-        source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
-        double atan = Math.atan2(response.y, response.x);
-        push = 30;
-        pushX = Math.cos(atan);
-        pushY = Math.sin(atan);
     }
 }

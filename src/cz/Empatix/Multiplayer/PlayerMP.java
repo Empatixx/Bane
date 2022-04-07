@@ -21,8 +21,6 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-import static cz.Empatix.Main.Game.window;
-import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
@@ -44,16 +42,14 @@ public class PlayerMP extends Player {
     private int vboGhostVertices;
 
     // INTERPOLATION
-    /*private long lastTimeMove;
+    private long lastTimeMove;
     private Network.MovePlayer currentMove;
     private Network.MovePlayer previousMove;
-    */
-    private final ArrayList<Network.MovePlayer> movePackets;
-    private int idMove;
-    private static int currentIdMove;
-    private boolean movementSync;
+    private int moveSteps;
 
     private Room deathRoom;
+    private int moveId;
+    private boolean postDeath;
 
     public PlayerMP(TileMap tm, String username){
         super(tm);
@@ -104,7 +100,9 @@ public class PlayerMP extends Player {
                 }
             }
         }
-        movePackets = new ArrayList<>(5);
+        moveId = 0;
+        moveSteps = 1;
+        postDeath = false;
     }
 
     public void setOrigin(boolean origin) {
@@ -302,11 +300,11 @@ public class PlayerMP extends Player {
         checkTileMapCollision();
         if(tileMap.isServerSide())setPosition(temp.x, temp.y);
         //TODO: INTERPOLATION CLIENT-MOVEMENT
-        /*else if(currentMove != null && origin){
+        else if(currentMove != null && origin && !postDeath){
             long timeSinceLastInput = System.nanoTime() - lastTimeMove;
-            final double ns = 1_000_000_000.0 / 60.0;
-            float t = (float) (timeSinceLastInput / (ns));
-            System.out.println("DELTA: "+t);
+            final double ns = (1_000_000_000.0)/ 60.0;
+            float t = (float) (timeSinceLastInput / (ns)) / moveSteps;
+            //System.out.println("DELTA: "+t);
             Vector3f finalPos = new Vector3f();
             if(previousMove != null){
                 finalPos.x = previousMove.x;
@@ -319,7 +317,7 @@ public class PlayerMP extends Player {
             }
             setPosition(finalPos.x,finalPos.y);
 
-        }*/
+        }
         if(!tileMap.isServerSide()){
             if(!ghost){
                 if (right || left) {
@@ -421,14 +419,10 @@ public class PlayerMP extends Player {
             animation.setFrames(ghostSpritesheet.getSprites(0));
             animation.setDelay(100);
 
-            if(isOrigin())glfwSetInputMode(window,GLFW_CURSOR,GLFW_CURSOR_DISABLED);
             light.setIntensity(2f);
         } else {
             GunsManagerMP gunsManagerMP = GunsManagerMP.getInstance();
             ArtefactManagerMP artefactManagerMP = ArtefactManagerMP.getInstance();
-
-            MPStatistics mpStatistics = MultiplayerManager.getInstance().server.getMpStatistics();
-            mpStatistics.setTimeDeath(idConnection,deathTime);
 
             // random direction of drop
             int x = -100 + Random.nextInt(201);
@@ -548,12 +542,10 @@ public class PlayerMP extends Player {
             animation.setFrames(spritesheet.getSprites(IDLE));
             animation.setDelay(100);
             light.setIntensity(4f);
-
-            if(isOrigin())glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
         }
     }
     //TODO: INTERPOLATION CLIENT-MOVEMENT
-    /*
+
     public void setPosition(Network.MovePlayer move)
     {
         RefreshToPosition(move, currentMove);
@@ -562,13 +554,34 @@ public class PlayerMP extends Player {
     private void RefreshToPosition(Network.MovePlayer move, Network.MovePlayer prevData)
     {
         if(prevData == null || prevData.idPacket < move.idPacket){
+            if(previousMove != null && previousMove.idPacket - move.idPacket > 0){
+                System.out.println("SKIPPED: "+(previousMove.idPacket - move.idPacket));
+            }
             previousMove = prevData;
             this.currentMove = move;
-            lastTimeMove = GameStateManager.timeUpdate - mpManager.client.getClient().getReturnTripTime()/500_000L;
+            lastTimeMove = System.nanoTime(); /*5*1_000_000;//*mpManager.client.getClient().getReturnTripTime()/500_000L*/;
         }
         //if(prevData != null) System.out.println("CHANGE X: "+(move.x-prevData.x));
     }
-*/
+    public void updateOrigin(){
+        Object[] packets = mpManager.packetHolder.getWithoutClear(PacketHolder.ORIGINMOVEPLAYER);
+        Network.MovePlayer recent = null;
+        int totalValidPackets = 0;
+        for(Object o : packets){
+            Network.MovePlayer p = (Network.MovePlayer)o;
+            if(recent == null || recent.idPacket > p.idPacket){
+                recent = p;
+                totalValidPackets++;
+            }
+        }
+        if(recent != null){
+            setPosition(recent);
+            mpManager.packetHolder.remove(PacketHolder.ORIGINMOVEPLAYER,recent);
+            moveSteps = 1;
+        }
+        setMapPosition();
+    }
+
     public void setIdConnection(int idConnection) {
         this.idConnection = idConnection;
     }
@@ -577,66 +590,11 @@ public class PlayerMP extends Player {
         return idConnection;
     }
 
-    public int getIdMove() {
-        return idMove++;
+    public int getMoveId() {
+        return moveId++;
     }
 
-    public void updateOrigin() {
-        if(!isAlreadySynced()){
-            Object[] sync = mpManager.packetHolder.get(PacketHolder.PMOVEMENTSYNC);
-            if(sync.length >= 1){
-                Client c = mpManager.client.getClient();
-                c.sendUDP(sync[0]);
-                synced();
-            }
-            return;
-        }
-        Object[] newPackets = mpManager.packetHolder.get(PacketHolder.ORIGINMOVEPLAYER);
-        for(Object o : newPackets){ movePackets.add((Network.MovePlayer) o);}
-        boolean found = false;
-        //System.out.println("FINDING: "+currentIdMove);
-        for(int i = 0;i<movePackets.size();i++){
-            Network.MovePlayer p = movePackets.get(i);
-            if(p.idPacket == currentIdMove){
-                currentIdMove++;
-                setPosition(p.x,p.y);
-                movePackets.remove(i);
-                found = true;
-                break;
-            } else if (p.idPacket < currentIdMove){
-                //System.out.println(p.idPacket+ "!= "+currentIdMove);
-                movePackets.remove(i);
-                i--;
-            } else {
-                //System.out.println("W: ("+p.idPacket+")"+currentIdMove);
-            }
-        }
-        /*if(!found && currentIdMove != 0){
-            currentIdMove++;
-            getMovementSpeed();
-            if(!ghost) checkRoomObjectsCollision();
-            else checkGhostRestrictions();
-            checkTileMapCollision();
-            setPosition(temp.x, temp.y);
-            System.out.println("NULL");
-        }*/
-    }
-    public boolean isAlreadySynced(){
-        return movementSync;
-    }
-
-    public void synced() {
-        if(!movementSync){
-            movementSync = true;
-            if(!tileMap.isServerSide())currentIdMove = 0;
-            idMove = 0;
-        }
-    }
-    public void unSynced() {
-        movementSync = false;
-    }
-    public void alreadySynced(){
-        //mpManager.packetHolder.clear(PacketHolder.ORIGINMOVEPLAYER);
-        movementSync = true;
+    public void setPostDeath() {
+        this.postDeath = true;
     }
 }

@@ -293,15 +293,12 @@ public abstract class Enemy extends MapObject{
             for (int k = 0; k < player.length; k++) {
                 if (player[k] != null && !player[k].isDead()) {
 
-                    Room croom = tileMap.getRoomByCoords(px[k],py[k]);
-                    // player is in path room
-                    if(croom == null) continue;
-                    int xMax = croom.getxMax();
-                    int xMin = croom.getxMin();
-                    // getting Y max/min of room
-                    int yMax = croom.getyMax();
-                    int yMin = croom.getyMin();
-                    if (px[k] < xMin || px[k] > xMax || py[k] < yMin || py[k] > yMax) continue; // player is in anothe room than this enemy
+                    Room eroom = tileMap.getRoomByCoords(position.x,position.y);
+                    Room proom = tileMap.getRoomByCoords(px[k],py[k]);
+
+                    // player is path room or in another room
+                    if(proom == null) continue;
+                    if(eroom.getId() != proom.getId()) continue;
 
                     int enemyTileX = (int) position.x / tileSize;
                     int enemyTileY = (int) position.y / tileSize;
@@ -810,18 +807,6 @@ public abstract class Enemy extends MapObject{
 
     public void setItemDropped() {
         this.itemDropped = true;
-    }
-
-    public void loadSave(){
-        outlineShader = ShaderManager.getShader("shaders\\outline");
-        if (outlineShader == null){
-            outlineShader = ShaderManager.createShader("shaders\\outline");
-        }
-
-        spawnShader = ShaderManager.getShader("shaders\\spawn");
-        if (spawnShader == null){
-            spawnShader = ShaderManager.createShader("shaders\\spawn");
-        }
     }
 
     public boolean canReflect(){return reflectBullets;}

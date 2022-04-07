@@ -112,10 +112,6 @@ public class Crystal extends RoomObject {
         }
     }
 
-    @Override
-    public void loadSave() {
-    }
-
     public void update() {
         setMapPosition();
 

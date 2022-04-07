@@ -29,7 +29,7 @@ public class Portal extends RoomObject {
 
     private TextRender textRender;
 
-    private boolean packetChangeSent;
+    public static boolean packetChangeSent;
 
     public Portal(TileMap tm){
         super(tm);
@@ -121,58 +121,6 @@ public class Portal extends RoomObject {
         }
     }
 
-    @Override
-    public void loadSave() {
-        width = 86;
-        height = 80;
-
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\portal.tga");
-
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\portal.tga");
-            Sprite[] sprites = new Sprite[8];
-            for(int i = 0; i < sprites.length; i++) {
-                float[] texCoords =
-                        {
-                                (float) i/spriteSheetCols,0,
-
-                                (float)i/spriteSheetCols,1,
-
-                                (1.0f+i)/spriteSheetCols,1,
-
-                                (1.0f+i)/spriteSheetCols,0
-                        };
-                Sprite sprite = new Sprite(texCoords);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
-        }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(125);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 8x
-        width *= scale;
-        height *= scale;
-
-        light = LightManager.createLight(new Vector3f(0.466f, 0.043f, 0.596f),new Vector2f(0,0),8f,this);
-
-        textRender = new TextRender();
-        packetChangeSent = false;
-    }
-
     public void update(){
         setMapPosition();
         animation.update();
@@ -226,8 +174,14 @@ public class Portal extends RoomObject {
         float time = (float)Math.sin(System.currentTimeMillis() % 2000 / 600f)+(1-(float)Math.cos((System.currentTimeMillis() % 2000 / 600f) +0.5f));
         if(MultiplayerManager.multiplayer && ProgressRoomMP.ready && message){
             int totalPlayers = MultiplayerManager.getInstance().client.getTotalPlayers();
-            textRender.drawMap("Waiting for players "+ProgressRoomMP.readyNumPlayers+"/"+totalPlayers,new Vector3f(position.x-155,position.y+155,0),2,
-                    new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
+            String text;
+            if(totalPlayers == 1){
+                text = "Need two players!";
+            } else {
+                text = "Waiting for players "+ProgressRoomMP.readyNumPlayers+"/"+totalPlayers;
+            }
+            float centerx = TextRender.getHorizontalCenter((int)position.x-100,(int)position.x+100,text,2);
+            textRender.drawMap(text,new Vector3f(centerx,position.y+155,0),2,new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));
         }else if(message){
             textRender.drawMap("Press E to enter game",new Vector3f(position.x-155,position.y+155,0),2,
                     new Vector3f((float)Math.sin(time),(float)Math.cos(0.5f+time),1f));

@@ -223,7 +223,7 @@ public class M4 extends Weapon {
                 bullets.add(bullet);
                 bonusShots--;
                 currentMagazineAmmo--;
-                sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
+                sendAddBulletPacket(bullet,x,y,px,py,idPlayer,false);
                 push += 35;
             }
             if(isShooting()) {
@@ -243,7 +243,7 @@ public class M4 extends Weapon {
                         bullet.setOwner(idPlayer);
                         bullets.add(bullet);
                         currentMagazineAmmo--;
-                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer,true);
                         for(int i = 0;i<3 && currentMagazineAmmo-i != 0;i++){
                             bonusShots++;
                         }
@@ -325,23 +325,21 @@ public class M4 extends Weapon {
     }
 
     @Override
-    public void loadSave() {
-        super.loadSave();
-
-        // shooting
-        soundShoot = AudioManager.loadSound("guns\\shootM4.ogg");
-        // shooting without ammo
-        soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
-        soundReload = AudioManager.loadSound("guns\\reloadM4.ogg");
-
-        weaponHud = new Image("Textures\\M4.tga",new Vector3f(1600,975,0),2f);
-        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1830,975,0),1f);
-        for(Bullet bullet : bullets){
-            bullet.loadSave();
+    public void handleAddBulletPacket(Network.AddBullet response) {
+        if(response.makeSound) {
+            source.play(soundShoot);
+            if(response.idPlayer == MultiplayerManager.getInstance().getIdConnection()){
+                if(System.currentTimeMillis() - timeShootSound > 650) {
+                    timeShootSound = System.currentTimeMillis();
+                    double atan = Math.atan2(response.y, response.x);
+                    push = 30;
+                    pushX = Math.cos(atan);
+                    pushY = Math.sin(atan);
+                } else {
+                    push+=35;
+                }
+            }
         }
-    }
-    @Override
-    public void handleBulletPacket(Network.AddBullet response) {
         Bullet bullet = new Bullet(tm, response.id);
         bullet.setPosition(response.px, response.py);
         bullet.setCritical(response.critical);
@@ -350,7 +348,7 @@ public class M4 extends Weapon {
     }
 
     @Override
-    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
+    public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
         for(Bullet b : bullets){
             if(b.getId() == moveBullet.id){
                 b.setPosition(moveBullet.x, moveBullet.y);
@@ -379,18 +377,4 @@ public class M4 extends Weapon {
             }
         }
     }
-
-    @Override
-    public void shootSound(Network.AddBullet response) {
-        if(System.currentTimeMillis() - timeShootSound > 650) {
-            timeShootSound = System.currentTimeMillis();
-            source.play(soundShoot);
-            double atan = Math.atan2(response.y, response.x);
-            push = 30;
-            pushX = Math.cos(atan);
-            pushY = Math.sin(atan);
-        } else {
-            push+=35;
-        }
-   }
 }

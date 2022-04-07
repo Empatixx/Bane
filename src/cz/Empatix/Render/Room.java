@@ -17,6 +17,8 @@ import cz.Empatix.Multiplayer.ItemManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.RoomObjects.*;
+import cz.Empatix.Render.RoomObjects.ProgressRoom.Armorstand;
+import cz.Empatix.Render.RoomObjects.ProgressRoom.Bookshelf;
 import cz.Empatix.Render.RoomObjects.ProgressRoom.Portal;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
@@ -110,12 +112,6 @@ public class Room {
         mapObjects = new ArrayList<>();
 
         loadRoom(mapFilepath);
-    }
-    public void loadSave(){
-        texts = new TextRender[5];
-        for(int i = 0;i<5;i++){
-            texts[i] = new TextRender();
-        }
     }
 
     private void loadRoom(String mapFilepath){
@@ -254,7 +250,7 @@ public class Room {
     public void enteredMP(TileMap tileMap){
         entered = true;
         if (type == Room.Classic){
-            int maxMobs = cz.Empatix.Java.Random.nextInt(4) + 2+tileMap.getFloor();
+            int maxMobs = cz.Empatix.Java.Random.nextInt(4) + 22+tileMap.getFloor();
             for (int i = 0; i < maxMobs;i++){
                 EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
                 enemyManager.addEnemy(xMin,xMax,yMin,yMax);
@@ -602,6 +598,23 @@ public class Room {
                 barrel.setMoveable(false);
                 this.addObject(barrel);
             }
+
+            Bookshelf bookshelf = new Bookshelf(tm);
+            bookshelf.setPosition(21*tileSize,tileSize+48);
+            mapObjects.add(bookshelf);
+            bookshelf = new Bookshelf(tm);
+            bookshelf.setPosition(23*tileSize,tileSize+48);
+            mapObjects.add(bookshelf);
+            bookshelf = new Bookshelf(tm);
+            bookshelf.setPosition(25*tileSize,tileSize+48);
+            mapObjects.add(bookshelf);
+
+            Armorstand armorstand = new Armorstand(tm);
+            armorstand.setPosition(19*tileSize,tileSize+tileSize/2);
+            mapObjects.add(armorstand);
+            armorstand = new Armorstand(tm);
+            armorstand.setPosition(27*tileSize,tileSize+tileSize/2);
+            mapObjects.add(armorstand);
         }
 
     }

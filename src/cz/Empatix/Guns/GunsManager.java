@@ -123,15 +123,6 @@ public class GunsManager {
 
         this.players = p;
     }
-    public void loadSave(){
-        weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);
-
-        soundSwitchingGun = AudioManager.loadSound("guns\\switchgun.ogg");
-        source = AudioManager.createSource(Source.EFFECTS,0.35f);
-        for(Weapon weapon: weapons){
-            weapon.loadSave();
-        }
-    }
     // singleplayer
     public void shoot(float x, float y, float px, float py){
         if(current == null) return;
@@ -179,7 +170,7 @@ public class GunsManager {
                 Network.AddBullet addBullet = (Network.AddBullet) o;
                 int index = addBullet.slot - (totalPlayers - 1);
                 if (index < 0) index = 0;
-                weapons.get(index).handleBulletPacket(addBullet);
+                weapons.get(index).handleAddBulletPacket(addBullet);
             }
             for (Object o : hitPackets) {
                 for (Weapon w : weapons) {
@@ -409,16 +400,16 @@ public class GunsManager {
         MultiplayerManager mpManager = MultiplayerManager.getInstance();
         PacketHolder packetHolder = mpManager.packetHolder;
         packetHolder.add(response,PacketHolder.ADDBULLET);
-        if(current != null){
+        /*if(current != null){
             if(mpManager.getIdConnection() == response.idPlayer){
                 current.shootSound(response);
             }
-        }
+        }*/
     }
 
     public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
         for(Weapon w : weapons){
-            w.handleBulletMovePacket(moveBullet);
+            w.handleMoveBulletPacket(moveBullet);
         }
     }
 

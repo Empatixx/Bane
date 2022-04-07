@@ -19,6 +19,7 @@ import cz.Empatix.Render.Graphics.Framebuffer;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Postprocessing.Fade;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
+import cz.Empatix.Render.RoomObjects.ProgressRoom.Portal;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
@@ -55,7 +56,7 @@ public class ProgressRoomMP extends GameState {
 
     private ProgressNPC progressNPC;
 
-    private TextRender textRender[];
+    private TextRender[] textRender;
 
     private AlertManager alertManager;
 
@@ -149,6 +150,13 @@ public class ProgressRoomMP extends GameState {
             playerReadies[index] = new PlayerReady(packetUsername,player.idPlayer);
             index++;
             DiscordRP.getInstance().update("Multiplayer - In-Game", "Lobby " + index + "/2");
+
+            for(PlayerReady r : playerReadies){
+                r.setReady(false);
+            }
+            readyNumPlayers = 0;
+            ready = false;
+            Portal.packetChangeSent = false;
         }
         mpManager.client.setNumPlayers(index);
         pingTimer = System.currentTimeMillis();
@@ -300,16 +308,14 @@ public class ProgressRoomMP extends GameState {
             if(playerReady != null){
                 if(playerReady.isReady()) readyNumPlayers++;
                 totalConPlayers++;
-
             }
         }
         // all players are ready => enter game
-        if(totalConPlayers == readyNumPlayers){
+        if(totalConPlayers == readyNumPlayers /*&& totalConPlayers != 1*/){ // TODO: for less than 1 guy not
             mpManager.client.setNumPlayers(1);
             gsm.setState(GameStateManager.INGAMEMP);
             mpManager.packetHolder.clear(PacketHolder.MOVEPLAYER);
             mpManager.packetHolder.clear(PacketHolder.ORIGINMOVEPLAYER);
-
             Client client = mpManager.client.getClient();
             Network.RequestForPlayers request = new Network.RequestForPlayers();
             request.exceptIdPlayer = mpManager.getIdConnection();
@@ -377,6 +383,13 @@ public class ProgressRoomMP extends GameState {
             playerReadies[index] = new PlayerReady(packetUsername,player.idPlayer);
             index++;
             DiscordRP.getInstance().update("Multiplayer - In-Game", "Lobby " + index + "/2");
+
+            for(PlayerReady r : playerReadies){
+                r.setReady(false);
+            }
+            readyNumPlayers = 0;
+            ready = false;
+            Portal.packetChangeSent = false;
         }
         mpManager.client.setNumPlayers(index);
 
@@ -399,6 +412,10 @@ public class ProgressRoomMP extends GameState {
                         for(PlayerReady pready : playerReadies){
                             if(pready != null) pready.setReady(false);
                         }
+                        readyNumPlayers = 0;
+                        ready = false;
+                        Portal.packetChangeSent = false;
+                        break;
                     }
                 }
             }

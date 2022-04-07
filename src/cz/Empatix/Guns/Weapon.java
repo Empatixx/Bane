@@ -161,13 +161,6 @@ public abstract class Weapon{
         return !reloading && System.currentTimeMillis() - InGame.deltaPauseTime() - delay > delayTime / 2;
     }
 
-    public void loadSave() {
-        source = AudioManager.createSource(Source.EFFECTS, 0.35f);
-        reloadsource = AudioManager.createSource(Source.EFFECTS, 0.35f);
-
-        textRender = new TextRender();
-    }
-
     public void outOfAmmo() {
         if (System.currentTimeMillis() - alertCooldown > 2000) {
             AlertManager.add(AlertManager.WARNING, "You're out of ammo!");
@@ -175,9 +168,9 @@ public abstract class Weapon{
         }
     }
 
-    public abstract void handleBulletPacket(Network.AddBullet response);
+    public abstract void handleAddBulletPacket(Network.AddBullet response);
 
-    public abstract void handleBulletMovePacket(Network.MoveBullet moveBullet);
+    public abstract void handleMoveBulletPacket(Network.MoveBullet moveBullet);
 
     public abstract void handleHitBulletPacket(Network.HitBullet hitBullet);
 
@@ -259,9 +252,7 @@ public abstract class Weapon{
             }
         }
     }
-    public abstract void shootSound(Network.AddBullet response);
-
-    public void sendAddBulletPacket(Bullet bullet, float x, float y, float px, float py, int idPlayer){
+    public void sendAddBulletPacket(Bullet bullet, float x, float y, float px, float py, int idPlayer, boolean makeSound){
         MultiplayerManager mpManager = MultiplayerManager.getInstance();
         // increasing statistic of shooted bullets so we can calculate accuracy
         MPStatistics mpStatistics = mpManager.server.getMpStatistics();
@@ -279,10 +270,11 @@ public abstract class Weapon{
         response.id = bullet.getId();
         response.idPlayer = idPlayer;
         response.slot = (byte)GunsManagerMP.getInstance().getWeaponSlot(this);
+        response.makeSound = makeSound;
         Server server = mpManager.server.getServer();
         server.sendToAllUDP(response);
     }
-    public void sendAddBulletPacket(Grenadebullet bullet, float x, float y, float px, float py, int idPlayer){
+    public void sendAddBulletPacket(Grenadebullet bullet, float x, float y, float px, float py, int idPlayer, boolean makeSound){
         MultiplayerManager mpManager = MultiplayerManager.getInstance();
         // increasing statistic of shooted bullets so we can calculate accuracy
         MPStatistics mpStatistics = mpManager.server.getMpStatistics();
@@ -300,6 +292,7 @@ public abstract class Weapon{
         response.id = bullet.getId();
         response.idPlayer = idPlayer;
         response.slot = (byte)GunsManagerMP.getInstance().getWeaponSlot(this);
+        response.makeSound = makeSound;
         Server server = mpManager.server.getServer();
         server.sendToAllUDP(response);
     }

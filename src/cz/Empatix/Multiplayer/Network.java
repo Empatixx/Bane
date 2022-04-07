@@ -84,7 +84,6 @@ public class Network {
         kryo.register(PacketACK.class);
         kryo.register(ExplosionDamage.class);
         kryo.register(TrapRoomObjectDamage.class);
-        kryo.register(PMovementSync.class);
 
     }
     // MAIN
@@ -94,10 +93,6 @@ public class Network {
     }
     public static class CanJoin {
         public boolean can;
-        public int idPlayer;
-    }
-    public static class PMovementSync {
-        public int idPacket;
         public int idPlayer;
     }
     public static class AllPlayersDeath {
@@ -111,11 +106,14 @@ public class Network {
     }
     public static class MovePlayer {
         public int idPacket;
-        //public String username;
         public int idPlayer;
         public float x;
         public float y;
         public boolean up,down,left,right;
+        public MovePlayer(){
+            idPacket = getIdPacketS();
+        }
+
     }
     public static class MovePlayerInput {
         public int idPlayer;
@@ -203,6 +201,7 @@ public class Network {
         public byte slot;
         public int id;
         public int idPacket;
+        public boolean makeSound;
         public AddBullet(){
             idPacket = getIdPacketS();
         }
@@ -493,7 +492,6 @@ public class Network {
         public short shootShooted;
         public short enemiesKilled;
         public short bulletsHit;
-        public long deathTime;
         public int idPacket;
         public PstatsUpdate(){
             idPacket = getIdPacketS();
@@ -504,7 +502,6 @@ public class Network {
         public byte sprite;
         public long time;
         public int idPacket;
-        public long cooldown;
         public RoomObjectAnimationSync(){
             idPacket = getIdPacketS();
         }

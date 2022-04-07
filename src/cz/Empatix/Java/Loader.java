@@ -23,6 +23,7 @@ import cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades.UpgradeBar;
 import cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades.UpgradeSideBar;
 import cz.Empatix.Render.Hud.ProgressNPC.UpgradeMenu;
 import cz.Empatix.Render.RoomObjects.*;
+import cz.Empatix.Render.RoomObjects.ProgressRoom.Armorstand;
 import cz.Empatix.Render.RoomObjects.ProgressRoom.Bookshelf;
 import cz.Empatix.Render.RoomObjects.ProgressRoom.Portal;
 import cz.Empatix.Render.Text.TextRender;
@@ -149,6 +150,7 @@ public class Loader {
         TileMap.load();
         Bookshelf.load();
         Crystal.load();
+        Armorstand.load();
         // states
         InGame.load();
         MenuState.load();

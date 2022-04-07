@@ -1797,9 +1797,6 @@ public class TileMap {
 				obj.delete();
 			}
 		}
-		floorAffixes.newAffix();
-		floorAffixes.newAffix();
-		floorAffixes.newAffix();
 		if(floor == 2 || floor == 4 || floor == 6){
 			floorAffixes.newAffix();
 		}
@@ -1816,9 +1813,6 @@ public class TileMap {
 	}
 	public void newMapMP(){
 		floor++;
-		floorAffixes.newAffix();
-		floorAffixes.newAffix();
-		floorAffixes.newAffix();
 		if(floor == 2 || floor == 4 || floor == 6){
 			floorAffixes.newAffix();
 		}
@@ -1847,6 +1841,10 @@ public class TileMap {
 		for(Player p : player){
 			if(p != null) p.setPosition(playerStartX, playerStartY);
 		}
+
+		MultiplayerManager mpManager = MultiplayerManager.getInstance();
+		mpManager.packetHolder.clear(PacketHolder.MOVEPLAYER);
+		mpManager.packetHolder.clear(PacketHolder.ORIGINMOVEPLAYER);
 	}
 	public void drawTitle(){
 		if(System.currentTimeMillis() - InGame.deltaPauseTime() - nextFloorEnterTime < 2250){

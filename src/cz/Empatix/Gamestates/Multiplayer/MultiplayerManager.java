@@ -51,11 +51,11 @@ public class MultiplayerManager {
 
     public void close(){
         if(!multiplayer) return;
+        multiplayer = false;
         if(isHost()) {
             server.close();
             server = null;
         }
-        multiplayer = false;
         client.close();
         client = null;
         packetHolder = null;

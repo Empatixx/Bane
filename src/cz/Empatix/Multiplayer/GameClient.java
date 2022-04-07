@@ -36,26 +36,37 @@ public class GameClient{
         packetHolder = mpManager.packetHolder;
 
         client = new Client(16384,4096);
-        client.start();
+        Network.register(client);
 
         recon = false;
         ackManager = new ACKManager();
         ackCaching = new ACKCaching();
 
-        new Thread("Client-ACK") {
+        new Thread("Client") {
             @Override
             public void run() {
+                long start = System.nanoTime();
                 while(MultiplayerManager.multiplayer){
-                    ackManager.update();
+                    try {
+                        client.setTimeout(2500);
+                        client.update(250);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if(System.nanoTime() - start > 10_000_000){
+                        start+=10_000_000L;
+                        ackManager.update();
+                        ackCaching.update();
+                    }
                 }
             }
         }.start();
-        client.addListener(new Listener.ThreadedListener(new Listener() {
+        client.addListener(new Listener() {
             public void received (Connection connection, Object object) {
                 if (object instanceof Network.AddPlayer) {
                     packetHolder.add(object,PacketHolder.JOINPLAYER);
                 }
-                if (object instanceof Network.Ping) {
+                else if (object instanceof Network.Ping) {
                     client.updateReturnTripTime();
                 }
                 else if (object instanceof Network.Disconnect) {
@@ -77,38 +88,32 @@ public class GameClient{
                 }
                 else if (object instanceof Network.Ready){
                     Network.Ready ready = (Network.Ready)object;
-                    Network.PacketACK ack = new Network.PacketACK();
-                    ack.id = ready.idPacket;
-                    connection.sendUDP(ack);
-                    if(!ackCaching.checkDuplicate(ready.idPacket)){
-                        boolean state = ((Network.Ready) object).state;
+                    boolean state = ((Network.Ready) object).state;
 
-                        GameState gameState = gsm.getCurrentGamestate();
-                        if(gameState instanceof ProgressRoomMP) {
-                            for(PlayerReady playerReady : ((ProgressRoomMP) gameState).playerReadies){
-                                if(playerReady == null) continue;
-                                if(playerReady.isEqual(((Network.Ready) object).idPlayer)){
-                                    playerReady.setReady(state);
-                                    int selfId = mpManager.getIdConnection(); // origin id
-                                    if(selfId != ((Network.Ready) object).idPlayer && state){
-                                        Network.Alert alert = new Network.Alert();
-                                        alert.text = playerReady.getUsername()+" is ready!";
-                                        alert.idPlayer = mpManager.getIdConnection();
-                                        alert.warning = false;
-                                        packetHolder.add(alert,PacketHolder.ALERT);
-                                    }
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof ProgressRoomMP) {
+                        for(PlayerReady playerReady : ((ProgressRoomMP) gameState).playerReadies){
+                            if(playerReady == null) continue;
+                            if(playerReady.isEqual(ready.idPlayer)){
+                                playerReady.setReady(state);
+                                int selfId = mpManager.getIdConnection(); // origin id
+                                if(selfId != ((Network.Ready) object).idPlayer && state){
+                                    Network.Alert alert = new Network.Alert();
+                                    alert.text = playerReady.getUsername()+" is ready!";
+                                    alert.idPlayer = mpManager.getIdConnection();
+                                    alert.warning = false;
+                                    packetHolder.add(alert,PacketHolder.ALERT);
                                 }
                             }
                         }
-                        if(gameState instanceof InGameMP) {
-                            for(PlayerReady playerReady : ((InGameMP) gameState).playerReadies){
-                                if(playerReady == null) continue;
-                                if(playerReady.isEqual(((Network.Ready) object).idPlayer)){
-                                    playerReady.setReady(state);
-                                }
+                    }
+                    if(gameState instanceof InGameMP) {
+                        for(PlayerReady playerReady : ((InGameMP) gameState).playerReadies){
+                            if(playerReady == null) continue;
+                            if(playerReady.isEqual(ready.idPlayer)){
+                                playerReady.setReady(state);
                             }
                         }
-                        ackCaching.add(ack);
                     }
                 }
                 else if (object instanceof Network.TransferRoomMap){
@@ -528,14 +533,6 @@ public class GameClient{
                         }
                         ackCaching.add(ack);
                     }
-                } else if (object instanceof Network.PMovementSync) {
-                    /*Network.PacketACK ack = new Network.PacketACK();
-                    ack.id = packet.idPacket;
-                    connection.sendUDP(ack);*/
-                    if (/*!ackCaching.checkDuplicate(packet.idPacket)*/ true) {
-                        packetHolder.add(object, PacketHolder.PMOVEMENTSYNC);
-                        //ackCaching.add(ack);
-                    }
                 } else if (object instanceof Network.TrapRoomObjectDamage){
                     GameState gameState = gsm.getCurrentGamestate();
                     Network.TrapRoomObjectDamage packet = (Network.TrapRoomObjectDamage) object;
@@ -552,10 +549,7 @@ public class GameClient{
                     ackManager.acknowledged(((Network.PacketACK) object).id);
                 }
             }
-        }));
-
-        Network.register(client);
-
+        });
         try {
             client.connect(5000, ipAddress, 54555, 54777);
         } catch (IOException e) {

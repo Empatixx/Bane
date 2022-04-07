@@ -54,12 +54,6 @@ public class EnemyManagerMP {
         enemiesKilled = 0;
     }
 
-    public void loadSave() {
-        for (Enemy e : enemies) {
-            e.loadSave();
-        }
-    }
-
     public boolean areEnemiesDead() {
         for (Enemy e : enemies) {
             if (!e.isDead()) {

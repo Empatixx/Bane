@@ -193,7 +193,7 @@ public class Grenadelauncher extends Weapon {
                         bullet.setDamage(damage);
                         bullet.setPosition(px, py);
                         bullets.add(bullet);
-                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer,true);
                         currentMagazineAmmo--;
                     }
                 } else if (currentAmmo != 0) {
@@ -279,25 +279,10 @@ public class Grenadelauncher extends Weapon {
     }
 
     @Override
-    public void loadSave() {
-        super.loadSave();
-
-        soundShoot = AudioManager.loadSound("guns\\grenadelaunchershoot.ogg");
-        // shooting without ammo
-        soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
-        soundReload = AudioManager.loadSound("guns\\grenadelauncherreload.ogg");
-
-        source.setPitch(0.75f);
-
-        weaponHud = new Image("Textures\\grenadelauncher.tga",new Vector3f(1600,975,0),2f);
-        weaponAmmo = new Image("Textures\\rocket-ammo.tga",new Vector3f(1830,975,0),2f);
-        for(Grenadebullet grenadebullet : bullets){
-            grenadebullet.loadSave();
+    public void handleAddBulletPacket(Network.AddBullet response) {
+        if(response.makeSound) {
+            source.play(soundShoot);
         }
-    }
-
-    @Override
-    public void handleBulletPacket(Network.AddBullet response) {
         Grenadebullet bullet = new Grenadebullet(tm, response.id);
         bullet.setPosition(response.px, response.py);
         bullet.setCritical(response.critical);
@@ -305,7 +290,7 @@ public class Grenadelauncher extends Weapon {
         bullets.add(bullet);
     }
     @Override
-    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
+    public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
         for(Grenadebullet b : bullets){
             if(b.getId() == moveBullet.id && !b.isHit()){
                 b.setPosition(moveBullet.x, moveBullet.y);
@@ -320,10 +305,5 @@ public class Grenadelauncher extends Weapon {
                 b.setHit();
             }
          }
-    }
-
-    @Override
-    public void shootSound(Network.AddBullet response) {
-        source.play(soundShoot);
     }
 }

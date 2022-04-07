@@ -44,14 +44,6 @@ public abstract class DestroyableObject extends RoomObject {
     }
 
     @Override
-    public void loadSave() {
-        outlineShader = ShaderManager.getShader("shaders\\outline");
-        if (outlineShader == null){
-            outlineShader = ShaderManager.createShader("shaders\\outline");
-        }
-    }
-
-    @Override
     public void touchEvent(MapObject o) {
 
     }

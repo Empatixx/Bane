@@ -10,19 +10,19 @@ import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
 
-public class Bookshelf extends RoomObject {
+public class Armorstand extends RoomObject {
     public static void load(){
-        Loader.loadImage("Textures\\bookshelf.tga");
+        Loader.loadImage("Textures\\armorstand.tga");
     }
     private static final int IDLE = 0;
 
-    public Bookshelf(TileMap tm){
+    public Armorstand(TileMap tm){
         super(tm);
-        width = 34;
-        height = 34;
-        cwidth = 34;
-        cheight = 34;
-        scale = 8;
+        width = 17;
+        height = 37;
+        cwidth = 17;
+        cheight = 37;
+        scale = 6;
 
         facingRight = true;
         flinching=false;
@@ -35,11 +35,11 @@ public class Bookshelf extends RoomObject {
         preDraw = true;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\bookshelf.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\armorstand.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\bookshelf.tga");
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\armorstand.tga");
             Sprite[] sprites = new Sprite[1];
             for(int i = 0; i < sprites.length; i++) {
                 float[] texCoords =

@@ -229,7 +229,7 @@ public class Revolver extends Weapon {
                         bullet.setDamage(damage);
                         bullets.add(bullet);
                         currentMagazineAmmo--;
-                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer,true);
 
                         double atan = Math.atan2(y, x);
                         push = 80;
@@ -307,25 +307,16 @@ public class Revolver extends Weapon {
     }
 
     @Override
-    public void loadSave() {
-        super.loadSave();
-
-        // shooting
-        soundShoot = AudioManager.loadSound("guns\\shootrevolver.ogg");
-        // shooting without ammo
-        soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
-        soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
-        reloadsource.setPitch(0.75f);
-        source.setPitch(1.2f);
-
-        weaponHud = new Image("Textures\\revolver.tga",new Vector3f(1600,975,0),2f);
-        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1810,975,0),1f);
-        for(Bullet bullet : bullets){
-            bullet.loadSave();
+    public void handleAddBulletPacket(Network.AddBullet response) {
+        if(response.makeSound) {
+            source.play(soundShoot);
+            if(response.idPlayer == MultiplayerManager.getInstance().getIdConnection()){
+                double atan = Math.atan2(response.y, response.x);
+                push = 80;
+                pushX = Math.cos(atan);
+                pushY = Math.sin(atan);
+            }
         }
-    }
-    @Override
-    public void handleBulletPacket(Network.AddBullet response) {
         Bullet bullet = new Bullet(tm, response.id);
         bullet.setPosition(response.px, response.py);
         bullet.setCritical(response.critical);
@@ -334,7 +325,7 @@ public class Revolver extends Weapon {
     }
 
     @Override
-    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
+    public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
         for(Bullet b : bullets){
             if(b.getId() == moveBullet.id){
                 b.setPosition(moveBullet.x, moveBullet.y);
@@ -362,14 +353,5 @@ public class Revolver extends Weapon {
                 }
             }
         }
-    }
-
-    @Override
-    public void shootSound(Network.AddBullet response) {
-        source.play(soundShoot);
-        double atan = Math.atan2(response.y, response.x);
-        push = 80;
-        pushX = Math.cos(atan);
-        pushY = Math.sin(atan);
     }
 }

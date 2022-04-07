@@ -525,64 +525,6 @@ public class KingSlime extends Enemy {
     }
 
     @Override
-    public void loadSave() {
-        super.loadSave();
-        width = 64;
-        height = 48;
-
-        // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slimeking.tga");
-
-        // creating a new spritesheet
-        if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\Enemies\\slimeking.tga");
-            Sprite[] sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                Sprite sprite = new Sprite(5,i,0,32,24,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
-
-            sprites = new Sprite[6];
-            for(int i = 0; i < sprites.length; i++) {
-                Sprite sprite = new Sprite(5,i,1,32,24,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
-
-            }
-            spritesheet.addSprites(sprites);
-
-        }
-        vboVertices = ModelManager.getModel(width,height);
-        if (vboVertices == -1){
-            vboVertices = ModelManager.createModel(width,height);
-        }
-
-        animation = new Animation();
-        animation.setFrames(spritesheet.getSprites(IDLE));
-        animation.setDelay(175);
-
-        shader = ShaderManager.getShader("shaders\\shader");
-        if (shader == null){
-            shader = ShaderManager.createShader("shaders\\shader");
-        }
-        // because of scaling image by 2x
-        width *= scale;
-        height *= scale;
-
-        healthBar = new HealthBar("Textures\\bosshealthbar",new Vector3f(960,1000,0),7,56,4);
-        healthBar.setOffsetsBar(14,1);
-        healthBar.initHealth(health,maxHealth);
-
-        createShadow();
-
-        for(KingSlimebullet kingSlimebullet : bullets){
-            kingSlimebullet.loadSave();
-        }
-
-    }
-    @Override
     public void handleAddEnemyProjectile(Network.AddEnemyProjectile o) {
         if(isDead()) return;
         KingSlimebullet slimebullet = new KingSlimebullet(tileMap,o.x,o.y,o.inaccuracy);

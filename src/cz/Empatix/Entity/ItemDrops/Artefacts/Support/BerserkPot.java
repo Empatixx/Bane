@@ -19,7 +19,6 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -355,7 +354,7 @@ public class BerserkPot extends Artefact {
         if(charge > maxCharge) charge = maxCharge;
     }
 
-    private static class SprintParticle extends MapObject implements Serializable {
+    private static class SprintParticle extends MapObject{
         // sprint particles
         SprintParticle(TileMap tm){
             super(tm);

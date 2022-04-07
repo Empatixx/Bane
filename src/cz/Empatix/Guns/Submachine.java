@@ -219,7 +219,7 @@ public class Submachine extends Weapon{
                         }
                         bullet.setDamage(damage);
                         bullets.add(bullet);
-                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer);
+                        sendAddBulletPacket(bullet,x,y,px,py,idPlayer,true);
                         if(chanceToNotConsumeAmmo){
                             if(Math.random() <= 0.8){
                                 currentMagazineAmmo--;
@@ -302,24 +302,16 @@ public class Submachine extends Weapon{
     }
 
     @Override
-    public void loadSave() {
-        super.loadSave();
-
-        // shooting
-        soundShoot = AudioManager.loadSound("guns\\shootsubmachine.ogg");
-        // shooting without ammo
-        soundEmptyShoot = AudioManager.loadSound("guns\\emptyshoot.ogg");
-        soundReload = AudioManager.loadSound("guns\\reloadpistol.ogg");
-        reloadsource.setPitch(1.5f);
-
-        weaponHud = new Image("Textures\\submachine.tga",new Vector3f(1600,975,0),2f);
-        weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1830,975,0),1f);
-        for(Bullet bullet : bullets){
-            bullet.loadSave();
+    public void handleAddBulletPacket(Network.AddBullet response) {
+        if(response.makeSound) {
+            source.play(soundShoot);
+            if(response.idPlayer == MultiplayerManager.getInstance().getIdConnection()){
+                double atan = Math.atan2(response.y, response.x);
+                push = 60;
+                pushX = Math.cos(atan);
+                pushY = Math.sin(atan);
+            }
         }
-    }
-    @Override
-    public void handleBulletPacket(Network.AddBullet response) {
         Bullet bullet = new Bullet(tm, response.id);
         bullet.setPosition(response.px, response.py);
         bullet.setCritical(response.critical);
@@ -328,7 +320,7 @@ public class Submachine extends Weapon{
     }
 
     @Override
-    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
+    public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
         for(Bullet b : bullets){
             if(b.getId() == moveBullet.id){
                 b.setPosition(moveBullet.x, moveBullet.y);
@@ -356,14 +348,5 @@ public class Submachine extends Weapon{
                 }
             }
         }
-    }
-
-    @Override
-    public void shootSound(Network.AddBullet response) {
-        source.play(soundShoot);
-        double atan = Math.atan2(response.y, response.x);
-        push = 60;
-        pushX = Math.cos(atan);
-        pushY = Math.sin(atan);
     }
 }

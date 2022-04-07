@@ -16,22 +16,25 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 public class GameServer {
-    private Server server;
+    private final Server server;
 
     private final List<PlayerMP> connectedPlayers;
     private final List<PlayerReady> readyCheckPlayers;
+    private final ReentrantReadWriteLock playerLock;
+    private final ReentrantReadWriteLock readyLock;
+
     private GunsManagerMP gunsManager;
     private ItemManagerMP itemManager;
     private EnemyManagerMP enemyManagerMP;
     private ArtefactManagerMP artefactManager;
-    private TileMap tileMap;
-    private MiniMap map;
-    private GunsManagerMP.GunUpgradesCache upgrades;
-    private ACKManager ackManager;
-    private ACKCaching ackCaching;
+    private final TileMap tileMap;
+    private final GunsManagerMP.GunUpgradesCache upgrades;
+    private final ACKManager ackManager;
+    private final ACKCaching ackCaching;
 
     private int gameState;
 
@@ -61,12 +64,20 @@ public class GameServer {
     public GameServer() {
         randomInit = new AtomicBoolean();
         randomInit.set(false);
-        new Thread("Server-Logic") {
+
+        ackManager = new ACKManager();
+        ackCaching = new ACKCaching();
+
+        server = new Server(16384, 4096);
+        Network.register(server);
+
+        new Thread("Server") {
             @Override
             public void run() {
                 Random.init();
                 randomInit.set(true);
                 long lastTime = System.nanoTime();
+                long startACK = System.nanoTime();
                 long timer = System.currentTimeMillis();
                 final double ns = 1000000000.0 / 60.0;
 
@@ -79,19 +90,27 @@ public class GameServer {
 
                 boolean apdPacket = false; // all players dead
                 while (MultiplayerManager.multiplayer) {
+                    try {
+                        server.update(250);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if(System.nanoTime() - startACK > 10_000_000){
+                        startACK+=10_000_000L;
+                        ackManager.update();
+                        ackCaching.update();
+                    }
                     long now = System.nanoTime();
                     delta += (now - lastTime) / ns;
                     lastTime = now;
                     while (delta >= 1) {
-                        if (gameState == GameStateManager.INGAME) {
-                            itemManager.update();
-                            ItemManagerMP.InteractionAcknowledge[] interAck = itemManager.checkDropInteractions();
-                            synchronized (connectedPlayers) {
+                        if(delta < 2){
+                            playerLock.readLock().lock();
+                            try{
                                 for (PlayerMP player : connectedPlayers) {
                                     player.update();
                                     Network.MovePlayer movePlayer = new Network.MovePlayer();
                                     movePlayer.idPlayer = player.getIdConnection();
-                                    movePlayer.idPacket = player.getIdMove();
                                     movePlayer.x = player.getX();
                                     movePlayer.y = player.getY();
                                     movePlayer.up = player.isMovingUp();
@@ -99,13 +118,14 @@ public class GameServer {
                                     movePlayer.right = player.isMovingRight();
                                     movePlayer.left = player.isMovingLeft();
                                     server.sendToAllUDP(movePlayer);
-                                    if(!player.isAlreadySynced()) {
-                                        Network.PMovementSync sync = new Network.PMovementSync();
-                                        sync.idPlayer = player.getIdConnection();
-                                        server.sendToUDP(sync.idPlayer,sync);
-                                    }
                                 }
+                            } finally {
+                                playerLock.readLock().unlock();
                             }
+                        }
+                        if (gameState == GameStateManager.INGAME) {
+                            itemManager.update();
+                            ItemManagerMP.InteractionAcknowledge[] interAck = itemManager.checkDropInteractions();
                             tileMap.updateCurrentRoom();
                             tileMap.updateObjects();
                             tileMap.checkObjectsInteractions(interAck);
@@ -117,14 +137,18 @@ public class GameServer {
                             enemyManagerMP.update();
                             ArrayList<Enemy> enemies = EnemyManagerMP.getInstance().getEnemies();
                             gunsManager.checkCollisions(enemies);
-                            synchronized (connectedPlayers) {
+                            playerLock.writeLock().lock();
+                            try{
                                 for (PlayerMP player : connectedPlayers) {
                                     player.checkCollision(enemies);
                                 }
+                            } finally {
+                                playerLock.writeLock().unlock();
                             }
                             artefactManager.update();
                             mpStatistics.sentPackets();
-                            synchronized (connectedPlayers) {
+                            playerLock.readLock().lock();
+                            try{
                                 for (PlayerMP player : connectedPlayers) {
                                     Network.PlayerInfo playerInfo = new Network.PlayerInfo();
                                     playerInfo.idPlayer = player.getIdConnection();
@@ -135,6 +159,8 @@ public class GameServer {
                                     playerInfo.maxArmor = (byte) player.getMaxArmor();
                                     server.sendToAllUDP(playerInfo);
                                 }
+                            } finally {
+                                playerLock.readLock().unlock();
                             }
                             boolean allDead = true;
                             synchronized (connectedPlayers) {
@@ -154,77 +180,73 @@ public class GameServer {
                             }
                             if (apdPacket) {
                                 boolean allReady = true;
-                                synchronized (readyCheckPlayers) {
+                                readyLock.readLock().lock();
+                                try{
                                     for (PlayerReady ready : readyCheckPlayers) {
                                         if (ready.isNotReady()) {
                                             allReady = false;
                                             break;
                                         }
                                     }
+                                } finally {
+                                    readyLock.readLock().unlock();
                                 }
                                 if (allReady) {
                                     tileMap.loadProgressRoom();
-                                    synchronized (connectedPlayers) {
+                                    playerLock.writeLock().lock();
+                                    try{
                                         for (PlayerMP p : connectedPlayers) {
                                             p.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
                                             p.reset(); // reseting collisions
                                         }
+                                    } finally {
+                                        playerLock.writeLock().unlock();
                                     }
                                     artefactManager = null;
                                     gunsManager = null;
                                     itemManager = null;
                                     enemyManagerMP = null;
                                     gameState = GameStateManager.PROGRESSROOM;
-                                    synchronized (readyCheckPlayers) {
+                                    readyLock.writeLock().lock();
+                                    try{
                                         for (PlayerReady ready : readyCheckPlayers) {
                                             ready.setReady(false);
                                         }
+                                    } finally {
+                                        readyLock.writeLock().unlock();
                                     }
                                     apdPacket = false;
                                 }
                             }
                         } else {
-                            synchronized (connectedPlayers) {
-                                for (PlayerMP player : connectedPlayers) {
-                                    player.update();
-                                    Network.MovePlayer movePlayer = new Network.MovePlayer();
-                                    movePlayer.idPlayer = player.getIdConnection();
-                                    movePlayer.idPacket = player.getIdMove();
-                                    movePlayer.x = player.getX();
-                                    movePlayer.y = player.getY();
-                                    movePlayer.up = player.isMovingUp();
-                                    movePlayer.down = player.isMovingDown();
-                                    movePlayer.right = player.isMovingRight();
-                                    movePlayer.left = player.isMovingLeft();
-                                    server.sendToAllUDP(movePlayer);
-                                    if(!player.isAlreadySynced()) {
-                                        Network.PMovementSync sync = new Network.PMovementSync();
-                                        sync.idPlayer = player.getIdConnection();
-                                        server.sendToUDP(sync.idPlayer,sync);
-                                    }
-                                }
-                            }
                             boolean allReady = true;
-                            synchronized (readyCheckPlayers) {
+                            readyLock.readLock().lock();
+                            int size;
+                            try {
+                                size = connectedPlayers.size();
                                 for (PlayerReady ready : readyCheckPlayers) {
                                     if (ready.isNotReady()) {
                                         allReady = false;
                                         break;
                                     }
                                 }
+                            } finally {
+                                readyLock.readLock().unlock();
                             }
-                            if (connectedPlayers.size() == 0) allReady = false;
+                            //TODO: for less then 1 player not//if (size <= 1) allReady = false;
                             if (allReady) {
                                 PlayerMP[] players;
-                                synchronized (connectedPlayers) {
+                                playerLock.writeLock().lock();
+                                try{
                                     players = new PlayerMP[connectedPlayers.size()];
                                     // reseting health/armor, speed movement etc.
                                     for (int i = 0; i < players.length; i++) {
                                         players[i] = connectedPlayers.get(i);
                                         players[i].reset();
-                                        players[i].unSynced();
                                         connectedPlayers.set(i, players[i]);
                                     }
+                                } finally {
+                                    playerLock.writeLock().unlock();
                                 }
                                 tileMap.setPlayers(players);
                                 artefactManager = new ArtefactManagerMP(tileMap, players);
@@ -233,19 +255,25 @@ public class GameServer {
                                 enemyManagerMP = new EnemyManagerMP(players, tileMap);
                                 tileMap.loadMap();
                                 mpStatistics = new MPStatistics();
-                                synchronized (connectedPlayers) {
+                                playerLock.writeLock().lock();
+                                try{
                                     for (PlayerMP p : connectedPlayers) {
                                         if (p != null) {
                                             p.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
                                             mpStatistics.addPlayer(p.getUsername(),p.getIdConnection());
                                         }
                                     }
+                                } finally {
+                                    playerLock.writeLock().unlock();
                                 }
                                 gameState = GameStateManager.INGAME;
-                                synchronized (readyCheckPlayers) {
+                                readyLock.writeLock().lock();
+                                try{
                                     for (PlayerReady ready : readyCheckPlayers) {
                                         ready.setReady(false);
                                     }
+                                }finally {
+                                    readyLock.writeLock().unlock();
                                 }
                             }
                         }
@@ -255,35 +283,33 @@ public class GameServer {
 
                     if (System.currentTimeMillis() - timer > 1000) {
                         timer += 1000;
-                        //System.out.print("UPS SERVER: "+updates+"\n");
+                        System.out.print("UPS SERVER: "+updates+"\n");
                         updates = 0;
                     }
                 }
             }
         }.start();
-        connectedPlayers = Collections.synchronizedList(new ArrayList<>());
-        readyCheckPlayers = Collections.synchronizedList(new ArrayList<>());
-        map = new MiniMap(true);
+        connectedPlayers = new ArrayList<>();
+        readyCheckPlayers = new ArrayList<>();
+        playerLock = new ReentrantReadWriteLock();
+        readyLock = new ReentrantReadWriteLock();
+        MiniMap map = new MiniMap(true);
         tileMap = new TileMap(64, map, 2);
         tileMap.loadTilesMP("Textures\\tileset64.tga");
         while(!randomInit.get());
         tileMap.loadProgressRoom();
 
-        ackManager = new ACKManager();
-        ackCaching = new ACKCaching();
         upgrades = new GunsManagerMP.GunUpgradesCache();
 
-        server = new Server(16384, 4096);
-        Network.register(server);
         //Log.DEBUG();
 
-        server.start();
+        //server.start();
         try {
             server.bind(54555, 54777);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        server.addListener(new Listener.ThreadedListener(new Listener() {
+        server.addListener(new Listener() {
 
             @Override
             public void disconnected(Connection connection) {
@@ -291,13 +317,17 @@ public class GameServer {
                 disconnect.idPlayer = connection.getID();
                 server.sendToAllTCP(disconnect);
                 if (gameState == GameStateManager.INGAME) {
-                    synchronized (connectedPlayers){
+                    playerLock.readLock().lock();
+                    try{
                         for (PlayerMP player : connectedPlayers) {
                             if (player.getIdConnection() == connection.getID()) {
                                 player.setDead();
                                 tileMap.clearEnemiesInPlayersRoom(player);
+                                break;
                             }
                         }
+                    } finally {
+                        playerLock.readLock().unlock();
                     }
                 }
                 handleDisconnect(connection);
@@ -316,7 +346,14 @@ public class GameServer {
                         return;
                     }
                     // server is full
-                    if (connectedPlayers.size() >= MAX_PLAYERS) {
+                    playerLock.readLock().lock();
+                    int size;
+                    try{
+                        size = connectedPlayers.size();
+                    } finally {
+                        playerLock.readLock().unlock();
+                    }
+                    if (size >= MAX_PLAYERS) {
                         Network.CanJoin canJoin = new Network.CanJoin();
                         canJoin.can = false;
                         connection.sendTCP(canJoin); // sending packet that player can't join
@@ -324,14 +361,19 @@ public class GameServer {
                         return;
                     }
                     // player is already connected
-                    for (PlayerMP player : connectedPlayers) {
-                        if (player.getUsername().equalsIgnoreCase(packetUsername)) {
-                            Network.CanJoin canJoin = new Network.CanJoin();
-                            canJoin.can = false;
-                            connection.sendTCP(canJoin); // sending packet that player can't join
-                            connection.close();
-                            return;
+                    playerLock.readLock().lock();
+                    try{
+                        for (PlayerMP player : connectedPlayers) {
+                            if (player.getUsername().equalsIgnoreCase(packetUsername)) {
+                                Network.CanJoin canJoin = new Network.CanJoin();
+                                canJoin.can = false;
+                                connection.sendTCP(canJoin); // sending packet that player can't join
+                                connection.close();
+                                return;
+                            }
                         }
+                    } finally {
+                        playerLock.readLock().unlock();
                     }
                     Network.CanJoin canJoin = new Network.CanJoin();
                     canJoin.can = true;
@@ -340,13 +382,18 @@ public class GameServer {
                     handleJoin(joinPacket, connection);
                 } else if (object instanceof Network.RequestForPlayers) {
                     Network.RequestForPlayers request = (Network.RequestForPlayers) object;
-                    for (PlayerMP player : connectedPlayers) {
-                        if (player.getIdConnection() != request.exceptIdPlayer) {
-                            Network.AddPlayer addPlayer = new Network.AddPlayer();
-                            addPlayer.username = player.getUsername();
-                            addPlayer.idPlayer = player.getIdConnection();
-                            connection.sendTCP(addPlayer);
+                    playerLock.readLock().lock();
+                    try{
+                        for (PlayerMP player : connectedPlayers) {
+                            if (player.getIdConnection() != request.exceptIdPlayer) {
+                                Network.AddPlayer addPlayer = new Network.AddPlayer();
+                                addPlayer.username = player.getUsername();
+                                addPlayer.idPlayer = player.getIdConnection();
+                                connection.sendTCP(addPlayer);
+                            }
                         }
+                    } finally {
+                        playerLock.readLock().unlock();
                     }
                 } else if (object instanceof Network.MovePlayerInput) {
                     handleMove((Network.MovePlayerInput) object);
@@ -358,17 +405,6 @@ public class GameServer {
                     if (gameState == GameStateManager.INGAME) {
                         gunsManager.handleMouseCoords((Network.MouseCoords) object);
                     }
-                } else if (object instanceof Network.PMovementSync) {
-                    synchronized (connectedPlayers){
-                        for(PlayerMP player : connectedPlayers){
-                            if(player.getIdConnection() == ((Network.PMovementSync)object).idPlayer){
-                                System.out.println("SYNCED: "+player.getIdConnection());
-                                player.synced();
-                                break;
-                            }
-                        }
-                    }
-
                 } else if (object instanceof Network.Reload) {
                     Network.Reload reload = (Network.Reload) object;
                     Network.PacketACK ack = new Network.PacketACK();
@@ -402,13 +438,25 @@ public class GameServer {
                     ack.id = ready.idPacket;
                     connection.sendUDP(ack);
                     if(!ackCaching.checkDuplicate(connection.getID(),ready.idPacket)){
-                        server.sendToAllTCP(object);
-                        synchronized (readyCheckPlayers) {
-                            for (PlayerReady pready : readyCheckPlayers) {
-                                if (pready.isThisPlayer(ready.idPlayer)){
-                                    pready.setReady(ready.state);
-                                    break;
+                        playerLock.readLock().lock();
+                        int totalPlayers;
+                        try{
+                            totalPlayers = connectedPlayers.size();
+                        } finally {
+                            playerLock.readLock().unlock();
+                        }
+                        if(totalPlayers > 0){//todo: not 1 guy playing mp
+                            server.sendToAllTCP(object);
+                            readyLock.writeLock().lock();
+                            try{
+                                for (PlayerReady pready : readyCheckPlayers) {
+                                    if (pready.isThisPlayer(ready.idPlayer)){
+                                        pready.setReady(ready.state);
+                                        break;
+                                    }
                                 }
+                            } finally {
+                                readyLock.writeLock().unlock();
                             }
                         }
                         ackCaching.add(connection.getID(),ack);
@@ -464,16 +512,7 @@ public class GameServer {
                     ackManager.acknowledged(connection.getID(), ((Network.PacketACK) object).id);
                 }
             }
-        }));
-        new Thread("Server-ACK") {
-            @Override
-            public void run() {
-                while(MultiplayerManager.multiplayer){
-                    ackManager.update();
-                    ackCaching.update();
-                }
-            }
-        }.start();
+        });
     }
 
     private void handleDisconnect(Connection connection) {
@@ -484,11 +523,15 @@ public class GameServer {
                 if (player.getIdConnection() == connection.getID()) {
                     connectedPlayers.remove(i);
                     synchronized (readyCheckPlayers){
-                        for(int j = 0;j<readyCheckPlayers.size();j++){
-                            PlayerReady playerReady = readyCheckPlayers.get(j);
+                        for(PlayerReady playerReady : readyCheckPlayers){
                             if(playerReady.isThisPlayer(player)){
-                                readyCheckPlayers.remove(i);
+                                readyCheckPlayers.remove(playerReady);
                                 break;
+                            }
+                        }
+                        if(gameState == GameStateManager.PROGRESSROOM){
+                            for(PlayerReady r : readyCheckPlayers) {
+                                r.setReady(false);
                             }
                         }
                     }
@@ -507,7 +550,8 @@ public class GameServer {
     }
     private void handleMove(Network.MovePlayerInput movePlayer) {
         // player is already connceted
-        synchronized (connectedPlayers){
+        playerLock.writeLock().lock();
+        try{
             for (PlayerMP player : connectedPlayers) {
                 if (player.getIdConnection() == movePlayer.idPlayer) {
                     player.setUp(movePlayer.up);
@@ -517,6 +561,8 @@ public class GameServer {
                     break;
                 }
             }
+        } finally {
+            playerLock.writeLock().unlock();
         }
 
     }
@@ -528,21 +574,53 @@ public class GameServer {
         playerMP.setPosition(tileMap.getPlayerStartX(),tileMap.getPlayerStartY());
 
         if(join.host){
-            connectedPlayers.add(playerMP);
-            readyCheckPlayers.add(new PlayerReady(idConnection));
+            playerLock.writeLock().lock();
+            try{
+                connectedPlayers.add(playerMP);
+            } finally {
+                playerLock.writeLock().unlock();
+            }
+            readyLock.writeLock().lock();
+            try{
+                readyCheckPlayers.add(new PlayerReady(idConnection));
+            } finally {
+                readyLock.writeLock().unlock();
+            }
             upgrades.addPlayer(idConnection);
             ackManager.addPlayer(idConnection);
             ackCaching.addPlayer(idConnection);
         } else {
-            for (PlayerMP otherPlayer : connectedPlayers) {
-                Network.AddPlayer addPlayer = new Network.AddPlayer();
-                addPlayer.username = otherPlayer.getUsername();
-                addPlayer.idPlayer = otherPlayer.getIdConnection();
-                // send other players to new player
-                connection.sendTCP(addPlayer);
+            playerLock.writeLock().lock();
+            try{
+                for (PlayerMP otherPlayer : connectedPlayers) {
+                    Network.AddPlayer addPlayer = new Network.AddPlayer();
+                    addPlayer.username = otherPlayer.getUsername();
+                    addPlayer.idPlayer = otherPlayer.getIdConnection();
+                    // send other players to new player
+                    connection.sendTCP(addPlayer);
+                }
+                connectedPlayers.add(playerMP);
+            } finally {
+                playerLock.writeLock().unlock();
             }
-            connectedPlayers.add(playerMP);
-            readyCheckPlayers.add(new PlayerReady(idConnection));
+            readyLock.writeLock().lock();
+            try{
+                readyCheckPlayers.add(new PlayerReady(idConnection));
+            } finally {
+                readyLock.writeLock().unlock();
+            }
+            if(gameState == GameStateManager.PROGRESSROOM){
+                readyLock.writeLock().lock();
+                try{
+                    synchronized (readyCheckPlayers){
+                        for(PlayerReady r : readyCheckPlayers){
+                            r.setReady(false);
+                        }
+                    }
+                } finally {
+                    readyLock.writeLock().unlock();
+                }
+            }
             upgrades.addPlayer(idConnection);
             ackCaching.addPlayer(idConnection);
             ackManager.addPlayer(idConnection);
@@ -564,10 +642,10 @@ public class GameServer {
         ackManager.add(o,id);
     }
     private static class ACKManager{
-        private HashMap<Integer,PlayerACKS> players;
-        private ArrayList<PacketWaitingACK> waitingForAdd;
-        private Lock lock;
-        private Lock waitingLock;
+        private final HashMap<Integer,PlayerACKS> players;
+        private final ArrayList<PacketWaitingACK> waitingForAdd;
+        private final Lock lock;
+        private final Lock waitingLock;
         ACKManager(){
             players = new HashMap<>();
             lock = new ReentrantLock();

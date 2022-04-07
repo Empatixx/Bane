@@ -178,10 +178,6 @@ public class InGameMP extends GameState {
     protected void keyReleased(int k) {
         if (k == GLFW_KEY_ESCAPE && !postDeath){
             pause = !pause;
-            if(player[0].isGhost()){
-                if(!pause)glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_HIDDEN);
-                else glfwSetInputMode(Game.window,GLFW_CURSOR,GLFW_CURSOR_NORMAL);
-            }
             if(pause){
                 setCursor(ARROW);
             } else {
@@ -471,9 +467,6 @@ public class InGameMP extends GameState {
             if(idOrigin != packet.idPlayer){
                 AlertManager.add(AlertManager.WARNING,player[1].getUsername()+" has left the game!");
             }
-            for(PlayerReady pready : playerReadies){
-                if(pready != null) pready.setReady(false);
-            }
         }
         mpManager.client.setNumPlayers(index);
         pingTimer = System.currentTimeMillis();
@@ -640,7 +633,7 @@ public class InGameMP extends GameState {
                 } else {
                     textRender[7].draw("Accuracy: "+(int)(pStats.getAccuracy()*100)+"%",new Vector3f(600,700,0),3,new Vector3f(1f,1f,1f));
                 }
-                long deathTime = pStats.getDeathTime();
+                long deathTime = player[0].getDeathTime();
                 long sec = (deathTime-gameStart)/1000%60;
                 long min = ((deathTime-gameStart)/1000/60)%60;
                 long hours = (deathTime-gameStart)/1000/3600;
@@ -849,7 +842,10 @@ public class InGameMP extends GameState {
                 skullPlayerdead.setPosition(newpos);
             }
             skullPlayerdead.setAlpha(time/3500f);
-            for(PlayerMP player : player) if(player!= null)player.update();
+            //player[0].updateOrigin();
+            for(PlayerMP p : player){
+                if(p != null)p.update();
+            }
         } else {
             // entering new floor
             Object[] nextFloor = mpManager.packetHolder.get(PacketHolder.NEXTFLOOR);
@@ -877,9 +873,28 @@ public class InGameMP extends GameState {
             Object[] allPlayersDead = mpManager.packetHolder.get(PacketHolder.ALLPLAYERDEAD);
             if(allPlayersDead.length >= 1 && !postDeath){
                 postDeath = true;
+                for(PlayerMP p : player){
+                    if(p != null) p.setPostDeath();
+                }
                 pause = false;
                 deathTime = System.currentTimeMillis();
             }
+
+            // loc of mouse
+            mouseX = gsm.getMouseX();
+            mouseY = gsm.getMouseY();
+            // mouse location-moving direction of mouse of tilemap
+            tileMap.setPosition(
+                    tileMap.getX()-(mouseX-960)/30,
+                    tileMap.getY()-(mouseY- 540)/30);
+
+            // updating player
+            // updating tilemap by player position
+            tileMap.setPosition(
+                    Camera.getWIDTH() / 2f - player[0].getX(),
+                    Camera.getHEIGHT() / 2f - player[0].getY()
+            );
+
             player[0].updateOrigin();
             Object[] objects = mpManager.packetHolder.get(PacketHolder.MOVEPLAYER);
             for(int i = 1;i<player.length;i++) {
@@ -922,20 +937,6 @@ public class InGameMP extends GameState {
             tileMap.createRoomObjectsViaPackets();
         }
         AudioManager.update();
-        // loc of mouse
-        mouseX = gsm.getMouseX();
-        mouseY = gsm.getMouseY();
-        // mouse location-moving direction of mouse of tilemap
-        tileMap.setPosition(
-                tileMap.getX()-(mouseX-960)/30,
-                tileMap.getY()-(mouseY- 540)/30);
-
-        // updating player
-        // updating tilemap by player position
-        tileMap.setPosition(
-                Camera.getWIDTH() / 2f - player[0].getX(),
-                Camera.getHEIGHT() / 2f - player[0].getY()
-        );
         tileMap.checkingRoomLocks();
 
         itemManager.update();
@@ -1024,7 +1025,7 @@ public class InGameMP extends GameState {
         gaussianBlur.update(pause);
         lightManager.update();
 
-        mpStatistics.reveicePackets();
+        mpStatistics.receivePackets();
 
         int index = mpManager.client.getTotalPlayers();
         Object[] disconnectPackets = mpManager.packetHolder.get(PacketHolder.DISCONNECTPLAYER);
@@ -1041,9 +1042,6 @@ public class InGameMP extends GameState {
             playerReadies[index] = null;
             healthBar[index] = null;
             armorBar[index] = null;
-            for(PlayerReady pready : playerReadies){
-                if(pready != null) pready.setReady(false);
-            }
         }
         Object[] joinPackets = mpManager.packetHolder.get(PacketHolder.JOINPLAYER);
         for(Object object : joinPackets) {

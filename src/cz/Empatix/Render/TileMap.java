@@ -1797,6 +1797,7 @@ public class TileMap {
 				obj.delete();
 			}
 		}
+		floor++;
 		if(floor == 2 || floor == 4 || floor == 6){
 			floorAffixes.newAffix();
 		}
@@ -1806,10 +1807,9 @@ public class TileMap {
 		player[0].setPosition(playerStartX, playerStartY);
 		setTween(0.10);
 
-		floor++;
 		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();
 
-		DiscordRP.getInstance().update("In-Game","Floor "+RomanNumber.toRoman(floor+1));
+		DiscordRP.getInstance().update("In-Game","Floor "+RomanNumber.toRoman(floor));
 	}
 	public void newMapMP(){
 		floor++;

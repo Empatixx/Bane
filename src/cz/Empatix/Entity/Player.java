@@ -226,8 +226,6 @@ public class Player extends MapObject {
             sprintParticles = new ArrayList<>(3);
 
             createShadow();
-            setCoins(100);
-
         }
     }
 

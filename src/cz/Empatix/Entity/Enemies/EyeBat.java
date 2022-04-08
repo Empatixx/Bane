@@ -422,8 +422,32 @@ public class EyeBat extends Enemy {
 
             float y = player[lastPlayerTargetIndex].getY() - originalPos.y;
             float x = player[lastPlayerTargetIndex].getX() - originalPos.x;
-            float angle = (float)Math.atan2(y,x);
-            this.angle += (angle - this.angle) * 0.035f;
+            float angle = (float)Math.atan(y/x);
+            if(!facingRight){
+                angle+=Math.PI;
+            }
+            boolean reverseDir = false;
+            if(Math.PI*2-Math.abs(this.angle - angle) < Math.abs(this.angle - angle)){
+                reverseDir = true;
+            }
+            if(!reverseDir){
+                this.angle += (angle - this.angle) * .035;
+            } else {
+                if(this.angle >= 0){
+                    this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * .035;
+                    if(this.angle >= Math.PI*3/2.){
+                        this.angle-=Math.PI*3/2.;
+                        this.angle=-Math.PI/2. - this.angle;
+                    }
+                } else {
+                    this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * .035;
+                    if(this.angle <= -Math.PI/2.){
+                        this.angle+=Math.PI/2;
+                        this.angle=Math.PI*3/2.-this.angle;
+                    }
+                }
+
+            }
 
 
             position.x = originalPos.x + (width / 2 - 50) * (float) Math.cos(this.angle);

@@ -36,6 +36,8 @@ public class Database {
         insertUpgrade("grenadelauncher", 0, "upgrades");
         insertUpgrade("revolver", 0, "upgrades");
         insertUpgrade("thompson", 0, "upgrades");
+        insertUpgrade("modernshotgun", 0, "upgrades");
+
     }
 
     public Connection getSQLConnection() {

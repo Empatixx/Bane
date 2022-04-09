@@ -36,11 +36,12 @@ public class UpgradeMenu {
         bars.add(pistol);
         bars.add(new LugerUpgrade(1));
         bars.add(new ShotgunUpgrade(2));
-        bars.add(new SubmachineUpgrade(3));
+        bars.add(new UziUpgrade(3));
         bars.add(new M4Upgrade(4));
         bars.add(new GrenadelauncherUpgrade(5));
         bars.add(new RevolverUpgrade(6));
         bars.add(new ThompsonUpgrade(7));
+        bars.add(new ModernShotgunUpgrade(8));
         sendAllNumUpgradesPacket(); // sends packet if player is in mp
 
         weaponSlider = new SliderBar(new Vector3f(842f,540,0),3f);

@@ -19,7 +19,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-public class Submachine extends Weapon{
+public class Uzi extends Weapon{
     public static void load(){
         Loader.loadImage("Textures\\submachine.tga");
         Loader.loadImage("Textures\\pistol_bullet.tga");
@@ -38,8 +38,8 @@ public class Submachine extends Weapon{
     private ArrayList<Bullet> bullets;
     private boolean chanceToNotConsumeAmmo;
 
-    Submachine(TileMap tm, Player player, GunsManager gunsManager){
-        super(tm,player,gunsManager);
+    Uzi(TileMap tm, Player player){
+        super(tm,player);
         source.setVolume(0.15f);
         mindamage = 1;
         maxdamage = 2;
@@ -75,7 +75,7 @@ public class Submachine extends Weapon{
             criticalHits = true;
         }
     }
-    public Submachine(TileMap tm, Player[] player){
+    public Uzi(TileMap tm, Player[] player){
         super(tm,player);
         mindamage = 1;
         maxdamage = 2;

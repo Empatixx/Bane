@@ -29,7 +29,6 @@ public abstract class Weapon{
     //ammo vars
     protected final TileMap tm;
     protected final Player player[];
-    protected GunsManager gunsManager;
     // dmg
     protected int mindamage;
     protected int maxdamage;
@@ -69,9 +68,8 @@ public abstract class Weapon{
      */
     protected int type;
 
-    Weapon(TileMap tm, Player player, GunsManager gunsManager) {
+    Weapon(TileMap tm, Player player) {
         this.tm = tm;
-        this.gunsManager = gunsManager;
         this.player = new Player[]{player};
         source = AudioManager.createSource(Source.EFFECTS, 0.35f);
         reloadsource = AudioManager.createSource(Source.EFFECTS, 0.35f);

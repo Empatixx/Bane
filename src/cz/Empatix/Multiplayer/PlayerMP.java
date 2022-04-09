@@ -300,7 +300,7 @@ public class PlayerMP extends Player {
         checkTileMapCollision();
         if(tileMap.isServerSide())setPosition(temp.x, temp.y);
         //TODO: INTERPOLATION CLIENT-MOVEMENT
-        else if(currentMove != null && origin && !postDeath){
+        else if(currentMove != null && origin && !postDeath && MultiplayerManager.getInstance().client.getClient().isConnected()){
             long timeSinceLastInput = System.nanoTime() - lastTimeMove;
             final double ns = (1_000_000_000.0)/ 60.0;
             float t = (float) (timeSinceLastInput / (ns)) / moveSteps;

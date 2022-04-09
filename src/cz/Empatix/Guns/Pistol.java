@@ -43,8 +43,8 @@ public class Pistol extends Weapon {
     private float lastX;
     private float lastY;
 
-    Pistol(TileMap tm, Player player, GunsManager gunsManager){
-        super(tm,player,gunsManager);
+    Pistol(TileMap tm, Player player){
+        super(tm,player);
         mindamage = 1;
         maxdamage = 3;
         inaccuracy = 0.8f;

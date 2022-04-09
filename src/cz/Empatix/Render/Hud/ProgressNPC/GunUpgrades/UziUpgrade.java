@@ -5,8 +5,8 @@ import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector3f;
 
-public class SubmachineUpgrade extends UpgradeBar {
-    public SubmachineUpgrade(int row){
+public class UziUpgrade extends UpgradeBar {
+    public UziUpgrade(int row){
         super("Textures\\submachine.tga",2,row);
         info = new WeaponInfo();
         info.maxAmmo = 200;

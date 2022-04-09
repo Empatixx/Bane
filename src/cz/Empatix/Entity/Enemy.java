@@ -846,11 +846,18 @@ public abstract class Enemy extends MapObject{
      * @return index of the farthest player to enemy
      */
     public int theFarthestPlayerIndex(){
-        int theClosest = 0;
-        float dist = position.distance(player[0].getPosition());
-        for(int i = 1;i<player.length;i++){
+        int theClosest = -1;
+        float dist = -1;
+        for(int i = 0;i<player.length;i++){
             if(player[i] == null) continue;
             if(player[i].isDead()) continue;
+            Room eroom = tileMap.getRoomByCoords(position.x,position.y);
+            Room proom = tileMap.getRoomByCoords(player[i].getX(),player[i].getY());
+
+            // player is path room or in another room
+            if(proom == null) continue;
+            if(eroom.getId() != proom.getId()) continue;
+
             float newDist = position.distance(player[i].getPosition());
             if(dist < newDist){
                 theClosest = i;

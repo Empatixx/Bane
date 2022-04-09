@@ -44,9 +44,6 @@ public class BerserkPot extends Artefact {
     private TextRender textRender;
     private long flichingDelay;
 
-    // multiplayer only
-    private String playerWithBonus;
-
     public BerserkPot(TileMap tm, Player p){
         super(tm,p);
         maxCharge = 4;

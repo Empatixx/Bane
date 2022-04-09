@@ -33,8 +33,8 @@ public class Grenadelauncher extends Weapon {
 
     private ArrayList<Grenadebullet> bullets;
 
-    Grenadelauncher(TileMap tm, Player player, GunsManager gunsManager){
-        super(tm,player,gunsManager);
+    Grenadelauncher(TileMap tm, Player player){
+        super(tm,player);
         mindamage = 4;
         maxdamage = 7;
         inaccuracy = 0.7f;

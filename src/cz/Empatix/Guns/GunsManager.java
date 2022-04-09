@@ -32,8 +32,9 @@ public class GunsManager {
         Pistol.load();
         Revolver.load();
         Shotgun.load();
-        Submachine.load();
+        Uzi.load();
         Thompson.load();
+        ModernShotgun.load();
     }
     private static GunsManager gunsManager;
     public static void init(GunsManager gunsManager
@@ -65,14 +66,15 @@ public class GunsManager {
 
     public GunsManager(TileMap tileMap, Player p){
         weapons = new ArrayList<>();
-        weapons.add(new Pistol(tileMap,p,this));
-        weapons.add(new Shotgun(tileMap,p,this));
-        weapons.add(new Submachine(tileMap,p,this));
-        weapons.add(new Revolver(tileMap,p,this));
-        weapons.add(new Grenadelauncher(tileMap,p,this));
-        weapons.add(new Luger(tileMap,p,this));
-        weapons.add(new M4(tileMap,p,this));
-        weapons.add(new Thompson(tileMap,p,this));
+        weapons.add(new Pistol(tileMap,p));
+        weapons.add(new Shotgun(tileMap,p));
+        weapons.add(new Uzi(tileMap,p));
+        weapons.add(new Revolver(tileMap,p));
+        weapons.add(new Grenadelauncher(tileMap,p));
+        weapons.add(new Luger(tileMap,p));
+        weapons.add(new M4(tileMap,p));
+        weapons.add(new Thompson(tileMap,p));
+        weapons.add(new ModernShotgun(tileMap,p));
 
 
         weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);
@@ -95,14 +97,15 @@ public class GunsManager {
 
     public GunsManager(TileMap tileMap, PlayerMP[] p){
         weapons = new ArrayList<>();
-        weapons.add(new Pistol(tileMap,p[0],this));
-        weapons.add(new Shotgun(tileMap,p[0],this));
-        weapons.add(new Submachine(tileMap,p[0],this));
-        weapons.add(new Revolver(tileMap,p[0],this));
-        weapons.add(new Grenadelauncher(tileMap,p[0],this));
-        weapons.add(new Luger(tileMap,p[0],this));
-        weapons.add(new M4(tileMap,p[0],this));
-        weapons.add(new Thompson(tileMap,p[0],this));
+        weapons.add(new Pistol(tileMap,p[0]));
+        weapons.add(new Shotgun(tileMap,p[0]));
+        weapons.add(new Uzi(tileMap,p[0]));
+        weapons.add(new Revolver(tileMap,p[0]));
+        weapons.add(new Grenadelauncher(tileMap,p[0]));
+        weapons.add(new Luger(tileMap,p[0]));
+        weapons.add(new M4(tileMap,p[0]));
+        weapons.add(new Thompson(tileMap,p[0]));
+        weapons.add(new ModernShotgun(tileMap,p[0]));
 
 
         weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);
@@ -156,10 +159,6 @@ public class GunsManager {
     public void update(Object[] hitPackets){
         if(MultiplayerManager.multiplayer) {
             PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
-            int totalPlayers = 0;
-            for (Player player : players) {
-                if (player != null) totalPlayers++;
-            }
             Object[] infoPackets = packetHolder.get(PacketHolder.WEAPONINFO);
             for(Object o : infoPackets){
                 handleWeaponInfoPacket((Network.WeaponInfo) o);
@@ -167,9 +166,8 @@ public class GunsManager {
             Object[] addPackets = packetHolder.get(PacketHolder.ADDBULLET);
             for (Object o : addPackets) {
                 Network.AddBullet addBullet = (Network.AddBullet) o;
-                int index = addBullet.slot - (totalPlayers - 1);
-                if (index < 0) index = 0;
-                weapons.get(index).handleAddBulletPacket(addBullet);
+                int slot = translateSlot(addBullet.slot);
+                weapons.get(slot).handleAddBulletPacket(addBullet);
             }
             for (Object o : hitPackets) {
                 for (Weapon w : weapons) {
@@ -413,11 +411,14 @@ public class GunsManager {
     }
 
     public void handleWeaponInfoPacket(Network.WeaponInfo weaponInfo){
-        int selfId = MultiplayerManager.getInstance().getIdConnection();
-        if(selfId == weaponInfo.idPlayer){
-            if(current != null){
-                current.handleWeaponInfoPacket(weaponInfo);
+        int currentslot = 0;
+        int idPlayer = MultiplayerManager.getInstance().getIdConnection();
+        if(idPlayer == weaponInfo.idPlayer) {
+            for (byte slot : weaponInfo.slots) {
+                int clientSlot = translateSlot(slot);
+                equipedweapons[currentslot++] = weapons.get(clientSlot);
             }
+            if(equipedweapons[weaponInfo.currSlot] != null)equipedweapons[weaponInfo.currSlot].handleWeaponInfoPacket(weaponInfo);
         }
     }
 
@@ -446,14 +447,24 @@ public class GunsManager {
 
     public void handleDropWeaponPacket(Network.DropWeapon dropWeapon) {
         // converting indexing from server to client ones
-        int totalPlayers = 0;
-        for(Player player : players){
-            if(player != null) totalPlayers++;
-        }
-        int index = dropWeapon.slot-(totalPlayers-1);
-        if(index < 0) index = 0;
-        dropWeapon.slot = (byte)index;
+        dropWeapon.slot = (byte)translateSlot(dropWeapon.slot);
         PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
         packetHolder.add(dropWeapon,PacketHolder.DROPWEAPON);
+    }
+
+    /**
+     * translates slot from server to client
+     * @param serverSlot slots on server is different than on client
+     * @return client slot
+     */
+    public int translateSlot(int serverSlot){
+        // converting indexing from server to client ones
+        /*int totalPlayers = 0;
+        for(Player player : players){ //TODO: handle disconnect, wont work with 3+ players, we must offset by TotalPlayerOnStart - 1
+            if(player != null) totalPlayers++;
+        }*/
+        int index = serverSlot-1;
+        if(index < 0) index = 0;
+        return index;
     }
 }

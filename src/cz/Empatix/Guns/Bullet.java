@@ -34,6 +34,7 @@ public class Bullet extends MapObject {
     // BASIC VARS
     private boolean hit;
     private boolean remove;
+    private boolean didHitEnemy;
 
     // audio
     private int soundWallhit;
@@ -282,6 +283,7 @@ public class Bullet extends MapObject {
      */
     public void setHit(TypeHit type) {
         if(hit) return;
+        if(type == TypeHit.ENEMY) didHitEnemy = true;
         if(tileMap.isServerSide()){
             MultiplayerManager mpManager = MultiplayerManager.getInstance();
             Server server = mpManager.server.getServer();
@@ -311,6 +313,7 @@ public class Bullet extends MapObject {
      */
     public void setHit(TypeHit type, int idHit) {
         if(hit) return;
+        if(type == TypeHit.ENEMY) didHitEnemy = true;
         if(tileMap.isServerSide()){
             MultiplayerManager mpManager = MultiplayerManager.getInstance();
             Server server = mpManager.server.getServer();
@@ -456,6 +459,10 @@ public class Bullet extends MapObject {
 
     public void setOwner(int owner) {
         this.owner = owner;
+    }
+
+    public boolean didHitEnemy() {
+        return didHitEnemy;
     }
 
     public int getOwner() {

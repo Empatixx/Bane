@@ -35,12 +35,13 @@ public class GunsManagerMP {
             weapons.add(new Pistol(tileMap,p));
         }
         weapons.add(new Shotgun(tileMap,p));
-        weapons.add(new Submachine(tileMap,p));
+        weapons.add(new Uzi(tileMap,p));
         weapons.add(new Revolver(tileMap,p));
         weapons.add(new Grenadelauncher(tileMap,p));
         weapons.add(new Luger(tileMap,p));
         weapons.add(new M4(tileMap,p));
         weapons.add(new Thompson(tileMap,p));
+        weapons.add(new ModernShotgun(tileMap,p));
 
         playerWeapons = new PlayerWeapons[p.length];
         for(int i = 0;i<p.length;i++){
@@ -56,6 +57,7 @@ public class GunsManagerMP {
     public static GunsManagerMP getInstance(){return instance;}
 
     public int getWeaponSlot(Weapon weapon){
+        if(weapon == null) return -1;
         return weapons.indexOf(weapon);
     }
 
@@ -209,6 +211,9 @@ public class GunsManagerMP {
             Network.WeaponInfo weaponInfo = new Network.WeaponInfo();
             weaponInfo.currentAmmo = (short)current.getCurrentAmmo();
             weaponInfo.currentMagazineAmmo = (short)current.getCurrentMagazineAmmo();
+            weaponInfo.slots[0] = (byte)getWeaponSlot(equipedweapons[0]);
+            weaponInfo.slots[1] = (byte)getWeaponSlot(equipedweapons[0]);
+            weaponInfo.currSlot = (byte)currentslot;
             weaponInfo.idPlayer = idPlayer;
 
             server.sendToAllUDP(weaponInfo);
@@ -478,6 +483,10 @@ public class GunsManagerMP {
                         index = 7;
                         break;
                     }
+                    case "ModernShotgun":{
+                        index = 8;
+                        break;
+                    }
                     default:{
                         index = -1;
                         break;
@@ -515,5 +524,23 @@ public class GunsManagerMP {
     }
     public int getNumUpgrades(int idPlayer, String gunName){
         return gunUpgrades.getNumUpgrades(idPlayer,gunName);
+    }
+
+    /**
+     * Returns id connection of player who has equiped that weapon
+     * @param weapon - weapon that is equiped by someone
+     * @return id player who has gun
+     */
+    public int getWeaponOwner(Weapon weapon){
+        for(PlayerWeapons pw : playerWeapons){
+            if(pw != null){
+                for(Weapon w: pw.equipedweapons){
+                    if(w == weapon){
+                        return pw.idPlayer;
+                    }
+                }
+            }
+        }
+        return -1;
     }
 }

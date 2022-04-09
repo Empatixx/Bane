@@ -43,8 +43,8 @@ public class Luger extends Weapon {
     private int lastDamage;
     private boolean lastDamageCrit;
 
-    Luger(TileMap tm, Player player, GunsManager gunsManager){
-        super(tm,player,gunsManager);
+    Luger(TileMap tm, Player player){
+        super(tm,player);
         mindamage = 1;
         maxdamage = 2;
         inaccuracy = 0.8f;

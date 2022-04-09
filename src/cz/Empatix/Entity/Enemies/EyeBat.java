@@ -239,7 +239,7 @@ public class EyeBat extends Enemy {
 
         int indexPlayer = theFarthestPlayerIndex();
         if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
-            if(currentAction == IDLE && System.currentTimeMillis() - InGame.deltaPauseTime() - beamCooldown > 5000 && position.distance(player[indexPlayer].getPosition()) > 550
+            if(currentAction == IDLE && indexPlayer != -1 && System.currentTimeMillis() - InGame.deltaPauseTime() - beamCooldown > 5000 && position.distance(player[indexPlayer].getPosition()) > 550
                     && position.distance(player[indexPlayer].getPosition()) < 1500){
                 laserBeam.setLastPlayerTargetIndex(indexPlayer);
                 if(canShot()){
@@ -419,39 +419,6 @@ public class EyeBat extends Enemy {
                 animation = new Animation(14);
                 animation.setDelay(125);
             }
-
-            float y = player[lastPlayerTargetIndex].getY() - originalPos.y;
-            float x = player[lastPlayerTargetIndex].getX() - originalPos.x;
-            float angle = (float)Math.atan(y/x);
-            if(!facingRight){
-                angle+=Math.PI;
-            }
-            boolean reverseDir = false;
-            if(Math.PI*2-Math.abs(this.angle - angle) < Math.abs(this.angle - angle)){
-                reverseDir = true;
-            }
-            if(!reverseDir){
-                this.angle += (angle - this.angle) * .035;
-            } else {
-                if(this.angle >= 0){
-                    this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * .035;
-                    if(this.angle >= Math.PI*3/2.){
-                        this.angle-=Math.PI*3/2.;
-                        this.angle=-Math.PI/2. - this.angle;
-                    }
-                } else {
-                    this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * .035;
-                    if(this.angle <= -Math.PI/2.){
-                        this.angle+=Math.PI/2;
-                        this.angle=Math.PI*3/2.-this.angle;
-                    }
-                }
-
-            }
-
-
-            position.x = originalPos.x + (width / 2 - 50) * (float) Math.cos(this.angle);
-            position.y = originalPos.y + (width / 2 - 50) * (float) Math.sin(this.angle);
         }
 
         boolean isFacingRight(){return facingRight;}
@@ -460,14 +427,37 @@ public class EyeBat extends Enemy {
             animation.update();
             setMapPosition();
             if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
-                float y = originalPos.y- player[lastPlayerTargetIndex].getY();
-                float x = originalPos.x- player[lastPlayerTargetIndex].getX();
-                float angle = (float)Math.atan2(y,x);
-                this.angle += (angle - this.angle) * 0.035f;
+                float y = player[lastPlayerTargetIndex].getY() - originalPos.y;
+                float x = player[lastPlayerTargetIndex].getX() - originalPos.x;
+                float angle = (float)Math.atan(y/x);
+                if(!facingRight){
+                    angle+=Math.PI;
+                }
+                boolean reverseDir = false;
+                if(Math.PI*2-Math.abs(this.angle - angle) < Math.abs(this.angle - angle)){
+                    reverseDir = true;
+                }
+                if(!reverseDir){
+                    this.angle += (angle - this.angle) * .035;
+                } else {
+                    if(this.angle >= 0){
+                        this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * .035;
+                        if(this.angle >= Math.PI*3/2.){
+                            this.angle-=Math.PI*3/2.;
+                            this.angle=-Math.PI/2. - this.angle;
+                        }
+                    } else {
+                        this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * .035;
+                        if(this.angle <= -Math.PI/2.){
+                            this.angle+=Math.PI/2;
+                            this.angle=Math.PI*3/2.-this.angle;
+                        }
+                    }
 
-                position.x = originalPos.x + (width/2-65) * (float)Math.cos(this.angle);
-                position.y = originalPos.y + (width/2-65) * (float)Math.sin(this.angle);
+                }
 
+                position.x = originalPos.x + (width/2-45) * (float)Math.cos(this.angle);
+                position.y = originalPos.y + (width/2-45) * (float)Math.sin(this.angle);
                 for(Player p : player){
                     if(p != null){
                         if(intersects(p) && canHit()){
@@ -482,12 +472,14 @@ public class EyeBat extends Enemy {
                         if (object instanceof DestroyableObject) {
                             if (intersects(object) && !((DestroyableObject) object).isDestroyed()) {
                                 ((DestroyableObject) object).setHit(1);
-                                MultiplayerManager mpManager = MultiplayerManager.getInstance();
-                                Network.LaserBeamHit laserBeamHit = new Network.LaserBeamHit();
-                                mpManager.server.requestACK(laserBeamHit,laserBeamHit.idPacket);
-                                laserBeamHit.idHit = object.id;
-                                Server server = mpManager.server.getServer();
-                                server.sendToAllUDP(laserBeamHit);
+                                if(tileMap.isServerSide()){
+                                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
+                                    Network.LaserBeamHit laserBeamHit = new Network.LaserBeamHit();
+                                    mpManager.server.requestACK(laserBeamHit,laserBeamHit.idPacket);
+                                    laserBeamHit.idHit = object.id;
+                                    Server server = mpManager.server.getServer();
+                                    server.sendToAllUDP(laserBeamHit);
+                                }
                             }
                         }
                     }

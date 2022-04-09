@@ -41,8 +41,8 @@ public class Revolver extends Weapon {
     private boolean nextCritChanceEnabled;
     private float nextCritChance;
 
-    Revolver(TileMap tm, Player player, GunsManager gunsManager){
-        super(tm,player,gunsManager);
+    Revolver(TileMap tm, Player player){
+        super(tm,player);
         source.setVolume(0.20f);
         mindamage = 4;
         maxdamage = 6;

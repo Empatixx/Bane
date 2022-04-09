@@ -36,6 +36,7 @@ public class GameClient{
         packetHolder = mpManager.packetHolder;
 
         client = new Client(16384,4096);
+        //client.setTimeout(250);
         Network.register(client);
 
         recon = false;
@@ -48,7 +49,6 @@ public class GameClient{
                 long start = System.nanoTime();
                 while(MultiplayerManager.multiplayer){
                     try {
-                        client.setTimeout(2500);
                         client.update(250);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -122,6 +122,9 @@ public class GameClient{
                 }
                 else if (object instanceof Network.TransferRoom){
                     packetHolder.add(object,PacketHolder.TRANSFERROOM);
+                }
+                else if (object instanceof Network.ArtefactInfo){
+                    packetHolder.add(object,PacketHolder.ARTEFACTSTATE);
                 }
                 else if(object instanceof Network.MapLoaded){
                     packetHolder.add(object,PacketHolder.MAPLOADED);
@@ -555,7 +558,6 @@ public class GameClient{
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
     public void requestACK(Object packet, int idPacket){
         ackManager.add(packet,idPacket);

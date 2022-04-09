@@ -37,8 +37,8 @@ public class Shotgun extends Weapon {
 
     private ArrayList<Bullet> bullets;
 
-    Shotgun(TileMap tm, Player player, GunsManager gunsManager){
-        super(tm, player,gunsManager);
+    Shotgun(TileMap tm, Player player){
+        super(tm, player);
         mindamage = 2;
         maxdamage = 3;
         inaccuracy = 0.7f;
@@ -71,7 +71,7 @@ public class Shotgun extends Weapon {
             maxdamage++;
         }
         if(numUpgrades >= 4){
-            delayTime = (int)(delayTime*0.85f);
+            delayTime = (int)(delayTime*0.80f);
         }
 
     }
@@ -110,7 +110,7 @@ public class Shotgun extends Weapon {
             maxdamage++;
         }
         if(numUpgrades >= 4){
-            delayTime = (int)(delayTime*0.85f);
+            delayTime = (int)(delayTime*0.80f);
         }
         if(!fullAmmo){
             if(currentAmmo > maxAmmo) currentAmmo = maxAmmo;

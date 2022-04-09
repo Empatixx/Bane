@@ -139,6 +139,11 @@ public class Console {
                                 itemManager.dropWeapon(gunsManager.getWeapon(6), (int) p.getX(), (int) p.getY(), new Vector2f(0, 0));
                                 break;
                             }
+                            case "modernshotgun": {
+                                ItemManager itemManager = ItemManager.getInstance();
+                                itemManager.dropWeapon(gunsManager.getWeapon(8), (int) p.getX(), (int) p.getY(), new Vector2f(0, 0));
+                                break;
+                            }
                         }
                         break;
                     }

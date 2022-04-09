@@ -38,8 +38,8 @@ public class Thompson extends Weapon{
     private ArrayList<Bullet> bullets;
     private boolean boostFirerate;
 
-    Thompson(TileMap tm, Player player, GunsManager gunsManager){
-        super(tm,player,gunsManager);
+    Thompson(TileMap tm, Player player){
+        super(tm,player);
         source.setVolume(0.20f);
         mindamage = 1;
         maxdamage = 3;

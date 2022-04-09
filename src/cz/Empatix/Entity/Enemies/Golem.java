@@ -324,7 +324,7 @@ public class Golem extends Enemy {
                     animation = new Animation(7);
                     animation.setDelay(130);
                 }
-            } else if(System.currentTimeMillis() - beamCooldown - InGame.deltaPauseTime() > 6500 && position.distance(player[beamPlayer].getPosition()) > 550 && currentAction == IDLE){
+            } else if(beamPlayer != -1 && System.currentTimeMillis() - beamCooldown - InGame.deltaPauseTime() > 6500 && position.distance(player[beamPlayer].getPosition()) > 550 && currentAction == IDLE){
                 currentAction = EYE_BEAM;
                 beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
                 if(!MultiplayerManager.multiplayer){
@@ -471,7 +471,7 @@ public class Golem extends Enemy {
 
     public void draw() {
         super.draw();
-        if(currentAction == EYE_BEAM){
+        if(currentAction == EYE_BEAM && !isDead()){
             laserBeam.draw();
         }
 
@@ -485,6 +485,7 @@ public class Golem extends Enemy {
     public void hit(int damage) {
         super.hit(damage);
         if(isDead()){
+            currentAction = DEAD;
             if(tileMap.isServerSide()){
                 animation = new Animation(14);
                 animation.setDelay(65);

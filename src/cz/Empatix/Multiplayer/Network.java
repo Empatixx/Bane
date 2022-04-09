@@ -5,6 +5,8 @@ import com.esotericsoftware.kryonet.EndPoint;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.Bullet;
 
+import java.util.Arrays;
+
 // This class is a convenient place to keep things common to both the client and server.
 public class Network {
     private static int idPacketServer = 0;
@@ -84,6 +86,7 @@ public class Network {
         kryo.register(PacketACK.class);
         kryo.register(ExplosionDamage.class);
         kryo.register(TrapRoomObjectDamage.class);
+        kryo.register(ArtefactInfo.class);
 
     }
     // MAIN
@@ -223,7 +226,6 @@ public class Network {
             idPacket = getIdPacketS();
         }
     }
-
     /**
      * typeHit
      * true - enemy
@@ -291,12 +293,24 @@ public class Network {
             idPacket = getIdPacketS();
         }
     }
-    public static class WeaponInfo {
-        public int idPlayer;
+    public static class WeaponInfo { // weapon, artefact
         public short currentAmmo;
         public short currentMagazineAmmo;
+        public byte[] slots;
+        public byte currSlot;
         public int idPacket;
+        public int idPlayer;
         public WeaponInfo(){
+            slots = new byte[2];
+            idPacket = getIdPacketS();
+        }
+    }
+    public static class ArtefactInfo { // weapon, artefact
+        public byte slot;
+        public int idPlayer;
+        public int idPacket;
+        public ArtefactInfo(){
+            slot = -1;
             idPacket = getIdPacketS();
         }
     }
@@ -389,12 +403,31 @@ public class Network {
             idPacket = getIdPacketS();
         }
     }
+    public static class AddEnemyProjectileInstanced{
+        public int[] id;
+        public int idEnemy;
+        public float[] x, y; // direction
+        public float[] inaccuracy;
+        public int idPacket;
+        public AddEnemyProjectileInstanced(){
+            idPacket = getIdPacketS();
+        }
+    }
     public static class MoveEnemyProjectile{
         public int id;
         public int idEnemy;
         public float x, y;
         public int idPacket;
         public MoveEnemyProjectile(){
+            idPacket = getIdPacketS();
+        }
+    }
+    public static class MoveEnemyProjectileInstanced{
+        public int[] id;
+        public int idEnemy;
+        public float[] x, y;
+        public int idPacket;
+        public MoveEnemyProjectileInstanced(){
             idPacket = getIdPacketS();
         }
     }
@@ -410,7 +443,17 @@ public class Network {
         // idHit == -1  means that player was hitted or room object
         // damage hit is done on serverside, only if it is room object damage is done on clientside
     }
-
+    public static class HitEnemyProjectileInstanced {
+        public int[] id; // id of projectile
+        public int idEnemy; // id of owner's projectile
+        public int[] idHit; // id of room that was hitted
+        public int idPacket;
+        public HitEnemyProjectileInstanced(int totalHit){
+            idHit = new int[totalHit];
+            Arrays.fill(idHit,-1);
+            idPacket = getIdPacketS();
+        }
+    }
     public static class ShopDropitem {
         public int id;
         public int idObject;

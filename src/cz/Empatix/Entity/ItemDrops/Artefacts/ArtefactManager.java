@@ -62,6 +62,8 @@ public class ArtefactManager {
         artefacts.add(new ReviveBook(tm,player));
         artefacts.add(new ShieldHorn(tm,player));
 
+
+        currentArtefact = artefacts.get(6);
         artefactHud = new Image("Textures\\Artefacts\\artefacthud.tga",new Vector3f(1400,975,0),2.6f);
 
         firstAlert = false;
@@ -130,7 +132,15 @@ public class ArtefactManager {
     public void  update(Object[] hitBullets){
         // receive packet, that player used artefact sucessfully
         MultiplayerManager mpManager = MultiplayerManager.getInstance();
-        Object[] packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTACTIVATED);
+        Object[] packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTINFO);
+        int idPlayer = MultiplayerManager.getInstance().getIdConnection();
+        for(Object o : packets) {
+            Network.ArtefactInfo p = (Network.ArtefactInfo)o;
+            if(idPlayer == p.idPlayer){
+                currentArtefact = artefacts.get(p.slot);
+            }
+        }
+        packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTACTIVATED);
         for(Object o : packets) {
             Network.ArtefactActivate p = (Network.ArtefactActivate)o;
             artefacts.get(p.slot).activateClientSide(p.idPlayer);

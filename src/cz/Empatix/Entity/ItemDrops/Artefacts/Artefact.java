@@ -124,7 +124,6 @@ public abstract class Artefact {
     public abstract void updateMPServer(String username);
     public abstract void handleAddBulletPacket(Network.ArtefactAddBullet addBullet);
 
-
     protected abstract void drawHud();
     public boolean canBeActivated(){return maxCharge == charge;}
 

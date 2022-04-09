@@ -250,7 +250,7 @@ public class Room {
     public void enteredMP(TileMap tileMap){
         entered = true;
         if (type == Room.Classic){
-            int maxMobs = cz.Empatix.Java.Random.nextInt(4) + 22+tileMap.getFloor();
+            int maxMobs = cz.Empatix.Java.Random.nextInt(4) + 2+tileMap.getFloor();
             for (int i = 0; i < maxMobs;i++){
                 EnemyManagerMP enemyManager = EnemyManagerMP.getInstance();
                 enemyManager.addEnemy(xMin,xMax,yMin,yMax);

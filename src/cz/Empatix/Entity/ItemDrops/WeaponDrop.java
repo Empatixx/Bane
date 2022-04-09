@@ -60,7 +60,7 @@ public class WeaponDrop extends ItemDrop {
             } else if (weapon instanceof Shotgun){
                 width=cwidth=97;
                 height=cheight=36;
-            } else if (weapon instanceof Submachine){
+            } else if (weapon instanceof Uzi){
                 width=cwidth=66;
                 height=cheight=58;
             } else if (weapon instanceof Thompson){
@@ -148,7 +148,7 @@ public class WeaponDrop extends ItemDrop {
             } else if (weapon instanceof Shotgun){
                 width=cwidth=97;
                 height=cheight=36;
-            } else if (weapon instanceof Submachine){
+            } else if (weapon instanceof Uzi){
                 width=cwidth=66;
                 height=cheight=58;
             } else if (weapon instanceof Thompson){

@@ -55,7 +55,7 @@ public class PacketHolder {
     public static final int WEAPONINFO = 43;
     public static final int EXPLOSIONDAMAGE = 44;
     public static final int TRAPRODAMAGE = 45;
-    public static final int PMOVEMENTSYNC = 47;
+    public static final int ARTEFACTINFO = 47;
 
 
     public PacketHolder(){

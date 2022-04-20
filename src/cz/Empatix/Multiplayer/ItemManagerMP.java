@@ -544,7 +544,7 @@ public class ItemManagerMP {
                             alert.text = "You don't have enough coins";
                             alert.warning = true;
                             alert.idPlayer = pickup.idPlayer;
-                            server.sendToAllUDP(alert);
+                            server.sendToUDP(pickup.idPlayer, alert);
                         }
                     }
                 } else if(shopItem[i] instanceof ArtefactDrop) {
@@ -563,7 +563,7 @@ public class ItemManagerMP {
                             alert.text = "You don't have enough coins";
                             alert.warning = true;
                             alert.idPlayer = pickup.idPlayer;
-                            server.sendToAllUDP(alert);
+                            server.sendToUDP(pickup.idPlayer, alert);
                         }
                     }
                 } else {
@@ -581,7 +581,7 @@ public class ItemManagerMP {
                             alert.text = "You don't have enough coins";
                             alert.warning = true;
                             alert.idPlayer = pickup.idPlayer;
-                            server.sendToAllUDP(alert);
+                            server.sendToUDP(pickup.idPlayer, alert);
                         }
                     }
                 }

@@ -64,7 +64,7 @@ public class MPStatistics {
                 pu.shootShooted = (short)stats.bulletShooted;
                 pu.enemiesKilled = (short)stats.enemiesKilled;
                 pu.idPlayer = stats.idPlayer;
-                server.sendToAllUDP(pu);
+                server.sendToUDP(stats.idPlayer, pu);
             }
             delay = System.currentTimeMillis();
         }

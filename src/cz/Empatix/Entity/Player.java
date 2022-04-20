@@ -1,17 +1,12 @@
 package cz.Empatix.Entity;
 
-import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
-import cz.Empatix.Multiplayer.ArtefactManagerMP;
-import cz.Empatix.Multiplayer.Network;
-import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -453,34 +448,16 @@ public class Player extends MapObject {
     public void hit(int damage){
         if (flinching ||dead || rolling) return;
 
-        if(tileMap.isServerSide()){
-            ArtefactManagerMP artefactManager = ArtefactManagerMP.getInstance();
-            boolean immune = artefactManager.playeHitEvent(((PlayerMP)this).getUsername());
-            if(immune){
-                flinching = true;
-                flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
-                lastDamage = DamageAbsorbedBy.IMMUNE;
-                MultiplayerManager mpManager = MultiplayerManager.getInstance();
-                Network.PlayerHit playerHit = new Network.PlayerHit();
-                mpManager.server.requestACK(playerHit,playerHit.idPacket);
-                playerHit.type = lastDamage;
-                playerHit.idPlayer = ((PlayerMP)(this)).getIdConnection();
-
-                Server server = mpManager.server.getServer();
-                server.sendToAllUDP(playerHit);
-                return;
-            }
-        } else {
-            ArtefactManager artefactManager = ArtefactManager.getInstance();
-            boolean immune = artefactManager.playeHitEvent();
-            if(immune){
-                lastDamage = DamageAbsorbedBy.IMMUNE;
-                flinching = true;
-                flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
-                source.play(soundPlayerhurt[Random.nextInt(2)]);
-                return;
-            }
+        ArtefactManager artefactManager = ArtefactManager.getInstance();
+        boolean immune = artefactManager.playeHitEvent();
+        if(immune){
+            lastDamage = DamageAbsorbedBy.IMMUNE;
+            flinching = true;
+            flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
+            source.play(soundPlayerhurt[Random.nextInt(2)]);
+            return;
         }
+
 
         int previousArmor = armor;
         int previousHealth = health;
@@ -502,23 +479,14 @@ public class Player extends MapObject {
         if(previousHealth != health) lastDamage = DamageAbsorbedBy.HEALTH;
         else if (previousArmor != armor) lastDamage = DamageAbsorbedBy.ARMOR;
         // if it is not server sided
-        if(!tileMap.isServerSide()){
-            if(lastDamage == DamageAbsorbedBy.ARMOR){
-                hitVignette[1].updateFadeTime();
-            } else {
-                hitVignette[0].updateFadeTime();
-            }
-            source.play(soundPlayerhurt[Random.nextInt(2)]);
-        } else {
-            MultiplayerManager mpManager = MultiplayerManager.getInstance();
-            Network.PlayerHit playerHit = new Network.PlayerHit();
-            mpManager.server.requestACK(playerHit,playerHit.idPacket);
-            playerHit.type = lastDamage;
-            playerHit.idPlayer = ((PlayerMP)(this)).getIdConnection();
 
-            Server server = mpManager.server.getServer();
-            server.sendToAllUDP(playerHit);
+        if(lastDamage == DamageAbsorbedBy.ARMOR){
+            hitVignette[1].updateFadeTime();
+        } else {
+            hitVignette[0].updateFadeTime();
         }
+        source.play(soundPlayerhurt[Random.nextInt(2)]);
+
         if(health <= 0) setDead();
     }
     public int getHealth() {

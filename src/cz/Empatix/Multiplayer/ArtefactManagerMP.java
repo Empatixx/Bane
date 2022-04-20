@@ -74,6 +74,14 @@ public class ArtefactManagerMP {
                 artefact.updateMPServer(null); // updating like bullets etc. meanwhile players don't have artefact
             }
         }
+        for(PlayerArtefacts pa : playerArtefacts){
+            if(pa != null){
+                Network.ArtefactInfo info = new Network.ArtefactInfo();
+                info.slot = (byte)getArtefactSlot(pa.currentArtefact);
+                info.idPlayer = pa.idPlayer;
+                MultiplayerManager.getInstance().server.getServer().sendToUDP(pa.idPlayer, info);
+            }
+        }
     }
     public Artefact randomArtefact(){
         boolean possible = false;

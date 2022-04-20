@@ -393,6 +393,9 @@ public class Slime extends Enemy {
         }
     }
     @Override
+    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o) {
+    }
+    @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
         for(Slimebullet bullet : bullets){
             if(bullet.getId() == hitPacket.id){
@@ -412,6 +415,10 @@ public class Slime extends Enemy {
             }
 
         }
+    }
+    @Override
+    public void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket) {
+
     }
     public void forceRemove(){
         for(Slimebullet b : bullets){

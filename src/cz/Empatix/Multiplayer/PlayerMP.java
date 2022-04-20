@@ -1,6 +1,7 @@
 package cz.Empatix.Multiplayer;
 
 import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.ItemDrops.Coin;
 import cz.Empatix.Entity.Player;
@@ -31,6 +32,7 @@ import static org.lwjgl.opengl.GL20.*;
 public class PlayerMP extends Player {
     private String username;
     private int idConnection;
+    private boolean newCreated;
 
     private boolean origin;
     private MultiplayerManager mpManager;
@@ -43,16 +45,22 @@ public class PlayerMP extends Player {
 
     // INTERPOLATION
     private long lastTimeMove;
+    private long shiftMove;
     private Network.MovePlayer currentMove;
     private Network.MovePlayer previousMove;
+    private Network.MovePlayer nextMove;
+
     private int moveSteps;
 
     private Room deathRoom;
     private int moveId;
     private boolean postDeath;
 
+    private Interpolator interpolator;
+
     public PlayerMP(TileMap tm, String username){
         super(tm);
+        newCreated = true;
         this.username = username;
         origin = false;
         mpManager = MultiplayerManager.getInstance();
@@ -103,6 +111,7 @@ public class PlayerMP extends Player {
         moveId = 0;
         moveSteps = 1;
         postDeath = false;
+
     }
 
     public void setOrigin(boolean origin) {
@@ -115,6 +124,7 @@ public class PlayerMP extends Player {
 
     @Override
     public void draw() {
+        setMapPosition();
         if(ghost){
         // pokud neni object na obrazovce - zrusit
             if (isNotOnScrean()){
@@ -299,24 +309,8 @@ public class PlayerMP extends Player {
         else checkGhostRestrictions();
         checkTileMapCollision();
         if(tileMap.isServerSide())setPosition(temp.x, temp.y);
-        //TODO: INTERPOLATION CLIENT-MOVEMENT
-        else if(currentMove != null && origin && !postDeath && MultiplayerManager.getInstance().client.getClient().isConnected()){
-            long timeSinceLastInput = System.nanoTime() - lastTimeMove;
-            final double ns = (1_000_000_000.0)/ 60.0;
-            float t = (float) (timeSinceLastInput / (ns)) / moveSteps;
-            //System.out.println("DELTA: "+t);
-            Vector3f finalPos = new Vector3f();
-            if(previousMove != null){
-                finalPos.x = previousMove.x;
-                finalPos.y = previousMove.y;
-                finalPos.lerp(new Vector3f(currentMove.x,currentMove.y,0),t);
-            }
-            else {
-                finalPos.x = currentMove.x;
-                finalPos.y = currentMove.y;
-            }
-            setPosition(finalPos.x,finalPos.y);
-
+        else {
+            if(interpolator != null) interpolator.update(position.x,position.y,tileMap);
         }
         if(!tileMap.isServerSide()){
             if(!ghost){
@@ -356,6 +350,7 @@ public class PlayerMP extends Player {
             } else if(lastDamage == DamageAbsorbedBy.HEALTH){
                 hitVignette[0].update();
             }
+            animation.update();
         }
         //  IMMORTALITY AFTER GETTING HIT
         if (flinching){
@@ -363,9 +358,6 @@ public class PlayerMP extends Player {
                 flinching = false;
             }
         }
-
-        // next sprite of player
-        if(!tileMap.isServerSide())animation.update();
         if(isOrigin()){
             Client client = mpManager.client.getClient();
             Network.MovePlayerInput movePlayer = new Network.MovePlayerInput();
@@ -544,42 +536,12 @@ public class PlayerMP extends Player {
             light.setIntensity(4f);
         }
     }
-    //TODO: INTERPOLATION CLIENT-MOVEMENT
-
-    public void setPosition(Network.MovePlayer move)
-    {
-        RefreshToPosition(move, currentMove);
-    }
-
-    private void RefreshToPosition(Network.MovePlayer move, Network.MovePlayer prevData)
-    {
-        if(prevData == null || prevData.idPacket < move.idPacket){
-            if(previousMove != null && previousMove.idPacket - move.idPacket > 0){
-                System.out.println("SKIPPED: "+(previousMove.idPacket - move.idPacket));
-            }
-            previousMove = prevData;
-            this.currentMove = move;
-            lastTimeMove = System.nanoTime(); /*5*1_000_000;//*mpManager.client.getClient().getReturnTripTime()/500_000L*/;
-        }
-        //if(prevData != null) System.out.println("CHANGE X: "+(move.x-prevData.x));
-    }
     public void updateOrigin(){
-        Object[] packets = mpManager.packetHolder.getWithoutClear(PacketHolder.ORIGINMOVEPLAYER);
-        Network.MovePlayer recent = null;
-        int totalValidPackets = 0;
+        Object[] packets = mpManager.packetHolder.get(PacketHolder.ORIGINMOVEPLAYER);
         for(Object o : packets){
             Network.MovePlayer p = (Network.MovePlayer)o;
-            if(recent == null || recent.idPacket > p.idPacket){
-                recent = p;
-                totalValidPackets++;
-            }
+            interpolator.newUpdate(p.tick,new Vector3f(p.x,p.y,0));
         }
-        if(recent != null){
-            setPosition(recent);
-            mpManager.packetHolder.remove(PacketHolder.ORIGINMOVEPLAYER,recent);
-            moveSteps = 1;
-        }
-        setMapPosition();
     }
 
     public void setIdConnection(int idConnection) {
@@ -596,5 +558,72 @@ public class PlayerMP extends Player {
 
     public void setPostDeath() {
         this.postDeath = true;
+    }
+
+    @Override
+    public void hit(int damage){
+        if (flinching ||dead || rolling) return;
+
+        ArtefactManagerMP artefactManager = ArtefactManagerMP.getInstance();
+        boolean immune = artefactManager.playeHitEvent(((PlayerMP)this).getUsername());
+        if(immune) {
+            flinching = true;
+            flinchingTimer = System.currentTimeMillis() - InGame.deltaPauseTime();
+            lastDamage = DamageAbsorbedBy.IMMUNE;
+            MultiplayerManager mpManager = MultiplayerManager.getInstance();
+            Network.PlayerHit playerHit = new Network.PlayerHit();
+            mpManager.server.requestACK(playerHit, playerHit.idPacket);
+            playerHit.type = lastDamage;
+            playerHit.idPlayer = idConnection;
+
+            Server server = mpManager.server.getServer();
+            server.sendToUDP(idConnection,playerHit);
+            return;
+        }
+
+        int previousArmor = armor;
+        int previousHealth = health;
+
+        armor-=damage;
+        if(armor < 0){
+            armor = 0;
+        }
+        damage-=previousArmor;
+        if (damage < 0) damage = 0;
+
+        health -= damage;
+        if (health < 0) health = 0;
+        if (health == 0) dead = true;
+
+        flinching = true;
+        flinchingTimer = System.currentTimeMillis()-InGame.deltaPauseTime();
+
+        if(previousHealth != health) lastDamage = DamageAbsorbedBy.HEALTH;
+        else if (previousArmor != armor) lastDamage = DamageAbsorbedBy.ARMOR;
+        // if it is not server sided
+
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+        Network.PlayerHit playerHit = new Network.PlayerHit();
+        mpManager.server.requestACK(playerHit,playerHit.idPacket);
+        playerHit.type = lastDamage;
+        playerHit.idPlayer = idConnection;
+
+        Server server = mpManager.server.getServer();
+        server.sendToUDP(idConnection,playerHit);
+
+        if(health <= 0) setDead();
+    }
+    public void initInterpolator(){
+        interpolator = new Interpolator(this);
+    }
+
+    public void newPlayerTickSync(int tick) {
+        if(newCreated){
+            newCreated = false;
+            Server server = MultiplayerManager.getInstance().server.getServer();
+            Network.TickSync tickSync = new Network.TickSync();
+            tickSync.tick = tick;
+            server.sendToAllUDP(tickSync);
+        }
     }
 }

@@ -28,12 +28,11 @@ public class GameStateManager {
     public static final int PROGRESSROOMMP = 3;
     public static final int INGAMEMP = 4;
 
+    public static float deltaTime; // unity like
 
     private Screenshot screenshot;
     private static Database db;
     private MultiplayerManager mpManager;
-
-    public static long timeUpdate;
 
     float mouseX,mouseY;
 
@@ -120,8 +119,8 @@ public class GameStateManager {
 
     }
     public void update() {
-        timeUpdate = System.nanoTime();
         gameStates.get(currentState).update();
+        deltaTime = (System.currentTimeMillis() - Game.startUpdate)/1000f;
     }
 
     public void draw() {

@@ -290,12 +290,14 @@ public class Grenadelauncher extends Weapon {
         bullets.add(bullet);
     }
     @Override
-    public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
+    public boolean handleMoveBulletPacket(Network.MoveBullet moveBullet) {
         for(Grenadebullet b : bullets){
             if(b.getId() == moveBullet.id && !b.isHit()){
                 b.setPosition(moveBullet.x, moveBullet.y);
+                return true;
             }
         }
+        return false;
     }
 
     @Override
@@ -303,6 +305,7 @@ public class Grenadelauncher extends Weapon {
          for(Grenadebullet b : bullets){
             if(b.id == hitBullet.id && !b.isHit()){
                 b.setHit();
+                break;
             }
          }
     }

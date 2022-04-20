@@ -607,6 +607,7 @@ public class ItemManager {
         for(ItemDrop drop: itemDrops){
             if(drop.getId() == dropItem.id){
                 drop.setPosition(dropItem.x, dropItem.y);
+                break;
             }
         }
     }

@@ -76,8 +76,8 @@ public class MMPlayerArrow {
     }
     public void update(TileMap tm){
         animation.update();
-        float y = followedPlayer.getY() + tm.getY() - position.y;
-        float x = followedPlayer.getX() + tm.getX() - position.x;
+        float y = followedPlayer.getY() + tm.getY() - 500;
+        float x = followedPlayer.getX() + tm.getX() - 960;
         angle = (float)Math.atan2(y,x);
         position.x = 960  + 400 *(float)Math.cos(angle);
         position.y = 500 + 400 *(float)Math.sin(angle);

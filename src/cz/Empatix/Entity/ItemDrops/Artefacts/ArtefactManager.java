@@ -62,8 +62,6 @@ public class ArtefactManager {
         artefacts.add(new ReviveBook(tm,player));
         artefacts.add(new ShieldHorn(tm,player));
 
-
-        currentArtefact = artefacts.get(6);
         artefactHud = new Image("Textures\\Artefacts\\artefacthud.tga",new Vector3f(1400,975,0),2.6f);
 
         firstAlert = false;
@@ -137,7 +135,9 @@ public class ArtefactManager {
         for(Object o : packets) {
             Network.ArtefactInfo p = (Network.ArtefactInfo)o;
             if(idPlayer == p.idPlayer){
-                currentArtefact = artefacts.get(p.slot);
+                if(p.slot != -1){
+                    currentArtefact = artefacts.get(p.slot);
+                }
             }
         }
         packets = mpManager.packetHolder.get(PacketHolder.ARTEFACTACTIVATED);
@@ -195,9 +195,12 @@ public class ArtefactManager {
         return artefacts.get(slot);
     }
 
-    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
-        for(Artefact a : artefacts){
-            a.handleMoveBulletPacket(moveBullet);
+    public void handleBulletMovePacket(Object[] moveBullets) {
+        for(Object o : moveBullets) {
+            Network.MoveBullet p = (Network.MoveBullet) o;
+            for (Artefact a : artefacts) {
+                a.handleMoveBulletPacket(p);
+            }
         }
     }
 

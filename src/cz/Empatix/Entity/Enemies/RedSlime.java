@@ -390,7 +390,9 @@ public class RedSlime extends Enemy {
 
         }
     }
-
+    @Override
+    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o) {
+    }
     @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
         for(RedSlimebullet bullet : bullets){
@@ -411,6 +413,10 @@ public class RedSlime extends Enemy {
             }
 
         }
+    }
+    @Override
+    public void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket) {
+
     }
     public void forceRemove(){
         for(RedSlimebullet b : bullets){

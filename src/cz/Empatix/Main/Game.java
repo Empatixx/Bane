@@ -32,9 +32,13 @@ public class Game{
     public final static int CROSSHAIR = 1;
     private static long[] cursors;
 
+    public static double delta;
+
     public static boolean displayCollisions = false;
 
     public static boolean running;
+    public static long startUpdate;
+    public static double deltaTime;
 
     private static int FPS;
 
@@ -214,9 +218,9 @@ public class Game{
 
         long lastTime = System.nanoTime();
         long timer = System.currentTimeMillis();
-        final double ns = 1000000000.0 / 60.0;
+        final float ns = 1000000000 / 60.0f;
 
-        double delta = 0;
+        delta = 0;
 
         // UPS/FPS counter
         int frames = 0;
@@ -337,19 +341,24 @@ public class Game{
             long now = System.nanoTime();
             delta += (now-lastTime) / ns;
             lastTime = now;
+            startUpdate = System.currentTimeMillis();
 
             while (delta >= 1){
+                startUpdate = System.currentTimeMillis();
+
                 update();
                 updates++;
                 delta--;
-
             }
             frames++;
             draw();
 
+            deltaTime = (System.currentTimeMillis() - startUpdate)/1_000f;
+
+
             if (System.currentTimeMillis() - timer > 1000){
                 timer += 1000;
-                //System.out.print("UPS: "+updates+"   "+"FPS: "+frames+"\n");
+                System.out.print("UPS: "+updates+"   "+"FPS: "+frames+"\n");
                 FPS = frames;
                 // GARBAGE COLLECTOR
                 System.gc();
@@ -389,8 +398,8 @@ public class Game{
         if(displayCollisions){
             text.draw("FPS: "+FPS,new Vector3f(200, 400,0),2,new Vector3f(1.0f,1.0f,1.0f));
         }
-
         glfwSwapBuffers(window); // swap the color buffers
+
 
     }
     void keyPressed(int key) {
@@ -408,8 +417,10 @@ public class Game{
         gsm.mouseReleased(button);
     }
 
+
     public static void main(String[] args){
         new Game().run();
+        Thread.currentThread().setPriority(2);
     }
 
     public static void stopGame(){

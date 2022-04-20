@@ -94,6 +94,11 @@ public class Console {
                         em.addEnemy(args[1]);
                         break;
                     }
+                    case "dropartefact": {
+                        ItemManager itemManager = ItemManager.getInstance();
+                        itemManager.dropArtefact((int) p.getX(), (int) p.getY());
+                        break;
+                    }
                     case "dropgun": {
                         if (args.length < 2) {
                             break;

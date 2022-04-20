@@ -734,6 +734,7 @@ public class TileMap {
 				for (RoomObject object : objects) {
 					if (object.getId() == openChest.id) {
 						((Chest) object).open();
+						break;
 					}
 				}
 			}
@@ -2034,6 +2035,7 @@ public class TileMap {
 						artefactManager.charge();
 					}
 					room.showRoomOnMinimap();
+					break;
 				}
 			}
 		}

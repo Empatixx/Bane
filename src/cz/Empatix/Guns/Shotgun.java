@@ -316,12 +316,14 @@ public class Shotgun extends Weapon {
     }
 
     @Override
-    public void handleMoveBulletPacket(Network.MoveBullet moveBullet) {
+    public boolean handleMoveBulletPacket(Network.MoveBullet moveBullet) {
         for(Bullet b : bullets){
             if(b.getId() == moveBullet.id){
                 b.setPosition(moveBullet.x, moveBullet.y);
+                return true;
             }
         }
+        return false;
     }
     @Override
     public void handleHitBulletPacket(Network.HitBullet hitBullet) {
@@ -339,9 +341,11 @@ public class Shotgun extends Weapon {
                             if (obj instanceof DestroyableObject) {
                                 ((DestroyableObject) obj).setHit(b.getDamage());
                             }
+                            break;
                         }
                     }
                 }
+                break;
             }
         }
     }

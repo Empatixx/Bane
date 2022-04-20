@@ -868,7 +868,9 @@ public abstract class Enemy extends MapObject{
     }
     public abstract void handleAddEnemyProjectile(Network.AddEnemyProjectile o);
     public abstract void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o);
+    public abstract void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o);
     public abstract void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket);
+    public abstract void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket);
 
     public void handleSync(Network.EnemySync sync){
         // packet sync is not old

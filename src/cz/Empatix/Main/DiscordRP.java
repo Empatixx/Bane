@@ -1,9 +1,5 @@
 package cz.Empatix.Main;
 
-import net.arikia.dev.drpc.DiscordEventHandlers;
-import net.arikia.dev.drpc.DiscordRPC;
-import net.arikia.dev.drpc.DiscordRichPresence;
-
 public class DiscordRP {
 
     private boolean running = true;
@@ -17,7 +13,7 @@ public class DiscordRP {
 
     public void start(){
 
-        new Thread("Discord RPC Callback") {
+       /* new Thread("Discord RPC Callback") {
             @Override
             public void run() {
                 created = System.currentTimeMillis();
@@ -31,25 +27,25 @@ public class DiscordRP {
                     DiscordRPC.discordRunCallbacks();
                 }
             }
-        }.start();
+        }.start();*/
 
 
 
 
     }
     public void shutdown(){
-        running = false;
-        DiscordRPC.discordShutdown();
+        /*running = false;
+        DiscordRPC.discordShutdown();*/
 
     }
     public void update(String firstLine, String secondLine){
 
-        DiscordRichPresence.Builder rich = new DiscordRichPresence.Builder(secondLine);
+        /*DiscordRichPresence.Builder rich = new DiscordRichPresence.Builder(secondLine);
         rich.setDetails(firstLine);
         rich.setBigImage("newi","0.9.0");
         rich.setStartTimestamps(created);
 
-        DiscordRPC.discordUpdatePresence(rich.build());
+        DiscordRPC.discordUpdatePresence(rich.build());*/
 
 
 

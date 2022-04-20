@@ -5,8 +5,6 @@ import com.esotericsoftware.kryonet.EndPoint;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Guns.Bullet;
 
-import java.util.Arrays;
-
 // This class is a convenient place to keep things common to both the client and server.
 public class Network {
     private static int idPacketServer = 0;
@@ -25,6 +23,7 @@ public class Network {
         kryo.register(int[][].class);
         kryo.register(int[].class);
         kryo.register(boolean[].class);
+        kryo.register(float[].class);
         kryo.register(byte[].class);
         kryo.register(TransferRoomMap.class);
         kryo.register(TransferRoom.class);
@@ -87,6 +86,10 @@ public class Network {
         kryo.register(ExplosionDamage.class);
         kryo.register(TrapRoomObjectDamage.class);
         kryo.register(ArtefactInfo.class);
+        kryo.register(HitEnemyProjectileInstanced.class);
+        kryo.register(MoveEnemyProjectileInstanced.class);
+        kryo.register(AddEnemyProjectileInstanced.class);
+        kryo.register(TickSync.class);
 
     }
     // MAIN
@@ -113,6 +116,7 @@ public class Network {
         public float x;
         public float y;
         public boolean up,down,left,right;
+        public int tick;
         public MovePlayer(){
             idPacket = getIdPacketS();
         }
@@ -121,6 +125,9 @@ public class Network {
     public static class MovePlayerInput {
         public int idPlayer;
         public boolean up,down,left,right;
+    }
+    public static class TickSync {
+        public int tick;
     }
     public static class ArtefactEventState {
         public int idPacket;
@@ -427,8 +434,13 @@ public class Network {
         public int idEnemy;
         public float[] x, y;
         public int idPacket;
-        public MoveEnemyProjectileInstanced(){
+        public MoveEnemyProjectileInstanced(int totalMove){
+            id = new int[totalMove];
+            x = new float[totalMove];
+            y = new float[totalMove];
             idPacket = getIdPacketS();
+        }
+        public MoveEnemyProjectileInstanced() {
         }
     }
     public static class HitEnemyProjectile {
@@ -449,9 +461,11 @@ public class Network {
         public int[] idHit; // id of room that was hitted
         public int idPacket;
         public HitEnemyProjectileInstanced(int totalHit){
+            id = new int[totalHit];
             idHit = new int[totalHit];
-            Arrays.fill(idHit,-1);
             idPacket = getIdPacketS();
+        }
+        public HitEnemyProjectileInstanced(){
         }
     }
     public static class ShopDropitem {

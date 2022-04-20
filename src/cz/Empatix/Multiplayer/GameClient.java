@@ -28,6 +28,11 @@ public class GameClient{
     private int numPlayers;
     private boolean recon;
 
+    public int serverTick;
+    public int interpolationTick;
+    public final int ticksBetweenPositionUpdates = 2;
+    private final int tickDivergenceTolerance = 1;
+
     public GameClient(GameStateManager gsm, String ipAddress){
         this.gsm = gsm;
         numPlayers = 1;
@@ -35,13 +40,18 @@ public class GameClient{
         mpManager = MultiplayerManager.getInstance();
         packetHolder = mpManager.packetHolder;
 
-        client = new Client(16384,4096);
+        client = new Client(16384,2048);
         //client.setTimeout(250);
+        //client.setKeepAliveTCP(20000);
+
         Network.register(client);
 
         recon = false;
         ackManager = new ACKManager();
         ackCaching = new ACKCaching();
+
+        serverTick = 2;
+        interpolationTick = 0;
 
         new Thread("Client") {
             @Override
@@ -124,7 +134,7 @@ public class GameClient{
                     packetHolder.add(object,PacketHolder.TRANSFERROOM);
                 }
                 else if (object instanceof Network.ArtefactInfo){
-                    packetHolder.add(object,PacketHolder.ARTEFACTSTATE);
+                    packetHolder.add(object,PacketHolder.ARTEFACTINFO);
                 }
                 else if(object instanceof Network.MapLoaded){
                     packetHolder.add(object,PacketHolder.MAPLOADED);
@@ -282,7 +292,10 @@ public class GameClient{
                     }
                 }
                 else if (object instanceof Network.MoveBullet){
-                    handleMove((Network.MoveBullet) object);
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        packetHolder.add(object,PacketHolder.MOVEBULLET);
+                    }
                 }
                 else if(object instanceof Network.AddEnemy){
                     GameState gameState = gsm.getCurrentGamestate();
@@ -310,7 +323,19 @@ public class GameClient{
                         ackCaching.add(ack);
                     }
                 }
-
+                else if (object instanceof Network.HitEnemyProjectileInstanced){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    Network.HitEnemyProjectileInstanced packet = (Network.HitEnemyProjectileInstanced) object;
+                    Network.PacketACK ack = new Network.PacketACK();
+                    ack.id = packet.idPacket;
+                    connection.sendUDP(ack);
+                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
+                        if (gameState instanceof InGameMP) {
+                            packetHolder.add(object, PacketHolder.iHIT_ENEMYPROJECTILE);
+                        }
+                        ackCaching.add(ack);
+                    }
+                }
 
                 else if(object instanceof Network.PlayerHit){
                     GameState gameState = gsm.getCurrentGamestate();
@@ -439,6 +464,15 @@ public class GameClient{
                         packetHolder.add(object,PacketHolder.MOVE_ENEMYPROJECTILE);
                     }
                 }
+                else if (object instanceof Network.MoveEnemyProjectileInstanced){
+                    GameState gameState = gsm.getCurrentGamestate();
+                    if(gameState instanceof InGameMP) {
+                        packetHolder.add(object,PacketHolder.iMOVE_ENEMYPROJECTILE);
+                    }
+                }
+                else if (object instanceof Network.TickSync){
+                    packetHolder.add(object,PacketHolder.TICKSYNC);
+                }
                 else if (object instanceof Network.HitEnemyProjectile){
                     GameState gameState = gsm.getCurrentGamestate();
                     Network.HitEnemyProjectile packet = (Network.HitEnemyProjectile) object;
@@ -559,6 +593,31 @@ public class GameClient{
             e.printStackTrace();
         }
     }
+
+    public void checkTickSyncs() {
+        Object[] objects = packetHolder.get(PacketHolder.TICKSYNC);
+        int recent;
+        if(0<objects.length){
+            Network.TickSync sync = (Network.TickSync) objects[0];
+            recent = sync.tick;
+            for(int i = 1;i<objects.length;i++){
+                sync = (Network.TickSync) objects[i];
+                if(sync.tick > recent) recent = sync.tick;
+            }
+            mpManager.client.setTick(recent);
+        }
+    }
+
+    public void setServerTick(int serverTick) {
+        this.serverTick = serverTick;
+        this.interpolationTick = serverTick - ticksBetweenPositionUpdates;
+    }
+    public void setTick(int serverTick){
+        if(Math.abs(this.serverTick - serverTick) > tickDivergenceTolerance){
+            System.out.println("CLIENT TICK: "+this.serverTick+" -> "+serverTick);
+            setServerTick(serverTick);
+        }
+    }
     public void requestACK(Object packet, int idPacket){
         ackManager.add(packet,idPacket);
     }
@@ -569,13 +628,6 @@ public class GameClient{
 
     public int getTotalPlayers() {
         return numPlayers;
-    }
-    public void handleMove(Network.MoveBullet movePacket) {
-        GameState gameState = gsm.getCurrentGamestate();
-        if (gameState instanceof InGameMP) {
-            ((InGameMP) gameState).gunsManager.handleBulletMovePacket(movePacket);
-            ((InGameMP) gameState).artefactManager.handleBulletMovePacket(movePacket);
-        }
     }
     public void close(){
         client.close();

@@ -262,6 +262,7 @@ public class ArrowTrap extends RoomObject {
         for(Arrow a : arrows){
             if(packet.id == a.id){
                 a.setPosition(packet.x, packet.y);
+                break;
             }
         }
     }
@@ -270,6 +271,7 @@ public class ArrowTrap extends RoomObject {
         for(Arrow a : arrows){
             if(packet.id == a.id){
                 a.setHit();
+                break;
             }
         }
     }

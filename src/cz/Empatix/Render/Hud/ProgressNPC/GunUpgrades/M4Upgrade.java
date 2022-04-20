@@ -56,7 +56,7 @@ public class M4Upgrade extends UpgradeBar {
         }
 
         bar = new UpgradeSideBar(sideBars.size(),"m4");
-        text = new String[]{"Increase maximum and minimum damage by 1"};
+        text = new String[]{"Increase damage by 2"};
         bar.setText(text);
         bar.setType(UpgradeSideBar.DAMAGEUPGRADE);
         bar.setPrice(170);
@@ -64,8 +64,8 @@ public class M4Upgrade extends UpgradeBar {
         if(numUpgrades > 0){
             bar.setBought(true);
             numUpgrades--;
-            info.maxDamage++;
-            info.minDamage++;
+            info.maxDamage+=2;
+            info.minDamage+=2;
         }
 
     }
@@ -92,8 +92,8 @@ public class M4Upgrade extends UpgradeBar {
             info.maxDamage++;
         }
         if(numUpgrades == 4){
-            info.maxDamage++;
-            info.minDamage++;
+            info.maxDamage+=2;
+            info.minDamage+=2;
         }
         this.numUpgrades = numUpgrades;
 

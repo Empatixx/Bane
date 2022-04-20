@@ -107,6 +107,7 @@ public class EnemyManager {
                 for (Enemy e : enemies) {
                     if (e.getId() == removeEnemy.id) {
                         e.hit(1000);
+                        break;
                     }
                 }
             }
@@ -116,6 +117,7 @@ public class EnemyManager {
                 for (Enemy e : enemies) {
                     if (e.getId() == heal.id) {
                         e.heal(heal.amount);
+                        break;
                     }
                 }
             }
@@ -139,6 +141,7 @@ public class EnemyManager {
                 for(Enemy e : enemies){
                     if(e.getId() == addEnemyProjectile.idEnemy){
                         e.handleAddEnemyProjectile(addEnemyProjectile);
+                        break;
                     }
                 }
             }
@@ -148,6 +151,17 @@ public class EnemyManager {
                 for(Enemy e : enemies){
                     if(e.getId() == hit.idEnemy){
                         e.handleHitEnemyProjectile(hit);
+                        break;
+                    }
+                }
+            }
+            Object[] ihitProjectiles = packetHolder.get(PacketHolder.iHIT_ENEMYPROJECTILE);
+            for(Object o : ihitProjectiles){
+                Network.HitEnemyProjectileInstanced hit = (Network.HitEnemyProjectileInstanced) o;
+                for(Enemy e : enemies){
+                    if(e.getId() == hit.idEnemy){
+                        e.handleHitEnemyProjectile(hit);
+                        break;
                     }
                 }
             }
@@ -176,16 +190,27 @@ public class EnemyManager {
                     }
                 }
             }
+            Object[] moveEnemyProjectilesInstanced = packetHolder.get(PacketHolder.iMOVE_ENEMYPROJECTILE);
+            for(Object o : moveEnemyProjectilesInstanced){
+                Network.MoveEnemyProjectileInstanced moveProjectile = (Network.MoveEnemyProjectileInstanced) o;
+                for(Enemy e : enemies){
+                    if(e.getId() == moveProjectile.idEnemy){
+                        e.handleMoveEnemyProjectile(moveProjectile);
+                        break;
+                    }
+                }
+            }
             ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
             Object[] laserHits = packetHolder.get(PacketHolder.LASERBEAMHIT);
             for(Object o : laserHits){
                 Network.LaserBeamHit lh = (Network.LaserBeamHit) o;
-                for(ArrayList<RoomObject> objects : objectsArray) {
+                A: for(ArrayList<RoomObject> objects : objectsArray) {
                     if (objects == null) continue;
                     for (RoomObject object : objects) {
                         if (object instanceof DestroyableObject) {
                             if (object.id == lh.idHit) {
                                 ((DestroyableObject) object).setHit(1);
+                                break A;
                             }
                         }
                     }

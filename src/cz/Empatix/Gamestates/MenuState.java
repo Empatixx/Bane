@@ -160,7 +160,9 @@ public class MenuState extends GameState{
                             r = 2 * (1 - value);
                             g = 1f;
                         }
-                        textRender[11].draw((int) (value * 100) + "%", new Vector3f(pos.x(), pos.y() - 25, pos.z()), 2, new Vector3f(r, g, b));
+                        String text = (int) (value * 100) + "%";
+                        float centerX = TextRender.getHorizontalCenter((int)pos.x(),(int)pos.x(),text,2);
+                        textRender[11].draw(text, new Vector3f(centerX, pos.y() - 25, pos.z()), 2, new Vector3f(r, g, b));
                     }
                     hud.draw();
                 }

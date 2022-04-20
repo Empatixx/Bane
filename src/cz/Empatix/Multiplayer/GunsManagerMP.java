@@ -212,11 +212,11 @@ public class GunsManagerMP {
             weaponInfo.currentAmmo = (short)current.getCurrentAmmo();
             weaponInfo.currentMagazineAmmo = (short)current.getCurrentMagazineAmmo();
             weaponInfo.slots[0] = (byte)getWeaponSlot(equipedweapons[0]);
-            weaponInfo.slots[1] = (byte)getWeaponSlot(equipedweapons[0]);
+            weaponInfo.slots[1] = (byte)getWeaponSlot(equipedweapons[1]);
             weaponInfo.currSlot = (byte)currentslot;
             weaponInfo.idPlayer = idPlayer;
 
-            server.sendToAllUDP(weaponInfo);
+            server.sendToUDP(idPlayer,weaponInfo); // sends ammo info only to specified player
         }
         // return true - if swapping was successful, false if not
         public boolean setCurrentWeapon(Weapon current, int slot) {

@@ -21,6 +21,7 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 
 public class GunsManager {
+
     public static void load(){
         Loader.loadImage("Textures\\weapon_hud.tga");
         Bullet.load();
@@ -397,16 +398,15 @@ public class GunsManager {
         MultiplayerManager mpManager = MultiplayerManager.getInstance();
         PacketHolder packetHolder = mpManager.packetHolder;
         packetHolder.add(response,PacketHolder.ADDBULLET);
-        /*if(current != null){
-            if(mpManager.getIdConnection() == response.idPlayer){
-                current.shootSound(response);
-            }
-        }*/
     }
 
-    public void handleBulletMovePacket(Network.MoveBullet moveBullet) {
-        for(Weapon w : weapons){
-            w.handleMoveBulletPacket(moveBullet);
+    public void handleBulletMovePacket(Object[] moveBullets) {
+        for(Object o : moveBullets){
+            Network.MoveBullet p = (Network.MoveBullet) o;
+            for(Weapon w : weapons){
+                boolean correct = w.handleMoveBulletPacket(p);
+                if(correct) break;
+            }
         }
     }
 
@@ -415,10 +415,17 @@ public class GunsManager {
         int idPlayer = MultiplayerManager.getInstance().getIdConnection();
         if(idPlayer == weaponInfo.idPlayer) {
             for (byte slot : weaponInfo.slots) {
-                int clientSlot = translateSlot(slot);
-                equipedweapons[currentslot++] = weapons.get(clientSlot);
+                if(slot == -1){
+                    // slot is null
+                    equipedweapons[currentslot++] = null;
+                } else {
+                    int clientSlot = translateSlot(slot);
+                    equipedweapons[currentslot++] = weapons.get(clientSlot);
+                }
             }
-            if(equipedweapons[weaponInfo.currSlot] != null)equipedweapons[weaponInfo.currSlot].handleWeaponInfoPacket(weaponInfo);
+            if(equipedweapons[weaponInfo.currSlot] != null) equipedweapons[weaponInfo.currSlot].handleWeaponInfoPacket(weaponInfo);
+            this.currentslot = weaponInfo.currSlot;
+            current = equipedweapons[weaponInfo.currSlot];
         }
     }
 

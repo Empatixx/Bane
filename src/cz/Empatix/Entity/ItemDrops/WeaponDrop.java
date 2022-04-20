@@ -66,6 +66,9 @@ public class WeaponDrop extends ItemDrop {
             } else if (weapon instanceof Thompson){
                 width=cwidth=97;
                 height=cheight=47;
+            } else if (weapon instanceof ModernShotgun){
+                width=cwidth=102;
+                height=cheight=38;
             }
             scale = 1.5f;
             facingRight = true;

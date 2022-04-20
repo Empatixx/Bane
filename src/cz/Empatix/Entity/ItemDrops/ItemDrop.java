@@ -50,6 +50,7 @@ public abstract class ItemDrop extends MapObject {
             setPosition(temp.x, temp.y);
             getMovementSpeed();
             if(tileMap.isServerSide()){
+                if(shop) return; // shop items are static located
                 Network.MoveDropItem moveDropItem = new Network.MoveDropItem();
                 moveDropItem.id = id;
                 moveDropItem.x = position.x;

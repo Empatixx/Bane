@@ -147,9 +147,9 @@ public class ShieldHorn extends Artefact {
             animation.setFrames(magicShield.getSprites(0));
             animation.setDelay(100);
 
-            vboShield = ModelManager.getModel(64,64);
+            vboShield = ModelManager.getModel(64,96);
             if (vboShield == -1){
-                vboShield = ModelManager.getModel(64,64);
+                vboShield = ModelManager.getModel(64,96);
             }
             shader = ShaderManager.getShader("shaders\\shader");
             if (shader == null){

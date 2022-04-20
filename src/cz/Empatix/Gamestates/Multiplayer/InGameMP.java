@@ -471,6 +471,8 @@ public class InGameMP extends GameState {
         mpManager.client.setNumPlayers(index);
         pingTimer = System.currentTimeMillis();
 
+        player[0].initInterpolator();
+
     }
 
     @Override
@@ -805,6 +807,13 @@ public class InGameMP extends GameState {
             lightManager.update();
             return;
         }
+        if(true){
+            GameClient client = mpManager.client;
+            client.serverTick++;
+            client.setServerTick(client.serverTick);
+            client.checkTickSyncs();
+            //System.out.println("CURR TICK: "+client.serverTick+ " INTERPOLATED TICK: "+client.interpolationTick);
+        }
         if (postDeath){
             fade.update(transitionContinue);
             readyNumPlayers = 0;
@@ -842,7 +851,7 @@ public class InGameMP extends GameState {
                 skullPlayerdead.setPosition(newpos);
             }
             skullPlayerdead.setAlpha(time/3500f);
-            //player[0].updateOrigin();
+            player[0].updateOrigin();
             for(PlayerMP p : player){
                 if(p != null)p.update();
             }
@@ -894,8 +903,10 @@ public class InGameMP extends GameState {
                     Camera.getWIDTH() / 2f - player[0].getX(),
                     Camera.getHEIGHT() / 2f - player[0].getY()
             );
-
             player[0].updateOrigin();
+            for(PlayerMP p : player){
+                if(p != null)p.update();
+            }
             Object[] objects = mpManager.packetHolder.get(PacketHolder.MOVEPLAYER);
             for(int i = 1;i<player.length;i++) {
                 PlayerMP p = player[i];
@@ -919,9 +930,6 @@ public class InGameMP extends GameState {
                         p.setLeft(recent.left);
                     }
                 }
-            }
-            for(PlayerMP p : player){
-                if(p != null)p.update();
             }
             Object[] playerHitPackets = mpManager.packetHolder.get(PacketHolder.PLAYERHIT);
             for(Object o : playerHitPackets){
@@ -972,10 +980,16 @@ public class InGameMP extends GameState {
             gunsManager.shoot(mouseX - mx - px, mouseY - my - py, px, py,player[0].getIdConnection());
         }
         // updating if player shoots any enemies
-        Object[] hitBulletPackets = mpManager.packetHolder.get(PacketHolder.HITBULLET);
         enemyManager.update();
+
+        Object[] hitBulletPackets = mpManager.packetHolder.get(PacketHolder.HITBULLET);
         artefactManager.update(hitBulletPackets);
         gunsManager.update(hitBulletPackets);
+
+        Object[] moveBulletPackets = mpManager.packetHolder.get(PacketHolder.MOVEBULLET);
+        gunsManager.handleBulletMovePacket(moveBulletPackets);
+        artefactManager.handleBulletMovePacket(moveBulletPackets);
+
         handleExplosionDamage();
         handleTrapRODamage();
 

@@ -24,6 +24,7 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class KingSlime extends Enemy {
 
@@ -244,18 +245,27 @@ public class KingSlime extends Enemy {
 
     @Override
     public void update() {
+        if(MultiplayerManager.multiplayer){
+            if(tileMap.isServerSide()) updateMPServer();
+            else updateMPClient();
+        } else {
+            updateSP();
+        }
+
+    }
+    public void updateSP(){
         setMapPosition();
-        if(!tileMap.isServerSide())healthBar.update(health,maxHealth);
+        healthBar.update(health,maxHealth);
         if(isSpawning()) return;
         // update animation
         animation.update();
 
-        // creating of chest+ladder after death
+        // creating chest+ladder after death
         // checking !itemDropped if boss wasn't killed by setDead();
         // this function is used when player dies so we want to not create ladder
         if(isDead() && animation.hasPlayedOnce() && !itemDropped){
             disableDraw = true;
-            if(!chestCreated && (tileMap.isServerSide() || !MultiplayerManager.multiplayer)){
+            if(!chestCreated){
                 chestCreated=true;
 
                 Chest chest = new Chest(tileMap);
@@ -269,80 +279,29 @@ public class KingSlime extends Enemy {
         // checking collisions of slime bullets
         for(int i = 0;i<bullets.size();i++){
             KingSlimebullet slimebullet = bullets.get(i);
-            boolean preHit = slimebullet.isHit();
             slimebullet.update();
-            if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
-                // if bullet hitted wall
-                if(!preHit && slimebullet.isHit() && tileMap.isServerSide()){
-                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
-                    Server server = MultiplayerManager.getInstance().server.getServer();
-                    Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
-                    mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
-                    enemyProjectile.id = slimebullet.id;
-                    enemyProjectile.idEnemy = getId();
-                    server.sendToAllUDP(enemyProjectile);
-                }
-                if(slimebullet.isHit()) continue;
-                if(tileMap.isServerSide()){
-                    Server server = MultiplayerManager.getInstance().server.getServer();
-                    Network.MoveEnemyProjectile moveEnemyProjectile = new Network.MoveEnemyProjectile();
-                    moveEnemyProjectile.idEnemy = id;
-                    moveEnemyProjectile.id = slimebullet.id;
-                    moveEnemyProjectile.x = slimebullet.getX();
-                    moveEnemyProjectile.y = slimebullet.getY();
-                    server.sendToAllUDP(moveEnemyProjectile);
-                }
-                for(Player p : player){
-                    if(p != null){
-                        if(slimebullet.intersects(p) && !p.isFlinching() && !p.isDead()){
-                            slimebullet.setHit();
-                            p.hit(1);
+            // if bullet hitted wall
+            if(slimebullet.isHit()) continue;
+            for(Player p : player){
+                if(p != null){
+                    if(slimebullet.intersects(p) && !p.isFlinching() && !p.isDead()){
+                        slimebullet.setHit();
+                        p.hit(1);
 
-                            if(tileMap.isServerSide()){
-                                MultiplayerManager mpManager = MultiplayerManager.getInstance();
-                                Server server = MultiplayerManager.getInstance().server.getServer();
-                                Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
-                                mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
-                                enemyProjectile.id = slimebullet.id;
-                                enemyProjectile.idEnemy = getId();
-                                server.sendToAllUDP(enemyProjectile);
-                            }
-                        }
                     }
                 }
-                ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
-                for(ArrayList<RoomObject> objects : objectsArray) {
-                    if (objects == null) continue;
-                    for (RoomObject object : objects) {
-                        if (object instanceof DestroyableObject) {
-                            if (slimebullet.intersects(object) && !slimebullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
-                                slimebullet.setHit();
-                                ((DestroyableObject) object).setHit(1);
-
-                                if (tileMap.isServerSide()) {
-                                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
-                                    Server server = MultiplayerManager.getInstance().server.getServer();
-                                    Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
-                                    mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
-                                    enemyProjectile.id = slimebullet.id;
-                                    enemyProjectile.idEnemy = getId();
-                                    enemyProjectile.idHit = object.getId();
-                                    server.sendToAllUDP(enemyProjectile);
-                                }
-                            }
-                        } else if (object.collision && slimebullet.intersects(object)) {
+            }
+            ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+            for(ArrayList<RoomObject> objects : objectsArray) {
+                if (objects == null) continue;
+                for (RoomObject object : objects) {
+                    if (object instanceof DestroyableObject) {
+                        if (slimebullet.intersects(object) && !slimebullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
                             slimebullet.setHit();
-
-                            if (tileMap.isServerSide()) {
-                                MultiplayerManager mpManager = MultiplayerManager.getInstance();
-                                Server server = MultiplayerManager.getInstance().server.getServer();
-                                Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
-                                mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
-                                enemyProjectile.id = slimebullet.id;
-                                enemyProjectile.idEnemy = getId();
-                                server.sendToAllUDP(enemyProjectile);
-                            }
+                            ((DestroyableObject) object).setHit(1);
                         }
+                    } else if (object.collision && slimebullet.intersects(object)) {
+                        slimebullet.setHit();
                     }
                 }
             }
@@ -354,8 +313,7 @@ public class KingSlime extends Enemy {
 
         if(dead) return;
 
-        if((float)health/maxHealth <= 0.5 && System.currentTimeMillis()-shootCooldownCircle- InGame.deltaPauseTime() > 2500
-        && (!MultiplayerManager.multiplayer || tileMap.isServerSide())){
+        if((float)health/maxHealth <= 0.5 && System.currentTimeMillis()-shootCooldownCircle- InGame.deltaPauseTime() > 2500){
             shootCooldownCircle = System.currentTimeMillis()- InGame.deltaPauseTime();
             for (int i = 0; i < 5; ) {
                 double inaccuracy = 0.055 * i;
@@ -370,18 +328,6 @@ public class KingSlime extends Enemy {
                 );
                 slimebullet.setPosition(position.x, position.y);
                 bullets.add(slimebullet);
-                if(tileMap.isServerSide()){
-                    MultiplayerManager mpManager = MultiplayerManager.getInstance();
-                    Network.AddEnemyProjectile addEnemyProjectile = new Network.AddEnemyProjectile();
-                    mpManager.server.requestACK(addEnemyProjectile,addEnemyProjectile.idPacket);
-                    addEnemyProjectile.idEnemy = id;
-                    addEnemyProjectile.id = slimebullet.id;
-                    addEnemyProjectile.x = px[index] - position.x;
-                    addEnemyProjectile.y = py[index] - position.y;
-                    addEnemyProjectile.inaccuracy = (float)inaccuracy;
-                    Server server = mpManager.server.getServer();
-                    server.sendToAllUDP(addEnemyProjectile);
-                }
                 if (i >= 0) i++;
                 else i--;
                 i = -i;
@@ -416,69 +362,268 @@ public class KingSlime extends Enemy {
                 angle+=360;
             }
             // spin bullets
-            // mp
-            if(tileMap.isServerSide()){
-                KingSlimebullet slimebullet = new KingSlimebullet(
-                        tileMap,
-                        Math.sin(Math.toRadians(angle)),
-                        Math.sin(Math.toRadians(angle-90)),
-                        offset+0.05 *(1-Random.nextInt(2)*2)
-                );
-                slimebullet.setPosition(position.x, position.y);
-                bullets.add(slimebullet);
+            KingSlimebullet slimebullet = new KingSlimebullet(
+                    tileMap,
+                    Math.sin(Math.toRadians(angle)),
+                    Math.sin(Math.toRadians(angle-90)),
+                    offset+0.05 *(1-Random.nextInt(2)*2)
+            );
+            slimebullet.setPosition(position.x, position.y);
+            bullets.add(slimebullet);
 
-                MultiplayerManager mpManager = MultiplayerManager.getInstance();
-                Network.AddEnemyProjectile addEnemyProjectile = new Network.AddEnemyProjectile();
-                mpManager.server.requestACK(addEnemyProjectile,addEnemyProjectile.idPacket);
-                addEnemyProjectile.idEnemy = id;
-                addEnemyProjectile.id = slimebullet.id;
-                addEnemyProjectile.x = (float)Math.sin(Math.toRadians(angle));
-                addEnemyProjectile.y = (float)Math.sin(Math.toRadians(angle-90));
-                addEnemyProjectile.inaccuracy = (float)(offset+0.05 *(1-Random.nextInt(2)*2));
-                Server server = mpManager.server.getServer();
-                server.sendToAllUDP(addEnemyProjectile);
-
-                slimebullet = new KingSlimebullet(
-                        tileMap,
-                        Math.sin(Math.toRadians(angle-180)),
-                        Math.sin(Math.toRadians(angle-270)),
-                        offset+0.05 *(1-Random.nextInt(2)*2)
-                );
-                slimebullet.setPosition(position.x, position.y);
-                bullets.add(slimebullet);
-                addEnemyProjectile = new Network.AddEnemyProjectile();
-                mpManager.server.requestACK(addEnemyProjectile,addEnemyProjectile.idPacket);
-                addEnemyProjectile.idEnemy = id;
-                addEnemyProjectile.id = slimebullet.id;
-                addEnemyProjectile.x = (float)Math.sin(Math.toRadians(angle-180));
-                addEnemyProjectile.y = (float)Math.sin(Math.toRadians(angle-270));
-                addEnemyProjectile.inaccuracy = (float)(offset+0.05 *(1-Random.nextInt(2)*2));
-                server.sendToAllUDP(addEnemyProjectile);
-            // SP
-            } else if (!MultiplayerManager.multiplayer){
-                KingSlimebullet slimebullet = new KingSlimebullet(
-                        tileMap,
-                        Math.sin(Math.toRadians(angle)),
-                        Math.sin(Math.toRadians(angle-90)),
-                        offset+0.05 *(1-Random.nextInt(2)*2)
-                );
-                slimebullet.setPosition(position.x, position.y);
-                bullets.add(slimebullet);
-
-                slimebullet = new KingSlimebullet(
-                        tileMap,
-                        Math.sin(Math.toRadians(angle-180)),
-                        Math.sin(Math.toRadians(angle-270)),
-                        offset+0.05 *(1-Random.nextInt(2)*2)
-                );
-                slimebullet.setPosition(position.x, position.y);
-                bullets.add(slimebullet);
-            }
+            slimebullet = new KingSlimebullet(
+                    tileMap,
+                    Math.sin(Math.toRadians(angle-180)),
+                    Math.sin(Math.toRadians(angle-270)),
+                    offset+0.05 *(1-Random.nextInt(2)*2)
+            );
+            slimebullet.setPosition(position.x, position.y);
+            bullets.add(slimebullet);
 
         }
         super.update();
         movePacket();
+    }
+    public void updateMPClient(){
+        setMapPosition();
+        healthBar.update(health,maxHealth);
+        if(isSpawning()) return;
+        // update animation
+        animation.update();
 
+        // creating chest+ladder after death
+        // checking !itemDropped if boss wasn't killed by setDead();
+        // this function is used when player dies so we want to not create ladder
+        if(isDead() && animation.hasPlayedOnce() && !itemDropped){
+            disableDraw = true;
+        }
+        // checking collisions of slime bullets
+        for(int i = 0;i<bullets.size();i++){
+            KingSlimebullet slimebullet = bullets.get(i);
+            slimebullet.update();
+            if(slimebullet.shouldRemove()) {
+                bullets.remove(i);
+                i--;
+            }
+        }
+
+        if(dead) return;
+
+        super.update();
+    }
+    public void updateMPServer(){
+        setMapPosition();
+        if(isSpawning()) return;
+        // update animation
+        animation.update();
+
+        // creating chest+ladder after death
+        // checking !itemDropped if boss wasn't killed by setDead();
+        // this function is used when player dies so we want to not create ladder
+        if(isDead() && animation.hasPlayedOnce() && !itemDropped){
+            disableDraw = true;
+            if(!chestCreated){
+                chestCreated=true;
+
+                Chest chest = new Chest(tileMap);
+                chest.setPosition(position.x,position.y);
+                chest.enableDropArtefact();
+                tileMap.addObject(chest,tileMap.getRoomByCoords(position.x,position.y).getId());
+
+                tileMap.addLadder();
+            }
+        }
+        // checking collisions of slime bullets
+        boolean[] hitBullet = new boolean[bullets.size()];
+        int[] hitIds = new int[bullets.size()];
+        int totalHit = 0;
+        int totalToMove = 0;
+
+        Arrays.fill(hitBullet,false);
+        for(int i = 0;i<bullets.size();i++){
+            KingSlimebullet slimebullet = bullets.get(i);
+            boolean preHit = slimebullet.isHit();
+            slimebullet.update();
+            // if bullet hitted wall
+            if(!preHit && slimebullet.isHit() && tileMap.isServerSide()){
+                hitBullet[i] = true;
+                hitIds[i] = -1;
+                totalHit++;
+            }
+            if(slimebullet.isHit()) continue;
+
+            for(Player p : player){
+                if(p != null){
+                    if(slimebullet.intersects(p) && !p.isFlinching() && !p.isDead()){
+                        slimebullet.setHit();
+                        p.hit(1);
+
+                        hitBullet[i] = true;
+                        hitIds[i] = -1;
+                        totalHit++;
+                        break;
+                    }
+                }
+            }
+            ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+            A: for(ArrayList<RoomObject> objects : objectsArray) {
+                if (objects == null) continue;
+                for (RoomObject object : objects) {
+                    if (object instanceof DestroyableObject) {
+                        if (slimebullet.intersects(object) && !slimebullet.isHit() && !((DestroyableObject) object).isDestroyed()) {
+                            slimebullet.setHit();
+                            ((DestroyableObject) object).setHit(1);
+
+                            hitBullet[i] = true;
+                            hitIds[i] = object.id;
+                            totalHit++;
+                            break A;
+                        }
+                    } else if (object.collision && slimebullet.intersects(object)) {
+                        slimebullet.setHit();
+
+                        hitBullet[i] = true;
+                        hitIds[i] = object.id;
+                        totalHit++;
+                        break A;
+                    }
+                }
+            }
+            if(!slimebullet.isHit()) totalToMove++; // if slimebullet is after logics still valid for moving
+        }
+        // hitbullets packet
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+        Server server = MultiplayerManager.getInstance().server.getServer();
+        Network.HitEnemyProjectileInstanced hepi = new Network.HitEnemyProjectileInstanced(totalHit);
+        hepi.idEnemy = id;
+        int totalHitFound = 0;
+        for(int i = 0;i<bullets.size() && totalHitFound != totalHit;i++){
+            KingSlimebullet slimebullet = bullets.get(i);
+            if(hitBullet[i]){
+                hepi.id[totalHitFound] = slimebullet.id;
+                hepi.idHit[totalHitFound] = hitIds[i];
+                totalHitFound++;
+            }
+        }
+        mpManager.server.requestACK(hepi,hepi.idPacket);
+        server.sendToAllUDP(hepi);
+
+        // total of bullets we are moving, that has not been marked as hitted
+        Network.MoveEnemyProjectileInstanced mpei = new Network.MoveEnemyProjectileInstanced(totalToMove);
+        int totalMoveFound = 0;
+        mpei.idEnemy = id;
+        for(int i = 0;i<bullets.size() && totalMoveFound != totalToMove;i++){
+            KingSlimebullet slimebullet = bullets.get(i);
+            if(slimebullet.shouldRemove()) {
+                bullets.remove(i);
+                i--;
+            } else if (!slimebullet.isHit()) {
+                mpei.id[totalMoveFound] = slimebullet.getId();
+                mpei.x[totalMoveFound] = slimebullet.getX();
+                mpei.y[totalMoveFound] = slimebullet.getY();
+                totalMoveFound++;
+            }
+        }
+        server.sendToAllUDP(mpei);
+
+        if(dead) return;
+
+        if((float)health/maxHealth <= 0.5 && System.currentTimeMillis()-shootCooldownCircle- InGame.deltaPauseTime() > 2500
+               ){
+            shootCooldownCircle = System.currentTimeMillis()- InGame.deltaPauseTime();
+            for (int i = 0; i < 5; ) {
+                double inaccuracy = 0.055 * i;
+
+                int index = theClosestPlayerIndex();
+
+                KingSlimebullet slimebullet = new KingSlimebullet(
+                        tileMap,
+                        px[index]-position.x,
+                        py[index]-position.y,
+                        inaccuracy
+                );
+                slimebullet.setPosition(position.x, position.y);
+                bullets.add(slimebullet);
+
+                Network.AddEnemyProjectile addEnemyProjectile = new Network.AddEnemyProjectile();
+                mpManager.server.requestACK(addEnemyProjectile,addEnemyProjectile.idPacket);
+                addEnemyProjectile.idEnemy = id;
+                addEnemyProjectile.id = slimebullet.id;
+                addEnemyProjectile.x = px[index] - position.x;
+                addEnemyProjectile.y = py[index] - position.y;
+                addEnemyProjectile.inaccuracy = (float)inaccuracy;
+                server.sendToAllUDP(addEnemyProjectile);
+
+                if (i >= 0) i++;
+                else i--;
+                i = -i;
+            }
+        }
+
+        if(!shootready && System.currentTimeMillis()-shootCooldown- InGame.deltaPauseTime() > 50){
+            shootready = true;
+            shootCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
+        }
+        else if(shootready) {
+            shootready = false;
+
+            float offset = Random.nextInt(3) * 0.1f;
+
+            // FLOOR 3 change between time change direction
+            if(tileMap.getFloor() >= 2 && System.currentTimeMillis() - directionChangeCooldown - InGame.deltaPauseTime() > 7500){
+                directionChangeCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
+                invertDirection = !invertDirection;
+            }
+            if(invertDirection){
+                angle -= 7;
+            } else {
+                angle += 7;
+            }
+            if(angle >= 360){
+                angle-=360;
+            }
+            if(angle < 0){
+                angle+=360;
+            }
+            // spin bullets
+            KingSlimebullet slimebullet = new KingSlimebullet(
+                    tileMap,
+                    Math.sin(Math.toRadians(angle)),
+                    Math.sin(Math.toRadians(angle-90)),
+                    offset+0.05 *(1-Random.nextInt(2)*2)
+            );
+            slimebullet.setPosition(position.x, position.y);
+            bullets.add(slimebullet);
+
+            Network.AddEnemyProjectile addEnemyProjectile = new Network.AddEnemyProjectile();
+            mpManager.server.requestACK(addEnemyProjectile,addEnemyProjectile.idPacket);
+            addEnemyProjectile.idEnemy = id;
+            addEnemyProjectile.id = slimebullet.id;
+            addEnemyProjectile.x = (float)Math.sin(Math.toRadians(angle));
+            addEnemyProjectile.y = (float)Math.sin(Math.toRadians(angle-90));
+            addEnemyProjectile.inaccuracy = (float)(offset+0.05 *(1-Random.nextInt(2)*2));
+            server.sendToAllUDP(addEnemyProjectile);
+
+            slimebullet = new KingSlimebullet(
+                    tileMap,
+                    Math.sin(Math.toRadians(angle-180)),
+                    Math.sin(Math.toRadians(angle-270)),
+                    offset+0.05 *(1-Random.nextInt(2)*2)
+            );
+            slimebullet.setPosition(position.x, position.y);
+            bullets.add(slimebullet);
+            addEnemyProjectile = new Network.AddEnemyProjectile();
+            mpManager.server.requestACK(addEnemyProjectile,addEnemyProjectile.idPacket);
+            addEnemyProjectile.idEnemy = id;
+            addEnemyProjectile.id = slimebullet.id;
+            addEnemyProjectile.x = (float)Math.sin(Math.toRadians(angle-180));
+            addEnemyProjectile.y = (float)Math.sin(Math.toRadians(angle-270));
+            addEnemyProjectile.inaccuracy = (float)(offset+0.05 *(1-Random.nextInt(2)*2));
+            server.sendToAllUDP(addEnemyProjectile);
+
+        }
+        super.update();
+        movePacket();
     }
 
     public void draw() {
@@ -538,8 +683,20 @@ public class KingSlime extends Enemy {
         for(KingSlimebullet bullet : bullets){
             if(bullet.getId() == o.id){
                 bullet.setPosition(o.x,o.y);
+                break;
             }
 
+        }
+    }
+    @Override
+    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o) {
+        for(int i = 0;i<o.id.length;i++){
+            for(KingSlimebullet bullet : bullets){
+                if(bullet.getId() == o.id[i]){
+                    bullet.setPosition(o.x[i],o.y[i]);
+                    break;
+                }
+            }
         }
     }
     @Override
@@ -549,14 +706,39 @@ public class KingSlime extends Enemy {
                 bullet.setHit();
                 if (hitPacket.idHit != -1) {
                     ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
-                    for (ArrayList<RoomObject> objects : objectsArray) {
+                    A: for (ArrayList<RoomObject> objects : objectsArray) {
                         if (objects == null) continue;
                         for (RoomObject roomObject : objects) {
                             if (roomObject.getId() == hitPacket.idHit) {
                                 ((DestroyableObject) roomObject).setHit(1);
+                                break A;
                             }
                         }
                     }
+                }
+                break;
+            }
+        }
+    }
+    @Override
+    public void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket) {
+        for(int i = 0;i<hitPacket.id.length;i++){
+            for(KingSlimebullet bullet : bullets){
+                if(bullet.getId() == hitPacket.id[i]){
+                    bullet.setHit();
+                    if (hitPacket.idHit[i] != -1) {
+                        ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+                        A: for (ArrayList<RoomObject> objects : objectsArray) {
+                            if (objects == null) continue;
+                            for (RoomObject roomObject : objects) {
+                                if (roomObject.getId() == hitPacket.idHit[i]) {
+                                    ((DestroyableObject) roomObject).setHit(1);
+                                    break A;
+                                }
+                            }
+                        }
+                    }
+                    break;
                 }
             }
         }

@@ -9,10 +9,7 @@ import cz.Empatix.Gamestates.GameState;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
-import cz.Empatix.Multiplayer.Network;
-import cz.Empatix.Multiplayer.PacketHolder;
-import cz.Empatix.Multiplayer.PlayerMP;
-import cz.Empatix.Multiplayer.PlayerReady;
+import cz.Empatix.Multiplayer.*;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Framebuffer;
@@ -161,6 +158,8 @@ public class ProgressRoomMP extends GameState {
         mpManager.client.setNumPlayers(index);
         pingTimer = System.currentTimeMillis();
 
+        player[0].initInterpolator();
+
     }
 
     @Override
@@ -239,6 +238,15 @@ public class ProgressRoomMP extends GameState {
     }
     @Override
     protected void update() {
+
+        if(true){
+            GameClient client = mpManager.client;
+            client.serverTick++;
+            client.setServerTick(client.serverTick);
+            client.checkTickSyncs();
+            //System.out.println("CURR TICK: "+client.serverTick+ " INTERPOLATED TICK: "+client.interpolationTick);
+        }
+
         if(mpManager.isNotConnected()) {
             if (System.currentTimeMillis() - connectionAlert > 5000) {
                 connectionAlert = System.currentTimeMillis();
@@ -290,17 +298,18 @@ public class ProgressRoomMP extends GameState {
         tileMap.setPosition(
                 tileMap.getX()-(mouseX-960)/30,
                 tileMap.getY()-(mouseY- 540)/30);
-
-
-
-        // updating player
         // updating tilemap by player position
         tileMap.setPosition(
                 1920 / 2f - player[0].getX(),
                 1080 / 2f - player[0].getY()
         );
+        tileMap.updateObjects();
 
-
+        player[0].updateOrigin();
+        // updating player
+        for(PlayerMP p : player){
+            if(p != null)p.update();
+        }
 
         readyNumPlayers = 0;
         int totalConPlayers = 0;
@@ -325,9 +334,6 @@ public class ProgressRoomMP extends GameState {
 
         }
 
-
-        tileMap.updateObjects();
-        player[0].updateOrigin();
         Object[] objects = mpManager.packetHolder.get(PacketHolder.MOVEPLAYER);
         for(int i = 1;i<player.length;i++) {
             PlayerMP p = player[i];
@@ -352,9 +358,7 @@ public class ProgressRoomMP extends GameState {
                 }
             }
         }
-        for(PlayerMP p : player){
-            if(p != null)p.update();
-        }
+
         progressNPC.update(mouseX,mouseY);
         progressNPC.touching(player[0]);
         Object[] AlertPackets = mpManager.packetHolder.get(PacketHolder.ALERT);

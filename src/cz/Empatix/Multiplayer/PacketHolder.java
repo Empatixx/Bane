@@ -56,10 +56,16 @@ public class PacketHolder {
     public static final int EXPLOSIONDAMAGE = 44;
     public static final int TRAPRODAMAGE = 45;
     public static final int ARTEFACTINFO = 47;
+    public static final int MOVEBULLET = 48;
+    public static final int TICKSYNC = 52;
+    // INSTANCED PACKETS
+    public static final int iMOVE_ENEMYPROJECTILE = 49;
+    public static final int iHIT_ENEMYPROJECTILE = 50;
+    public static final int iADD_ENEMYPROJECTILE = 51;
 
 
     public PacketHolder(){
-        final int size = 48;
+        final int size = 53;
 
         packetArrays = new ArrayList<>(size);
         for(int i = 0;i<size;i++){

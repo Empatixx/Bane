@@ -21,6 +21,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class GameServer {
     private final Server server;
+    private int tick;
 
     private final List<PlayerMP> connectedPlayers;
     private final List<PlayerReady> readyCheckPlayers;
@@ -69,7 +70,10 @@ public class GameServer {
         ackCaching = new ACKCaching();
 
         server = new Server(16384, 4096);
+
         Network.register(server);
+
+        tick = 0;
 
         new Thread("Server") {
             @Override
@@ -79,7 +83,8 @@ public class GameServer {
                 long lastTime = System.nanoTime();
                 long startACK = System.nanoTime();
                 long timer = System.currentTimeMillis();
-                final double ns = 1000000000.0 / 60.0;
+                final float ns = 1000000000 / 60.0f;
+
 
                 double delta = 0;
 
@@ -104,11 +109,18 @@ public class GameServer {
                     delta += (now - lastTime) / ns;
                     lastTime = now;
                     while (delta >= 1) {
-                        if(delta < 2){
-                            playerLock.readLock().lock();
-                            try{
-                                for (PlayerMP player : connectedPlayers) {
-                                    player.update();
+                        tick++;
+                        if(tick % 300 == 0){ // every 5sec
+                            Network.TickSync tickSync = new Network.TickSync();
+                            tickSync.tick = tick;
+                            server.sendToAllUDP(tickSync);
+                        }
+                        playerLock.readLock().lock();
+                        try{
+                            for (PlayerMP player : connectedPlayers) {
+                                player.update();
+                                player.newPlayerTickSync(tick); // sends tick sync if player is new
+                                if(tick % 2 == 0){
                                     Network.MovePlayer movePlayer = new Network.MovePlayer();
                                     movePlayer.idPlayer = player.getIdConnection();
                                     movePlayer.x = player.getX();
@@ -117,11 +129,12 @@ public class GameServer {
                                     movePlayer.down = player.isMovingDown();
                                     movePlayer.right = player.isMovingRight();
                                     movePlayer.left = player.isMovingLeft();
+                                    movePlayer.tick = tick;
                                     server.sendToAllUDP(movePlayer);
                                 }
-                            } finally {
-                                playerLock.readLock().unlock();
                             }
+                        } finally {
+                            playerLock.readLock().unlock();
                         }
                         if (gameState == GameStateManager.INGAME) {
                             itemManager.update();
@@ -283,7 +296,7 @@ public class GameServer {
 
                     if (System.currentTimeMillis() - timer > 1000) {
                         timer += 1000;
-                        System.out.print("UPS SERVER: "+updates+"\n");
+                        //System.out.print("UPS SERVER: "+updates+"\n");
                         updates = 0;
                     }
                 }

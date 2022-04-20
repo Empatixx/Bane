@@ -1,1 +1,77 @@
-Discord found: Empatix#7522
+UPS: 60   FPS: 58
+UPS: 60   FPS: 58
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+00:00  INFO: [kryonet] Server opened.
+00:00  INFO: Connecting: localhost/127.0.0.1:54555/54777
+00:00  INFO: [kryonet] Connection 1 connected: /127.0.0.1
+00:00  INFO: [kryonet] Connection 1 connected: localhost/127.0.0.1
+CLIENT TICK: 4 -> 2
+UPS: 60   FPS: 47
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+CLIENT TICK: 310 -> 300
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+STOP
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 59
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+UPS: 60   FPS: 60
+00:52  INFO: [kryonet] Closing server connections...
+00:52  INFO: [kryonet] Connection 1 disconnected.
+java.net.SocketException: Connection is closed.
+00:52  INFO: [kryonet] Server closed.
+00:52  INFO: [kryonet] Connection 1 disconnected.
+	at com.esotericsoftware.kryonet.TcpConnection.readObject(TcpConnection.java:109)
+	at com.esotericsoftware.kryonet.Client.update(Client.java:247)
+	at cz.Empatix.Multiplayer.GameClient$1.run(GameClient.java:62)
+UPS: 60   FPS: 60
+AL lib: (EE) alc_cleanup: 1 device not closed

@@ -221,11 +221,20 @@ public class Demoneye extends Enemy {
     @Override
     public void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o) {
     }
-
+    @Override
+    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o) {
+    }
     @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
 
     }
+    @Override
+    public void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket) {
+
+    }
     public void forceRemove(){
+    }
+    public boolean shouldRemove(){
+        return isDead();
     }
 }

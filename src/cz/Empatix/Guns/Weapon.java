@@ -168,7 +168,7 @@ public abstract class Weapon{
 
     public abstract void handleAddBulletPacket(Network.AddBullet response);
 
-    public abstract void handleMoveBulletPacket(Network.MoveBullet moveBullet);
+    public abstract boolean handleMoveBulletPacket(Network.MoveBullet moveBullet);
 
     public abstract void handleHitBulletPacket(Network.HitBullet hitBullet);
 

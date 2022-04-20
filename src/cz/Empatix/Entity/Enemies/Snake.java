@@ -232,6 +232,13 @@ public class Snake extends Enemy {
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
 
     }
+    @Override
+    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o) {
+    }
+    @Override
+    public void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket) {
+
+    }
     public void forceRemove(){
     }
 }

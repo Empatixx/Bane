@@ -294,12 +294,12 @@ public class InGame extends GameState {
         //health bar
         healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,56,4);
         healthBar.enableHoverValuesShow();
-        healthBar.setOffsetsBar(19,1);
+        healthBar.setOffsetsBar(18,1);
         healthBar.initHealth(player.getHealth(),player.getMaxHealth());
         //armor bar
-        armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3,54,4);
+        armorBar = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3,55,4);
         armorBar.enableHoverValuesShow();
-        armorBar.setOffsetsBar(14,2);
+        armorBar.setOffsetsBar(13f,2.5f);
         armorBar.initArmor(player.getArmor(),player.getMaxArmor());
         //minimap
         tileMap.fillMiniMap();
@@ -525,7 +525,6 @@ public class InGame extends GameState {
 
     @Override
     protected void update() {
-
         AudioManager.update();
         if(player.isDead()){
             enemyManager.updateOnlyAnimations();

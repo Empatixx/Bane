@@ -340,7 +340,7 @@ public class InGameMP extends GameState {
         //health bar
         healthBar[0] = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,56,4);
         healthBar[0].enableHoverValuesShow();
-        healthBar[0].setOffsetsBar(19,1);
+        healthBar[0].setOffsetsBar(18,1);
         healthBar[0].enableHoverValuesShow();
         healthBar[0].initHealth(player[0].getHealth(),player[0].getMaxHealth());
 
@@ -348,7 +348,7 @@ public class InGameMP extends GameState {
         //armor bar
         armorBar[0] = new ArmorBar("Textures\\armorbar",new Vector3f(275,175,0),3,54,4);
         armorBar[0].enableHoverValuesShow();
-        armorBar[0].setOffsetsBar(14,2);
+        armorBar[0].setOffsetsBar(13f,2.5f);
         armorBar[0].initArmor(player[0].getArmor(),player[0].getMaxArmor());
         damageIndicator = new CombatIndicator();
         // coin

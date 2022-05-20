@@ -860,8 +860,10 @@ public class Room {
         int xMaxTile = xMax/tileSize - 3;
         int yMaxTile = yMax/tileSize - 3;
 
-        int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-        int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+        int x;
+        int y;
+
+        Spike spike = new Spike(tm);
 
         boolean done = false;
         while(!done){
@@ -877,10 +879,11 @@ public class Room {
                     }
                 }
             }
+
+            spike.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
             if(!collision) done = true;
+            if(hasRoomObjectCollision(spike)) done = false;
         }
-        Spike spike = new Spike(tm);
-        spike.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
         addObject(spike);
         sendAddRoomObjectPacket(spike,tm);
     }
@@ -913,14 +916,17 @@ public class Room {
         int xMaxTile = xMax/tileSize - 1;
         int yMaxTile = yMax/tileSize - 1;
 
+        Bones bones = new Bones(tm);
+
         int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
         int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-        while(tm.getType(y,x) == Tile.BLOCKED){
+        bones.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
+
+        while(tm.getType(y,x) == Tile.BLOCKED || hasRoomObjectCollision(bones)){
             x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
             y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+            bones.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
         }
-        Bones bones = new Bones(tm);
-        bones.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
         this.addObject(bones);
         sendAddRoomObjectPacket(bones,tm);
     }
@@ -933,16 +939,30 @@ public class Room {
         int xMaxTile = xMax/tileSize - 3;
         int yMaxTile = yMax/tileSize - 3;
 
+        Barrel barrel = new Barrel(tm);
+
         int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
         int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
-        while(tm.getType(y,x) == Tile.BLOCKED){
+        barrel.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
+
+        while(tm.getType(y,x) == Tile.BLOCKED || hasRoomObjectCollision(barrel)){
             x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
             y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+            barrel.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
         }
-        Barrel barrel = new Barrel(tm);
-        barrel.setPosition(x*tileSize+tileSize/2,y*tileSize+tileSize/2);
         this.addObject(barrel);
         sendAddRoomObjectPacket(barrel,tm);
+    }
+
+    /**
+     * checks defined room object if it has collided with some others room objects
+     * @return true if collision is detected, false if not
+     */
+    public boolean hasRoomObjectCollision(RoomObject o){
+        for(RoomObject othObj: mapObjects){
+            if(o.intersects(othObj)) return true;
+        }
+        return false;
     }
 
 }

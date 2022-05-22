@@ -191,18 +191,18 @@ public class ArrowTrap extends RoomObject {
             if(type == TOP){
                 arrow = new Arrow(tileMap,false);
                 arrow.setPosition(position.x + 3,position.y + 10);
-                arrow.setSpeed(0,15);
+                arrow.setDown(true);
                 arrows.add(arrow);
             } else if(type == RIGHT){
                 arrow = new Arrow(tileMap,true);
                 arrow.setFacingRight(false);
                 arrow.setPosition(position.x - 2,position.y);
-                arrow.setSpeed(-15,0);
+                arrow.setLeft(true);
                 arrows.add(arrow);
             } else { // LEFT
                 arrow = new Arrow(tileMap,true);
                 arrow.setPosition(position.x + 2,position.y);
-                arrow.setSpeed(15,0);
+                arrow.setRight(true);
                 arrows.add(arrow);
             }
             if(tileMap.isServerSide()){
@@ -291,6 +291,9 @@ public class ArrowTrap extends RoomObject {
 
         public Arrow(TileMap tm, boolean horizontal) {
             super(tm);
+            moveAcceleration = 4.5f;
+            movementVelocity = 750;
+            stopAcceleration = 0;
             if(tm.isServerSide()){
                 this.horizontal = horizontal;
                 facingRight = true;
@@ -484,6 +487,8 @@ public class ArrowTrap extends RoomObject {
             animation.setDelay(90);
             speed.x = 0;
             speed.y = 0;
+            acceleration.x = 0;
+            acceleration.y = 0;
             if(tileMap.isServerSide()){
                 MultiplayerManager mpManager = MultiplayerManager.getInstance();
                 Network.TrapArrowHit arrowHit = new Network.TrapArrowHit();
@@ -499,6 +504,7 @@ public class ArrowTrap extends RoomObject {
         public void update() {
             setMapPosition();
             if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
+                if(!hit)getMovementSpeed();
                 if(System.currentTimeMillis() - collisionBypass - InGame.deltaPauseTime() < 200){
                     temp.x = position.x + speed.x;
                     temp.y = position.y + speed.y;
@@ -507,8 +513,9 @@ public class ArrowTrap extends RoomObject {
                     checkTileMapCollision();
                 }
                 setPosition(temp.x, temp.y);
-
                 if(speed.y == 0 && speed.x == 0 && !hit) {
+                    System.out.println("X: "+speed.x);
+                    System.out.println("Y: "+speed.y);
                     setHit();
                 }
                 if(tileMap.isServerSide()){

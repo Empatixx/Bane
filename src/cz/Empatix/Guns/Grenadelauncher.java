@@ -135,7 +135,7 @@ public class Grenadelauncher extends Weapon {
                     double inaccuracy = 0;
 
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                    Grenadebullet bullet = new Grenadebullet(tm, x, y, inaccuracy,30);
+                    Grenadebullet bullet = new Grenadebullet(tm, x, y, inaccuracy,1500);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                     if(criticalHits){
                         if(Math.random() > 0.9){
@@ -182,7 +182,7 @@ public class Grenadelauncher extends Weapon {
                     if (delta > 550) {
                         double inaccuracy = 0;
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                        Grenadebullet bullet = new Grenadebullet(tm, x, y, inaccuracy,30);
+                        Grenadebullet bullet = new Grenadebullet(tm, x, y, inaccuracy,1500);
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                         if(criticalHits){
                             if(Math.random() > 0.9){

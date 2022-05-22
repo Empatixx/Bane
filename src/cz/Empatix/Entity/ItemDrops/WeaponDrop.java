@@ -74,9 +74,11 @@ public class WeaponDrop extends ItemDrop {
             facingRight = true;
 
             double atan = Math.atan2(y,x);
-            speed.x = (float)(Math.cos(atan) * 10);
-            speed.y = (float)(Math.sin(atan) * 10);
-            stopSpeed = 0.35f;
+            acceleration.x = (float)(Math.cos(atan));
+            acceleration.y = (float)(Math.sin(atan));
+
+            stopAcceleration = 1.5f;
+            movementVelocity = 550;
 
             cwidth*=scale;
             cheight*=scale;
@@ -110,9 +112,11 @@ public class WeaponDrop extends ItemDrop {
             light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
 
             double atan = Math.atan2(y,x);
-            speed.x = (float)(Math.cos(atan) * 10);
-            speed.y = (float)(Math.sin(atan) * 10);
-            stopSpeed = 0.35f;
+            acceleration.x = (float)(Math.cos(atan));
+            acceleration.y = (float)(Math.sin(atan));
+
+            stopAcceleration = 1.5f;
+            movementVelocity = 550;
 
             cwidth*=scale;
             cheight*=scale;

@@ -185,23 +185,23 @@ public class Chest extends RoomObject {
             if(opened && animation.hasPlayedOnce()){
                 remove=true;
 
-                Vector2f speed = new Vector2f();
+                Vector2f acceleration = new Vector2f();
 
                 float x = (float) Random.nextDouble()*(-1+Random.nextInt(2)*2);
                 float y = (float)Random.nextDouble()*(-1+Random.nextInt(2)*2);
 
                 ItemManager itemManager = ItemManager.getInstance();
 
-                if(dropGun) itemManager.dropWeapon((int)position.x,(int)position.y,speed);
+                if(dropGun) itemManager.dropWeapon((int)position.x,(int)position.y,acceleration);
                 if(dropArtefact) itemManager.dropArtefact((int)position.x,(int)position.y);
 
                 for(int i = 0;i<5;i++){
                     double atan = Math.atan2(x,
                             y) + 1.3 * i;
-                    speed.x = (float)(Math.cos(atan) * 10);
-                    speed.y = (float)(Math.sin(atan) * 10);
+                    acceleration.x = (float)(Math.cos(atan));
+                    acceleration.y = (float)(Math.sin(atan));
 
-                    itemManager.createDrop((int)position.x,(int)position.y,speed);
+                    itemManager.createDrop((int)position.x,(int)position.y,acceleration);
                 }
             }
             stopping();

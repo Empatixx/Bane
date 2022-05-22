@@ -153,10 +153,10 @@ public abstract class Artefact {
         int x = -cwidth/4+ Random.nextInt(cwidth/2);
         if(critical){
             CombatIndicator.addCriticalDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
-                    ,new Vector2f(-x/25f,-1f));
+                    ,new Vector2f(-x/10f,-30f));
         } else {
             CombatIndicator.addDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
-                    ,new Vector2f(-x/25f,-1f));
+                    ,new Vector2f(-x/10f,-30f));
         }
     }
 

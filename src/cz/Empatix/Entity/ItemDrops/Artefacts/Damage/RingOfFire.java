@@ -183,7 +183,7 @@ public class RingOfFire extends Artefact {
 
     @Override
     public void handleAddBulletPacket(Network.ArtefactAddBullet addBullet) {
-        Bullet bullet = new Bullet(tm, 0, 0, addBullet.inaccuracy,30);
+        Bullet bullet = new Bullet(tm, 0, 0, addBullet.inaccuracy,1800);
         bullet.setPosition(addBullet.px, addBullet.py);
         bullet.setId(addBullet.id);
         bullets.add(bullet);
@@ -286,7 +286,7 @@ public class RingOfFire extends Artefact {
         charge = 0;
         for (int i = 1; i <= 50; ) {
             double inaccuracy = 0.155 * i;
-            Bullet bullet = new Bullet(tm, 0, 0, inaccuracy,30);
+            Bullet bullet = new Bullet(tm, 0, 0, inaccuracy,1800);
             bullet.setPosition(p[0].getX(), p[0].getY());
             bullets.add(bullet);
             bullet.setDamage(4);
@@ -307,7 +307,7 @@ public class RingOfFire extends Artefact {
                 ArtefactManagerMP artefactManager = ArtefactManagerMP.getInstance();
                 for (int i = 1; i <= 50; ) {
                     double inaccuracy = 0.155 * i;
-                    Bullet bullet = new Bullet(tm, 0, 0, inaccuracy, 30);
+                    Bullet bullet = new Bullet(tm, 0, 0, inaccuracy, 1800);
                     bullet.setPosition(p.getX(), p.getY());
                     bullets.add(bullet);
                     bullet.setDamage(4);

@@ -224,10 +224,7 @@ public class Game{
      */
     public void run() {
         Configuration.DEBUG_MEMORY_ALLOCATOR.set(false);
-
-        long lastTime = System.nanoTime();
         long timer = System.currentTimeMillis();
-        final float ns = 1000000000 / 60.0f;
 
         deltaTimeUpdate = 0;
 
@@ -267,12 +264,7 @@ public class Game{
             if(glfwWindowShouldClose(window)){
                 running=false;
             }
-            long now = System.nanoTime();
-            deltaTimeUpdate = (now-lastTime) / ns;
-            lastTime = now;
-
             loadingScreen.update();
-
             frames++;
             glClear(GL_COLOR_BUFFER_BIT); // clear the framebuffer
             loadingScreen.draw();
@@ -293,20 +285,19 @@ public class Game{
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-        long startUpdate;
+        deltaTimeUpdate = -1;
 
+        long startUpdate;
+        long lastTime = System.nanoTime();
         while ( running ) {
             startUpdate = System.currentTimeMillis();
 
             if(glfwWindowShouldClose(window)){
                 running=false;
             }
-            long now = System.currentTimeMillis();
-            deltaTimeUpdate = (now-lastTime) / 1_000f;
-            System.out.println("DELTA: "+deltaTimeUpdate);
-            lastTime = now;
-
-            update();
+            if(deltaTimeUpdate >= 0){
+                update();
+            }
             frames++;
             draw();
             if (System.currentTimeMillis() - timer > 1000){
@@ -317,6 +308,9 @@ public class Game{
             }
             deltaTimeMillis = (System.currentTimeMillis() - startUpdate)/1_000f;
 
+            long now = System.nanoTime();
+            deltaTimeUpdate = (float)((now-lastTime) * 1E-9);
+            lastTime = now;
         }
         MultiplayerManager multiplayerManager = MultiplayerManager.getInstance();
         if(multiplayerManager != null) multiplayerManager.close();

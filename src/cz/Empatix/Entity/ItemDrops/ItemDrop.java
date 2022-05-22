@@ -35,7 +35,8 @@ public abstract class ItemDrop extends MapObject {
         super(tm);
         shop = false;
 
-        stopAcceleration = 3.5f;
+        stopAcceleration = 1.5f;
+        movementVelocity = 550;
     }
 
     public void setAmount(int amount) {

@@ -848,7 +848,7 @@ public abstract class Enemy extends MapObject{
                 int cheight = getCheight();
                 int x = -cwidth/4+ Random.nextInt(cwidth/2);
                 CombatIndicator.addHealShow(amount,(int)getX()-x,(int)getY()-cheight/3
-                        ,new Vector2f(-x/25f,-1f));
+                        ,new Vector2f(-x/10f,-30f));
             } else {
                 Network.EnemyHealthHeal healPacket = new Network.EnemyHealthHeal();
                 MultiplayerManager mpManager = MultiplayerManager.getInstance();

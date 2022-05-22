@@ -88,6 +88,10 @@ public class Player extends MapObject {
             maxSpeed = 11.84f;
             stopSpeed = 3.25f;
 
+            moveAcceleration = 4.5f;
+            stopAcceleration = 6.5f;
+            movementVelocity = 715;
+
             health = maxHealth = 7;
             coins = 0;
 
@@ -124,7 +128,7 @@ public class Player extends MapObject {
 
             moveAcceleration = 4.5f;
             stopAcceleration = 6.5f;
-            movementVelocity = 800;
+            movementVelocity = 715;
 
             health = maxHealth = 7;
             coins = 0;

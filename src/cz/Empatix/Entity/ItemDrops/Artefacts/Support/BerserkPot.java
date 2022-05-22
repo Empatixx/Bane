@@ -17,6 +17,7 @@ import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class BerserkPot extends Artefact {
         Loader.loadImage("Textures\\artefacts\\berserkpot-particle.tga");
     }
     private long time;
-    private float bonusSpeed;
+    private int bonusSpeed;
     private boolean removedSpeed;
 
     transient private ArrayList<SprintParticle> sprintParticles;
@@ -94,20 +95,20 @@ public class BerserkPot extends Artefact {
 
             if(System.currentTimeMillis() - time - InGame.deltaPauseTime() > 20000){
                 removedSpeed = true;
-                p[0].setMaxSpeed(p[0].getMaxSpeed()-bonusSpeed);
-
+                p[0].setMovementVelocity(p[0].getMovementVelocity()-bonusSpeed);
+                p[0].setMoveAcceleration(p[0].getMoveAcceleration() + 0.5f);
             }
-            Vector3f speed = p[0].getSpeed();float maxSpeed = p[0].getMaxSpeed();
+            Vector2f acceleration = p[0].getAcceleration();
 
-            if(Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed){
+            if(Math.abs(acceleration.x) >= 1 || Math.abs(acceleration.y) >= 1){
 
                 Vector3f position = p[0].getPosition();
                 boolean up = p[0].isMovingUp(), down = p[0].isMovingDown(), left = p[0].isMovingLeft(), right = p[0].isMovingRight();
                 int height = p[0].getCheight();
 
-                float value = Math.abs(speed.x);
-                if(value < Math.abs(speed.y)) value = Math.abs(speed.y);
-                if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 500-value*20){
+                float value = Math.abs(acceleration.x);
+                if(value < Math.abs(acceleration.y)) value = Math.abs(acceleration.y);
+                if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 500-value*200){
                     lastTimeSprintParticle = System.currentTimeMillis()- InGame.deltaPauseTime();
                     SprintParticle sprintParticle = new SprintParticle(tm);
                     if((up || down) && !left && !right){
@@ -148,19 +149,20 @@ public class BerserkPot extends Artefact {
                     if(((PlayerMP)p).getIdConnection() == idUser){
                         if(System.currentTimeMillis() - time - InGame.deltaPauseTime() > 20000){
                             removedSpeed = true;
-                            p.setMaxSpeed(p.getMaxSpeed()-bonusSpeed);
+                            p.setMovementVelocity(p.getMovementVelocity()-bonusSpeed);
+                            p.setMoveAcceleration(p.getMoveAcceleration() + 0.5f);
                         }
-                        Vector3f speed = p.getSpeed();float maxSpeed = p.getMaxSpeed();
+                        Vector2f acceleration = p.getAcceleration();
 
-                        if(Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed){
+                        if(Math.abs(acceleration.x) >= 1 || Math.abs(acceleration.y) >= 1){
 
                             Vector3f position = p.getPosition();
                             boolean up = p.isMovingUp(), down = p.isMovingDown(), left = p.isMovingLeft(), right = p.isMovingRight();
                             int height = p.getCheight();
 
-                            float value = Math.abs(speed.x);
-                            if(value < Math.abs(speed.y)) value = Math.abs(speed.y);
-                            if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 500-value*20){
+                            float value = Math.abs(acceleration.x);
+                            if(value < Math.abs(acceleration.y)) value = Math.abs(acceleration.y);
+                            if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 500-value*200){
                                 lastTimeSprintParticle = System.currentTimeMillis()- InGame.deltaPauseTime();
                                 SprintParticle sprintParticle = new SprintParticle(tm);
                                 if((up || down) && !left && !right){
@@ -202,7 +204,8 @@ public class BerserkPot extends Artefact {
                     if(((PlayerMP)player).getIdConnection() == idUser){
                         if(System.currentTimeMillis() - time > 20000){
                             removedSpeed = true;
-                            player.setMaxSpeed(player.getMaxSpeed()-bonusSpeed);
+                            player.setMovementVelocity(player.getMovementVelocity()-bonusSpeed);
+                            player.setMoveAcceleration(player.getMoveAcceleration() + 0.5f);
                             idUser = 0; // setting user to no one
                         }
                         break;
@@ -308,8 +311,12 @@ public class BerserkPot extends Artefact {
         charge = 0;
         removedSpeed = false;
         // refills player armor to full
-        bonusSpeed = p[0].getMaxSpeed()*0.25f;
-        p[0].setMaxSpeed(p[0].getMaxSpeed()*1.25f);
+        int movementVelocity = p[0].getMovementVelocity();
+        float moveAcce = p[0].getMoveAcceleration();
+
+        bonusSpeed = (int)(movementVelocity*0.25f);
+        p[0].setMovementVelocity(movementVelocity+bonusSpeed);
+        p[0].setMoveAcceleration(moveAcce - 0.5f);
         time = System.currentTimeMillis() - InGame.deltaPauseTime();
     }
     @Override
@@ -320,8 +327,12 @@ public class BerserkPot extends Artefact {
         for(Player player : p){
             if(player == null) continue;
             if(((PlayerMP)player).getIdConnection() == idUser){
-                bonusSpeed = player.getMaxSpeed()*0.25f;
-                player.setMaxSpeed(player.getMaxSpeed()*1.25f);
+                int movementVelocity = player.getMovementVelocity();
+                float moveAcce = player.getMoveAcceleration();
+
+                bonusSpeed = (int)(movementVelocity*0.25f);
+                player.setMovementVelocity(movementVelocity+bonusSpeed);
+                player.setMoveAcceleration(moveAcce - 0.5f);
                 time = System.currentTimeMillis() - InGame.deltaPauseTime();
                 this.idUser = idUser;
                 break;
@@ -336,9 +347,13 @@ public class BerserkPot extends Artefact {
             if(player != null){
                 if(((PlayerMP)player).getIdConnection() == idUser){
                     removedSpeed = false;
-                    // refills player armor to full
-                    bonusSpeed = player.getMaxSpeed()*0.25f;
-                    player.setMaxSpeed(player.getMaxSpeed()*1.25f);
+
+                    int movementVelocity = player.getMovementVelocity();
+                    float moveAcce = player.getMoveAcceleration();
+
+                    bonusSpeed = (int)(movementVelocity*0.25f);
+                    player.setMovementVelocity(movementVelocity+bonusSpeed);
+                    player.setMoveAcceleration(moveAcce - 0.5f);
                     time = System.currentTimeMillis() - InGame.deltaPauseTime();
                     break;
                 }

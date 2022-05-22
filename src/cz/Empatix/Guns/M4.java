@@ -66,7 +66,7 @@ public class M4 extends Weapon {
         weaponHud = new Image("Textures\\M4.tga",new Vector3f(1600,975,0),2f);
         weaponAmmo = new Image("Textures\\pistol_bullet.tga",new Vector3f(1830,975,0),1f);
 
-        speedBullet = 30;
+        speedBullet = 1800;
 
         int numUpgrades = GameStateManager.getDb().getValueUpgrade("m4","upgrades");
         if(numUpgrades >= 1){
@@ -74,7 +74,7 @@ public class M4 extends Weapon {
             currentMagazineAmmo = maxMagazineAmmo;
         }
         if(numUpgrades >= 2){
-            speedBullet = 36;
+            speedBullet = 2160;
         }
         if(numUpgrades >= 3){
             maxdamage++;
@@ -160,7 +160,7 @@ public class M4 extends Weapon {
             bonusShots--;
             currentMagazineAmmo--;
 
-            push += 35;
+            push += 15;
         }
         if(isShooting()) {
             if (currentMagazineAmmo != 0) {
@@ -184,7 +184,7 @@ public class M4 extends Weapon {
                         bonusShots++;
                     }
                     double atan = Math.atan2(y, x);
-                    push = 30;
+                    push = 15;
                     pushX = Math.cos(atan);
                     pushY = Math.sin(atan);
                 }
@@ -224,7 +224,7 @@ public class M4 extends Weapon {
                 bonusShots--;
                 currentMagazineAmmo--;
                 sendAddBulletPacket(bullet,x,y,px,py,idPlayer,false);
-                push += 35;
+                push += 15;
             }
             if(isShooting()) {
                 if (currentMagazineAmmo != 0) {
@@ -248,7 +248,7 @@ public class M4 extends Weapon {
                             bonusShots++;
                         }
                         double atan = Math.atan2(y, x);
-                        push = 30;
+                        push = 15;
                         pushX = Math.cos(atan);
                         pushY = Math.sin(atan);
                     }
@@ -300,7 +300,7 @@ public class M4 extends Weapon {
             if (push > 0) push-=5;
             if (push < 0) push+=5;
             push = -push;
-            tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
+            tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY,true);
         }
     }
 
@@ -332,11 +332,11 @@ public class M4 extends Weapon {
                 if(System.currentTimeMillis() - timeShootSound > 650) {
                     timeShootSound = System.currentTimeMillis();
                     double atan = Math.atan2(response.y, response.x);
-                    push = 30;
+                    push = 15;
                     pushX = Math.cos(atan);
                     pushY = Math.sin(atan);
                 } else {
-                    push+=35;
+                    push+=15;
                 }
             }
         }

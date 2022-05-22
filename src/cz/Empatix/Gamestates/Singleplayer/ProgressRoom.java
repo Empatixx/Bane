@@ -84,10 +84,11 @@ public class ProgressRoom extends GameState {
         player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
         tileMap.setPosition(
                 Camera.getWIDTH() / 2f - player.getX(),
-                Camera.getHEIGHT() / 2f - player.getY()
+                Camera.getHEIGHT() / 2f - player.getY(),
+                true
         );
         // make camera move smoothly
-        tileMap.setTween(0.1);
+        tileMap.setTween(5);
 
         coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
 
@@ -163,13 +164,15 @@ public class ProgressRoom extends GameState {
         // mouse location-moving direction of mouse of tilemap
         tileMap.setPosition(
                 tileMap.getX()-(mouseX-960)/30,
-                tileMap.getY()-(mouseY- 540)/30);
+                tileMap.getY()-(mouseY- 540)/30,
+                false);
 
         // updating player
         // updating tilemap by player position
         tileMap.setPosition(
                 Camera.getWIDTH() / 2f - player.getX(),
-                Camera.getHEIGHT() / 2f - player.getY()
+                Camera.getHEIGHT() / 2f - player.getY(),
+                false
         );
 
 

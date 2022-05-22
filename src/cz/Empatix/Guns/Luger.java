@@ -152,7 +152,7 @@ public class Luger extends Weapon {
         if(bonusShots > 0 && delta > delayTime-bonusShots*16.6){
             double inaccuracy = 0;
             inaccuracy = 0.055 * delta / (delay-bonusShots*16.6) * (Random.nextInt(2) * 2 - 1);
-            Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+            Bullet bullet = new Bullet(tm, x, y, inaccuracy,1800);
             bullet.setPosition(px, py);
             bullet.setDamage(lastDamage);
             bullet.setCritical(lastDamageCrit);
@@ -174,7 +174,7 @@ public class Luger extends Weapon {
                         inaccuracy = 0.055 * 400 / delta * (Random.nextInt(2) * 2 - 1);
                     }
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,1800);
                     bullet.setPosition(px, py);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                     lastDamageCrit = false;
@@ -197,7 +197,7 @@ public class Luger extends Weapon {
                         if(!bonusShotsAntiConsume)currentMagazineAmmo--;
                     }
                     double atan = Math.atan2(y, x);
-                    push = 30;
+                    push = 15;
                     pushX = Math.cos(atan);
                     pushY = Math.sin(atan);
                 }
@@ -236,7 +236,7 @@ public class Luger extends Weapon {
                     if(bonusShots > 0 && delta > delayTime-bonusShots*16.6){
                         double inaccuracy = 0;
                         inaccuracy = 0.055 * delta / (delay-bonusShots*16.6) * (Random.nextInt(2) * 2 - 1);
-                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,1800);
                         bullet.setPosition(px, py);
                         bullet.setDamage(lastDamage);
                         bullet.setCritical(lastDamageCrit);
@@ -251,7 +251,7 @@ public class Luger extends Weapon {
                             inaccuracy = 0.055 * 400 / delta * (Random.nextInt(2) * 2 - 1);
                         }
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,1800);
                         bullet.setPosition(px, py);
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                         lastDamageCrit = false;
@@ -273,7 +273,7 @@ public class Luger extends Weapon {
                             if(!bonusShotsAntiConsume)currentMagazineAmmo--;
                         }
                         double atan = Math.atan2(y, x);
-                        push = 30;
+                        push = 15;
                         pushX = Math.cos(atan);
                         pushY = Math.sin(atan);
                     }
@@ -326,7 +326,7 @@ public class Luger extends Weapon {
             if (push > 0) push-=5;
             if (push < 0) push+=5;
             push = -push;
-            tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
+            tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY,true);
         }
     }
 
@@ -356,7 +356,7 @@ public class Luger extends Weapon {
             source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
             if(response.idPlayer == MultiplayerManager.getInstance().getIdConnection()){
                 double atan = Math.atan2(response.y, response.x);
-                push = 30;
+                push = 15;
                 pushX = Math.cos(atan);
                 pushY = Math.sin(atan);
             }

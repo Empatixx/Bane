@@ -147,7 +147,7 @@ public class Pistol extends Weapon {
         if(doubleShots && delta > 75 && secondShotReady){
             double inaccuracy = 0;
             delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-            Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,30);
+            Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,1800);
             bullet.setPosition(px, py);
             int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
             if(criticalHits){
@@ -173,7 +173,7 @@ public class Pistol extends Weapon {
                         inaccuracy = 0.055 * 400 / delta * (Random.nextInt(2) * 2 - 1);
                     }
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,1800);
                     bullet.setPosition(px, py);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                     if(criticalHits){
@@ -193,7 +193,7 @@ public class Pistol extends Weapon {
                     if(currentMagazineAmmo > 0 && doubleShots) secondShotReady = true;
 
                     double atan = Math.atan2(y, x);
-                    push = 30;
+                    push = 15;
                     pushX = Math.cos(atan);
                     pushY = Math.sin(atan);
                 }
@@ -227,7 +227,7 @@ public class Pistol extends Weapon {
             if(doubleShots && delta > 75 && secondShotReady){
                 double inaccuracy = 0;
                 delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,30);
+                Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,1800);
                 bullet.setPosition(px, py);
                 int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                 if(criticalHits){
@@ -255,7 +255,7 @@ public class Pistol extends Weapon {
                             inaccuracy = 0.055 * 400 / delta * (Random.nextInt(2) * 2 - 1);
                         }
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,30);
+                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,1800);
                         bullet.setPosition(px, py);
                         bullet.setOwner(idPlayer);
 
@@ -278,7 +278,7 @@ public class Pistol extends Weapon {
                         if(currentMagazineAmmo > 0 && doubleShots) secondShotReady = true;
 
                         double atan = Math.atan2(y, x);
-                        push = 30;
+                        push = 5;
                         pushX = Math.cos(atan);
                         pushY = Math.sin(atan);
                     }
@@ -331,7 +331,7 @@ public class Pistol extends Weapon {
             if (push > 0) push-=5;
             if (push < 0) push+=5;
             push = -push;
-            tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
+            tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY,true);
         }
     }
 

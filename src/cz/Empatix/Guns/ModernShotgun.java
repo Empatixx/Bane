@@ -146,7 +146,7 @@ public class ModernShotgun extends Weapon {
                     for (int i = 0; Math.abs(i) < 3; ) {
                         double inaccuracy = 0;
                         if(i != 0) inaccuracy = i < 0 ? -0.045 : 0.045;
-                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,35);
+                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,2100);
                         bullet.setPosition(px, py);
                         bullets.add(bullet);
                         int damage;
@@ -165,7 +165,7 @@ public class ModernShotgun extends Weapon {
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
 
                     double atan = Math.atan2(y, x);
-                    push = 60;
+                    push = 30;
                     pushX = Math.cos(atan);
                     pushY = Math.sin(atan);
 
@@ -206,7 +206,7 @@ public class ModernShotgun extends Weapon {
                         for (int i = 0; Math.abs(i) < 3; ) {
                             double inaccuracy = 0;
                             if(i != 0) inaccuracy = i < 0 ? -0.045 : 0.045;
-                            Bullet bullet = new Bullet(tm, x, y, inaccuracy,35);
+                            Bullet bullet = new Bullet(tm, x, y, inaccuracy,2100);
                             bullet.setPosition(px, py);
                             bullet.setOwner(idPlayer);
                             bullets.add(bullet);
@@ -227,7 +227,7 @@ public class ModernShotgun extends Weapon {
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
 
                         double atan = Math.atan2(y, x);
-                        push = 60;
+                        push = 30;
                         pushX = Math.cos(atan);
                         pushY = Math.sin(atan);
 
@@ -280,7 +280,7 @@ public class ModernShotgun extends Weapon {
             if (push > 0) push-=5;
             if (push < 0) push+=5;
             push = -push;
-            tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
+            tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY,true);
         }
     }
 
@@ -323,7 +323,7 @@ public class ModernShotgun extends Weapon {
             source.play(soundShoot);
             if(response.idPlayer == MultiplayerManager.getInstance().getIdConnection()){
                 double atan = Math.atan2(response.y, response.x);
-                push = 60;
+                push = 30;
                 pushX = Math.cos(atan);
                 pushY = Math.sin(atan);
             }

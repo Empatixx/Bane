@@ -11,6 +11,7 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.EnemyManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Damageindicator.CombatIndicator;
@@ -45,14 +46,16 @@ public class Grenadebullet extends MapObject {
     // audio
     private int soundhit;
 
-    private long shotTime;
-    private Vector2f originalspeed;
-
     private int damage;
     private boolean crit;
 
-    public Grenadebullet(TileMap tm, double x, double y, double inaccuracy, int speed) {
+    public long bulletShooted;
+
+    public Grenadebullet(TileMap tm, double x, double y, double inaccuracy, int movementVelocity) {
         super(tm);
+        this.movementVelocity = movementVelocity;
+        this.moveAcceleration = 0;
+        this.stopAcceleration = 1.25f;
         if(tm.isServerSide()){
             facingRight = true;
 
@@ -69,19 +72,15 @@ public class Grenadebullet extends MapObject {
             spriteSheetRows = 2;
 
             double atan = Math.atan2(y,x) + inaccuracy;
-            // 30 - speed of bullet
-            this.speed.x = (float)(Math.cos(atan) * speed);
-            this.speed.y = (float)(Math.sin(atan) * speed);
+            // direction of bullet
+            this.acceleration.x = (float)(Math.cos(atan));
+            this.acceleration.y = (float)(Math.sin(atan));
 
             // because of scaling image by 2x
             width *= 2;
             height *= 2;
             cwidth *= 2;
             cheight *= 2;
-
-            shotTime = System.currentTimeMillis() - InGame.deltaPauseTime();
-            originalspeed = new Vector2f(this.speed.x,this.speed.y);
-
         }else {
             facingRight = true;
 
@@ -98,9 +97,9 @@ public class Grenadebullet extends MapObject {
             spriteSheetRows = 2;
 
             double atan = Math.atan2(y,x) + inaccuracy;
-            // 30 - speed of bullet
-            this.speed.x = (float)(Math.cos(atan) * speed);
-            this.speed.y = (float)(Math.sin(atan) * speed);
+            // direction of bullet
+            this.acceleration.x = (float)(Math.cos(atan));
+            this.acceleration.y = (float)(Math.sin(atan));
 
             // try to find spritesheet if it was created once
             spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\explosion.tga");
@@ -175,10 +174,8 @@ public class Grenadebullet extends MapObject {
             source = AudioManager.createSource(Source.EFFECTS,0.35f);
 
             light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f((float)x+xmap,(float)y+ymap), 1.25f,this);
-
-            shotTime = System.currentTimeMillis() - InGame.deltaPauseTime();
-            originalspeed = new Vector2f(this.speed.x,this.speed.y);
         }
+        bulletShooted = System.currentTimeMillis() - InGame.deltaPauseTime();
     }
     public Grenadebullet(TileMap tm, int id) {
         super(tm);
@@ -273,8 +270,6 @@ public class Grenadebullet extends MapObject {
 
         light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f(xmap,ymap), 1.25f,this);
 
-        shotTime = System.currentTimeMillis() - InGame.deltaPauseTime();
-        originalspeed = new Vector2f(this.speed.x,this.speed.y);
         this.id = id;
     }
 
@@ -309,6 +304,8 @@ public class Grenadebullet extends MapObject {
         }
         speed.x = 0;
         speed.y = 0;
+        acceleration.x = 0;
+        acceleration.y = 0;
     }
     public void explosion(){
         if(tileMap.isServerSide()){
@@ -370,10 +367,10 @@ public class Grenadebullet extends MapObject {
                     int x = -cwidth/4+ Random.nextInt(cwidth/2);
                     if(!isCritical()){
                         CombatIndicator.addDamageShow(damage,(int)e.getX()-x,(int)e.getY()-cheight/3
-                                ,new Vector2f(-x/25f,-1f));
+                                ,new Vector2f(-x/10f,-30f));
                     } else {
                         CombatIndicator.addCriticalDamageShow(damage,(int)e.getX()-x,(int)e.getY()-cheight/3
-                                ,new Vector2f(-x/25f,-1f));
+                                ,new Vector2f(-x/10f,-30f));
                     }
                 }
             }
@@ -403,6 +400,13 @@ public class Grenadebullet extends MapObject {
     }
     public void update() {
         if(tileMap.isServerSide()){
+            if(!hit){
+                long elapsed = System.currentTimeMillis() - InGame.deltaPauseTime() - bulletShooted;
+                float delay = 1 - elapsed/750f;
+                if(delay < 0) delay = 0;
+                speed.x = movementVelocity * Game.deltaTimeUpdate * acceleration.x * delay;
+                speed.y = movementVelocity * Game.deltaTimeUpdate * acceleration.y * delay;
+            }
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
             checkUnmovableCollisions(); // only for not movable room objects
@@ -419,17 +423,16 @@ public class Grenadebullet extends MapObject {
                 moveBullet.id = id;
                 server.sendToAllUDP(moveBullet);
             }
-            float changeSpeed = (float) (1 - Math.pow((System.currentTimeMillis() - shotTime - InGame.deltaPauseTime()) / 750f,1));
-            if(changeSpeed < 0){
-                speed.x = 0;
-                speed.y = 0;
-            } else if (!hit) {
-                speed.x = originalspeed.x * changeSpeed;
-                speed.y = originalspeed.y * changeSpeed;
-            }
         } else {
             setMapPosition();
             if(!MultiplayerManager.multiplayer){
+                if(!hit){
+                    long elapsed = System.currentTimeMillis() - InGame.deltaPauseTime() - bulletShooted;
+                    float delay = 1 - elapsed/750f;
+                    if(delay < 0) delay = 0;
+                    speed.x = movementVelocity * Game.deltaTimeUpdate * acceleration.x * delay;
+                    speed.y = movementVelocity * Game.deltaTimeUpdate * acceleration.y * delay;
+                }
                 checkTileMapCollision();
                 checkUnmovableCollisions(); // only for not movable room objects
                 setPosition(temp.x, temp.y);
@@ -448,17 +451,6 @@ public class Grenadebullet extends MapObject {
                 if (animation.hasPlayedOnce()) {
                     remove = true;
                     light.remove();
-                }
-            }
-            if(!MultiplayerManager.multiplayer){
-                float changeSpeed = (float) (1 - Math.pow((System.currentTimeMillis() - shotTime - InGame.deltaPauseTime()) / 750f,1));
-                if(changeSpeed < 0){
-                    speed.x = 0;
-                    speed.y = 0;
-                } else if (!hit) {
-                    speed.x = originalspeed.x * changeSpeed;
-                    speed.y = originalspeed.y * changeSpeed;
-
                 }
             }
         }

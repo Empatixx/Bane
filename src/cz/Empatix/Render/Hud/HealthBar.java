@@ -2,6 +2,7 @@ package cz.Empatix.Render.Hud;
 
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Main.Game;
 import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -149,7 +150,7 @@ public class HealthBar extends HUD{
             healthChangeTime = System.currentTimeMillis() - InGame.deltaPauseTime();
         }
         if(System.currentTimeMillis() - InGame.deltaPauseTime() - healthChangeTime > 100){
-            delayedHealth+=(health - delayedHealth) * 0.07;
+            delayedHealth+=(health - delayedHealth) * Game.deltaTimeUpdate * 2;
         }
 
         this.maxHealth = maxHealth;

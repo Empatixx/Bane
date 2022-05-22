@@ -394,15 +394,18 @@ public abstract class MapObject {
 	 * @param x speed in direction x
 	 * @param y speed in direction y
 	 */
-	public void setSpeed(float x, float y) {
+	@Deprecated public void setSpeed(float x, float y) {
 		this.speed.x = x;
 		this.speed.y = y;
 	}
-	public void setSpeedX(float x) {
+	@Deprecated public void setSpeedX(float x) {
 		this.speed.x = x;
 	}
-	public void setSpeedY(float y) {
+	@Deprecated public void setSpeedY(float y) {
 		this.speed.y = y;
+	}
+	public void move(Vector2f acceleration, int velocity){
+		this.acceleration.set(acceleration);
 	}
 	/**
 	 * Getting shifts of tilemap
@@ -693,7 +696,7 @@ public abstract class MapObject {
 			speed.x = moveSpeed;
 		}
 		else {
-			if (speed.x < 0){
+			if (acceleration.x < 0){
 				acceleration.x += stopAcceleration * deltaTimeUpdate;
 				moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
 				speed.x = moveSpeed;
@@ -701,7 +704,7 @@ public abstract class MapObject {
 					acceleration.x = 0;
 					speed.x = 0;
 				}
-			} else if (speed.x > 0){
+			} else if (acceleration.x > 0){
 				acceleration.x -= stopAcceleration * deltaTimeUpdate;
 				moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
 				speed.x = moveSpeed;
@@ -727,7 +730,7 @@ public abstract class MapObject {
 			speed.y = moveSpeed;
 		}
 		else {
-			if (speed.y < 0){
+			if (acceleration.y < 0){
 				acceleration.y += stopAcceleration * deltaTimeUpdate;
 				moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
 				speed.y = moveSpeed;
@@ -735,7 +738,7 @@ public abstract class MapObject {
 					acceleration.y = 0;
 					speed.y = 0;
 				}
-			} else if (speed.y > 0){
+			} else if (acceleration.y > 0){
 				acceleration.y -= stopAcceleration * deltaTimeUpdate;
 				moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate; // delty na casy, postupne zrychlovani pomocí nasobení, čas postupného zrychlení a postupné zpomalení odečítání pak
 				speed.y = moveSpeed;
@@ -746,5 +749,24 @@ public abstract class MapObject {
 			}
 		}
 
+	}
+
+	public int getMovementVelocity() {
+		return movementVelocity;
+	}
+	public void setMovementVelocity(int movementVelocity) {
+		this.movementVelocity = movementVelocity;
+	}
+
+	public Vector2f getAcceleration() {
+		return acceleration;
+	}
+
+	public void setMoveAcceleration(float moveAcceleration) {
+		this.moveAcceleration = moveAcceleration;
+	}
+
+	public float getMoveAcceleration() {
+		return moveAcceleration;
 	}
 }

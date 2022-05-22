@@ -428,16 +428,16 @@ public class EyeBat extends Enemy {
                     reverseDir = true;
                 }
                 if(!reverseDir){
-                    this.angle += (angle - this.angle) * .035;
+                    this.angle += (angle - this.angle) * Game.deltaTimeUpdate * 1.5;
                 } else {
                     if(this.angle >= 0){
-                        this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * .035;
+                        this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * Game.deltaTimeUpdate * 1.5;
                         if(this.angle >= Math.PI*3/2.){
                             this.angle-=Math.PI*3/2.;
                             this.angle=-Math.PI/2. - this.angle;
                         }
                     } else {
-                        this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * .035;
+                        this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * Game.deltaTimeUpdate * 1.5;
                         if(this.angle <= -Math.PI/2.){
                             this.angle+=Math.PI/2;
                             this.angle=Math.PI*3/2.-this.angle;

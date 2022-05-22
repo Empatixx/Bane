@@ -44,9 +44,13 @@ public class Slimebullet extends MapObject {
             spriteSheetRows = 2;
 
             double atan = Math.atan2(y,x) + inaccuracy;
-            // 30 - speed of bullet
-            speed.x = (float)(Math.cos(atan) * 10);
-            speed.y = (float)(Math.sin(atan) * 10);
+            // direction of bullet
+            acceleration.x = (float)Math.cos(atan);
+            acceleration.y = (float)Math.sin(atan);
+
+            movementVelocity = 600;
+            moveAcceleration = 0;
+            stopAcceleration = 0;
 
             animation = new Animation(4);
             animation.setDelay(70);
@@ -73,9 +77,13 @@ public class Slimebullet extends MapObject {
             spriteSheetRows = 2;
 
             double atan = Math.atan2(y,x) + inaccuracy;
-            // 30 - speed of bullet
-            speed.x = (float)(Math.cos(atan) * 10);
-            speed.y = (float)(Math.sin(atan) * 10);
+            // direction of bullet
+            acceleration.x = (float)Math.cos(atan);
+            acceleration.y = (float)Math.sin(atan);
+
+            movementVelocity = 600;
+            moveAcceleration = 0;
+            stopAcceleration = 0;
 
             // try to find spritesheet if it was created once
             spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Enemies\\slimebullet.tga");
@@ -170,6 +178,7 @@ public class Slimebullet extends MapObject {
         setMapPosition();
         animation.update();
         if(tileMap.isServerSide()){
+            getMovementSpeed();
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
             if((speed.x == 0 || speed.y == 0) && !hit) {
@@ -182,6 +191,7 @@ public class Slimebullet extends MapObject {
             }
         } else {
             if(!MultiplayerManager.multiplayer) {
+                getMovementSpeed();
                 checkTileMapCollision();
                 setPosition(temp.x, temp.y);
             }

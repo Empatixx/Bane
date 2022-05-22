@@ -1,6 +1,7 @@
 package cz.Empatix.Render.Hud;
 
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -149,14 +150,13 @@ public class SliderBar {
         this.locked = locked;
     }
     public void update(float x, float y){
-        // smooth movement - multiply 0.3
         if(!vertical){
-            pos.x += (x-pos.x) * .3f;
+            pos.x += (x-pos.x) * 6.5f * Game.deltaTimeUpdate;
             if(pos.x> sliderMax) pos.x = sliderMax;
             if(pos.x< sliderMin) pos.x = sliderMin;
             value = (pos.x- sliderMin)/(sliderMax - sliderMin);
         } else {
-            pos.y += (y-pos.y) * .3f;
+            pos.y += (y-pos.y) * 6.5f * Game.deltaTimeUpdate;
             if(pos.y> sliderMax) pos.y = sliderMax;
             if(pos.y< sliderMin) pos.y = sliderMin;
             value = (pos.y- sliderMin)/(sliderMax - sliderMin);

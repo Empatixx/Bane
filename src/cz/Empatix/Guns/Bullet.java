@@ -53,8 +53,12 @@ public class Bullet extends MapObject {
         PLAYER
     }
 
-    public Bullet(TileMap tm, float x, float y,double inaccuracy, int speed) {
+    public Bullet(TileMap tm, float x, float y,double inaccuracy, int movementVelocity) {
         super(tm);
+        this.movementVelocity = movementVelocity;
+        this.moveAcceleration = 0;
+        this.stopAcceleration = 0;
+
         if(tm.isServerSide()){
             facingRight = true;
             crit=false;
@@ -68,9 +72,10 @@ public class Bullet extends MapObject {
             scale = 2;
 
             double atan = Math.atan2(y,x) + inaccuracy;
-            // 30 - speed of bullet
-            this.speed.x = (float)(Math.cos(atan) * speed);
-            this.speed.y = (float)(Math.sin(atan) * speed);
+
+            // setting direction of bullet
+            this.acceleration.x = (float)(Math.cos(atan));
+            this.acceleration.y = (float)(Math.sin(atan));
 
             // because of scaling image by 2x
             width *= scale;
@@ -95,9 +100,9 @@ public class Bullet extends MapObject {
             spriteSheetRows = 2;
 
             double atan = Math.atan2(y,x) + inaccuracy;
-            // 30 - speed of bullet
-            this.speed.x = (float)(Math.cos(atan) * speed);
-            this.speed.y = (float)(Math.sin(atan) * speed);
+            // setting direction of bullet
+            this.acceleration.x = (float)(Math.cos(atan));
+            this.acceleration.y = (float)(Math.sin(atan));
 
             // try to find spritesheet if it was created once
             spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
@@ -278,7 +283,7 @@ public class Bullet extends MapObject {
     }
 
     /*
-    mostly singlerplayer method for setting bullet as hit, sending packet without any damage to object/enemy
+    mostly singleplayer method for setting bullet as hit, sending packet without any damage to object/enemy
     or bullet hitted player(not sending any damage)
      */
     public void setHit(TypeHit type) {
@@ -306,6 +311,8 @@ public class Bullet extends MapObject {
         }
         speed.x = 0;
         speed.y = 0;
+        acceleration.x = 0;
+        acceleration.y = 0;
     }
     /*
      setting bullet as hit, sending packet with damage to object/enemy
@@ -345,6 +352,8 @@ public class Bullet extends MapObject {
         }
         speed.x = 0;
         speed.y = 0;
+        acceleration.x = 0;
+        acceleration.y = 0;
     }
     public int getDamage() {
         return damage;
@@ -367,6 +376,7 @@ public class Bullet extends MapObject {
                     }
                 }
             }
+            getMovementSpeed();
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
 
@@ -398,6 +408,7 @@ public class Bullet extends MapObject {
                         }
                     }
                 }
+                getMovementSpeed();
                 checkTileMapCollision();
                 setPosition(temp.x, temp.y);
             }

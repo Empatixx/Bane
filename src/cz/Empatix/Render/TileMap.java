@@ -379,7 +379,7 @@ public class TileMap {
 			}
 
 		}
-		setPosition(Camera.getWIDTH() / 2f - playerStartX,Camera.getHEIGHT() / 2f - playerStartY);
+		setPosition(Camera.getWIDTH() / 2f - playerStartX,Camera.getHEIGHT() / 2f - playerStartY,true);
 	}
 	public void loadMapViaPackets() {
 		Object[] roomPackets = MultiplayerManager.getInstance().packetHolder.get(PacketHolder.TRANSFERROOM);
@@ -451,7 +451,7 @@ public class TileMap {
 			}
 
 		}
-		setPosition(Camera.getWIDTH() / 2f - playerStartX,Camera.getHEIGHT() / 2f - playerStartY);
+		setPosition(Camera.getWIDTH() / 2f - playerStartX,Camera.getHEIGHT() / 2f - playerStartY,true);
 	}
 	/**
 	 * Method for singleplayer, checking if player entered some new rooms, only works in singleplayer
@@ -477,11 +477,11 @@ public class TileMap {
 
 					// CORNERS OF MAP ( ROOM ) + tween to make it more sync (plus max = min; min = max) bcs of x / y of tilemap is negative
 
-					xmin += (Camera.getWIDTH() - xMax - xmin) * tween;
-					xmax += (-xMin - xmax) * tween;
+					xmin += (Camera.getWIDTH() - xMax - xmin) * tween * Game.deltaTimeUpdate;
+					xmax += (-xMin - xmax) * tween * Game.deltaTimeUpdate;
 
-					ymin += (Camera.getHEIGHT() - yMax - ymin) * tween;
-					ymax += (-yMin - ymax) * tween;
+					ymin += (Camera.getHEIGHT() - yMax - ymin) * tween * Game.deltaTimeUpdate;
+					ymax += (-yMin - ymax) * tween * Game.deltaTimeUpdate;
 					break;
 				}
 			}
@@ -506,11 +506,11 @@ public class TileMap {
 						}
 					}
 					// CORNERS OF MAP ( ROOM ) + tween to make it more sync (plus max = min; min = max) bcs of x / y of tilemap is negative
-					xmin += (Camera.getWIDTH() - xMax - xmin) * tween;
-					xmax += (-xMin - xmax) * tween;
+					xmin += (Camera.getWIDTH() - xMax - xmin) * tween * Game.deltaTimeUpdate;
+					xmax += (-xMin - xmax) * tween * Game.deltaTimeUpdate;
 
-					ymin += (Camera.getHEIGHT() - yMax - ymin) * tween;
-					ymax += (-yMin - ymax) * tween;
+					ymin += (Camera.getHEIGHT() - yMax - ymin) * tween * Game.deltaTimeUpdate;
+					ymax += (-yMin - ymax) * tween * Game.deltaTimeUpdate;
 
 
 					xMax -= tileSize*2;
@@ -1492,12 +1492,29 @@ public class TileMap {
 		if (map[row][col] == -1) return Tile.NORMAL;
 		return tiles[r][c].getType();
 	}
+
+	/**
+	 * Sets how fast camera will be moving, tweaking the smooth move
+	 * @param d % difference per second (camera is moving % * deltaTime)
+	 */
 	public void setTween(double d) { tween = d; }
-	public void setPosition(double x, double y) {
+
+	/**
+	 * sets camera location and tilemap positions
+	 * @param x - camera position X
+	 * @param y - camera position Y
+	 * @param teleport - if setPosition should be smoothed by deltaTime or not
+	 */
+	public void setPosition(double x, double y, boolean teleport) {
 		if(serverSide) return;
 
-		position.x += (x - position.x) * tween;
-		position.y += (y - position.y) * tween;
+		if(teleport){
+			position.x += (x - position.x);
+			position.y += (y - position.y);
+		} else {
+			position.x += (x - position.x) * tween * Game.deltaTimeUpdate;
+			position.y += (y - position.y) * tween * Game.deltaTimeUpdate;
+		}
 
 		fixBounds();
 
@@ -1806,7 +1823,7 @@ public class TileMap {
 
 		fillMiniMap();
 		player[0].setPosition(playerStartX, playerStartY);
-		setTween(0.10);
+		setTween(5);
 
 		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();
 

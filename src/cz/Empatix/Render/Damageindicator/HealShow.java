@@ -1,6 +1,7 @@
 package cz.Empatix.Render.Damageindicator;
 
 import cz.Empatix.Gamestates.Singleplayer.InGame;
+import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Text.TextRender;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -25,8 +26,8 @@ public class HealShow {
         return System.currentTimeMillis() - time - InGame.deltaPauseTime() > 500;
     }
     public void update(){
-        pos.x+=dir.x;
-        pos.y+=dir.y;
+        pos.x+=dir.x * Game.deltaTimeUpdate;
+        pos.y+=dir.y * Game.deltaTimeUpdate;
     }
     void draw(){
         textRender.drawMap("+"+amount,pos,2,new Vector3f(0.050f, 0.729f, 0.290f));

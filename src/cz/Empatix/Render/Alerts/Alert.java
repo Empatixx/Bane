@@ -2,6 +2,7 @@ package cz.Empatix.Render.Alerts;
 
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -95,11 +96,11 @@ public class Alert {
         } else if (delay > 4500){
             alpha = 1f - (delay / 5000f);
             disableText = true;
-            position.y += (370+row*100 - position.y) * .12;
+            position.y += (370+row*100 - position.y) * 1.5f * Game.deltaTimeUpdate;;
             return;
         }
-        position.x += (1750 - position.x) * .12;
-        position.y += (320+row*100 - position.y) * .36;
+        position.x += (1750 - position.x) * 2.75 * Game.deltaTimeUpdate;
+        position.y += (320+row*100 - position.y) * 2.75 * Game.deltaTimeUpdate;
 
     }
     public void draw(){

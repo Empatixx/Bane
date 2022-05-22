@@ -186,7 +186,12 @@ public class ItemManager {
                 numWeapons++;
             }
         }
-        if(numWeapons == 1){
+        if(numWeapons <= 0){
+            drop = new Coin(tm);
+            drop.setPosition(x, y);
+            itemDrops.add(drop);
+        }
+        else if(numWeapons == 1){
             for(int type : weaponTypes) {
                 if(type != -1){
                     if (type == ItemDrop.PISTOLAMMO) {
@@ -444,9 +449,9 @@ public class ItemManager {
         drop.setPosition((int)player.getX(), (int)player.getY()+30);
         itemDrops.add(drop);
     }
-    public void createDrop(float x, float y, Vector2f speed) {
+    public void createDrop(float x, float y, Vector2f acceleration) {
         ItemDrop drop = createDrop(x,y);
-        drop.setSpeed(speed.x,speed.y);
+        drop.move(acceleration,drop.getMovementVelocity());
     }
 
     public void dropWeapon(Weapon weapon, int x, int y) {

@@ -151,7 +151,7 @@ public class Revolver extends Weapon {
                         inaccuracy = 0.055 * 600 / delta * (Random.nextInt(2) * 2 - 1);
                     }
                     delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,40);
+                    Bullet bullet = new Bullet(tm, x, y, inaccuracy,2400);
                     bullet.setPosition(px, py);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                     if(criticalHits){
@@ -170,7 +170,7 @@ public class Revolver extends Weapon {
                     source.play(soundShoot);
 
                     double atan = Math.atan2(y, x);
-                    push = 80;
+                    push = 40;
                     pushX = Math.cos(atan);
                     pushY = Math.sin(atan);
 
@@ -213,7 +213,7 @@ public class Revolver extends Weapon {
                             inaccuracy = 0.055 * 600 / delta * (Random.nextInt(2) * 2 - 1);
                         }
                         delay = System.currentTimeMillis() - InGame.deltaPauseTime();
-                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,40);
+                        Bullet bullet = new Bullet(tm, x, y, inaccuracy,2400);
                         bullet.setPosition(px, py);
                         bullet.setOwner(idPlayer);
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
@@ -232,7 +232,7 @@ public class Revolver extends Weapon {
                         sendAddBulletPacket(bullet,x,y,px,py,idPlayer,true);
 
                         double atan = Math.atan2(y, x);
-                        push = 80;
+                        push = 40;
                         pushX = Math.cos(atan);
                         pushY = Math.sin(atan);
 
@@ -286,7 +286,7 @@ public class Revolver extends Weapon {
             if (push > 0) push-=5;
             if (push < 0) push+=5;
             push = -push;
-            tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY);
+            tm.setPosition(tm.getX()+push*pushX,tm.getY()+push*pushY,true);
         }
     }
 
@@ -312,7 +312,7 @@ public class Revolver extends Weapon {
             source.play(soundShoot);
             if(response.idPlayer == MultiplayerManager.getInstance().getIdConnection()){
                 double atan = Math.atan2(response.y, response.x);
-                push = 80;
+                push = 40;
                 pushX = Math.cos(atan);
                 pushY = Math.sin(atan);
             }

@@ -289,7 +289,7 @@ public class InGame extends GameState {
         player.setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
 
         // make camera move smoothly
-        tileMap.setTween(0.10);
+        tileMap.setTween(5);
 
         //health bar
         healthBar = new HealthBar("Textures\\healthBar",new Vector3f(250,125,0),5,56,4);
@@ -454,7 +454,7 @@ public class InGame extends GameState {
                 }
                 textRender[3].draw(stringBuilder.toString(),new Vector3f( TextRender.getHorizontalCenter(0,1920,stringBuilder.toString(),5),340,0),5,new Vector3f(1f,0.25f,0f));
                 glColor4f(1f,1f,1f,1f);
-                glLineWidth(3f);
+                glLineWidth(10f);
                 glBegin(GL_LINES);
                 float first = 960-(time-3500)/2.5f;
                 float secondary = 960+(time-3500)/2.5f;
@@ -540,8 +540,10 @@ public class InGame extends GameState {
             float time = (System.currentTimeMillis()-player.getDeathTime());
             if(time > 2000){
                 Vector3f pos = skullPlayerdead.getPos();
-                float y = pos.y() + (140-pos.y()) * time/40000;
-                Vector3f newpos = new Vector3f(pos.x(),y,0);
+                float shift = (time-2000)/1500;
+                if(shift > 1) shift = 1;
+                pos.y += ((540 - 400 * shift) - pos.y);
+                Vector3f newpos = new Vector3f(pos.x(),(int)pos.y(),0);
                 skullPlayerdead.setPosition(newpos);
             }
             skullPlayerdead.setAlpha(time/4500f);
@@ -554,16 +556,16 @@ public class InGame extends GameState {
         // mouse location-moving direction of mouse of tilemap
         tileMap.setPosition(
                 tileMap.getX()-(mouseX-960)/30,
-                tileMap.getY()-(mouseY- 540)/30);
+                tileMap.getY()-(mouseY- 540)/30,
+                false);
 
         tileMap.setPosition(
                 Camera.getWIDTH()/2f-player.getX(),
-                Camera.getHEIGHT()/2f-player.getY());
+                Camera.getHEIGHT()/2f-player.getY(),
+                false);
 
 
         artefactManager.update(pause);
-
-        itemManager.update();
 
         if(pause){
             for(MenuBar hud:pauseBars){
@@ -573,6 +575,8 @@ public class InGame extends GameState {
                 }
             }
         } else {
+            itemManager.update();
+
             ArrayList<Enemy> enemies = EnemyManager.getInstance().getEnemies();
 
             player.update();

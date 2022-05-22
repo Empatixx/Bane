@@ -52,6 +52,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class InGameMP extends GameState {
     private long deathTime;
+    private float totalDelta;
 
     public static void load(){
         Loader.loadImage("Textures\\Menu\\pausemenu.tga");
@@ -421,7 +422,7 @@ public class InGameMP extends GameState {
         player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
 
         // make camera move smoothly
-        tileMap.setTween(0.10);
+        tileMap.setTween(5);
 
         totalRoomsSynch = 999;
         ready = false;
@@ -716,13 +717,14 @@ public class InGameMP extends GameState {
             // mouse location-moving direction of mouse of tilemap
             tileMap.setPosition(
                     tileMap.getX()-(mouseX-960)/30,
-                    tileMap.getY()-(mouseY- 540)/30);
-
+                    tileMap.getY()-(mouseY- 540)/30,
+                    false);
             // updating player
             // updating tilemap by player position
             tileMap.setPosition(
                     Camera.getWIDTH() / 2f - player[0].getX(),
-                    Camera.getHEIGHT() / 2f - player[0].getY()
+                    Camera.getHEIGHT() / 2f - player[0].getY(),
+                    false
             );
             itemManager.update();
 
@@ -844,10 +846,12 @@ public class InGameMP extends GameState {
                 return;
             }
             float time = (System.currentTimeMillis()-deathTime);
-            if(time > 500){
+            if(time > 500){ //TODO: test
                 Vector3f pos = skullPlayerdead.getPos();
-                float y = pos.y() + (140-pos.y()) * time/15000;
-                Vector3f newpos = new Vector3f(pos.x(),y,0);
+                float shift = (time-500)/500;
+                if(shift > 1) shift = 1;
+                pos.y += ((540 - 400 * shift) - pos.y);
+                Vector3f newpos = new Vector3f(pos.x(),(int)pos.y(),0);
                 skullPlayerdead.setPosition(newpos);
             }
             skullPlayerdead.setAlpha(time/3500f);
@@ -877,7 +881,7 @@ public class InGameMP extends GameState {
                 // move player to starter room
                 mpManager.packetHolder.clear(PacketHolder.MOVEPLAYER);
                 player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
-                tileMap.setTween(0.10);
+                tileMap.setTween(5);
             }
             Object[] allPlayersDead = mpManager.packetHolder.get(PacketHolder.ALLPLAYERDEAD);
             if(allPlayersDead.length >= 1 && !postDeath){
@@ -895,13 +899,15 @@ public class InGameMP extends GameState {
             // mouse location-moving direction of mouse of tilemap
             tileMap.setPosition(
                     tileMap.getX()-(mouseX-960)/30,
-                    tileMap.getY()-(mouseY- 540)/30);
+                    tileMap.getY()-(mouseY- 540)/30,
+                    false);
 
             // updating player
             // updating tilemap by player position
             tileMap.setPosition(
                     Camera.getWIDTH() / 2f - player[0].getX(),
-                    Camera.getHEIGHT() / 2f - player[0].getY()
+                    Camera.getHEIGHT() / 2f - player[0].getY(),
+                    false
             );
             player[0].updateOrigin();
             for(PlayerMP p : player){
@@ -1120,10 +1126,10 @@ public class InGameMP extends GameState {
                             int x = -cwidth/4+ Random.nextInt(cwidth/2);
                             if(packet.critical){
                                 CombatIndicator.addCriticalDamageShow(packet.damage,(int)e.getX()-x,(int)e.getY()-cheight/3
-                                        ,new Vector2f(-x/25f,-1f));
+                                        ,new Vector2f(-x/10f,-30f));
                             } else {
                                 CombatIndicator.addDamageShow(packet.damage,(int)e.getX()-x,(int)e.getY()-cheight/3
-                                        ,new Vector2f(-x/25f,-1f));
+                                        ,new Vector2f(-x/10f,-30f));
                             }
                             e.hit(packet.damage);
                             continue A;

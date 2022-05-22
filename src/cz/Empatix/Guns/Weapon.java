@@ -183,10 +183,10 @@ public abstract class Weapon{
         int x = -cwidth/4+ Random.nextInt(cwidth/2);
         if(critical){
             CombatIndicator.addCriticalDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
-                    ,new Vector2f(-x/25f,-1f));
+                    ,new Vector2f(-x/10f,-30f));
         } else {
             CombatIndicator.addDamageShow(damage,(int)enemy.getX()-x,(int)enemy.getY()-cheight/3
-                    ,new Vector2f(-x/25f,-1f));
+                    ,new Vector2f(-x/10f,-30f));
         }
     }
 
@@ -202,7 +202,10 @@ public abstract class Weapon{
         A: for(Bullet bullet:bullets){
             for(Enemy enemy:enemies){
                 if(bullet.intersects(enemy) && enemy.canReflect()){
+                    Vector2f acceleration = bullet.getAcceleration();
                     Vector3f speed = bullet.getSpeed();
+                    acceleration.x = -acceleration.x;
+                    acceleration.y = -acceleration.y;
                     speed.x = -speed.x;
                     speed.y = -speed.y;
                     bullet.setFriendlyFire(true);

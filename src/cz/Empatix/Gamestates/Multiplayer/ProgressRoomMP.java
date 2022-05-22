@@ -116,10 +116,11 @@ public class ProgressRoomMP extends GameState {
         player[0].setPosition(tileMap.getPlayerStartX(), tileMap.getPlayerStartY());
         tileMap.setPosition(
                 Camera.getWIDTH() / 2f - player[0].getX(),
-                Camera.getHEIGHT() / 2f - player[0].getY()
+                Camera.getHEIGHT() / 2f - player[0].getY(),
+                true
         );
         // make camera move smoothly
-        tileMap.setTween(0.1);
+        tileMap.setTween(5);
 
         coin = new Image("Textures\\coin.tga",new Vector3f(75,1000,0),1.5f);
 
@@ -265,7 +266,8 @@ public class ProgressRoomMP extends GameState {
             // mouse location-moving direction of mouse of tilemap
             tileMap.setPosition(
                     tileMap.getX()-(mouseX-960)/30,
-                    tileMap.getY()-(mouseY- 540)/30);
+                    tileMap.getY()-(mouseY- 540)/30,
+                    false);
 
 
 
@@ -273,7 +275,8 @@ public class ProgressRoomMP extends GameState {
             // updating tilemap by player position
             tileMap.setPosition(
                     1920 / 2f - player[0].getX(),
-                    1080 / 2f - player[0].getY()
+                    1080 / 2f - player[0].getY(),
+                    false
             );
             progressNPC.update(mouseX,mouseY);
             progressNPC.touching(player[0]);
@@ -297,11 +300,13 @@ public class ProgressRoomMP extends GameState {
         // mouse location-moving direction of mouse of tilemap
         tileMap.setPosition(
                 tileMap.getX()-(mouseX-960)/30,
-                tileMap.getY()-(mouseY- 540)/30);
+                tileMap.getY()-(mouseY- 540)/30,
+                false);
         // updating tilemap by player position
         tileMap.setPosition(
                 1920 / 2f - player[0].getX(),
-                1080 / 2f - player[0].getY()
+                1080 / 2f - player[0].getY(),
+                false
         );
         tileMap.updateObjects();
 

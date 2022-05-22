@@ -1,14 +1,13 @@
 package cz.Empatix.Multiplayer;
 
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
-import cz.Empatix.Main.Game;
 import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static cz.Empatix.Main.Game.deltaTime;
+import static cz.Empatix.Main.Game.deltaTimeMillis;
 
 public class Interpolator {
     private float timeElapsed = 0f;
@@ -46,10 +45,8 @@ public class Interpolator {
                 timeToReachTarget = (to.tick - from.tick) * ns;
             }
         }
-        if(Game.delta < 2){
-            timeElapsed += deltaTime;
-            interpolatePosition(timeElapsed / timeToReachTarget,tm);
-        }
+        timeElapsed += deltaTimeMillis;
+        interpolatePosition(timeElapsed / timeToReachTarget,tm);
     }
     private void interpolatePosition(float lerpAmount, TileMap tileMap){
         GameClient client = MultiplayerManager.getInstance().client;
@@ -85,7 +82,7 @@ public class Interpolator {
         }
         futureTransformUpdates.add(new TransformUpdate(tick,pos.x,pos.y));
     }
-    public Vector3f lerpClamped(Vector3f x, Vector3f y, float t) {
+    private Vector3f lerpClamped(Vector3f x, Vector3f y, float t) {
         Vector3f dest = new Vector3f();
         if(t > 1) t = 1;
         if(t < 0) t = 0;
@@ -93,7 +90,7 @@ public class Interpolator {
         dest.y = x.y + (y.y() - x.y) * t;
         return dest;
     }
-    public Vector3f lerpUnclamped(Vector3f x, Vector3f y, float t) {
+    private Vector3f lerpUnclamped(Vector3f x, Vector3f y, float t) {
         Vector3f dest = new Vector3f();
         dest.x = x.x + (y.x() - x.x) * t;
         dest.y = x.y + (y.y() - x.y) * t;

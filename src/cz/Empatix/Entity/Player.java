@@ -19,6 +19,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
+import static cz.Empatix.Main.Game.deltaTimeUpdate;
 import static cz.Empatix.Main.Game.window;
 import static org.lwjgl.glfw.GLFW.*;
 public class Player extends MapObject {
@@ -121,6 +122,10 @@ public class Player extends MapObject {
             moveSpeed = 0.8f;
             maxSpeed = 11.84f;
             stopSpeed = 3.25f;
+
+            moveAcceleration = 4.5f;
+            stopAcceleration = 6.5f;
+            movementVelocity = 800;
 
             health = maxHealth = 7;
             coins = 0;
@@ -225,7 +230,6 @@ public class Player extends MapObject {
     }
 
     public void update() {
-        setMapPosition();
         // check if player should be still rolling
         if(System.currentTimeMillis() - rollCooldown - InGame.deltaPauseTime() >= 400 && rolling){
             rolling = false;
@@ -260,7 +264,7 @@ public class Player extends MapObject {
                 hitVignette[0].updateFadeTime();
             }
         }
-        if((Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed)){
+        if((Math.abs(acceleration.x) >= 1f || Math.abs(acceleration.y) >= 1f)){
             float value = Math.abs(speed.x);
             if(value < Math.abs(speed.y)) value = Math.abs(speed.y);
             if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 400-value*20){
@@ -350,54 +354,79 @@ public class Player extends MapObject {
     }
 
     protected void getMovementSpeed() {
+        float moveSpeed;
         // MAKING CHARACTER MOVE
         if (right){
-            speed.x += moveSpeed;
-            if (speed.x > maxSpeed){
-                speed.x = maxSpeed;
-            }
+            acceleration.x += moveAcceleration * deltaTimeUpdate;
+            if(acceleration.x > 1f) acceleration.x = 1f;
+
+            moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
+            speed.x = moveSpeed;
         }
         else if (left){
-            speed.x -= moveSpeed;
-            if (speed.x < -maxSpeed){
-                speed.x = -maxSpeed;
-            }
+            acceleration.x -= moveAcceleration * deltaTimeUpdate;
+            if(acceleration.x < -1f) acceleration.x = -1f;
+
+            moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
+            speed.x = moveSpeed;
         }
         else {
             if (speed.x < 0){
-                speed.x += stopSpeed;
-                if (speed.x > 0) speed.x = 0;
+                acceleration.x += stopAcceleration * deltaTimeUpdate;
+                moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
+                speed.x = moveSpeed;
+                if (speed.x > 0){
+                    acceleration.x = 0;
+                    speed.x = 0;
+                }
             } else if (speed.x > 0){
-                speed.x -= stopSpeed;
-                if (speed.x < 0) speed.x = 0;
+                acceleration.x -= stopAcceleration * deltaTimeUpdate;
+                moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
+                speed.x = moveSpeed;
+                if (speed.x < 0){
+                    acceleration.x = 0;
+                    speed.x = 0;
+                }
             }
         }
 
         if (up){
-            speed.y -= moveSpeed;
-            if (speed.y < -maxSpeed){
-                speed.y = -maxSpeed;
-            }
+            acceleration.y -= moveAcceleration * deltaTimeUpdate;
+            if(acceleration.y < -1f) acceleration.y = -1f;
+
+            moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
+            speed.y = moveSpeed;
         }
         else if (down){
-            speed.y += moveSpeed;
-            if (speed.y > maxSpeed){
-                speed.y = maxSpeed;
-            }
+            acceleration.y += moveAcceleration * deltaTimeUpdate;
+            if(acceleration.y > 1f) acceleration.y = 1f;
+
+            moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
+            speed.y = moveSpeed;
         }
         else {
             if (speed.y < 0){
-                speed.y += stopSpeed;
-                if (speed.y > 0) speed.y = 0;
+                acceleration.y += stopAcceleration * deltaTimeUpdate;
+                moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
+                speed.y = moveSpeed;
+                if (speed.y > 0){
+                    acceleration.y = 0;
+                    speed.y = 0;
+                }
             } else if (speed.y > 0){
-                speed.y -= stopSpeed;
-                if (speed.y < 0) speed.y = 0;
+                acceleration.y -= stopAcceleration * deltaTimeUpdate;
+                moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate; // delty na casy, postupne zrychlovani pomocí nasobení, čas postupného zrychlení a postupné zpomalení odečítání pak
+                speed.y = moveSpeed;
+                if (speed.y < 0){
+                    acceleration.y = 0;
+                    speed.y = 0;
+                }
             }
         }
 
     }
-
     public void draw() {
+        setMapPosition();
         super.draw();
     }
 
@@ -626,7 +655,6 @@ public class Player extends MapObject {
             return animation.hasPlayedOnce();
         }
         public void update(){
-            setMapPosition();
             animation.update();
         }
     }
@@ -667,5 +695,9 @@ public class Player extends MapObject {
 
     public void setMaxArmor(int maxArmor) {
         this.maxArmor = maxArmor;
+    }
+    private float lerpSpeed(float oldSpeed, float newSpeed, float deltaTime) {
+        float diff = newSpeed - oldSpeed;
+        return oldSpeed + diff * deltaTime;
     }
 }

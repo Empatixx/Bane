@@ -267,8 +267,8 @@ public class Golem extends Enemy {
             createShadow();
 
             speedBuff = false;
-            speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime() - 3000;
-            shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime() - 3000;
+            speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime() - 2000;
+            shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime() - 1500;
             beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
             lastRegen = System.currentTimeMillis() - InGame.deltaPauseTime();
             laserBeam = new LaserBeam(tm,this.player);
@@ -336,7 +336,7 @@ public class Golem extends Enemy {
                 }
                 laserBeam.setLastPlayerTargetIndex(beamPlayer);
                 laserBeam.setPosition(position.x,position.y-height/scale-5);
-            } else if (System.currentTimeMillis() - speedCooldown - InGame.deltaPauseTime() > 8000 && currentAction == IDLE){
+            } else if (System.currentTimeMillis() - speedCooldown - InGame.deltaPauseTime() > 6000 && currentAction == IDLE){
                 speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
                 speedBuff = true;
                 maxSpeed = 15f;
@@ -348,7 +348,7 @@ public class Golem extends Enemy {
                     animation = new Animation(8);
                     animation.setDelay(85);
                 }
-            } else if (System.currentTimeMillis() - shieldCooldown - InGame.deltaPauseTime() > 7000 && currentAction == IDLE){
+            } else if (System.currentTimeMillis() - shieldCooldown - InGame.deltaPauseTime() > 5000 && currentAction == IDLE){
                 shieldCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
                 currentAction = BARRIER;
                 if(!MultiplayerManager.multiplayer){

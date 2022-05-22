@@ -214,24 +214,6 @@ public class Chest extends RoomObject {
 
     }
 
-    public void stopping(){
-        if (speed.x < 0){
-            speed.x += stopSpeed;
-            if (speed.x > 0) speed.x = 0;
-        } else if (speed.x > 0){
-            speed.x -= stopSpeed;
-            if (speed.x < 0) speed.x = 0;
-        }
-
-        if (speed.y < 0){
-            speed.y += stopSpeed;
-            if (speed.y > 0) speed.y = 0;
-        } else if (speed.y > 0){
-            speed.y -= stopSpeed;
-            if (speed.y < 0) speed.y = 0;
-        }
-    }
-
     @Override
     public void touchEvent(MapObject o) {
         open();

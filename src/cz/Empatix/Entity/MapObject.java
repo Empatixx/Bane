@@ -39,6 +39,7 @@ public abstract class MapObject {
 	// position and vector
 	protected Vector3f position;
 	protected final Vector3f speed;
+	protected final Vector2f acceleration;
 
 	// dimensions
 	protected int width;
@@ -78,6 +79,9 @@ public abstract class MapObject {
 	protected float maxSpeed;
 	protected float stopSpeed;
 
+	protected int movementVelocity;
+	protected float moveAcceleration;
+	protected float stopAcceleration;
 	//
 	protected boolean flinching;
 	protected long flinchingTimer;
@@ -108,10 +112,12 @@ public abstract class MapObject {
 		temp = new Vector2f(0,0);
 		dest = new Vector2f(0,0);
 		speed = new Vector3f(0,0,0);
+		acceleration = new Vector2f(0,0);
 		position = new Vector3f(0,0,0);
 		if(tileMap.isServerSide()){
 			id = atomicInteger.incrementAndGet();
 		}
+
 	}
 	
 	public boolean intersects(MapObject o) {
@@ -184,6 +190,7 @@ public abstract class MapObject {
 		if(speed.y < 0) {
 			if(topLeft || topRight) {
 				speed.y = 0;
+				acceleration.y = 0;
 				if(tileSize < cheight/2) currRow = (int)(position.y - cheight / 2) / tileSize;
 				else currRow = (int)position.y / tileSize;
 				temp.y = currRow * tileSize + cheight / 2;
@@ -195,6 +202,7 @@ public abstract class MapObject {
 		if(speed.y > 0) {
 			if(bottomLeft || bottomRight) {
 				speed.y = 0;
+				acceleration.y = 0;
 				if(tileSize < cheight/2) currRow = ((int)position.y + cheight / 2 - 1) / tileSize;
 				else currRow = (int)position.y / tileSize;
 				temp.y = (currRow + 1) * tileSize - cheight / 2;
@@ -208,6 +216,7 @@ public abstract class MapObject {
 		if(speed.x < 0) {
 			if(topLeft || bottomLeft) {
 				speed.x = 0;
+				acceleration.x = 0;
 				if(tileSize < cwidth/2) currCol = ((int)position.x - cwidth / 2) / tileSize;
 				else currCol = (int)position.x / tileSize;
 
@@ -220,6 +229,7 @@ public abstract class MapObject {
 		if(speed.x > 0) {
 			if(topRight || bottomRight) {
 				speed.x = 0;
+				acceleration.x = 0;
 				if(tileSize < cwidth/2) currCol = ((int)position.x + cwidth / 2 - 1) / tileSize;
 				else currCol = (int)position.x / tileSize;
 
@@ -410,6 +420,7 @@ public abstract class MapObject {
 	public void drawShadow() {
 	}
 	public void draw() {
+		setMapPosition();
 		// pokud neni object na obrazovce - zrusit
 		if (isNotOnScrean()){
 			return;

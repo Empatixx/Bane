@@ -12,16 +12,26 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLDebugMessageCallback;
+import org.lwjgl.opengl.KHRDebug;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.Configuration;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+import java.io.File;
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL43.GL_DEBUG_TYPE_PERFORMANCE;
+import static org.lwjgl.opengl.GL43C.GL_DEBUG_OUTPUT;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -32,13 +42,12 @@ public class Game{
     public final static int CROSSHAIR = 1;
     private static long[] cursors;
 
-    public static double delta;
-
     public static boolean displayCollisions = false;
 
     public static boolean running;
-    public static long startUpdate;
-    public static double deltaTime;
+
+    public static float deltaTimeUpdate;
+    public static float deltaTimeMillis;
 
     private static int FPS;
 
@@ -220,11 +229,10 @@ public class Game{
         long timer = System.currentTimeMillis();
         final float ns = 1000000000 / 60.0f;
 
-        delta = 0;
+        deltaTimeUpdate = 0;
 
         // UPS/FPS counter
         int frames = 0;
-        int updates = 0;
 
         // WINDOW INIT
         initWindow();
@@ -248,32 +256,8 @@ public class Game{
         // Make the window visible
         glfwShowWindow(window);
 
-        // log errors into file in /logs/...
-        /*
-        try{
-            File file = new File("logs");
-            if(!file.exists()){
-                //Creating the directory
-                boolean b = file.mkdir();
-                if(b){
-                    System.out.println("Directory logs created successfully");
-                }else{
-                    System.out.println("Sorry couldn’t create logs directory");
-                }
-            }
-            long c = 0;
-            try (Stream<Path> files = Files.list(Paths.get("logs/"))) {
-                c = files.count();
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-            PrintStream pst = new PrintStream("logs/"+c+".txt");
-            System.setOut(pst);
-            System.setErr(pst);
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-         */
+        //enableLogging();
+
         DiscordRP.getInstance().start();
         DiscordRP.getInstance().update("Loading game...","");
 
@@ -284,47 +268,22 @@ public class Game{
                 running=false;
             }
             long now = System.nanoTime();
-            delta += (now-lastTime) / ns;
+            deltaTimeUpdate = (now-lastTime) / ns;
             lastTime = now;
 
-            while (delta >= 1){
-                loadingScreen.update();
-                updates++;
-                delta--;
+            loadingScreen.update();
 
-            }
             frames++;
             glClear(GL_COLOR_BUFFER_BIT); // clear the framebuffer
             loadingScreen.draw();
             textRender.draw(Loader.rendering(),new Vector3f(TextRender.getHorizontalCenter(0,1920,Loader.rendering(),3),950,0),3,new Vector3f(0.874f,0.443f,0.149f));
             glfwSwapBuffers(window);
-
-            if (System.currentTimeMillis() - timer > 1000){
-                timer += 1000;
-                //System.out.print("UPS: "+updates+"   "+"FPS: "+frames+"\n");
-                FPS = frames;
-                frames = 0;
-                updates = 0;
-            }
         }
 
         glOrtho(0,1920,1080,0,1,-1);
         glViewport(0,0, Settings.WIDTH,Settings.HEIGHT);
 
-        /*glEnable(GL_DEBUG_OUTPUT);
-        glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        //KHRDebug.glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_PERFORMANCE, GL_DEBUG_SEVERITY_HIGH, 0,
-        //        true);
-        KHRDebug.glDebugMessageCallback(new GLDebugMessageCallback() {
-            @Override
-            public void invoke(int source, int type, int id, int severity, int length, long message, long userParam) {
-                if(type == GL_DEBUG_TYPE_PERFORMANCE){
-                    System.out.println(GLDebugMessageCallback.getMessage(length,message));
-
-                }
-            }
-        },NULL);
-*/
+        //enableGLDebug();
 
         // GAMESTATE / RUNNING
         initGame();
@@ -334,38 +293,30 @@ public class Game{
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+        long startUpdate;
+
         while ( running ) {
+            startUpdate = System.currentTimeMillis();
+
             if(glfwWindowShouldClose(window)){
                 running=false;
             }
-            long now = System.nanoTime();
-            delta += (now-lastTime) / ns;
+            long now = System.currentTimeMillis();
+            deltaTimeUpdate = (now-lastTime) / 1_000f;
+            System.out.println("DELTA: "+deltaTimeUpdate);
             lastTime = now;
-            startUpdate = System.currentTimeMillis();
 
-            while (delta >= 1){
-                startUpdate = System.currentTimeMillis();
-
-                update();
-                updates++;
-                delta--;
-            }
+            update();
             frames++;
             draw();
-
-            deltaTime = (System.currentTimeMillis() - startUpdate)/1_000f;
-
-
             if (System.currentTimeMillis() - timer > 1000){
                 timer += 1000;
-                System.out.print("UPS: "+updates+"   "+"FPS: "+frames+"\n");
+                System.out.print("FPS: "+frames+"\n");
                 FPS = frames;
-                // GARBAGE COLLECTOR
-                System.gc();
-
                 frames = 0;
-                updates = 0;
             }
+            deltaTimeMillis = (System.currentTimeMillis() - startUpdate)/1_000f;
+
         }
         MultiplayerManager multiplayerManager = MultiplayerManager.getInstance();
         if(multiplayerManager != null) multiplayerManager.close();
@@ -429,6 +380,49 @@ public class Game{
 
     public static void setCursor(int type){
         GLFW.glfwSetCursor(window, cursors[type]);
+
+    }
+    public void enableGLDebug(){
+        glEnable(GL_DEBUG_OUTPUT);
+        glEnable(KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS);
+        //KHRDebug.glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_PERFORMANCE, GL_DEBUG_SEVERITY_HIGH, 0,
+        //        true);
+        KHRDebug.glDebugMessageCallback(new GLDebugMessageCallback() {
+            @Override
+            public void invoke(int source, int type, int id, int severity, int length, long message, long userParam) {
+                if(type == GL_DEBUG_TYPE_PERFORMANCE){
+                    System.out.println(GLDebugMessageCallback.getMessage(length,message));
+
+                }
+            }
+        },NULL);
+    }
+    public void enableLogging(){
+        // log errors into file in /logs/...
+
+        try{
+            File file = new File("logs");
+            if(!file.exists()){
+                //Creating the directory
+                boolean b = file.mkdir();
+                if(b){
+                    System.out.println("Directory logs created successfully");
+                }else{
+                    System.out.println("Sorry couldn’t create logs directory");
+                }
+            }
+            long c = 0;
+            try (Stream<Path> files = Files.list(Paths.get("logs/"))) {
+                c = files.count();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+            PrintStream pst = new PrintStream("logs/"+c+".txt");
+            System.setOut(pst);
+            System.setErr(pst);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 }

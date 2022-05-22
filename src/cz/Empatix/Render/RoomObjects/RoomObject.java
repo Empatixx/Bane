@@ -60,6 +60,23 @@ public abstract class RoomObject extends MapObject{
             server.sendToAllUDP(moveRoomObject);
         }
     }
+    public void stopping(){
+        if (speed.x < 0){
+            speed.x += stopSpeed;
+            if (speed.x > 0) speed.x = 0;
+        } else if (speed.x > 0){
+            speed.x -= stopSpeed;
+            if (speed.x < 0) speed.x = 0;
+        }
+
+        if (speed.y < 0){
+            speed.y += stopSpeed;
+            if (speed.y > 0) speed.y = 0;
+        } else if (speed.y > 0){
+            speed.y -= stopSpeed;
+            if (speed.y < 0) speed.y = 0;
+        }
+    }
 
 
     public void animationSync(Network.RoomObjectAnimationSync sync) {

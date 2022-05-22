@@ -34,6 +34,8 @@ public abstract class ItemDrop extends MapObject {
     public ItemDrop(TileMap tm){
         super(tm);
         shop = false;
+
+        stopAcceleration = 3.5f;
     }
 
     public void setAmount(int amount) {
@@ -64,24 +66,6 @@ public abstract class ItemDrop extends MapObject {
     public void remove(){
         if(tileMap.isServerSide()) return;
         light.remove();
-    }
-    private void getMovementSpeed() {
-        if (speed.x < 0){
-            speed.x += stopSpeed;
-            if (speed.x > 0) speed.x = 0;
-        } else if (speed.x > 0){
-            speed.x -= stopSpeed;
-            if (speed.x < 0) speed.x = 0;
-        }
-        if (speed.y < 0){
-            speed.y += stopSpeed;
-            if (speed.y > 0) speed.y = 0;
-        } else if (speed.y > 0){
-            speed.y -= stopSpeed;
-            if (speed.y < 0) speed.y = 0;
-
-        }
-
     }
     public int getAmount() {
         return amount;

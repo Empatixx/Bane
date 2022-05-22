@@ -64,10 +64,7 @@ public class Golem extends Enemy {
     }
     public Golem(TileMap tm, Player player) {
         super(tm,player);
-
-        moveSpeed = 0.7f;
-        maxSpeed = 5.2f;
-        stopSpeed = 0.75f;
+        initStats(tm.getFloor());
 
         width = 100;
         height = 100;
@@ -75,10 +72,6 @@ public class Golem extends Enemy {
         cheight = 40;
         scale = 6;
 
-        health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-        damage = 2;
-
-        type = melee;
         facingRight = true;
 
         spriteSheetCols = 14;
@@ -152,21 +145,14 @@ public class Golem extends Enemy {
     // multiplayer
     public Golem(TileMap tm, Player[] player) {
         super(tm,player);
+        initStats(tm.getFloor());
         if(tm.isServerSide()){
-            moveSpeed = 0.7f;
-            maxSpeed = 5.2f;
-            stopSpeed = 0.75f;
-
             width = 100;
             height = 100;
             cwidth = 50;
             cheight = 40;
             scale = 6;
 
-            health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            damage = 2;
-
-            type = melee;
             facingRight = true;
 
             currentAction = IDLE;
@@ -193,20 +179,12 @@ public class Golem extends Enemy {
 
             shieldStacks = 0;
         } else {
-            moveSpeed = 0.7f;
-            maxSpeed = 5.2f;
-            stopSpeed = 0.75f;
-
             width = 100;
             height = 100;
             cwidth = 50;
             cheight = 40;
             scale = 6;
 
-            health = maxHealth = (int)(130*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            damage = 2;
-
-            type = melee;
             facingRight = true;
 
             spriteSheetCols = 14;
@@ -277,6 +255,20 @@ public class Golem extends Enemy {
         }
 
     }
+    public void initStats(int floor){
+        moveSpeed = 0.7f;
+        maxSpeed = 5.2f;
+        stopSpeed = 0.75f;
+
+        movementVelocity = 315;
+        moveAcceleration = 3f;
+        stopAcceleration = 3.5f;
+
+        health = maxHealth = (int)(130*(1+(Math.pow(floor,1.25)*0.12)));
+        damage = 2;
+
+        type = melee;
+    }
 
     @Override
     public void setId(int id) {
@@ -305,6 +297,8 @@ public class Golem extends Enemy {
         }
         if(dead) return;
 
+        tryEnrage();
+        tryRegen();
         // ENEMY AI
         EnemyAI();
         // preventing changing facingRight because of the closest player if boss if doing beams
@@ -339,7 +333,7 @@ public class Golem extends Enemy {
             } else if (System.currentTimeMillis() - speedCooldown - InGame.deltaPauseTime() > 6000 && currentAction == IDLE){
                 speedCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
                 speedBuff = true;
-                maxSpeed = 15f;
+                movementVelocity *= 3f;
                 currentAction = ENERGY;
                 if(!MultiplayerManager.multiplayer){
                     animation.setFrames(spritesheet.getSprites(ENERGY));
@@ -450,9 +444,9 @@ public class Golem extends Enemy {
                 }
             } else if(speedBuff && System.currentTimeMillis() - speedCooldown - InGame.deltaPauseTime() > 1000){
                 speedBuff = false;
-                maxSpeed = 5.2f;
+                movementVelocity /= 3;
             }
-            getNextPosition();
+            getMovementSpeed();
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
         } else {

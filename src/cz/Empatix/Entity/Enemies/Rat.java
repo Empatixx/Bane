@@ -19,27 +19,14 @@ public class Rat extends Enemy {
     }
     public Rat(TileMap tm, Player player) {
         super(tm,player);
+        initStats(tm.getFloor());
 
-        moveSpeed = 1.2f;
-        maxSpeed = 4.4f;
-        stopSpeed = 1f;
-
-        /*width = 64;
-        height = 47;
-        cwidth = 64;
-        cheight = 47;
-        */
         width=85;
         height=37;
         cwidth=80;
         cheight=37;
         scale = 2;
 
-        health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-        tryBoostHealth();
-        damage = 1;
-
-        type = melee;
         facingRight = true;
 
         spriteSheetCols = 4;
@@ -92,11 +79,8 @@ public class Rat extends Enemy {
 
     public Rat(TileMap tm, Player[] player) {
         super(tm,player);
+        initStats(tm.getFloor());
         if(tm.isServerSide()){
-            moveSpeed = 1.2f;
-            maxSpeed = 4.4f;
-            stopSpeed = 1f;
-
             width=85;
             height=37;
             cwidth=80;
@@ -106,11 +90,6 @@ public class Rat extends Enemy {
             animation = new Animation(4);
             animation.setDelay(120);
 
-            health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 1;
-
-            type = melee;
             facingRight = true;
 
             // because of scaling image by 2x
@@ -120,26 +99,12 @@ public class Rat extends Enemy {
             cheight *= 2;
 
         } else {
-            moveSpeed = 1.2f;
-            maxSpeed = 4.4f;
-            stopSpeed = 1f;
-
-        /*width = 64;
-        height = 47;
-        cwidth = 64;
-        cheight = 47;
-        */
             width=85;
             height=37;
             cwidth=80;
             cheight=37;
             scale = 2;
 
-            health = maxHealth = (int)(12*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 1;
-
-            type = melee;
             facingRight = true;
 
             spriteSheetCols = 4;
@@ -191,7 +156,21 @@ public class Rat extends Enemy {
 
 
     }
+    public void initStats(int floor){
+        moveSpeed = 1.2f;
+        maxSpeed = 4.4f;
+        stopSpeed = 1f;
 
+        movementVelocity = 265;
+        moveAcceleration = 4f;
+        stopAcceleration = 3.5f;
+
+        health = maxHealth = (int)(12*(1+(Math.pow(floor,1.25)*0.12)));
+        tryBoostHealth();
+        damage = 1;
+
+        type = melee;
+    }
     @Override
     public void update() {
         setMapPosition();

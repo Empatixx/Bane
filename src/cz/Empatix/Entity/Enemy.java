@@ -722,7 +722,7 @@ public abstract class Enemy extends MapObject{
             EnemyAI();
 
             // update position
-            getNextPosition();
+            getMovementSpeed();
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
         }
@@ -740,50 +740,6 @@ public abstract class Enemy extends MapObject{
             moveEnemy.right = right;
             moveEnemy.facingRight = facingRight;
             server.sendToAllUDP(moveEnemy);
-        }
-    }
-    public void getNextPosition() {
-
-        // movement
-        if(left) {
-            speed.x -= moveSpeed;
-            if(speed.x < -maxSpeed) {
-                speed.x = -maxSpeed;
-            }
-        }
-        else if(right) {
-            speed.x += moveSpeed;
-            if(speed.x > maxSpeed) {
-                speed.x = maxSpeed;
-            }
-        }
-        else {
-            if (speed.x < 0){
-                speed.x += stopSpeed;
-                if (speed.x > 0) speed.x = 0;
-            } else if (speed.x > 0){
-                speed.x -= stopSpeed;
-                if (speed.x < 0) speed.x = 0;
-            }
-        }
-        if(down) {
-            speed.y += moveSpeed;
-            if (speed.y > maxSpeed){
-                speed.y = maxSpeed;
-            }
-        } else if (up){
-            speed.y -= moveSpeed;
-            if (speed.y < -maxSpeed){
-                speed.y = -maxSpeed;
-            }
-        } else {
-            if (speed.y < 0){
-                speed.y += stopSpeed;
-                if (speed.y > 0) speed.y = 0;
-            } else if (speed.y > 0){
-                speed.y -= stopSpeed;
-                if (speed.y < 0) speed.y = 0;
-            }
         }
     }
 
@@ -937,4 +893,8 @@ public abstract class Enemy extends MapObject{
         }
     }
     public abstract void forceRemove();
+
+    public boolean isRagingActivated() {
+        return ragingActivated;
+    }
 }

@@ -22,6 +22,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static cz.Empatix.Main.Game.deltaTimeUpdate;
 import static org.lwjgl.opengl.GL20.*;
 
 public abstract class MapObject {
@@ -75,13 +76,13 @@ public abstract class MapObject {
 	protected boolean facingRight;
 
 	// movement attributes
-	protected float moveSpeed;
-	protected float maxSpeed;
-	protected float stopSpeed;
+	@Deprecated protected float maxSpeed;
+	@Deprecated protected float moveSpeed;
+	@Deprecated protected float stopSpeed;
 
-	protected int movementVelocity;
-	protected float moveAcceleration;
-	protected float stopAcceleration;
+	protected int movementVelocity; // distance per second
+	protected float moveAcceleration; // percent gain per second
+	protected float stopAcceleration; // percent lose per second
 	//
 	protected boolean flinching;
 	protected long flinchingTimer;
@@ -117,7 +118,6 @@ public abstract class MapObject {
 		if(tileMap.isServerSide()){
 			id = atomicInteger.incrementAndGet();
 		}
-
 	}
 	
 	public boolean intersects(MapObject o) {
@@ -675,4 +675,76 @@ public abstract class MapObject {
 	}
 	public float getTempX(){return temp.x;}
 	public float getTempY(){return temp.y;}
+	public void getMovementSpeed() {
+		float moveSpeed;
+		// MAKING CHARACTER MOVE
+		if (right){
+			acceleration.x += moveAcceleration * deltaTimeUpdate;
+			if(acceleration.x > 1f) acceleration.x = 1f;
+
+			moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
+			speed.x = moveSpeed;
+		}
+		else if (left){
+			acceleration.x -= moveAcceleration * deltaTimeUpdate;
+			if(acceleration.x < -1f) acceleration.x = -1f;
+
+			moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
+			speed.x = moveSpeed;
+		}
+		else {
+			if (speed.x < 0){
+				acceleration.x += stopAcceleration * deltaTimeUpdate;
+				moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
+				speed.x = moveSpeed;
+				if (speed.x > 0){
+					acceleration.x = 0;
+					speed.x = 0;
+				}
+			} else if (speed.x > 0){
+				acceleration.x -= stopAcceleration * deltaTimeUpdate;
+				moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
+				speed.x = moveSpeed;
+				if (speed.x < 0){
+					acceleration.x = 0;
+					speed.x = 0;
+				}
+			}
+		}
+
+		if (up){
+			acceleration.y -= moveAcceleration * deltaTimeUpdate;
+			if(acceleration.y < -1f) acceleration.y = -1f;
+
+			moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
+			speed.y = moveSpeed;
+		}
+		else if (down){
+			acceleration.y += moveAcceleration * deltaTimeUpdate;
+			if(acceleration.y > 1f) acceleration.y = 1f;
+
+			moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
+			speed.y = moveSpeed;
+		}
+		else {
+			if (speed.y < 0){
+				acceleration.y += stopAcceleration * deltaTimeUpdate;
+				moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
+				speed.y = moveSpeed;
+				if (speed.y > 0){
+					acceleration.y = 0;
+					speed.y = 0;
+				}
+			} else if (speed.y > 0){
+				acceleration.y -= stopAcceleration * deltaTimeUpdate;
+				moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate; // delty na casy, postupne zrychlovani pomocí nasobení, čas postupného zrychlení a postupné zpomalení odečítání pak
+				speed.y = moveSpeed;
+				if (speed.y < 0){
+					acceleration.y = 0;
+					speed.y = 0;
+				}
+			}
+		}
+
+	}
 }

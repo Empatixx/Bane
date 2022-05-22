@@ -52,19 +52,13 @@ public class KingSlime extends Enemy {
     }
     public KingSlime(TileMap tm, Player player) {
         super(tm,player);
-
-        moveSpeed = 0.6f;
-        maxSpeed = 1.6f;
-        stopSpeed = 0.5f;
+        initStats(tm.getFloor());
 
         width = 64;
         height = 48;
         cwidth = 64;
         cheight = 48;
         scale = 5;
-
-        health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-        damage = 1;
 
         type = melee;
         facingRight = true;
@@ -132,11 +126,8 @@ public class KingSlime extends Enemy {
     // multiplayer
     public KingSlime(TileMap tm, Player[] player) {
         super(tm,player);
+        initStats(tm.getFloor());
         if(tm.isServerSide()){
-            moveSpeed = 0.6f;
-            maxSpeed = 1.6f;
-            stopSpeed = 0.5f;
-
             width = 64;
             height = 48;
             cwidth = 64;
@@ -146,10 +137,6 @@ public class KingSlime extends Enemy {
             animation = new Animation(4);
             animation.setDelay(175);
 
-            health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            damage = 1;
-
-            type = melee;
             facingRight = true;
             bullets=new ArrayList<>(100);
 
@@ -165,20 +152,12 @@ public class KingSlime extends Enemy {
             directionChangeCooldown = System.currentTimeMillis()- InGame.deltaPauseTime();
             invertDirection = false;
         } else  {
-            moveSpeed = 0.6f;
-            maxSpeed = 1.6f;
-            stopSpeed = 0.5f;
-
             width = 64;
             height = 48;
             cwidth = 64;
             cheight = 48;
             scale = 5;
 
-            health = maxHealth = (int)(90*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            damage = 1;
-
-            type = melee;
             facingRight = true;
             bullets=new ArrayList<>(100);
 
@@ -241,6 +220,20 @@ public class KingSlime extends Enemy {
             invertDirection = false;
         }
 
+    }
+    public void initStats(int floor){
+        moveSpeed = 0.6f;
+        maxSpeed = 1.6f;
+        stopSpeed = 0.5f;
+
+        movementVelocity = 100;
+        moveAcceleration = 4f;
+        stopAcceleration = 3.8f;
+
+        health = maxHealth = (int)(90*(1+(Math.pow(floor,1.25)*0.12)));
+        damage = 1;
+
+        type = melee;
     }
 
     @Override

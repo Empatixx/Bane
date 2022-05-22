@@ -18,16 +18,15 @@ public class Ghost extends Enemy {
 
     private long cdRush;
     private boolean rush;
+
+    private int defaultSpeed;
+
     public static void load(){
         Loader.loadImage("Textures\\Sprites\\Enemies\\ghost.tga");
     }
     public Ghost(TileMap tm, Player player) {
-
         super(tm,player);
-
-        moveSpeed = 1.4f;
-        maxSpeed = 7.2f;
-        stopSpeed = 0.3f;
+        initStats(tm.getFloor());
 
         width = 22;
         height = 28;
@@ -35,12 +34,6 @@ public class Ghost extends Enemy {
         cheight = 28;
         scale = 5;
 
-
-        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-        tryBoostHealth();
-        damage = 2;
-
-        type = melee;
         facingRight = true;
 
         spriteSheetCols = 5;
@@ -93,22 +86,14 @@ public class Ghost extends Enemy {
     }
     public Ghost(TileMap tm, Player[] player) {
         super(tm,player);
+        initStats(tm.getFloor());
         if(tm.isServerSide()){
-            moveSpeed = 1.4f;
-            maxSpeed = 7.2f;
-            stopSpeed = 0.3f;
-
             width = 22;
             height = 28;
             cwidth = 22;
             cheight = 28;
             scale = 5;
 
-            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 2;
-
-            type = melee;
             facingRight = true;
 
             animation = new Animation(4);
@@ -120,21 +105,12 @@ public class Ghost extends Enemy {
             cwidth *= scale;
             cheight *= scale;
         } else {
-            moveSpeed = 1.4f;
-            maxSpeed = 7.2f;
-            stopSpeed = 0.3f;
-
             width = 22;
             height = 28;
             cwidth = 22;
             cheight = 28;
             scale = 5;
 
-            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 2;
-
-            type = melee;
             facingRight = true;
 
             spriteSheetCols = 5;
@@ -186,6 +162,23 @@ public class Ghost extends Enemy {
         }
 
     }
+    public void initStats(int floor){
+        moveSpeed = 1.4f;
+        maxSpeed = 7.2f;
+        stopSpeed = 0.3f;
+
+        movementVelocity = 430;
+        moveAcceleration = 6f;
+        stopAcceleration = 2f;
+
+        defaultSpeed = movementVelocity;
+
+        health = maxHealth = (int)(11*(1+(Math.pow(floor,1.25)*0.12)));
+        tryBoostHealth();
+        damage = 2;
+
+        type = melee;
+    }
 
     @Override
     public void update() {
@@ -198,10 +191,11 @@ public class Ghost extends Enemy {
 
         if(System.currentTimeMillis()-cdRush-InGame.deltaPauseTime() > 3000){
             cdRush = System.currentTimeMillis()-InGame.deltaPauseTime();
-            maxSpeed = 14.4f;
+            defaultSpeed = movementVelocity;
+            movementVelocity *=2;
             rush = true;
         } else if (rush && System.currentTimeMillis()-cdRush-InGame.deltaPauseTime() > 700){
-            maxSpeed = 7.2f;
+            movementVelocity = defaultSpeed;
             rush = false;
         }
         super.update();

@@ -18,12 +18,8 @@ public class Demoneye extends Enemy {
         Loader.loadImage("Textures\\Sprites\\Enemies\\demoneye.tga");
     }
     public Demoneye(TileMap tm, Player player) {
-
         super(tm,player);
-
-        moveSpeed = 2f;
-        maxSpeed = 6.5f;
-        stopSpeed = 1.6f;
+        initStats(tm.getFloor());
 
         width = 76;
         height = 64;
@@ -31,12 +27,6 @@ public class Demoneye extends Enemy {
         cheight = 64;
         scale = 2;
 
-
-        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-        tryBoostHealth();
-        damage = 3;
-
-        type = melee;
         facingRight = true;
 
         spriteSheetCols = 4;
@@ -56,16 +46,6 @@ public class Demoneye extends Enemy {
 
             }
             spritesheet.addSprites(sprites);
-
-            /*sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
-
-             */
         }
         vboVertices = ModelManager.getModel(width,height);
         if (vboVertices == -1){
@@ -91,11 +71,8 @@ public class Demoneye extends Enemy {
     }
     public Demoneye(TileMap tm, Player[] player) {
         super(tm,player);
+        initStats(tm.getFloor());
         if(tm.isServerSide()){
-            moveSpeed = 2f;
-            maxSpeed = 6.5f;
-            stopSpeed = 1.6f;
-
             width = 76;
             height = 64;
             cwidth = 76;
@@ -105,33 +82,18 @@ public class Demoneye extends Enemy {
             animation = new Animation(4);
             animation.setDelay(125);
 
-            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 3;
-
-            type = melee;
             facingRight = true;
             width *= 2;
             height *= 2;
             cwidth *= 2;
             cheight *= 2;
         } else {
-            moveSpeed = 2f;
-            maxSpeed = 6.5f;
-            stopSpeed = 1.6f;
-
             width = 76;
             height = 64;
             cwidth = 76;
             cheight = 64;
             scale = 2;
 
-
-            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 3;
-
-            type = melee;
             facingRight = true;
 
             spriteSheetCols = 4;
@@ -151,16 +113,6 @@ public class Demoneye extends Enemy {
 
                 }
                 spritesheet.addSprites(sprites);
-
-            /*sprites = new Sprite[4];
-            for(int i = 0; i < sprites.length; i++) {
-                Sprite sprite = new Sprite(5,i,1,width,height,spriteSheetRows,spriteSheetCols);
-                sprites[i] = sprite;
-
-            }
-            spritesheet.addSprites(sprites);
-
-             */
             }
             vboVertices = ModelManager.getModel(width,height);
             if (vboVertices == -1){
@@ -184,6 +136,21 @@ public class Demoneye extends Enemy {
             createShadow();
         }
 
+    }
+    public void initStats(int floor){
+        moveSpeed = 2f;
+        maxSpeed = 6.5f;
+        stopSpeed = 1.6f;
+
+        movementVelocity =  390;
+        moveAcceleration = 6f;
+        stopAcceleration = 5f;
+
+        health = maxHealth = (int)(11*(1+(Math.pow(floor,1.25)*0.12)));
+        tryBoostHealth();
+        damage = 3;
+
+        type = melee;
     }
 
     @Override

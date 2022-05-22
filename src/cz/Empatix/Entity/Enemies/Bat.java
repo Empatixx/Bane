@@ -18,12 +18,8 @@ public class Bat extends Enemy {
         Loader.loadImage("Textures\\Sprites\\Enemies\\bat.tga");
     }
     public Bat(TileMap tm, Player player) {
-
         super(tm,player);
-
-        moveSpeed = 1.4f;
-        maxSpeed = 5.2f;
-        stopSpeed = 0.8f;
+        initStats(tm.getFloor());
 
         width = 64;
         height = 64;
@@ -31,14 +27,7 @@ public class Bat extends Enemy {
         cheight = 64;
         scale = 2;
 
-
-        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-        tryBoostHealth();
-        damage = 2;
-
-        type = melee;
         facingRight = true;
-
         spriteSheetCols = 4;
         spriteSheetRows = 2;
 
@@ -89,11 +78,8 @@ public class Bat extends Enemy {
 
     public Bat(TileMap tm, Player[] player) {
         super(tm,player);
+        initStats(tm.getFloor());
         if(tm.isServerSide()){
-            moveSpeed = 1.4f;
-            maxSpeed = 5.2f;
-            stopSpeed = 0.8f;
-
             width = 64;
             height = 64;
             cwidth = 64;
@@ -103,11 +89,6 @@ public class Bat extends Enemy {
             animation = new Animation(4);
             animation.setDelay(125);
 
-            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 2;
-
-            type = melee;
             facingRight = true;
 
             // because of scaling image by 2x
@@ -116,24 +97,13 @@ public class Bat extends Enemy {
             cwidth *= 2;
             cheight *= 2;
         } else {
-            moveSpeed = 1.4f;
-            maxSpeed = 5.2f;
-            stopSpeed = 0.8f;
-
             width = 64;
             height = 64;
             cwidth = 64;
             cheight = 64;
             scale = 2;
 
-
-            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 2;
-
-            type = melee;
             facingRight = true;
-
             spriteSheetCols = 4;
             spriteSheetRows = 2;
 
@@ -181,6 +151,21 @@ public class Bat extends Enemy {
 
             createShadow();
         }
+    }
+    public void initStats(int floor){
+        moveSpeed = 1.4f;
+        maxSpeed = 5.2f;
+        stopSpeed = 0.8f;
+
+        movementVelocity =  315;
+        moveAcceleration = 5f;
+        stopAcceleration = 4f;
+
+        health = maxHealth = (int)(9*(1+(Math.pow(floor,1.25)*0.12)));
+        tryBoostHealth();
+        damage = 2;
+
+        type = melee;
     }
 
     @Override

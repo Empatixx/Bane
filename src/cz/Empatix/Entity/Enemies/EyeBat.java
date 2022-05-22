@@ -50,12 +50,8 @@ public class EyeBat extends Enemy {
     private LaserBeam laserBeam;
 
     public EyeBat(TileMap tm, Player player) {
-
         super(tm,player);
-
-        moveSpeed = 2f;
-        maxSpeed = 8.5f;
-        stopSpeed = 1.6f;
+        initStats(tm.getFloor());
 
         width = 80;
         height = 80;
@@ -66,11 +62,6 @@ public class EyeBat extends Enemy {
         animation = new Animation(5);
         animation.setDelay(125);
 
-        health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-        tryBoostHealth();
-        damage = 1;
-
-        type = melee;
         facingRight = true;
 
         spriteSheetCols = 5;
@@ -121,23 +112,14 @@ public class EyeBat extends Enemy {
 
     public EyeBat(TileMap tm, Player[] player) {
         super(tm,player);
+        initStats(tm.getFloor());
         if(tm.isServerSide()){
-            moveSpeed = 2f;
-            maxSpeed = 8.5f;
-            stopSpeed = 1.6f;
-
             width = 80;
             height = 80;
             cwidth = 80;
             cheight = 80;
             scale = 2;
 
-
-            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 1;
-
-            type = melee;
             facingRight = true;
 
             width *= scale;
@@ -156,22 +138,12 @@ public class EyeBat extends Enemy {
             laserBeam.setId(id); // setting id so id will be same as enemy
             beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
         } else {
-            moveSpeed = 2f;
-            maxSpeed = 8.5f;
-            stopSpeed = 1.6f;
-
             width = 80;
             height = 80;
             cwidth = 80;
             cheight = 80;
             scale = 2;
 
-
-            health = maxHealth = (int)(11*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 1;
-
-            type = melee;
             facingRight = true;
 
             spriteSheetCols = 5;
@@ -220,6 +192,22 @@ public class EyeBat extends Enemy {
             beamCooldown = System.currentTimeMillis() - InGame.deltaPauseTime();
         }
     }
+    public void initStats(int floor){
+        moveSpeed = 2f;
+        maxSpeed = 8.5f;
+        stopSpeed = 1.6f;
+
+        movementVelocity =  510;
+        moveAcceleration = 6f;
+        stopAcceleration = 5f;
+
+        health = maxHealth = (int)(11*(1+(Math.pow(floor,1.25)*0.12)));
+        tryBoostHealth();
+        damage = 1;
+
+        type = melee;
+    }
+
     @Override
     public void setId(int id) {
         super.setId(id);
@@ -234,6 +222,8 @@ public class EyeBat extends Enemy {
 
         if(dead) return;
 
+        tryEnrage();
+        tryRegen();
         // ENEMY AI
         EnemyAI();
 
@@ -282,7 +272,7 @@ public class EyeBat extends Enemy {
             }
 
             // update position
-            getNextPosition();
+            getMovementSpeed();
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
         } else if (MultiplayerManager.multiplayer){

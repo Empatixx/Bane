@@ -38,10 +38,7 @@ public class RedSlime extends Enemy {
     }
     public RedSlime(TileMap tm, Player player) {
         super(tm,player);
-
-        moveSpeed = 0.6f;
-        maxSpeed = 3.6f;
-        stopSpeed = 0.5f;
+        initStats(tm.getFloor());
 
         width = 64;
         height = 48;
@@ -49,11 +46,6 @@ public class RedSlime extends Enemy {
         cheight = 48;
         scale = 2;
 
-        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-        tryBoostHealth();
-        damage = 1;
-
-        type = melee;
         facingRight = true;
 
         spriteSheetCols = 6;
@@ -111,11 +103,8 @@ public class RedSlime extends Enemy {
     }
     public RedSlime(TileMap tm, Player[] player) {
         super(tm,player);
+        initStats(tm.getFloor());
         if(tm.isServerSide()){
-            moveSpeed = 0.6f;
-            maxSpeed = 3.6f;
-            stopSpeed = 0.5f;
-
             width = 64;
             height = 48;
             cwidth = 64;
@@ -125,11 +114,6 @@ public class RedSlime extends Enemy {
             animation = new Animation(4);
             animation.setDelay(145);
 
-            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 1;
-
-            type = melee;
             facingRight = true;
 
             // because of scaling image by 2x
@@ -143,21 +127,12 @@ public class RedSlime extends Enemy {
             projectiles = 0;
             projectilesShooted = false;
         } else {
-            moveSpeed = 0.6f;
-            maxSpeed = 3.6f;
-            stopSpeed = 0.5f;
-
             width = 64;
             height = 48;
             cwidth = 64;
             cheight = 48;
             scale = 2;
 
-            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 1;
-
-            type = melee;
             facingRight = true;
 
             spriteSheetCols = 6;
@@ -214,7 +189,21 @@ public class RedSlime extends Enemy {
         }
 
     }
+    public void initStats(int floor){
+        moveSpeed = 0.6f;
+        maxSpeed = 3.6f;
+        stopSpeed = 0.5f;
 
+        movementVelocity = 215;
+        moveAcceleration = 4f;
+        stopAcceleration = 3.8f;
+
+        health = maxHealth = (int)(9*(1+(Math.pow(floor,1.25)*0.12)));
+        tryBoostHealth();
+        damage = 1;
+
+        type = melee;
+    }
     @Override
     public void update() {
         setMapPosition();

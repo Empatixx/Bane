@@ -19,7 +19,6 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
-import static cz.Empatix.Main.Game.deltaTimeUpdate;
 import static cz.Empatix.Main.Game.window;
 import static org.lwjgl.glfw.GLFW.*;
 public class Player extends MapObject {
@@ -351,79 +350,6 @@ public class Player extends MapObject {
                 hit(currentEnemy.getDamage());
             }
         }
-    }
-
-    protected void getMovementSpeed() {
-        float moveSpeed;
-        // MAKING CHARACTER MOVE
-        if (right){
-            acceleration.x += moveAcceleration * deltaTimeUpdate;
-            if(acceleration.x > 1f) acceleration.x = 1f;
-
-            moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
-            speed.x = moveSpeed;
-        }
-        else if (left){
-            acceleration.x -= moveAcceleration * deltaTimeUpdate;
-            if(acceleration.x < -1f) acceleration.x = -1f;
-
-            moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
-            speed.x = moveSpeed;
-        }
-        else {
-            if (speed.x < 0){
-                acceleration.x += stopAcceleration * deltaTimeUpdate;
-                moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
-                speed.x = moveSpeed;
-                if (speed.x > 0){
-                    acceleration.x = 0;
-                    speed.x = 0;
-                }
-            } else if (speed.x > 0){
-                acceleration.x -= stopAcceleration * deltaTimeUpdate;
-                moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
-                speed.x = moveSpeed;
-                if (speed.x < 0){
-                    acceleration.x = 0;
-                    speed.x = 0;
-                }
-            }
-        }
-
-        if (up){
-            acceleration.y -= moveAcceleration * deltaTimeUpdate;
-            if(acceleration.y < -1f) acceleration.y = -1f;
-
-            moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
-            speed.y = moveSpeed;
-        }
-        else if (down){
-            acceleration.y += moveAcceleration * deltaTimeUpdate;
-            if(acceleration.y > 1f) acceleration.y = 1f;
-
-            moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
-            speed.y = moveSpeed;
-        }
-        else {
-            if (speed.y < 0){
-                acceleration.y += stopAcceleration * deltaTimeUpdate;
-                moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
-                speed.y = moveSpeed;
-                if (speed.y > 0){
-                    acceleration.y = 0;
-                    speed.y = 0;
-                }
-            } else if (speed.y > 0){
-                acceleration.y -= stopAcceleration * deltaTimeUpdate;
-                moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate; // delty na casy, postupne zrychlovani pomocí nasobení, čas postupného zrychlení a postupné zpomalení odečítání pak
-                speed.y = moveSpeed;
-                if (speed.y < 0){
-                    acceleration.y = 0;
-                    speed.y = 0;
-                }
-            }
-        }
-
     }
     public void draw() {
         setMapPosition();

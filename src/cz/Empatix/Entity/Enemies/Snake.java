@@ -20,10 +20,7 @@ public class Snake extends Enemy {
     }
     public Snake(TileMap tm, Player player) {
         super(tm,player);
-
-        moveSpeed = 1.4f;
-        maxSpeed = 4.6f;
-        stopSpeed = 0.35f;
+        initStats(tm.getFloor());
 
         width = 64;
         height = 64;
@@ -31,11 +28,6 @@ public class Snake extends Enemy {
         cheight = 30;
         scale = 3;
 
-        health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-        tryBoostHealth();
-        damage = 2;
-
-        type = melee;
         facingRight = true;
 
         spriteSheetCols = 9;
@@ -88,11 +80,8 @@ public class Snake extends Enemy {
 
     public Snake(TileMap tm, Player[] player) {
         super(tm,player);
+        initStats(tm.getFloor());
         if(tm.isServerSide()){
-            moveSpeed = 1.4f;
-            maxSpeed = 4.6f;
-            stopSpeed = 0.35f;
-
             width = 64;
             height = 64;
             cwidth = 32;
@@ -102,11 +91,6 @@ public class Snake extends Enemy {
             animation = new Animation(9);
             animation.setDelay(125);
 
-            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 2;
-
-            type = melee;
             facingRight = true;
 
             // because of scaling image by 2x
@@ -116,21 +100,11 @@ public class Snake extends Enemy {
             cheight *= scale;
 
         } else {
-            moveSpeed = 1.4f;
-            maxSpeed = 4.6f;
-            stopSpeed = 0.35f;
-
             width = 64;
             height = 64;
             cwidth = 32;
             cheight = 30;
             scale = 3;
-
-            health = maxHealth = (int)(9*(1+(Math.pow(tm.getFloor(),1.25)*0.12)));
-            tryBoostHealth();
-            damage = 2;
-
-            type = melee;
             facingRight = true;
 
             spriteSheetCols = 9;
@@ -181,7 +155,21 @@ public class Snake extends Enemy {
             createShadow();
         }
     }
+    public void initStats(int floor){
+        moveSpeed = 1.4f;
+        maxSpeed = 4.6f;
+        stopSpeed = 0.35f;
 
+        movementVelocity = 280;
+        moveAcceleration = 4f;
+        stopAcceleration = 2f;
+
+        health = maxHealth = (int)(9*(1+(Math.pow(floor,1.25)*0.12)));
+        tryBoostHealth();
+        damage = 2;
+
+        type = melee;
+    }
 
     @Override
     public void update() {

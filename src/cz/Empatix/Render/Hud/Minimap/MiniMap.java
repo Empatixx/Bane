@@ -525,6 +525,12 @@ public class MiniMap {
 
         }
     }
+    public void forceHideBigMap(){
+        displayBigMap = false;
+        minimapBorders.setScale(2);
+        minimapBorders.setPosition(new Vector3f(1770,150,0));
+
+    }
     private void drawRoom(MMRoom room, float x, float y, float scale){
         Matrix4f matrixPos = new Matrix4f()
                 .translate(new Vector3f(x, y, 0))

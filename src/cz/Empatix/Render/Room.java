@@ -560,6 +560,14 @@ public class Room {
                 }
             }
         }
+        if(type == Starter){
+            Barrel barrel = new Barrel(tm);
+            barrel.setPosition(xMin+300,yMin+300);
+            addObject(barrel);
+            barrel = new Barrel(tm);
+            barrel.setPosition(xMin+500,yMin+300);
+            addObject(barrel);
+        }
         if(type == Progress){
             int tileSize = tm.getTileSize();
             Portal portal = new Portal(tm);

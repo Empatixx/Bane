@@ -169,6 +169,8 @@ public class Slimebullet extends MapObject {
         }
         speed.x = 0;
         speed.y = 0;
+        acceleration.x = 0;
+        acceleration.y = 0;
     }
 
     public boolean shouldRemove() { return remove; }

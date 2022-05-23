@@ -1,15 +1,10 @@
 package cz.Empatix.Render.Postprocessing;
 
+import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Graphics.Framebuffer;
 
 public class Fade extends Postprocess  {
     private float value;
-
-    private long timer;
-    private float time;
-
-    private boolean stop;
-    private long firstTime;
 
     private float increment;
 
@@ -18,20 +13,38 @@ public class Fade extends Postprocess  {
     public Fade(String shader) {
         super(shader);
         value = 0f;
-        time = 75f;
-        stop = false;
         increment = 0.09f;
     }
     public void setReverse(){
-        firstTime = 0;
         increment = 0.09f;
-        value = 50f;
-        time = 15;
-        stop = false;
+        value = 55f;
         reverse = true;
     }
-    public void update(boolean transition){
+
+    /**
+     *
+     * @param translation defines if it should be endless translation so we make black screen to translate between gamestates
+     */
+    public void update(boolean translation){
         if(reverse){
+            System.out.println("value´D: "+value);
+            if(value > 0){
+                value -= 6.69f * value/55;
+                if(value < 0.001f) value = 0;
+            }
+        } else {
+            if(value < 2){
+                value += 0.03f * Game.deltaTimeUpdate;
+                increment += Game.deltaTimeUpdate;
+                value += increment * Game.deltaTimeUpdate;
+            }
+            if (translation){
+                value += 0.75f * Game.deltaTimeUpdate;
+                increment += 30f * Game.deltaTimeUpdate;
+                value += increment * Game.deltaTimeUpdate;
+            }
+        }
+/*        if(reverse){
             if(firstTime == 0){
                 firstTime = System.currentTimeMillis();
             } else if(System.currentTimeMillis() - firstTime > 2500){
@@ -62,7 +75,7 @@ public class Fade extends Postprocess  {
                 time-=0.5f;
             }
         }
-
+*/
     }
 
     @Override
@@ -72,5 +85,8 @@ public class Fade extends Postprocess  {
         super.draw(framebuffer);
         shader.unbind();
     }
-    public boolean isTransitionDone(){return value <= 0 || value > 50;}
+    public boolean isTransitionDone(){
+        if(reverse) return value <= 0;
+        else return value > 55;
+    }
 }

@@ -1,5 +1,6 @@
 package cz.Empatix.Render.Postprocessing;
 
+import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Graphics.Framebuffer;
 
 public class GaussianBlur extends Postprocess {
@@ -19,7 +20,7 @@ public class GaussianBlur extends Postprocess {
     public void update(boolean pause){
         if(pause){
             if(darkness <= 0.7f) return;
-            darkness-=0.008f;
+            darkness-=0.008f * Game.deltaTimeUpdate * 75;
         } else {
             darkness = 1f;
         }

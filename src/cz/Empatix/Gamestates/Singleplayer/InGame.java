@@ -463,6 +463,7 @@ public class InGame extends GameState {
                 glVertex2f(secondary, 380);
                 glVertex2f(first, 380);
                 glEnd();
+                glLineWidth(1f);
             }
             if(time > 5000){
                 for(Image img : logos){
@@ -501,6 +502,7 @@ public class InGame extends GameState {
 
                 }
             }
+            miniMap.forceHideBigMap();
 
         }
         if(pause){

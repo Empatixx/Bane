@@ -22,6 +22,9 @@ public class Barrel extends DestroyableObject {
 
     public Barrel(TileMap tm){
         super(tm);
+        movementVelocity = 375;
+        stopAcceleration = 1.5f;
+        moveAcceleration = 0;
         if(tm.isServerSide()){
             width = 64;
             height = 64;

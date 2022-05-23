@@ -623,6 +623,8 @@ public class InGameMP extends GameState {
                 glVertex2f(secondary, 380);
                 glVertex2f(first, 380);
                 glEnd();
+                glLineWidth(1f);
+
             }
             if(time > 2350){
                 for(Image img : logos){

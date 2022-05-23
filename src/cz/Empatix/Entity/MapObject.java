@@ -240,8 +240,146 @@ public abstract class MapObject {
 			}
 		}
 	}
-
 	public void checkRoomObjectsCollision(){
+		ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
+		for(ArrayList<RoomObject> objects : objectsArray) {
+			if (objects == null) continue;
+			for (RoomObject obj : objects) {
+				if(this instanceof RoomObject && this == obj) continue;
+				if(!obj.collision && intersects(obj) && this instanceof Player) obj.touchEvent(this);
+				if(obj.collision){
+					dest.x = position.x + speed.y;
+					dest.y = position.y + speed.y;
+
+					boolean xCollision = obj.getX() - obj.getCwidth() / 2 < dest.x + cwidth / 2 - 1
+							&&
+							obj.getX() + obj.getCwidth() / 2 > dest.x - cwidth / 2 + 1;
+
+					boolean yCollision = obj.getY() - obj.getCheight() / 2f < position.y + cheight / 2 - 1
+							&&
+							obj.getY() + obj.getCheight() / 2 > position.y - cheight / 2 + 1;
+
+					if(xCollision && yCollision) {
+						if (speed.x > 0 && obj.collision) {
+							if (obj.moveable) {
+								float maxSpeed = obj.getMovementVelocity() * deltaTimeUpdate;
+								if (this instanceof Player || this instanceof Enemy) {
+									if (speed.x > maxSpeed) {
+										acceleration.x = maxSpeed / (movementVelocity * deltaTimeUpdate);
+										speed.x = maxSpeed;
+									}
+									temp.x = position.x + speed.x;
+
+								}
+								obj.acceleration.x = 1;
+								obj.speed.x = maxSpeed;
+								obj.checkTileMapCollision();
+								obj.checkRoomObjectsCollision();
+								if (obj.speed.x == 0) {
+									speed.x = 0;
+									acceleration.x = 0;
+									temp.x = obj.getX() - obj.cwidth / 2 - cwidth / 2;
+								}
+							} else {
+								speed.x = 0;
+								acceleration.x = 0;
+								temp.x = obj.getX() - obj.cwidth / 2 - cwidth / 2;
+							}
+						} else if (speed.x < 0 && obj.collision) {
+							if (obj.moveable) {
+								float maxSpeed = -obj.getMovementVelocity() * deltaTimeUpdate;
+								if (this instanceof Player || this instanceof Enemy) {
+									if (speed.x < maxSpeed) {
+										acceleration.x = maxSpeed / (movementVelocity * deltaTimeUpdate);
+										speed.x = maxSpeed;
+									}
+									temp.x = position.x + speed.x;
+								}
+								obj.acceleration.x = -1;
+								obj.speed.x = maxSpeed;
+								obj.checkTileMapCollision();
+								obj.checkRoomObjectsCollision();
+								if (obj.speed.x == 0) {
+									speed.x = 0;
+									acceleration.x = 0;
+									temp.x = obj.getX() + obj.cwidth / 2 + cwidth / 2;
+								}
+							} else {
+								speed.x = 0;
+								acceleration.x = 0;
+								temp.x = obj.getX() + obj.cwidth / 2 + cwidth / 2;
+							}
+						}
+						obj.touchEvent(this);
+					}
+					xCollision = obj.getX() - obj.getCwidth() / 2 < position.x + cwidth / 2 - 1
+							&&
+							obj.getX() + obj.getCwidth() / 2 > position.x - cwidth / 2 + 1;
+
+					yCollision = obj.getY() - obj.getCheight() / 2 < dest.y + cheight / 2 - 1
+							&&
+							obj.getY() + obj.getCheight() / 2 > dest.y - cheight / 2 + 1;
+					if(xCollision && yCollision){
+						if (speed.y > 0 && obj.collision) {
+							if (obj.moveable) {
+								float maxSpeed = obj.getMovementVelocity() * deltaTimeUpdate;
+								if (this instanceof Player || this instanceof Enemy) {
+									if (speed.y > maxSpeed) {
+										acceleration.y = maxSpeed / (movementVelocity * deltaTimeUpdate);
+										speed.y = maxSpeed;
+									}
+									temp.y = position.y + speed.y;
+								}
+								obj.acceleration.y = 1;
+								obj.speed.y = maxSpeed;
+								obj.checkTileMapCollision();
+								obj.checkRoomObjectsCollision();
+								if (obj.speed.y == 0) {
+									speed.y = 0;
+									acceleration.y = 0;
+									temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
+								}
+
+							} else {
+								speed.y = 0;
+								acceleration.y = 0;
+								temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
+							}
+						} else if (speed.y < 0 && obj.collision) {
+							if (obj.moveable) {
+								float maxSpeed = -obj.getMovementVelocity() * deltaTimeUpdate;
+								if (this instanceof Player || this instanceof Enemy) {
+									if (speed.y < maxSpeed) {
+										acceleration.y = maxSpeed / (movementVelocity * deltaTimeUpdate);
+										speed.y = maxSpeed;
+									}
+									temp.y = position.y + speed.y;
+
+								}
+								obj.acceleration.y = -1;
+								obj.speed.y = maxSpeed;
+								obj.setSpeedY(speed.y);
+								obj.checkTileMapCollision();
+								obj.checkRoomObjectsCollision();
+								if (obj.speed.y == 0) {
+									speed.y = 0;
+									acceleration.y = 0;
+									temp.y = obj.getY() + obj.cheight / 2 + cheight / 2;
+								}
+							} else {
+								speed.y = 0;
+								acceleration.y = 0;
+								temp.y = obj.getY() + obj.cheight / 2 + cheight / 2;
+							}
+						}
+						obj.touchEvent(this);
+					}
+				}
+			}
+		}
+	}
+
+	/*public void checkRoomObjectsCollision(){
 		ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
 		for(ArrayList<RoomObject> objects : objectsArray) {
 			if (objects == null) continue;
@@ -372,7 +510,7 @@ public abstract class MapObject {
 				}
 			}
 		}
-	}
+	}*/
 	public float getX() { return position.x; }
 	public float getY() { return position.y; }
 
@@ -404,7 +542,7 @@ public abstract class MapObject {
 	@Deprecated public void setSpeedY(float y) {
 		this.speed.y = y;
 	}
-	public void move(Vector2f acceleration, int velocity){
+	public void move(Vector2f acceleration, int velocity){ //TODO: make sum of more velocities, self-velocity + move velocity
 		this.acceleration.set(acceleration);
 	}
 	/**

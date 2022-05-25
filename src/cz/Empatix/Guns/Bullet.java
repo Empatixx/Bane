@@ -476,7 +476,7 @@ public class Bullet extends MapObject {
         return didHitEnemy;
     }
 
-    public int getOwner() {
+    public int getPlayerOwner() {
         return owner;
     }
 }

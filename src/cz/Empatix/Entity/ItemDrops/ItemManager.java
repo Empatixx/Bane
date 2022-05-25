@@ -132,7 +132,7 @@ public class ItemManager {
             price = Random.nextInt(3+tm.getFloor()) + 2+tm.getFloor()*2;
         }
         if(tm.isActiveAffix(TileMap.INFLATION)){
-            price *= 1.5f;
+            price *= 2f;
         }
         drop.setShop(price);
         itemDrops.add(drop);
@@ -412,18 +412,18 @@ public class ItemManager {
         }
     }
 
-    public void dropWeapon(int x, int y, Vector2f speed) {
+    public void dropWeapon(int x, int y, Vector2f acceleration) {
         Weapon weapon = gm.randomGun();
         weapon.drop();
         WeaponDrop drop = new WeaponDrop(tm, weapon);
-        drop.setSpeed(speed.x, speed.y);
+        drop.move(acceleration,drop.getMovementVelocity());
         drop.setPosition(x, y);
         itemDrops.add(drop);
     }
-    public void dropWeapon(Weapon weapon, int x, int y, Vector2f speed) {
+    public void dropWeapon(Weapon weapon, int x, int y, Vector2f acceleration) {
         weapon.drop();
         WeaponDrop drop = new WeaponDrop(tm, weapon);
-        drop.setSpeed(speed.x, speed.y);
+        drop.move(acceleration,drop.getMovementVelocity());
         drop.setPosition(x, y);
         itemDrops.add(drop);
     }

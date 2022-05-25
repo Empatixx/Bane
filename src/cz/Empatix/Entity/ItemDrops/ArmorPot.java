@@ -39,8 +39,6 @@ public class ArmorPot extends ItemDrop{
             height *= scale;
             cwidth *= scale;
             cheight *= scale;
-
-            stopSpeed = 0.35f;
         } else {
             type = ARMOR;
             canDespawn = true;
@@ -99,7 +97,6 @@ public class ArmorPot extends ItemDrop{
 
             light = LightManager.createLight(new Vector3f(.0f,1.0f,.0f),new Vector2f(0,0),1.25f,this);
 
-            stopSpeed = 0.35f;
         }
 
     }

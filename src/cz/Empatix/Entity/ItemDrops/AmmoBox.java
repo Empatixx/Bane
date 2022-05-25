@@ -42,7 +42,6 @@ public class AmmoBox extends ItemDrop  {
             cwidth *= scale;
             cheight *= scale;
 
-            stopSpeed = 0.35f;
         } else {
             type = AMMOBOX;
             canDespawn = true;
@@ -101,7 +100,6 @@ public class AmmoBox extends ItemDrop  {
 
             light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
 
-            stopSpeed = 0.35f;
         }
 
     }

@@ -119,7 +119,7 @@ public class ItemManagerMP {
             price = Random.nextInt(3+tm.getFloor()) + 2+tm.getFloor()*2;
         }
         if(tm.isActiveAffix(TileMap.INFLATION)){
-            price *= 1.5f;
+            price *= 2f;
         }
         drop.setShop(price);
         Network.ShopDropitem shopPacket = new Network.ShopDropitem();
@@ -131,6 +131,7 @@ public class ItemManagerMP {
         if(drop instanceof StatUpgradeDrop) shopPacket.subType = ((StatUpgradeDrop) drop).getUpgradeType();
         Server server = MultiplayerManager.getInstance().server.getServer();
         server.sendToAllTCP(shopPacket);
+
     }
 
     public ItemDrop createDrop(float x, float y) {
@@ -341,11 +342,10 @@ public class ItemManagerMP {
         }
     }
 
-    public void dropWeapon(int x, int y, Vector2f speed) {
+    public void dropWeapon(int x, int y) {
         Weapon weapon = gm.randomGun();
         weapon.drop();
         WeaponDrop drop = new WeaponDrop(tm, weapon);
-        drop.setSpeed(speed.x, speed.y);
         drop.setPosition(x, y);
         itemDrops.add(drop);
 
@@ -360,13 +360,6 @@ public class ItemManagerMP {
 
         Server server = mpManager.server.getServer();
         server.sendToAllUDP(dropWeapon);
-    }
-    public void dropWeapon(Weapon weapon, int x, int y, Vector2f speed) {
-        weapon.drop();
-        WeaponDrop drop = new WeaponDrop(tm, weapon);
-        drop.setSpeed(speed.x, speed.y);
-        drop.setPosition(x, y);
-        itemDrops.add(drop);
     }
 
     /**
@@ -425,9 +418,9 @@ public class ItemManagerMP {
             }
         }
     }
-    public void createDrop(float x, float y, Vector2f speed) {
+    public void createDrop(float x, float y, Vector2f acceleration) {
         ItemDrop drop = createDrop(x,y);
-        drop.setSpeed(speed.x,speed.y);
+        drop.move(acceleration,drop.getMovementVelocity());
     }
 
     public void dropPlayerWeapon(Weapon weapon, int x, int y, int slot, int idPlayer) {

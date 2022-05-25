@@ -562,10 +562,19 @@ public class Room {
         }
         if(type == Starter){
             Barrel barrel = new Barrel(tm);
-            barrel.setPosition(xMin+300,yMin+300);
+            barrel.setPosition(xMin+600,yMin+600);
             addObject(barrel);
             barrel = new Barrel(tm);
-            barrel.setPosition(xMin+500,yMin+300);
+            barrel.setPosition(xMin+1000,yMin+1000);
+            addObject(barrel);
+            barrel = new Barrel(tm);
+            barrel.setPosition(xMin+1128,yMin+1000);
+            addObject(barrel);
+            barrel = new Barrel(tm);
+            barrel.setPosition(xMin+1256,yMin+1000);
+            addObject(barrel);
+            barrel = new Barrel(tm);
+            barrel.setPosition(xMin+1384,yMin+1000);
             addObject(barrel);
         }
         if(type == Progress){

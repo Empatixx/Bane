@@ -42,8 +42,6 @@ public class ShotgunAmmo extends ItemDrop{
             height *= scale;
             cwidth *= scale;
             cheight *= scale;
-
-            stopSpeed = 0.35f;
         } else {
             type = SHOTGUNAMMO;
             canDespawn = true;
@@ -102,8 +100,6 @@ public class ShotgunAmmo extends ItemDrop{
 
             light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
 
-
-            stopSpeed = 0.35f;
         }
     }
 

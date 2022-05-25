@@ -50,7 +50,6 @@ public class Pot extends DestroyableObject {
             cwidth *= scale;
             cheight *= scale;
 
-            stopSpeed = 0.55f;
             maxMovement = 0.7f;
         } else {
             width = 128;
@@ -66,7 +65,7 @@ public class Pot extends DestroyableObject {
             spriteSheetRows = 2;
 
             collision = true;
-            moveable=true;
+            moveable=false;
             preDraw=true;
             behindCollision=true;
 
@@ -154,8 +153,6 @@ public class Pot extends DestroyableObject {
             cwidth *= scale;
             cheight *= scale;
 
-            stopSpeed = 0.55f;
-
             maxMovement = 0.7f;
         }
     }
@@ -167,7 +164,7 @@ public class Pot extends DestroyableObject {
         if(tileMap.isServerSide() || !MultiplayerManager.multiplayer){
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
-            stopping();
+            getMovementSpeed();
             sendMovePacket();
         }
 

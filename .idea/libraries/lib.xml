@@ -21,6 +21,7 @@
       <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-openal/lwjgl-openal-javadoc.jar!/" />
       <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-opengl/lwjgl-opengl-javadoc.jar!/" />
       <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-stb/lwjgl-stb-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/javadoc/dyn4j-4.2.1-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
       <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-openal/lwjgl-openal-sources.jar!/" />
@@ -28,6 +29,7 @@
       <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-glfw/lwjgl-glfw-sources.jar!/" />
       <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl/lwjgl-sources.jar!/" />
       <root url="jar://$PROJECT_DIR$/../../lwjgl-3.2.3/lwjgl-opengl/lwjgl-opengl-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/javadoc/dyn4j-4.2.1-sources.jar!/" />
     </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
   </library>

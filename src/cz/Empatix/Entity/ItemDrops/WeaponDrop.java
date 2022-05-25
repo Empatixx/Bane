@@ -164,9 +164,6 @@ public class WeaponDrop extends ItemDrop {
             }
             scale = 1.5f;
             facingRight = true;
-
-            stopSpeed = 0.35f;
-
             cwidth*=scale;
             cheight*=scale;
 
@@ -197,8 +194,6 @@ public class WeaponDrop extends ItemDrop {
             textureHeight = height;
 
             light = LightManager.createLight(new Vector3f(1.0f,0.8274f,0.0f),new Vector2f(0,0),1.25f,this);
-            
-            stopSpeed = 0.35f;
 
             cwidth*=scale;
             cheight*=scale;

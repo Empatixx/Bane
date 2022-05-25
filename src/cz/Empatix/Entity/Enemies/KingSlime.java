@@ -222,10 +222,6 @@ public class KingSlime extends Enemy {
 
     }
     public void initStats(int floor){
-        moveSpeed = 0.6f;
-        maxSpeed = 1.6f;
-        stopSpeed = 0.5f;
-
         movementVelocity = 100;
         moveAcceleration = 4f;
         stopAcceleration = 3.8f;

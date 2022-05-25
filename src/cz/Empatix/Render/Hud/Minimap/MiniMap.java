@@ -305,11 +305,11 @@ public class MiniMap {
                         break;
                     }
                     case TileMap.ENEMYREGEN:{
-                        desc = "Enemies have got regeneration 1 hp per 5 seconds";
+                        desc = "Enemies have got regeneration 2% hp per 5 seconds";
                         break;
                     }
                     case TileMap.INFLATION:{
-                        desc = "Shop prices are increased by 50%";
+                        desc = "Shop prices are increased by 100%";
                         break;
                     }
                     case TileMap.BERSERKS:{

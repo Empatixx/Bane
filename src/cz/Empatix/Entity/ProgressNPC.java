@@ -29,10 +29,6 @@ public class ProgressNPC extends MapObject {
     public ProgressNPC(TileMap tm) {
         super(tm);
 
-        moveSpeed = 0f;
-        maxSpeed = 1.5f;
-        stopSpeed = 1.5f;
-
         width = 64;
         height = 64;
         cwidth = 64;

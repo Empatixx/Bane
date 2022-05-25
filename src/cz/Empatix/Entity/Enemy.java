@@ -870,8 +870,8 @@ public abstract class Enemy extends MapObject{
         if(tileMap.isActiveAffix(TileMap.BERSERKS)){
             if((float)health/maxHealth <= 0.2f){
                 if(!ragingActivated){
-                    maxSpeed *= 1.3f;
-                    moveSpeed *= 1.3f;
+                    moveAcceleration *= 1.3f;
+                    movementVelocity *= 1.3f;
                     ragingActivated = true;
                 }
             }
@@ -886,9 +886,11 @@ public abstract class Enemy extends MapObject{
     }
     public void tryRegen(){
         if(tileMap.isActiveAffix(TileMap.ENEMYREGEN)){
-            if(System.currentTimeMillis() - lastReg - InGame.deltaPauseTime() > 5000){
+            if(System.currentTimeMillis() - lastReg - InGame.deltaPauseTime() > 5000 && !isDead()){
                 lastReg = System.currentTimeMillis() - InGame.deltaPauseTime();
-                heal(1);
+                int healAmount = (int)Math.ceil(maxHealth * 0.02);
+                if(healAmount <= 0) healAmount = 1;
+                heal(healAmount);
             }
         }
     }

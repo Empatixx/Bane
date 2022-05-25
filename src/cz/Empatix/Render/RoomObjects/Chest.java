@@ -53,7 +53,6 @@ public class Chest extends RoomObject {
             cwidth *= scale;
             cheight *= scale;
 
-            stopSpeed = 0.55f;
             maxMovement=1.5f;
             dropGun= false;
             dropArtefact = false;
@@ -136,7 +135,6 @@ public class Chest extends RoomObject {
             cwidth *= scale;
             cheight *= scale;
 
-            stopSpeed = 0.55f;
             maxMovement=1.5f;
             dropGun= false;
             dropArtefact = false;
@@ -165,19 +163,19 @@ public class Chest extends RoomObject {
 
                 ItemManagerMP itemManager = ItemManagerMP.getInstance();
 
-                if(dropGun) itemManager.dropWeapon((int)position.x,(int)position.y,speed);
+                if(dropGun) itemManager.dropWeapon((int)position.x,(int)position.y);
                 if(dropArtefact) itemManager.dropArtefact((int)position.x,(int)position.y);
 
                 for(int i = 0;i<5;i++){
                     double atan = Math.atan2(x,
                             y) + 1.3 * i;
-                    speed.x = (float)(Math.cos(atan) * 10);
-                    speed.y = (float)(Math.sin(atan) * 10);
+                    speed.x = (float)Math.cos(atan);
+                    speed.y = (float)Math.sin(atan);
 
                     itemManager.createDrop((int)position.x,(int)position.y,speed);
                 }
             }
-            stopping();
+            getMovementSpeed();
             sendMovePacket();
         } else if (!MultiplayerManager.multiplayer){
             checkTileMapCollision();
@@ -204,7 +202,7 @@ public class Chest extends RoomObject {
                     itemManager.createDrop((int)position.x,(int)position.y,acceleration);
                 }
             }
-            stopping();
+            getMovementSpeed();
         } else {
             if(opened && animation.hasPlayedOnce()) {
                 remove = true;

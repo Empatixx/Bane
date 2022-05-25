@@ -190,10 +190,6 @@ public class RedSlime extends Enemy {
 
     }
     public void initStats(int floor){
-        moveSpeed = 0.6f;
-        maxSpeed = 3.6f;
-        stopSpeed = 0.5f;
-
         movementVelocity = 215;
         moveAcceleration = 4f;
         stopAcceleration = 3.8f;

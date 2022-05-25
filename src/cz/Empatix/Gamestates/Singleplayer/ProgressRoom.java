@@ -196,6 +196,7 @@ public class ProgressRoom extends GameState {
     protected void keyPressed(int k) {
         if(k == GLFW.GLFW_KEY_ESCAPE && !progressNPC.isInteracting()){
             gsm.setState(GameStateManager.MENU);
+            transition = false;
         }
         player.keyPressed(k);
         tileMap.keyPressed(k, player);

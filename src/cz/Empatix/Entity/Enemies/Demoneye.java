@@ -138,10 +138,6 @@ public class Demoneye extends Enemy {
 
     }
     public void initStats(int floor){
-        moveSpeed = 2f;
-        maxSpeed = 6.5f;
-        stopSpeed = 1.6f;
-
         movementVelocity =  390;
         moveAcceleration = 6f;
         stopAcceleration = 5f;

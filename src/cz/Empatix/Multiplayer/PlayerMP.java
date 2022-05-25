@@ -18,6 +18,7 @@ import cz.Empatix.Render.Room;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -273,7 +274,7 @@ public class PlayerMP extends Player {
             }
         }
         if(!tileMap.isServerSide()){
-            if(((Math.abs(speed.x) >= maxSpeed || Math.abs(speed.y) >= maxSpeed)) && !ghost){
+            if((Math.abs(acceleration.x) >= 1f || Math.abs(acceleration.y) >= 1f) && !ghost){
                 float value = Math.abs(speed.x);
                 if(value < Math.abs(speed.y)) value = Math.abs(speed.y);
                 if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 400-value*20){
@@ -437,11 +438,12 @@ public class PlayerMP extends Player {
                 } else {
                     amount = coins / 3 + coins % 3;
                 }
-                x = -100 + Random.nextInt(201);
-                y = -100 + Random.nextInt(201);
+                Vector2f acc = new Vector2f();
+                acc.x = -1 + 2 * (float)Math.random();
+                acc.y = -1 + 2 * (float)Math.random();
                 Coin coin = new Coin(tileMap);
                 coin.setAmount(amount);
-                coin.setSpeed(x/10f,y/10f);
+                coin.move(acc,coin.getMovementVelocity());
                 coin.canDespawn = false;
                 coin.setPosition(position.x,position.y);
                 ItemManagerMP itemManagerMP = ItemManagerMP.getInstance();
@@ -505,10 +507,6 @@ public class PlayerMP extends Player {
 
         // COLLISION WIDTH/HEIGHT
         scale = 2;
-
-        moveSpeed = 0.8f;
-        maxSpeed = 11.84f;
-        stopSpeed = 3.25f;
 
         health = maxHealth = 7;
         coins = 0;

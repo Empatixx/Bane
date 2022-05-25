@@ -56,8 +56,6 @@ public class Barrel extends DestroyableObject {
             height *= scale;
             cwidth *= scale;
             cheight *= scale;
-
-            stopSpeed = 0.55f;
             maxMovement = 0.5f;
         } else {
             width = 64;
@@ -73,7 +71,7 @@ public class Barrel extends DestroyableObject {
             spriteSheetRows = 2;
 
             collision = true;
-            moveable=true;
+            moveable=false;
             preDraw = true;
             behindCollision = true;
 
@@ -162,7 +160,6 @@ public class Barrel extends DestroyableObject {
             cwidth *= scale;
             cheight *= scale;
 
-            stopSpeed = 0.55f;
             maxMovement = 0.5f;
         }
     }
@@ -173,7 +170,7 @@ public class Barrel extends DestroyableObject {
             checkTileMapCollision();
             checkRoomObjectsCollision();
             setPosition(temp.x, temp.y);
-            stopping();
+            getMovementSpeed();
             sendMovePacket();
         }
 

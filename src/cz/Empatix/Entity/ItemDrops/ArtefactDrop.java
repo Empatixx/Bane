@@ -64,8 +64,6 @@ public class ArtefactDrop extends ItemDrop {
 
             cwidth*=scale;
             cheight*=scale;
-
-            stopSpeed = 0.35f;
         } else {
             this.artefact = artefact;
             type = ARTEFACT;
@@ -102,7 +100,6 @@ public class ArtefactDrop extends ItemDrop {
                 outlineShader = ShaderManager.createShader("shaders\\outline");
             }
 
-            stopSpeed = 0.35f;
         }
     }
     public ArtefactDrop(TileMap tm, Artefact artefact, float x, float y){
@@ -139,7 +136,6 @@ public class ArtefactDrop extends ItemDrop {
             double atan = Math.atan2(y,x);
             speed.x = (float)(Math.cos(atan) * 10);
             speed.y = (float)(Math.sin(atan) * 10);
-            stopSpeed = 0.35f;
         } else {
             this.artefact = artefact;
             type = ARTEFACT;
@@ -179,7 +175,6 @@ public class ArtefactDrop extends ItemDrop {
             double atan = Math.atan2(y,x);
             speed.x = (float)(Math.cos(atan) * 10);
             speed.y = (float)(Math.sin(atan) * 10);
-            stopSpeed = 0.35f;
         }
     }
 

@@ -38,7 +38,6 @@ public class HealingPot extends ItemDrop{
             height *= scale;
             cwidth *= scale;
             cheight *= scale;
-            stopSpeed = 0.35f;
         } else {
             type = HP;
             canDespawn = true;
@@ -96,8 +95,6 @@ public class HealingPot extends ItemDrop{
             cheight *= scale;
 
             light = LightManager.createLight(new Vector3f(1.f,0.f,.0f),new Vector2f(0,0),1.25f,this);
-
-            stopSpeed = 0.35f;
         }
 
     }

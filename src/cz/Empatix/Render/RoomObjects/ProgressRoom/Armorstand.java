@@ -77,8 +77,6 @@ public class Armorstand extends RoomObject {
         cwidth *= scale;
         cheight *= scale;
 
-        stopSpeed = 0.55f;
-
     }
 
     public void update(){

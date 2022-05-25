@@ -163,10 +163,6 @@ public class Ghost extends Enemy {
 
     }
     public void initStats(int floor){
-        moveSpeed = 1.4f;
-        maxSpeed = 7.2f;
-        stopSpeed = 0.3f;
-
         movementVelocity = 430;
         moveAcceleration = 6f;
         stopAcceleration = 2f;

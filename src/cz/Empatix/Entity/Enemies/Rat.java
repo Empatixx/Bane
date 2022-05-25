@@ -157,10 +157,6 @@ public class Rat extends Enemy {
 
     }
     public void initStats(int floor){
-        moveSpeed = 1.2f;
-        maxSpeed = 4.4f;
-        stopSpeed = 1f;
-
         movementVelocity = 265;
         moveAcceleration = 4f;
         stopAcceleration = 3.5f;

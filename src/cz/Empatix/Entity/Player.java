@@ -84,10 +84,6 @@ public class Player extends MapObject {
             // COLLISION WIDTH/HEIGHT
             scale = 2;
 
-            moveSpeed = 0.8f;
-            maxSpeed = 11.84f;
-            stopSpeed = 3.25f;
-
             moveAcceleration = 4.5f;
             stopAcceleration = 6.5f;
             movementVelocity = 715;
@@ -121,10 +117,6 @@ public class Player extends MapObject {
 
             // COLLISION WIDTH/HEIGHT
             scale = 2;
-
-            moveSpeed = 0.8f;
-            maxSpeed = 11.84f;
-            stopSpeed = 3.25f;
 
             moveAcceleration = 4.5f;
             stopAcceleration = 6.5f;
@@ -298,8 +290,8 @@ public class Player extends MapObject {
             }
         }
         getMovementSpeed();
-        checkRoomObjectsCollision();
         checkTileMapCollision();
+        checkRoomObjectsCollision();
         setPosition(temp.x, temp.y);
         if (right || left) {
             if (currentAction != SIDE) {
@@ -588,9 +580,6 @@ public class Player extends MapObject {
             animation.update();
         }
     }
-    public void setMaxSpeed(float maxSpeed){ this.maxSpeed = maxSpeed;}
-
-    public float getMaxSpeed(){return maxSpeed;}
 
     public void setCurrentAction(int state){
         if (state == SIDE && currentAction != SIDE) {

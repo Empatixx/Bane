@@ -153,10 +153,6 @@ public class Bat extends Enemy {
         }
     }
     public void initStats(int floor){
-        moveSpeed = 1.4f;
-        maxSpeed = 5.2f;
-        stopSpeed = 0.8f;
-
         movementVelocity =  315;
         moveAcceleration = 5f;
         stopAcceleration = 4f;

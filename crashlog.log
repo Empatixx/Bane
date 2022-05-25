@@ -1,1069 +1,535 @@
-FPS: 72
+FPS: 3429
 FPS: 1
-FPS: 48
-FPS: 53
+FPS: 2841
+FPS: 4024
+FPS: 1650
+FPS: 2548
+FPS: 2052
+FPS: 1979
 X: 0.0
 Y: 0.0
-FPS: 60
+FPS: 1921
+FPS: 1730
+FPS: 2895
+FPS: 1591
+FPS: 1767
+FPS: 1493
+FPS: 1759
+FPS: 1770
+FPS: 1723
+FPS: 2263
+FPS: 2242
+FPS: 2357
+FPS: 2335
+FPS: 2333
+FPS: 2200
+FPS: 2148
+FPS: 2391
+FPS: 2497
+FPS: 2626
+FPS: 2737
+FPS: 2240
 X: 0.0
 Y: 0.0
-FPS: 60
-FPS: 60
-FPS: 60
+FPS: 2748
+FPS: 2689
 X: 0.0
 Y: 0.0
-FPS: 60
+FPS: 2559
+FPS: 2064
+FPS: 2183
 X: 0.0
 Y: 0.0
-FPS: 60
-FPS: 60
-FPS: 60
-X: 0.0
-Y: 0.0
-FPS: 60
-X: 0.0
-Y: 0.0
-FPS: 60
-FPS: 60
-FPS: 60
-X: 0.0
-Y: 0.0
-FPS: 60
-X: 0.0
-Y: 0.0
-FPS: 60
-FPS: 60
-FPS: 60
-FPS: 60
+FPS: 1719
 X: 0.0
 Y: 0.0
 X: 0.0
 Y: 0.0
-FPS: 60
-FPS: 60
-Exception in thread "main" java.lang.StackOverflowError
-	at cz.Empatix.Entity.MapObject.checkTileMapCollision(MapObject.java:190)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:277)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
-	at cz.Empatix.Entity.MapObject.checkRoomObjectsCollision(MapObject.java:278)
+FPS: 1972
+FPS: 2305
+FPS: 2110
+X: 0.0
+Y: 0.0
+FPS: 1773
+X: 0.0
+Y: 0.0
+X: 0.0
+Y: 0.0
+FPS: 1742
+FPS: 1786
+FPS: 1939
+X: 0.0
+Y: 0.0
+FPS: 2006
+X: 0.0
+Y: 0.0
+FPS: 2128
+FPS: 1806
+FPS: 2138
+X: 0.0
+Y: 0.0
+FPS: 2129
+X: 0.0
+Y: 0.0
+FPS: 2313
+FPS: 2341
+FPS: 2302
+X: 0.0
+Y: 0.0
+FPS: 1792
+X: 0.0
+Y: 0.0
+FPS: 2202
+X: 0.0
+Y: 0.0
+FPS: 2060
+FPS: 2035
+X: 0.0
+Y: 0.0
+FPS: 1972
+FPS: 1715
+X: 0.0
+Y: 0.0
+FPS: 2080
+FPS: 2199
+FPS: 2145
+X: 0.0
+Y: 0.0
+FPS: 2028
+X: 0.0
+Y: 0.0
+FPS: 1612
+FPS: 2072
+FPS: 2071
+X: 0.0
+Y: 0.0
+X: 0.0
+Y: 0.0
+FPS: 2010
+X: 0.0
+Y: 0.0
+FPS: 2001
+FPS: 2086
+FPS: 1755
+X: 0.0
+Y: 0.0
+FPS: 1907
+FPS: 2079
+FPS: 2017
+FPS: 2171
+X: 0.0
+Y: 0.0
+FPS: 1860
+FPS: 2323
+FPS: 2298
+FPS: 2347
+FPS: 1521
+FPS: 779
+FPS: 634
+FPS: 657
+FPS: 1860
+FPS: 2145
+FPS: 2481
+FPS: 2430
+FPS: 2138
+FPS: 2179
+FPS: 1732
+FPS: 2207
+FPS: 2291
+FPS: 3197
+FPS: 2640
+FPS: 3468
+FPS: 3178
+FPS: 2387
+FPS: 2981
+FPS: 2978
+FPS: 1862
+FPS: 2214
+FPS: 2266
+FPS: 2270
+FPS: 2018
+X: 0.0
+Y: 0.0
+FPS: 2302
+FPS: 2296
+FPS: 2243
+FPS: 2396
+FPS: 1946
+FPS: 2234
+FPS: 2865
+FPS: 3538
+FPS: 2661
+FPS: 3746
+FPS: 3509
+FPS: 2745
+FPS: 3548
+FPS: 2895
+FPS: 3733
+FPS: 3571
+FPS: 2880
+FPS: 3532
+FPS: 2902
+FPS: 2724
+FPS: 3334
+FPS: 2887
+FPS: 3693
+FPS: 3525
+FPS: 2775
+FPS: 3529
+FPS: 3134
+FPS: 3530
+FPS: 3712
+FPS: 2841
+FPS: 3461
+FPS: 3166
+FPS: 2633
+FPS: 3227
+FPS: 3574
+FPS: 2876
+FPS: 3622
+FPS: 3277
+FPS: 2831
+FPS: 3669
+FPS: 2829
+FPS: 3271
+FPS: 3448
+FPS: 2741
+FPS: 3356
+FPS: 3382
+FPS: 2856
+FPS: 3699
+FPS: 3510
+FPS: 2794
+FPS: 3303
+FPS: 2501
+FPS: 3078
+FPS: 3332
+FPS: 2566
+FPS: 3057
+FPS: 3360
+FPS: 1925
+FPS: 2081
+FPS: 2371
+FPS: 2385
+FPS: 1913
+FPS: 2478
+FPS: 2517
+FPS: 2458
+FPS: 1951
+FPS: 2321
+FPS: 2383
+FPS: 2450
+FPS: 2013
+FPS: 2463
+FPS: 2493
+FPS: 2507
+FPS: 2007
+FPS: 2556
+FPS: 2525
+FPS: 2512
+FPS: 2012
+FPS: 2521
+FPS: 2476
+FPS: 2476
+FPS: 2041
+FPS: 2545
+FPS: 2416
+FPS: 2365
+FPS: 1735
+FPS: 1881
+FPS: 1490
+FPS: 2337
+FPS: 2269
+FPS: 2883
+FPS: 3067
+FPS: 3009
+FPS: 3409
+FPS: 3611
+FPS: 3561
+FPS: 2915
+FPS: 2027
+FPS: 2554
+FPS: 2685
+FPS: 2841
+FPS: 3086
+FPS: 3117
+FPS: 3029
+FPS: 3221
+FPS: 3720
+FPS: 2526
+FPS: 3452
+FPS: 3404
+FPS: 3217
+FPS: 2909
+FPS: 3365
+FPS: 2575
+FPS: 2443
+FPS: 2550
+X: 0.0
+Y: 0.0
+X: 0.0
+Y: 0.0
+FPS: 1979
+FPS: 2467
+FPS: 2472
+FPS: 2330
+X: 0.0
+Y: 0.0
+FPS: 2167
+FPS: 1870
+FPS: 1669
+FPS: 1834
+X: 0.0
+Y: 0.0
+FPS: 2006
+FPS: 2073
+FPS: 2260
+FPS: 2102
+X: 0.0
+Y: 0.0
+FPS: 2088
+FPS: 2312
+FPS: 2404
+FPS: 2443
+X: 0.0
+Y: 0.0
+FPS: 2406
+X: 0.0
+Y: 0.0
+FPS: 2309
+FPS: 2279
+X: 0.0
+Y: 0.0
+FPS: 2389
+FPS: 2402
+FPS: 2577
+FPS: 2036
+X: 0.0
+Y: 0.0
+FPS: 2032
+FPS: 2093
+FPS: 2131
+FPS: 2108
+X: 0.0
+Y: 0.0
+FPS: 2084
+FPS: 1702
+FPS: 2025
+FPS: 2040
+X: 0.0
+Y: 0.0
+FPS: 2044
+FPS: 2088
+FPS: 1722
+FPS: 2037
+X: 0.0
+Y: 0.0
+FPS: 2040
+FPS: 2073
+FPS: 1998
+FPS: 1675
+X: 0.0
+Y: 0.0
+FPS: 2042
+FPS: 2074
+FPS: 2074
+FPS: 2048
+X: 0.0
+Y: 0.0
+FPS: 1688
+FPS: 2066
+FPS: 1995
+FPS: 2093
+X: 0.0
+Y: 0.0
+FPS: 2041
+FPS: 1726
+FPS: 2037
+FPS: 2085
+X: 0.0
+Y: 0.0
+FPS: 2017
+FPS: 2039
+FPS: 2031
+FPS: 1693
+X: 0.0
+Y: 0.0
+FPS: 2030
+FPS: 2096
+FPS: 2055
+FPS: 2080
+X: 0.0
+Y: 0.0
+FPS: 2001
+FPS: 1632
+FPS: 2046
+FPS: 2041
+X: 0.0
+Y: 0.0
+FPS: 2007
+FPS: 2162
+FPS: 1941
+FPS: 1705
+X: 0.0
+Y: 0.0
+FPS: 2024
+FPS: 1968
+FPS: 2202
+FPS: 2082
+X: 0.0
+Y: 0.0
+FPS: 1958
+FPS: 1572
+FPS: 2027
+FPS: 1965
+X: 0.0
+Y: 0.0
+FPS: 1860
+FPS: 2150
+FPS: 1807
+FPS: 2395
+X: 0.0
+Y: 0.0
+FPS: 2376
+FPS: 2254
+FPS: 2177
+FPS: 1797
+X: 0.0
+Y: 0.0
+FPS: 2239
+FPS: 2213
+FPS: 2090
+FPS: 2286
+X: 0.0
+Y: 0.0
+FPS: 1796
+FPS: 2268
+FPS: 2260
+FPS: 2248
+FPS: 1956
+X: 0.0
+Y: 0.0
+FPS: 1982
+FPS: 2212
+FPS: 2376
+X: 0.0
+Y: 0.0
+FPS: 2560
+FPS: 1949
+FPS: 2509
+FPS: 2508
+FPS: 2607
+X: 0.0
+Y: 0.0
+FPS: 2573
+FPS: 1947
+FPS: 2426
+FPS: 2444
+FPS: 2156
+FPS: 1745
+X: 0.0
+Y: 0.0
+FPS: 1873
+FPS: 1908
+FPS: 2109
+FPS: 1738
+X: 0.0
+Y: 0.0
+FPS: 2059
+FPS: 2129
+FPS: 2206
+FPS: 1778
+FPS: 1807
+FPS: 1918
+FPS: 2085
+FPS: 2160
+FPS: 1749
+FPS: 2208
+FPS: 2272
+FPS: 2287
+FPS: 1828
+FPS: 1991
+FPS: 2089
+FPS: 1813
+FPS: 2158
+FPS: 2180
+FPS: 2195
+FPS: 1855
+FPS: 2324
+WTF
+FPS: 2360
+FPS: 2044
+FPS: 1965
+FPS: 1653
+FPS: 2097
+X: 0.0
+Y: 0.0
+FPS: 2375
+FPS: 2475
+FPS: 2112
+FPS: 2422
+FPS: 2365
+FPS: 2224
+FPS: 2007
+FPS: 1878
+FPS: 1560
+X: 0.0
+Y: 0.0
+FPS: 2032
+FPS: 1799
+FPS: 1796
+FPS: 1859
+X: 0.0
+Y: 0.0
+FPS: 1897
+FPS: 2163
+FPS: 1617
+FPS: 1778
+FPS: 2139
+FPS: 1817
+X: 0.0
+Y: 0.0
+FPS: 2230
+FPS: 2152
+FPS: 2096
+FPS: 2207
+X: 0.0
+Y: 0.0
+FPS: 1744
+FPS: 2034
+FPS: 2007
+FPS: 2059
+X: 0.0
+Y: 0.0
+FPS: 1797
+FPS: 1312
+FPS: 1670
+FPS: 1706
+X: 0.0
+Y: 0.0
+X: 0.0
+Y: 0.0
+FPS: 1732
+FPS: 1592
+FPS: 2085
+FPS: 2165
+X: 0.0
+Y: 0.0
+X: 0.0
+Y: 0.0
+FPS: 2208
+FPS: 2209
+FPS: 1881
+FPS: 1552
+X: 0.0
+Y: 0.0
+X: 0.0
+Y: 0.0
+FPS: 2022
+FPS: 2017
+FPS: 2164
+FPS: 1632
+X: 0.0
+Y: 0.0
+FPS: 1954
 AL lib: (EE) alc_cleanup: 1 device not closed

@@ -27,9 +27,8 @@ public class Fade extends Postprocess  {
      */
     public void update(boolean translation){
         if(reverse){
-            System.out.println("value´D: "+value);
             if(value > 0){
-                value -= 6.69f * value/55;
+                value -= 360.69f * value/55 * Game.deltaTimeUpdate;;
                 if(value < 0.001f) value = 0;
             }
         } else {

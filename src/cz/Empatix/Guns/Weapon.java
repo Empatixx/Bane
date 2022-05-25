@@ -227,8 +227,8 @@ public abstract class Weapon{
                         MultiplayerManager mpManager = MultiplayerManager.getInstance();
                         // increasing statistic of killed enemies by player
                         MPStatistics mpStatistics = mpManager.server.getMpStatistics();
-                        int owner = bullet.getOwner();
-                        if(owner != 0) mpStatistics.addEnemiesKill(bullet.getOwner());
+                        int owner = bullet.getPlayerOwner();
+                        if(owner != 0) mpStatistics.addEnemiesKill(bullet.getPlayerOwner());
                     }
                     if(!tm.isServerSide()){
                         showDamageIndicator(bullet.getDamage(),bullet.isCritical(),enemy);

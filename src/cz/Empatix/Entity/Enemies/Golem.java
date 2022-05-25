@@ -256,10 +256,6 @@ public class Golem extends Enemy {
 
     }
     public void initStats(int floor){
-        moveSpeed = 0.7f;
-        maxSpeed = 5.2f;
-        stopSpeed = 0.75f;
-
         movementVelocity = 315;
         moveAcceleration = 3f;
         stopAcceleration = 3.5f;

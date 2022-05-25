@@ -193,10 +193,6 @@ public class EyeBat extends Enemy {
         }
     }
     public void initStats(int floor){
-        moveSpeed = 2f;
-        maxSpeed = 8.5f;
-        stopSpeed = 1.6f;
-
         movementVelocity =  510;
         moveAcceleration = 6f;
         stopAcceleration = 5f;

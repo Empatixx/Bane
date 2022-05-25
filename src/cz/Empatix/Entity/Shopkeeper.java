@@ -19,10 +19,6 @@ public class Shopkeeper extends RoomObject {
     public Shopkeeper(TileMap tm) {
         super(tm);
         if(tm.isServerSide()){
-            moveSpeed = 0f;
-            maxSpeed = 1.5f;
-            stopSpeed = 1.5f;
-
             width = 80;
             height = 80;
             cwidth = 80;
@@ -41,10 +37,6 @@ public class Shopkeeper extends RoomObject {
 
             reverse = false;
         } else {
-            moveSpeed = 0f;
-            maxSpeed = 1.5f;
-            stopSpeed = 1.5f;
-
             width = 80;
             height = 80;
             cwidth = 80;

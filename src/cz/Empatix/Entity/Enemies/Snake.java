@@ -156,10 +156,6 @@ public class Snake extends Enemy {
         }
     }
     public void initStats(int floor){
-        moveSpeed = 1.4f;
-        maxSpeed = 4.6f;
-        stopSpeed = 0.35f;
-
         movementVelocity = 280;
         moveAcceleration = 4f;
         stopAcceleration = 2f;

@@ -14,6 +14,7 @@ import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -130,6 +131,7 @@ public class LuckyCoin extends Artefact {
         charge = 0;
         ItemManager im = ItemManager.getInstance();
 
+        Vector2f acceleration = new Vector2f();
         for(int i = 0;i<5 + multiplier;i++){
             int tileSize = tm.getTileSize();
 
@@ -150,12 +152,12 @@ public class LuckyCoin extends Artefact {
                 y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
             }
             double atan = Math.atan2(y-playerY,x-playerX);
-            float dx = (float)(Math.cos(atan) * 10);
-            float dy = (float)(Math.sin(atan) * 10);
+            acceleration.x = (float)Math.cos(atan);
+            acceleration.y = (float)Math.sin(atan);
 
             Coin coin = new Coin(tm);
             coin.setPosition(x,y);
-            coin.setSpeed(dx,dy);
+            coin.move(acceleration,coin.getMovementVelocity());
             im.addItemDrop(coin);
         }
         multiplier++;
@@ -169,6 +171,7 @@ public class LuckyCoin extends Artefact {
         for(Player p : p){
             if(p == null) continue;
             if(((PlayerMP)p).getIdConnection() == idUser){
+                Vector2f acceleration = new Vector2f();
                 for(int i = 0;i<5 + multiplier;i++){
                     int tileSize = tm.getTileSize();
 
@@ -189,12 +192,12 @@ public class LuckyCoin extends Artefact {
                         y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
                     }
                     double atan = Math.atan2(y-playerY,x-playerX);
-                    float dx = (float)(Math.cos(atan) * 10);
-                    float dy = (float)(Math.sin(atan) * 10);
+                    acceleration.x = (float)Math.cos(atan);
+                    acceleration.y = (float)Math.sin(atan);
 
                     Coin coin = new Coin(tm);
                     coin.setPosition(x,y);
-                    coin.setSpeed(dx,dy);
+                    coin.move(acceleration,coin.getMovementVelocity());
                     im.addItemDrop(coin);
                 }
                 multiplier++;

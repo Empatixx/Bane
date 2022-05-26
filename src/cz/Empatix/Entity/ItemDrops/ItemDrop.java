@@ -3,8 +3,11 @@ package cz.Empatix.Entity.ItemDrops;
 import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.GameServer;
+import cz.Empatix.Multiplayer.Interpolator;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector3f;
 
 public abstract class ItemDrop extends MapObject {
     int amount;
@@ -37,8 +40,13 @@ public abstract class ItemDrop extends MapObject {
 
         stopAcceleration = 1.5f;
         movementVelocity = 550;
+
+        if(MultiplayerManager.multiplayer && !tm.isServerSide()) interpolator = new Interpolator(this,1/30f);
     }
 
+    public void addInterpolationPosition(Network.MoveDropItem p){
+        interpolator.newUpdate(p.tick,new Vector3f(p.x,p.y,0));
+    }
     public void setAmount(int amount) {
         this.amount = amount;
     }
@@ -54,13 +62,18 @@ public abstract class ItemDrop extends MapObject {
             getMovementSpeed();
             if(tileMap.isServerSide()){
                 if(shop) return; // shop items are static located
-                Network.MoveDropItem moveDropItem = new Network.MoveDropItem();
-                moveDropItem.id = id;
-                moveDropItem.x = position.x;
-                moveDropItem.y = position.y;
-                Server server = MultiplayerManager.getInstance().server.getServer();
-                server.sendToAllUDP(moveDropItem);
+                if(GameServer.tick % 2 == 0){ // every second tick
+                    Network.MoveDropItem moveDropItem = new Network.MoveDropItem();
+                    moveDropItem.id = id;
+                    moveDropItem.x = position.x;
+                    moveDropItem.tick = GameServer.tick;
+                    moveDropItem.y = position.y;
+                    Server server = MultiplayerManager.getInstance().server.getServer();
+                    server.sendToAllUDP(moveDropItem);
+                }
             }
+        } else {
+            interpolator.update(position.x,position.y);
         }
     }
 

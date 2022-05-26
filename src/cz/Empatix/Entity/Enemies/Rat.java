@@ -211,14 +211,7 @@ public class Rat extends Enemy {
     public void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o) {
     }
     @Override
-    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o) {
-    }
-    @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
-
-    }
-    @Override
-    public void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket) {
 
     }
     public void forceRemove(){

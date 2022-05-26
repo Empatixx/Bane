@@ -19,6 +19,9 @@ public class MultiplayerManager {
 
     public static boolean multiplayer = false;
 
+    public static final int TICKS = 60;
+    public static final float ns = 1000000000f / MultiplayerManager.TICKS;
+
     public static MultiplayerManager getInstance(){ return multiplayerManager;}
     public MultiplayerManager(boolean host, GameStateManager gsm, String ip) {
         multiplayerManager = this;

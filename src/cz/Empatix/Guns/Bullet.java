@@ -7,6 +7,8 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.GameServer;
+import cz.Empatix.Multiplayer.Interpolator;
 import cz.Empatix.Multiplayer.MPStatistics;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -52,6 +54,8 @@ public class Bullet extends MapObject {
         ROOMOBJECT,
         PLAYER
     }
+
+
 
     public Bullet(TileMap tm, float x, float y,double inaccuracy, int movementVelocity) {
         super(tm);
@@ -201,6 +205,8 @@ public class Bullet extends MapObject {
 
         speed.x = 1;
         speed.y = 1;
+        acceleration.x = 1;
+        acceleration.y = 1;
 
         // try to find spritesheet if it was created once
         spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\Player\\bullet64.tga");
@@ -276,6 +282,8 @@ public class Bullet extends MapObject {
 
         light = LightManager.createLight(new Vector3f(1.0f,0.0f,0.0f), new Vector2f(xmap,ymap), 1.75f,this);
         this.id = id;
+
+        interpolator = new Interpolator(this,1/30f);
     }
 
     public void setDamage(int damage) {
@@ -389,11 +397,14 @@ public class Bullet extends MapObject {
             }
 
             Server server = MultiplayerManager.getInstance().server.getServer();
-            Network.MoveBullet moveBullet = new Network.MoveBullet();
-            moveBullet.x = position.x;
-            moveBullet.y = position.y;
-            moveBullet.id = id;
-            server.sendToAllUDP(moveBullet);
+            if(GameServer.tick % 2 == 0){
+                Network.MoveBullet moveBullet = new Network.MoveBullet();
+                moveBullet.x = position.x;
+                moveBullet.y = position.y;
+                moveBullet.id = id;
+                moveBullet.tick = GameServer.tick;
+                server.sendToAllUDP(moveBullet);
+            }
 
         } else {
             setMapPosition();
@@ -411,8 +422,9 @@ public class Bullet extends MapObject {
                 getMovementSpeed();
                 checkTileMapCollision();
                 setPosition(temp.x, temp.y);
+            } else {
+                interpolator.update(position.x,position.y);
             }
-
             if((speed.x == 0 || speed.y == 0) && !hit) {
                 source.play(soundWallhit);
                 setHit(TypeHit.WALL);
@@ -478,5 +490,8 @@ public class Bullet extends MapObject {
 
     public int getPlayerOwner() {
         return owner;
+    }
+    public void addInterpolationPosition(Network.MoveBullet p){
+        interpolator.newUpdate(p.tick,new Vector3f(p.x,p.y,0));
     }
 }

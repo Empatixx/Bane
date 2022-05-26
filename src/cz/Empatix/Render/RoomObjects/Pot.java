@@ -34,7 +34,7 @@ public class Pot extends DestroyableObject {
             flinching=false;
 
             collision = true;
-            moveable=true;
+            moveable=false;
             preDraw=true;
             behindCollision=true;
 
@@ -166,6 +166,8 @@ public class Pot extends DestroyableObject {
             setPosition(temp.x, temp.y);
             getMovementSpeed();
             sendMovePacket();
+        } else {
+            interpolator.update(position.x,position.y);
         }
 
         animation.update();

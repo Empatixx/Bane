@@ -39,7 +39,7 @@ public class Barrel extends DestroyableObject {
             spriteSheetRows = 2;
 
             collision = true;
-            moveable=true;
+            moveable=false;
             preDraw = true;
             behindCollision = true;
 
@@ -172,6 +172,8 @@ public class Barrel extends DestroyableObject {
             setPosition(temp.x, temp.y);
             getMovementSpeed();
             sendMovePacket();
+        } else {
+            interpolator.update(position.x,position.y);
         }
 
         animation.update();

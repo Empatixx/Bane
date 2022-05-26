@@ -21,7 +21,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class GameServer {
     private final Server server;
-    private int tick;
+    public static int tick;
 
     private final List<PlayerMP> connectedPlayers;
     private final List<PlayerReady> readyCheckPlayers;
@@ -47,6 +47,9 @@ public class GameServer {
         return mpStatistics;
     }
     private AtomicBoolean randomInit;
+
+    public static float deltaTimeServer;
+
 
     public static class PlayerReady{
         private int id;
@@ -83,13 +86,11 @@ public class GameServer {
                 long lastTime = System.nanoTime();
                 long startACK = System.nanoTime();
                 long timer = System.currentTimeMillis();
-                final float ns = 1000000000 / 60.0f;
+                final float ns = MultiplayerManager.ns;
 
-
-                double delta = 0;
-
-                // UPS  counter
-                int updates = 0;
+                float deltaTick = 0;
+                long lastTimeDelta = System.nanoTime();
+                deltaTimeServer = -1;
 
                 gameState = GameStateManager.PROGRESSROOM;
 
@@ -106,11 +107,11 @@ public class GameServer {
                         ackCaching.update();
                     }
                     long now = System.nanoTime();
-                    delta += (now - lastTime) / ns;
+                    deltaTick += (now - lastTime) / ns;
                     lastTime = now;
-                    while (delta >= 1) {
+                    while (deltaTick >= 1) {
                         tick++;
-                        if(tick % 300 == 0){ // every 5sec
+                        if(tick % 300 == 0){ // every 5sec with default 60 ticks
                             Network.TickSync tickSync = new Network.TickSync();
                             tickSync.tick = tick;
                             server.sendToAllUDP(tickSync);
@@ -120,17 +121,18 @@ public class GameServer {
                             for (PlayerMP player : connectedPlayers) {
                                 player.update();
                                 player.newPlayerTickSync(tick); // sends tick sync if player is new
+                                Network.MovePlayer movePlayer = new Network.MovePlayer();
+                                movePlayer.idPlayer = player.getIdConnection();
+                                movePlayer.x = player.getX();
+                                movePlayer.y = player.getY();
+                                movePlayer.up = player.isMovingUp();
+                                movePlayer.down = player.isMovingDown();
+                                movePlayer.right = player.isMovingRight();
+                                movePlayer.left = player.isMovingLeft();
+                                movePlayer.tick = tick;
+                                server.sendToUDP(player.getIdConnection(),movePlayer); // to origin player every tick
                                 if(tick % 2 == 0){
-                                    Network.MovePlayer movePlayer = new Network.MovePlayer();
-                                    movePlayer.idPlayer = player.getIdConnection();
-                                    movePlayer.x = player.getX();
-                                    movePlayer.y = player.getY();
-                                    movePlayer.up = player.isMovingUp();
-                                    movePlayer.down = player.isMovingDown();
-                                    movePlayer.right = player.isMovingRight();
-                                    movePlayer.left = player.isMovingLeft();
-                                    movePlayer.tick = tick;
-                                    server.sendToAllUDP(movePlayer);
+                                    server.sendToAllExceptUDP(player.getIdConnection(),movePlayer); // to others players every 2 tick
                                 }
                             }
                         } finally {
@@ -290,14 +292,11 @@ public class GameServer {
                                 }
                             }
                         }
-                        updates++;
-                        delta--;
-                    }
+                        deltaTick--;
 
-                    if (System.currentTimeMillis() - timer > 1000) {
-                        timer += 1000;
-                        //System.out.print("UPS SERVER: "+updates+"\n");
-                        updates = 0;
+                        long nowDelta = System.nanoTime();
+                        deltaTimeServer = (float)((nowDelta-lastTimeDelta) * 1E-9);
+                        lastTimeDelta = now;
                     }
                 }
             }

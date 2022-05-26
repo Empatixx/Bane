@@ -44,20 +44,8 @@ public class PlayerMP extends Player {
     private Spritesheet ghostSpritesheet;
     private int vboGhostVertices;
 
-    // INTERPOLATION
-    private long lastTimeMove;
-    private long shiftMove;
-    private Network.MovePlayer currentMove;
-    private Network.MovePlayer previousMove;
-    private Network.MovePlayer nextMove;
-
-    private int moveSteps;
-
     private Room deathRoom;
     private int moveId;
-    private boolean postDeath;
-
-    private Interpolator interpolator;
 
     public PlayerMP(TileMap tm, String username){
         super(tm);
@@ -108,15 +96,14 @@ public class PlayerMP extends Player {
                     ghostSpritesheet.addSprites(images);
                 }
             }
+            interpolator = new Interpolator(this,1/30f); // every tick
         }
         moveId = 0;
-        moveSteps = 1;
-        postDeath = false;
-
     }
 
     public void setOrigin(boolean origin) {
         this.origin = origin;
+        interpolator = new Interpolator(this,1/60f); // every tick
     }
 
     public boolean isOrigin() {
@@ -310,9 +297,8 @@ public class PlayerMP extends Player {
         else checkGhostRestrictions();
         checkTileMapCollision();
         if(tileMap.isServerSide())setPosition(temp.x, temp.y);
-        else {
-            if(interpolator != null) interpolator.update(position.x,position.y,tileMap);
-        }
+        else interpolator.update(position.x,position.y);
+
         if(!tileMap.isServerSide()){
             if(!ghost){
                 if (right || left) {
@@ -505,6 +491,10 @@ public class PlayerMP extends Player {
         width = cwidth= 32;
         height = cheight = 72;
 
+        moveAcceleration = 4.5f;
+        stopAcceleration = 6.5f;
+        movementVelocity = 715;
+
         // COLLISION WIDTH/HEIGHT
         scale = 2;
 
@@ -541,6 +531,9 @@ public class PlayerMP extends Player {
             interpolator.newUpdate(p.tick,new Vector3f(p.x,p.y,0));
         }
     }
+    public void addInterpolationPosition(Network.MovePlayer p){
+        interpolator.newUpdate(p.tick,new Vector3f(p.x,p.y,0));
+    }
 
     public void setIdConnection(int idConnection) {
         this.idConnection = idConnection;
@@ -552,10 +545,6 @@ public class PlayerMP extends Player {
 
     public int getMoveId() {
         return moveId++;
-    }
-
-    public void setPostDeath() {
-        this.postDeath = true;
     }
 
     @Override
@@ -610,9 +599,6 @@ public class PlayerMP extends Player {
         server.sendToUDP(idConnection,playerHit);
 
         if(health <= 0) setDead();
-    }
-    public void initInterpolator(){
-        interpolator = new Interpolator(this);
     }
 
     public void newPlayerTickSync(int tick) {

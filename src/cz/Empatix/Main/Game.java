@@ -46,8 +46,7 @@ public class Game{
 
     public static boolean running;
 
-    public static float deltaTimeUpdate;
-    public static float deltaTimeMillis;
+    public static float deltaTime;
 
     private static int FPS;
 
@@ -86,7 +85,7 @@ public class Game{
 
 
         // Create the window
-        window = glfwCreateWindow(Settings.WIDTH, Settings.HEIGHT, "Bane",glfwGetPrimaryMonitor(), NULL);
+        window = glfwCreateWindow(Settings.WIDTH, Settings.HEIGHT, "Bane",/*glfwGetPrimaryMonitor()*/NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -226,7 +225,7 @@ public class Game{
         Configuration.DEBUG_MEMORY_ALLOCATOR.set(false);
         long timer = System.currentTimeMillis();
 
-        deltaTimeUpdate = 0;
+        deltaTime = 0;
 
         // UPS/FPS counter
         int frames = 0;
@@ -285,17 +284,14 @@ public class Game{
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-        deltaTimeUpdate = -1;
+        deltaTime = -1;
 
-        long startUpdate;
         long lastTime = System.nanoTime();
         while ( running ) {
-            startUpdate = System.currentTimeMillis();
-
             if(glfwWindowShouldClose(window)){
                 running=false;
             }
-            if(deltaTimeUpdate >= 0){
+            if(deltaTime >= 0){
                 update();
             }
             frames++;
@@ -306,21 +302,20 @@ public class Game{
                 FPS = frames;
                 frames = 0;
             }
-            deltaTimeMillis = (System.currentTimeMillis() - startUpdate)/1_000f;
 
             long now = System.nanoTime();
-            deltaTimeUpdate = (float)((now-lastTime) * 1E-9);
+            deltaTime = (float)((now-lastTime) * 1E-9);
+
             lastTime = now;
         }
         MultiplayerManager multiplayerManager = MultiplayerManager.getInstance();
         if(multiplayerManager != null) multiplayerManager.close();
         Settings.save();
-        //DiscordRP.getInstance().shutdown();
+        DiscordRP.getInstance().shutdown();
         Loader.unload();
         keyCallback.free();
         mouseButtonCallback.free();
         cursorPosCallback.free();
-        //cursorPosCallback.free();
         GL.setCapabilities(null);
         AudioManager.cleanUp();
         glfwDestroyWindow(window);

@@ -7,6 +7,8 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Random;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Multiplayer.GameServer;
+import cz.Empatix.Multiplayer.Interpolator;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Damageindicator.CombatIndicator;
@@ -86,7 +88,6 @@ public abstract class Enemy extends MapObject{
         }
 
         spawnTime=System.currentTimeMillis()-InGame.deltaPauseTime();
-
     }
 
     public Enemy(TileMap tm, Player[] player) {
@@ -114,6 +115,9 @@ public abstract class Enemy extends MapObject{
             }
         }
         spawnTime=System.currentTimeMillis()-InGame.deltaPauseTime();
+
+        if(MultiplayerManager.multiplayer && !tm.isServerSide()) interpolator = new Interpolator(this,1/30f);
+
     }
 
     public boolean isSpawning(){
@@ -725,21 +729,26 @@ public abstract class Enemy extends MapObject{
             getMovementSpeed();
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
+        } else {
+            interpolator.update(position.x,position.y);
         }
     }
     public void movePacket(){
         if(tileMap.isServerSide()){
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            Network.MoveEnemy moveEnemy = new Network.MoveEnemy();
-            moveEnemy.x = position.x;
-            moveEnemy.y = position.y;
-            moveEnemy.id = id;
-            moveEnemy.down = down;
-            moveEnemy.up = up;
-            moveEnemy.left = left;
-            moveEnemy.right = right;
-            moveEnemy.facingRight = facingRight;
-            server.sendToAllUDP(moveEnemy);
+            if(GameServer.tick % 2 == 0){ // every second tick send location
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                Network.MoveEnemy moveEnemy = new Network.MoveEnemy();
+                moveEnemy.tick = GameServer.tick;
+                moveEnemy.x = position.x;
+                moveEnemy.y = position.y;
+                moveEnemy.id = id;
+                moveEnemy.down = down;
+                moveEnemy.up = up;
+                moveEnemy.left = left;
+                moveEnemy.right = right;
+                moveEnemy.facingRight = facingRight;
+                server.sendToAllUDP(moveEnemy);
+            }
         }
     }
 
@@ -824,9 +833,7 @@ public abstract class Enemy extends MapObject{
     }
     public abstract void handleAddEnemyProjectile(Network.AddEnemyProjectile o);
     public abstract void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o);
-    public abstract void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o);
     public abstract void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket);
-    public abstract void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket);
 
     public void handleSync(Network.EnemySync sync){
         // packet sync is not old
@@ -859,6 +866,10 @@ public abstract class Enemy extends MapObject{
                 server.sendToAllUDP(healPacket);
             }
         }
+    }
+
+    public void addInterpolationPosition(Network.MoveEnemy p){
+        interpolator.newUpdate(p.tick,new Vector3f(p.x,p.y,0));
     }
 
     public void setHealth(short health) {

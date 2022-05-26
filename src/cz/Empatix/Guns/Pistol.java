@@ -278,7 +278,7 @@ public class Pistol extends Weapon {
                         if(currentMagazineAmmo > 0 && doubleShots) secondShotReady = true;
 
                         double atan = Math.atan2(y, x);
-                        push = 5;
+                        push = 15;
                         pushX = Math.cos(atan);
                         pushY = Math.sin(atan);
                     }
@@ -362,7 +362,7 @@ public class Pistol extends Weapon {
             source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
             if(response.idPlayer == MultiplayerManager.getInstance().getIdConnection()){
                 double atan = Math.atan2(response.y, response.x);
-                push = 30;
+                push = 15;
                 pushX = Math.cos(atan);
                 pushY = Math.sin(atan);
             }
@@ -378,7 +378,7 @@ public class Pistol extends Weapon {
     public boolean handleMoveBulletPacket(Network.MoveBullet moveBullet) {
         for(Bullet b : bullets){
             if(b.id== moveBullet.id){
-                b.setPosition(moveBullet.x, moveBullet.y);
+                b.addInterpolationPosition(moveBullet);
                 return true;
             }
         }

@@ -183,9 +183,8 @@ public class RingOfFire extends Artefact {
 
     @Override
     public void handleAddBulletPacket(Network.ArtefactAddBullet addBullet) {
-        Bullet bullet = new Bullet(tm, 0, 0, addBullet.inaccuracy,1800);
+        Bullet bullet = new Bullet(tm, addBullet.id);
         bullet.setPosition(addBullet.px, addBullet.py);
-        bullet.setId(addBullet.id);
         bullets.add(bullet);
         bullet.setDamage(4);
     }

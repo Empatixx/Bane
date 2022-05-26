@@ -477,11 +477,11 @@ public class TileMap {
 
 					// CORNERS OF MAP ( ROOM ) + tween to make it more sync (plus max = min; min = max) bcs of x / y of tilemap is negative
 
-					xmin += (Camera.getWIDTH() - xMax - xmin) * tween * Game.deltaTimeUpdate;
-					xmax += (-xMin - xmax) * tween * Game.deltaTimeUpdate;
+					xmin += (Camera.getWIDTH() - xMax - xmin) * tween * Game.deltaTime;
+					xmax += (-xMin - xmax) * tween * Game.deltaTime;
 
-					ymin += (Camera.getHEIGHT() - yMax - ymin) * tween * Game.deltaTimeUpdate;
-					ymax += (-yMin - ymax) * tween * Game.deltaTimeUpdate;
+					ymin += (Camera.getHEIGHT() - yMax - ymin) * tween * Game.deltaTime;
+					ymax += (-yMin - ymax) * tween * Game.deltaTime;
 					break;
 				}
 			}
@@ -506,11 +506,11 @@ public class TileMap {
 						}
 					}
 					// CORNERS OF MAP ( ROOM ) + tween to make it more sync (plus max = min; min = max) bcs of x / y of tilemap is negative
-					xmin += (Camera.getWIDTH() - xMax - xmin) * tween * Game.deltaTimeUpdate;
-					xmax += (-xMin - xmax) * tween * Game.deltaTimeUpdate;
+					xmin += (Camera.getWIDTH() - xMax - xmin) * tween * Game.deltaTime;
+					xmax += (-xMin - xmax) * tween * Game.deltaTime;
 
-					ymin += (Camera.getHEIGHT() - yMax - ymin) * tween * Game.deltaTimeUpdate;
-					ymax += (-yMin - ymax) * tween * Game.deltaTimeUpdate;
+					ymin += (Camera.getHEIGHT() - yMax - ymin) * tween * Game.deltaTime;
+					ymax += (-yMin - ymax) * tween * Game.deltaTime;
 
 
 					xMax -= tileSize*2;
@@ -1512,8 +1512,8 @@ public class TileMap {
 			position.x += (x - position.x);
 			position.y += (y - position.y);
 		} else {
-			position.x += (x - position.x) * tween * Game.deltaTimeUpdate;
-			position.y += (y - position.y) * tween * Game.deltaTimeUpdate;
+			position.x += (x - position.x) * tween * Game.deltaTime;
+			position.y += (y - position.y) * tween * Game.deltaTime;
 		}
 
 		fixBounds();
@@ -2020,7 +2020,7 @@ public class TileMap {
 		for(ArrayList<RoomObject> roomObjects : objects){
 			for(RoomObject roomObject : roomObjects){
 				if(roomObject.getId() == movePacket.id){
-					roomObject.setPosition(movePacket.x,movePacket.y);
+					roomObject.addInterpolationPosition(movePacket);
 					return;
 				}
 			}
@@ -2030,7 +2030,7 @@ public class TileMap {
 			ArrayList<RoomObject> roomObjects = sideRoom.getMapObjects();
 			for(RoomObject roomObject : roomObjects){
 				if(roomObject.getId() == movePacket.id){
-					roomObject.setPosition(movePacket.x,movePacket.y);
+					roomObject.addInterpolationPosition(movePacket);
 					return;
 				}
 			}

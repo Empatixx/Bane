@@ -86,9 +86,6 @@ public class Network {
         kryo.register(ExplosionDamage.class);
         kryo.register(TrapRoomObjectDamage.class);
         kryo.register(ArtefactInfo.class);
-        kryo.register(HitEnemyProjectileInstanced.class);
-        kryo.register(MoveEnemyProjectileInstanced.class);
-        kryo.register(AddEnemyProjectileInstanced.class);
         kryo.register(TickSync.class);
 
     }
@@ -206,7 +203,7 @@ public class Network {
         public float px,py;
         public byte damage;
         public boolean critical;
-        public byte speed;
+        public short speed;
         public float inaccuracy;
         public byte slot;
         public int id;
@@ -220,6 +217,7 @@ public class Network {
         public float x,y;
         public int id;
         public int idPacket;
+        public int tick;
         public MoveBullet(){
             idPacket = getIdPacketS();
         }
@@ -264,6 +262,7 @@ public class Network {
         public float x,y;
         public int id;
         public int idPacket;
+        public int tick;
         public MoveDropItem(){
             idPacket = getIdPacketS();
         }
@@ -277,6 +276,7 @@ public class Network {
     }
     public static class MoveEnemy {
         public float x, y;
+        public int tick;
         public int id;
         public boolean up, down, right, left, facingRight;
         public int idPacket;
@@ -396,6 +396,7 @@ public class Network {
         public int id;
         public float x, y;
         public int idPacket;
+        public int tick;
         public MoveRoomObject(){
             idPacket = getIdPacketS();
         }
@@ -410,18 +411,9 @@ public class Network {
             idPacket = getIdPacketS();
         }
     }
-    public static class AddEnemyProjectileInstanced{
-        public int[] id;
-        public int idEnemy;
-        public float[] x, y; // direction
-        public float[] inaccuracy;
-        public int idPacket;
-        public AddEnemyProjectileInstanced(){
-            idPacket = getIdPacketS();
-        }
-    }
     public static class MoveEnemyProjectile{
         public int id;
+        public int tick;
         public int idEnemy;
         public float x, y;
         public int idPacket;
@@ -429,24 +421,10 @@ public class Network {
             idPacket = getIdPacketS();
         }
     }
-    public static class MoveEnemyProjectileInstanced{
-        public int[] id;
-        public int idEnemy;
-        public float[] x, y;
-        public int idPacket;
-        public MoveEnemyProjectileInstanced(int totalMove){
-            id = new int[totalMove];
-            x = new float[totalMove];
-            y = new float[totalMove];
-            idPacket = getIdPacketS();
-        }
-        public MoveEnemyProjectileInstanced() {
-        }
-    }
     public static class HitEnemyProjectile {
         public int id; // id of projectile
         public int idEnemy; // id of owner's projectile
-        public int idHit; // id of room that was hitted
+        public int idHit; // id of room object that was hitted
         public int idPacket;
         public HitEnemyProjectile(){
             idHit= -1;
@@ -454,19 +432,6 @@ public class Network {
         }
         // idHit == -1  means that player was hitted or room object
         // damage hit is done on serverside, only if it is room object damage is done on clientside
-    }
-    public static class HitEnemyProjectileInstanced {
-        public int[] id; // id of projectile
-        public int idEnemy; // id of owner's projectile
-        public int[] idHit; // id of room that was hitted
-        public int idPacket;
-        public HitEnemyProjectileInstanced(int totalHit){
-            id = new int[totalHit];
-            idHit = new int[totalHit];
-            idPacket = getIdPacketS();
-        }
-        public HitEnemyProjectileInstanced(){
-        }
     }
     public static class ShopDropitem {
         public int id;

@@ -151,12 +151,12 @@ public class SliderBar {
     }
     public void update(float x, float y){
         if(!vertical){
-            pos.x += (x-pos.x) * 6.5f * Game.deltaTimeUpdate;
+            pos.x += (x-pos.x) * 6.5f * Game.deltaTime;
             if(pos.x> sliderMax) pos.x = sliderMax;
             if(pos.x< sliderMin) pos.x = sliderMin;
             value = (pos.x- sliderMin)/(sliderMax - sliderMin);
         } else {
-            pos.y += (y-pos.y) * 6.5f * Game.deltaTimeUpdate;
+            pos.y += (y-pos.y) * 6.5f * Game.deltaTime;
             if(pos.y> sliderMax) pos.y = sliderMax;
             if(pos.y< sliderMin) pos.y = sliderMin;
             value = (pos.y- sliderMin)/(sliderMax - sliderMin);

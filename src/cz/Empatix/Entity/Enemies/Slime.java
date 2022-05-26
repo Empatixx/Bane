@@ -8,6 +8,7 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.GameServer;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -219,13 +220,16 @@ public class Slime extends Enemy {
                 }
                 if(slimebullet.isHit()) continue;
                 if(tileMap.isServerSide()){
-                    Server server = MultiplayerManager.getInstance().server.getServer();
-                    Network.MoveEnemyProjectile moveEnemyProjectile = new Network.MoveEnemyProjectile();
-                    moveEnemyProjectile.idEnemy = id;
-                    moveEnemyProjectile.id = slimebullet.id;
-                    moveEnemyProjectile.x = slimebullet.getX();
-                    moveEnemyProjectile.y = slimebullet.getY();
-                    server.sendToAllUDP(moveEnemyProjectile);
+                    if(GameServer.tick % 2 == 0){
+                        Server server = MultiplayerManager.getInstance().server.getServer();
+                        Network.MoveEnemyProjectile moveEnemyProjectile = new Network.MoveEnemyProjectile();
+                        moveEnemyProjectile.idEnemy = id;
+                        moveEnemyProjectile.id = slimebullet.id;
+                        moveEnemyProjectile.tick = GameServer.tick;
+                        moveEnemyProjectile.x = slimebullet.getX();
+                        moveEnemyProjectile.y = slimebullet.getY();
+                        server.sendToAllUDP(moveEnemyProjectile);
+                    }
                 }
                 for(Player p : player){
                     if(p != null){
@@ -372,14 +376,12 @@ public class Slime extends Enemy {
     public void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o) {
         for(Slimebullet bullet : bullets){
             if(bullet.getId() == o.id){
-                bullet.setPosition(o.x,o.y);
+                bullet.addInterpolationPosition(o);
             }
 
         }
     }
-    @Override
-    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o) {
-    }
+
     @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
         for(Slimebullet bullet : bullets){
@@ -400,10 +402,6 @@ public class Slime extends Enemy {
             }
 
         }
-    }
-    @Override
-    public void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket) {
-
     }
     public void forceRemove(){
         for(Slimebullet b : bullets){

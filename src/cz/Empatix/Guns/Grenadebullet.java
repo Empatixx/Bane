@@ -404,8 +404,8 @@ public class Grenadebullet extends MapObject {
                 long elapsed = System.currentTimeMillis() - InGame.deltaPauseTime() - bulletShooted;
                 float delay = 1 - elapsed/750f;
                 if(delay < 0) delay = 0;
-                speed.x = movementVelocity * Game.deltaTimeUpdate * acceleration.x * delay;
-                speed.y = movementVelocity * Game.deltaTimeUpdate * acceleration.y * delay;
+                speed.x = movementVelocity * Game.deltaTime * acceleration.x * delay;
+                speed.y = movementVelocity * Game.deltaTime * acceleration.y * delay;
             }
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
@@ -430,8 +430,8 @@ public class Grenadebullet extends MapObject {
                     long elapsed = System.currentTimeMillis() - InGame.deltaPauseTime() - bulletShooted;
                     float delay = 1 - elapsed/750f;
                     if(delay < 0) delay = 0;
-                    speed.x = movementVelocity * Game.deltaTimeUpdate * acceleration.x * delay;
-                    speed.y = movementVelocity * Game.deltaTimeUpdate * acceleration.y * delay;
+                    speed.x = movementVelocity * Game.deltaTime * acceleration.x * delay;
+                    speed.y = movementVelocity * Game.deltaTime * acceleration.y * delay;
                 }
                 checkTileMapCollision();
                 checkUnmovableCollisions(); // only for not movable room objects

@@ -150,6 +150,8 @@ public class Bat extends Enemy {
             cheight *= 2;
 
             createShadow();
+
+
         }
     }
     public void initStats(int floor){
@@ -208,14 +210,7 @@ public class Bat extends Enemy {
     public void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o) {
     }
     @Override
-    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o) {
-    }
-    @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
-
-    }
-    @Override
-    public void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket) {
 
     }
     public void forceRemove(){

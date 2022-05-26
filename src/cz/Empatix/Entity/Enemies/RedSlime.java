@@ -7,6 +7,7 @@ import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.GameServer;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -227,13 +228,16 @@ public class RedSlime extends Enemy {
                 }
                 if(redSlimebullet.isHit()) continue;
                 if(tileMap.isServerSide()){
-                    Server server = MultiplayerManager.getInstance().server.getServer();
-                    Network.MoveEnemyProjectile moveEnemyProjectile = new Network.MoveEnemyProjectile();
-                    moveEnemyProjectile.idEnemy = id;
-                    moveEnemyProjectile.id = redSlimebullet.id;
-                    moveEnemyProjectile.x = redSlimebullet.getX();
-                    moveEnemyProjectile.y = redSlimebullet.getY();
-                    server.sendToAllUDP(moveEnemyProjectile);
+                    if(GameServer.tick % 2 == 0){
+                        Server server = MultiplayerManager.getInstance().server.getServer();
+                        Network.MoveEnemyProjectile moveEnemyProjectile = new Network.MoveEnemyProjectile();
+                        moveEnemyProjectile.idEnemy = id;
+                        moveEnemyProjectile.tick = GameServer.tick;
+                        moveEnemyProjectile.id = redSlimebullet.id;
+                        moveEnemyProjectile.x = redSlimebullet.getX();
+                        moveEnemyProjectile.y = redSlimebullet.getY();
+                        server.sendToAllUDP(moveEnemyProjectile);
+                    }
                 }
 
                 for(Player p : player){
@@ -370,13 +374,10 @@ public class RedSlime extends Enemy {
     public void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o) {
         for(RedSlimebullet bullet : bullets){
             if(bullet.getId() == o.id){
-                bullet.setPosition(o.x,o.y);
+                bullet.addInterpolationPosition(o);
             }
 
         }
-    }
-    @Override
-    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o) {
     }
     @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
@@ -398,10 +399,6 @@ public class RedSlime extends Enemy {
             }
 
         }
-    }
-    @Override
-    public void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket) {
-
     }
     public void forceRemove(){
         for(RedSlimebullet b : bullets){

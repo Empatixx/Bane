@@ -471,9 +471,6 @@ public class InGameMP extends GameState {
         }
         mpManager.client.setNumPlayers(index);
         pingTimer = System.currentTimeMillis();
-
-        player[0].initInterpolator();
-
     }
 
     @Override
@@ -811,11 +808,15 @@ public class InGameMP extends GameState {
             lightManager.update();
             return;
         }
-        if(true){
+        long now = System.nanoTime();
+        GameClient.deltaTick += (now - GameClient.lastTime) / MultiplayerManager.ns;
+        GameClient.lastTime = now;
+        while(GameClient.deltaTick >= 1){
             GameClient client = mpManager.client;
             client.serverTick++;
             client.setServerTick(client.serverTick);
             client.checkTickSyncs();
+            GameClient.deltaTick--;
             //System.out.println("CURR TICK: "+client.serverTick+ " INTERPOLATED TICK: "+client.interpolationTick);
         }
         if (postDeath){
@@ -888,9 +889,6 @@ public class InGameMP extends GameState {
             Object[] allPlayersDead = mpManager.packetHolder.get(PacketHolder.ALLPLAYERDEAD);
             if(allPlayersDead.length >= 1 && !postDeath){
                 postDeath = true;
-                for(PlayerMP p : player){
-                    if(p != null) p.setPostDeath();
-                }
                 pause = false;
                 deathTime = System.currentTimeMillis();
             }
@@ -919,23 +917,14 @@ public class InGameMP extends GameState {
             for(int i = 1;i<player.length;i++) {
                 PlayerMP p = player[i];
                 if(p == null) continue;
-                Network.MovePlayer recent=null;
                 for (Object o : objects) {
                     Network.MovePlayer move = (Network.MovePlayer) o;
                     if (p.getIdConnection() == move.idPlayer) {
-                        if (recent == null) recent = move;
-                        if (recent.idPacket < move.idPacket){
-                            recent = move;
-                        }
-                    }
-                }
-                if(recent != null){
-                    p.setPosition(recent.x,recent.y);
-                    if(!p.isOrigin()){
-                        p.setUp(recent.up);
-                        p.setDown(recent.down);
-                        p.setRight(recent.right);
-                        p.setLeft(recent.left);
+                        p.addInterpolationPosition(move);
+                        p.setUp(move.up);
+                        p.setDown(move.down);
+                        p.setRight(move.right);
+                        p.setLeft(move.left);
                     }
                 }
             }

@@ -4,6 +4,7 @@ import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades.*;
@@ -87,7 +88,7 @@ public class UpgradeMenu {
             scrollY = weaponSlider.getValue();
         }
         float value = weaponSlider.getValue();
-        value += (scrollY - value) * 0.3f;
+        value += (scrollY - value) * Game.deltaTime * 10;
         if(value > 1) value = 1;
         else if (value < 0) value = 0;
         weaponSlider.setValue(value);
@@ -147,7 +148,7 @@ public class UpgradeMenu {
             Network.NumUpgrades numUpgradesP = new Network.NumUpgrades();
             numUpgradesP.idPlayer = MultiplayerManager.getInstance().getIdConnection();
             numUpgradesP.numUpgrades = getAllNumUpgrades();
-            c.sendTCP(numUpgradesP); // TEST
+            c.sendTCP(numUpgradesP);
         }
     }
 }

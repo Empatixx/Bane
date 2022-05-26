@@ -4,6 +4,8 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Java.Loader;
+import cz.Empatix.Multiplayer.Interpolator;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -80,7 +82,13 @@ public class Slimebullet extends MapObject {
             // direction of bullet
             acceleration.x = (float)Math.cos(atan);
             acceleration.y = (float)Math.sin(atan);
+            // just set some random speed/so client dont think bullets were hitted
+            if(MultiplayerManager.multiplayer){
+                speed.x = 1;
+                speed.y = 1;
 
+                interpolator = new Interpolator(this,1/30f);
+            }
             movementVelocity = 600;
             moveAcceleration = 0;
             stopAcceleration = 0;
@@ -196,9 +204,12 @@ public class Slimebullet extends MapObject {
                 getMovementSpeed();
                 checkTileMapCollision();
                 setPosition(temp.x, temp.y);
+            } else {
+                interpolator.update(position.x,position.y);
             }
             if((speed.x == 0 || speed.y == 0) && !hit) {
                 setHit();
+                System.out.println("HIT");
             }
             if(hit) {
                 if (animation.hasPlayedOnce()){
@@ -221,5 +232,9 @@ public class Slimebullet extends MapObject {
 
     public void forceRemove(){
         light.remove();
+    }
+
+    public void addInterpolationPosition(Network.MoveEnemyProjectile p){
+        interpolator.newUpdate(p.tick,new Vector3f(p.x,p.y,0));
     }
 }

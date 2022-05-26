@@ -11,6 +11,7 @@ import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Java.Random;
+import cz.Empatix.Multiplayer.GameServer;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
@@ -24,7 +25,6 @@ import cz.Empatix.Render.TileMap;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class KingSlime extends Enemy {
 
@@ -371,7 +371,6 @@ public class KingSlime extends Enemy {
 
         }
         super.update();
-        movePacket();
     }
     public void updateMPClient(){
         setMapPosition();
@@ -395,10 +394,7 @@ public class KingSlime extends Enemy {
                 i--;
             }
         }
-
-        if(dead) return;
-
-        super.update();
+        interpolator.update(position.x,position.y);
     }
     public void updateMPServer(){
         setMapPosition();
@@ -422,24 +418,35 @@ public class KingSlime extends Enemy {
                 tileMap.addLadder();
             }
         }
-        // checking collisions of slime bullets
-        boolean[] hitBullet = new boolean[bullets.size()];
-        int[] hitIds = new int[bullets.size()];
-        int totalHit = 0;
-        int totalToMove = 0;
 
-        Arrays.fill(hitBullet,false);
+        Server server = MultiplayerManager.getInstance().server.getServer();
+        MultiplayerManager mpManager = MultiplayerManager.getInstance();
+
         for(int i = 0;i<bullets.size();i++){
             KingSlimebullet slimebullet = bullets.get(i);
             boolean preHit = slimebullet.isHit();
             slimebullet.update();
             // if bullet hitted wall
             if(!preHit && slimebullet.isHit() && tileMap.isServerSide()){
-                hitBullet[i] = true;
-                hitIds[i] = -1;
-                totalHit++;
+                Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
+                enemyProjectile.id = slimebullet.id;
+                enemyProjectile.idEnemy = id;
+                enemyProjectile.idHit = -1;
+                server.sendToAllUDP(enemyProjectile);
             }
             if(slimebullet.isHit()) continue;
+
+            // move packet
+            if(GameServer.tick % 2 == 0){
+                Network.MoveEnemyProjectile moveEnemyProjectile = new Network.MoveEnemyProjectile();
+                moveEnemyProjectile.idEnemy = id;
+                moveEnemyProjectile.tick = GameServer.tick;
+                moveEnemyProjectile.id = slimebullet.id;
+                moveEnemyProjectile.x = slimebullet.getX();
+                moveEnemyProjectile.y = slimebullet.getY();
+                server.sendToAllUDP(moveEnemyProjectile);
+            }
 
             for(Player p : player){
                 if(p != null){
@@ -447,9 +454,12 @@ public class KingSlime extends Enemy {
                         slimebullet.setHit();
                         p.hit(1);
 
-                        hitBullet[i] = true;
-                        hitIds[i] = -1;
-                        totalHit++;
+                        Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                        mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
+                        enemyProjectile.id = slimebullet.id;
+                        enemyProjectile.idEnemy = id;
+                        enemyProjectile.idHit = -1;
+                        server.sendToAllUDP(enemyProjectile);
                         break;
                     }
                 }
@@ -463,57 +473,28 @@ public class KingSlime extends Enemy {
                             slimebullet.setHit();
                             ((DestroyableObject) object).setHit(1);
 
-                            hitBullet[i] = true;
-                            hitIds[i] = object.id;
-                            totalHit++;
+                            Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                            mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
+                            enemyProjectile.id = slimebullet.id;
+                            enemyProjectile.idEnemy = id;
+                            enemyProjectile.idHit = object.id;
+                            server.sendToAllUDP(enemyProjectile);
                             break A;
                         }
                     } else if (object.collision && slimebullet.intersects(object)) {
                         slimebullet.setHit();
 
-                        hitBullet[i] = true;
-                        hitIds[i] = object.id;
-                        totalHit++;
+                        Network.HitEnemyProjectile enemyProjectile = new Network.HitEnemyProjectile();
+                        mpManager.server.requestACK(enemyProjectile,enemyProjectile.idPacket);
+                        enemyProjectile.id = slimebullet.id;
+                        enemyProjectile.idEnemy = id;
+                        enemyProjectile.idHit = object.id;
+                        server.sendToAllUDP(enemyProjectile);
                         break A;
                     }
                 }
             }
-            if(!slimebullet.isHit()) totalToMove++; // if slimebullet is after logics still valid for moving
         }
-        // hitbullets packet
-        MultiplayerManager mpManager = MultiplayerManager.getInstance();
-        Server server = MultiplayerManager.getInstance().server.getServer();
-        Network.HitEnemyProjectileInstanced hepi = new Network.HitEnemyProjectileInstanced(totalHit);
-        hepi.idEnemy = id;
-        int totalHitFound = 0;
-        for(int i = 0;i<bullets.size() && totalHitFound != totalHit;i++){
-            KingSlimebullet slimebullet = bullets.get(i);
-            if(hitBullet[i]){
-                hepi.id[totalHitFound] = slimebullet.id;
-                hepi.idHit[totalHitFound] = hitIds[i];
-                totalHitFound++;
-            }
-        }
-        mpManager.server.requestACK(hepi,hepi.idPacket);
-        server.sendToAllUDP(hepi);
-
-        // total of bullets we are moving, that has not been marked as hitted
-        Network.MoveEnemyProjectileInstanced mpei = new Network.MoveEnemyProjectileInstanced(totalToMove);
-        int totalMoveFound = 0;
-        mpei.idEnemy = id;
-        for(int i = 0;i<bullets.size() && totalMoveFound != totalToMove;i++){
-            KingSlimebullet slimebullet = bullets.get(i);
-            if(slimebullet.shouldRemove()) {
-                bullets.remove(i);
-                i--;
-            } else if (!slimebullet.isHit()) {
-                mpei.id[totalMoveFound] = slimebullet.getId();
-                mpei.x[totalMoveFound] = slimebullet.getX();
-                mpei.y[totalMoveFound] = slimebullet.getY();
-                totalMoveFound++;
-            }
-        }
-        server.sendToAllUDP(mpei);
 
         if(dead) return;
 
@@ -671,21 +652,10 @@ public class KingSlime extends Enemy {
     public void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o) {
         for(KingSlimebullet bullet : bullets){
             if(bullet.getId() == o.id){
-                bullet.setPosition(o.x,o.y);
+                bullet.addInterpolationPosition(o);
                 break;
             }
 
-        }
-    }
-    @Override
-    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o) {
-        for(int i = 0;i<o.id.length;i++){
-            for(KingSlimebullet bullet : bullets){
-                if(bullet.getId() == o.id[i]){
-                    bullet.setPosition(o.x[i],o.y[i]);
-                    break;
-                }
-            }
         }
     }
     @Override
@@ -706,29 +676,6 @@ public class KingSlime extends Enemy {
                     }
                 }
                 break;
-            }
-        }
-    }
-    @Override
-    public void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket) {
-        for(int i = 0;i<hitPacket.id.length;i++){
-            for(KingSlimebullet bullet : bullets){
-                if(bullet.getId() == hitPacket.id[i]){
-                    bullet.setHit();
-                    if (hitPacket.idHit[i] != -1) {
-                        ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
-                        A: for (ArrayList<RoomObject> objects : objectsArray) {
-                            if (objects == null) continue;
-                            for (RoomObject roomObject : objects) {
-                                if (roomObject.getId() == hitPacket.idHit[i]) {
-                                    ((DestroyableObject) roomObject).setHit(1);
-                                    break A;
-                                }
-                            }
-                        }
-                    }
-                    break;
-                }
             }
         }
     }

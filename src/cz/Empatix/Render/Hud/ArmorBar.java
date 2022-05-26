@@ -139,7 +139,7 @@ public class ArmorBar extends HUD{
             armorChangeTime = System.currentTimeMillis() - InGame.deltaPauseTime();
         }
         if(System.currentTimeMillis() - InGame.deltaPauseTime() - armorChangeTime > 100){
-            delayedArmor+=(armor - delayedArmor) * Game.deltaTimeUpdate * 2;
+            delayedArmor+=(armor - delayedArmor) * Game.deltaTime * 2;
         }
 
         this.maxArmor = maxArmor;

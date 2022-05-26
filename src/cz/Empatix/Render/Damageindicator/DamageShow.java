@@ -31,8 +31,8 @@ public class DamageShow {
         return System.currentTimeMillis() - time - InGame.deltaPauseTime() > 500;
     }
     public void update(){
-        pos.x+=dir.x * Game.deltaTimeUpdate;
-        pos.y+=dir.y * Game.deltaTimeUpdate;
+        pos.x+=dir.x * Game.deltaTime;
+        pos.y+=dir.y * Game.deltaTime;
     }
     void draw(){
         if(crit){

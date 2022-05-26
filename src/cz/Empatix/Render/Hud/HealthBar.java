@@ -150,7 +150,7 @@ public class HealthBar extends HUD{
             healthChangeTime = System.currentTimeMillis() - InGame.deltaPauseTime();
         }
         if(System.currentTimeMillis() - InGame.deltaPauseTime() - healthChangeTime > 100){
-            delayedHealth+=(health - delayedHealth) * Game.deltaTimeUpdate * 2;
+            delayedHealth+=(health - delayedHealth) * Game.deltaTime * 2;
         }
 
         this.maxHealth = maxHealth;

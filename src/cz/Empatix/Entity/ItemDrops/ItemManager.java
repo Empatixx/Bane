@@ -611,7 +611,7 @@ public class ItemManager {
     public void handleMoveDropItemPacket(Network.MoveDropItem dropItem) {
         for(ItemDrop drop: itemDrops){
             if(drop.getId() == dropItem.id){
-                drop.setPosition(dropItem.x, dropItem.y);
+                drop.addInterpolationPosition(dropItem);
                 break;
             }
         }

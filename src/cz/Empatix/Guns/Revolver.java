@@ -328,7 +328,7 @@ public class Revolver extends Weapon {
     public boolean handleMoveBulletPacket(Network.MoveBullet moveBullet) {
         for(Bullet b : bullets){
             if(b.getId() == moveBullet.id){
-                b.setPosition(moveBullet.x, moveBullet.y);
+                b.addInterpolationPosition(moveBullet);
                 return true;
             }
         }

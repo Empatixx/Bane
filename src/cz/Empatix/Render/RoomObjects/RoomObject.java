@@ -3,8 +3,11 @@ package cz.Empatix.Render.RoomObjects;
 import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.GameServer;
+import cz.Empatix.Multiplayer.Interpolator;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.TileMap;
+import org.joml.Vector3f;
 
 public abstract class RoomObject extends MapObject{
     public boolean moveable;
@@ -25,6 +28,7 @@ public abstract class RoomObject extends MapObject{
 
         maxMovement = 1f;
 
+        if(MultiplayerManager.multiplayer && !tm.isServerSide()) interpolator = new Interpolator(this,1/30f);
 
     }
     public abstract void touchEvent(MapObject o);
@@ -52,12 +56,15 @@ public abstract class RoomObject extends MapObject{
 
     public void sendMovePacket(){
         if(tileMap.isServerSide()){
-            Network.MoveRoomObject moveRoomObject = new Network.MoveRoomObject();
-            moveRoomObject.id = getId();
-            moveRoomObject.x = position.x;
-            moveRoomObject.y = position.y;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            server.sendToAllUDP(moveRoomObject);
+            if(GameServer.tick % 2 == 0){
+                Network.MoveRoomObject moveRoomObject = new Network.MoveRoomObject();
+                moveRoomObject.id = getId();
+                moveRoomObject.x = position.x;
+                moveRoomObject.y = position.y;
+                moveRoomObject.tick = GameServer.tick;
+                Server server = MultiplayerManager.getInstance().server.getServer();
+                server.sendToAllUDP(moveRoomObject);
+            }
         }
     }
 
@@ -71,5 +78,8 @@ public abstract class RoomObject extends MapObject{
     }
     protected boolean validPacketSync(int packetId){
         return lastTimeSync < packetId;
+    }
+    public void addInterpolationPosition(Network.MoveRoomObject p){
+        interpolator.newUpdate(p.tick,new Vector3f(p.x,p.y,0));
     }
 }

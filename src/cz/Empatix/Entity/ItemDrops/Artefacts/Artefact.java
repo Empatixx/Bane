@@ -105,6 +105,7 @@ public abstract class Artefact {
     /**
      * updates artefact in singeplayer
      * @param pause - if game is paused, needed for pausing timings
+     *
      */
     public abstract void updateSP(boolean pause);
 

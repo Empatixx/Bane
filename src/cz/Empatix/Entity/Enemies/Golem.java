@@ -446,6 +446,7 @@ public class Golem extends Enemy {
             checkTileMapCollision();
             setPosition(temp.x, temp.y);
         } else {
+            interpolator.update(position.x,position.y);
             if(currentAction == EYE_BEAM) {
                 right = false;
                 left = false;
@@ -607,16 +608,16 @@ public class Golem extends Enemy {
                     reverseDir = true;
                 }
                 if(!reverseDir){
-                    this.angle += (angle - this.angle) * Game.deltaTimeUpdate * 1.5;
+                    this.angle += (angle - this.angle) * Game.deltaTime * 1.5;
                 } else {
                     if(this.angle >= 0){
-                        this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * Game.deltaTimeUpdate * 1.5;
+                        this.angle += ((Math.PI*3/2. - this.angle)+(Math.PI/2.+angle)) * Game.deltaTime * 1.5;
                         if(this.angle >= Math.PI*3/2.){
                             this.angle-=Math.PI*3/2.;
                             this.angle=-Math.PI/2. - this.angle;
                         }
                     } else {
-                        this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * Game.deltaTimeUpdate * 1.5;
+                        this.angle -= ((Math.PI*3/2. - angle)+(Math.PI/2.+this.angle)) * Game.deltaTime * 1.5;
                         if(this.angle <= -Math.PI/2.){
                             this.angle+=Math.PI/2;
                             this.angle=Math.PI*3/2.-this.angle;
@@ -936,14 +937,7 @@ public class Golem extends Enemy {
     public void handleMoveEnemyProjectile(Network.MoveEnemyProjectile o) {
     }
     @Override
-    public void handleMoveEnemyProjectile(Network.MoveEnemyProjectileInstanced o) {
-    }
-    @Override
     public void handleHitEnemyProjectile(Network.HitEnemyProjectile hitPacket) {
-
-    }
-    @Override
-    public void handleHitEnemyProjectile(Network.HitEnemyProjectileInstanced hitPacket) {
 
     }
     public void forceRemove(){

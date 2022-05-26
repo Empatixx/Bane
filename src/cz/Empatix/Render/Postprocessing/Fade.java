@@ -28,19 +28,19 @@ public class Fade extends Postprocess  {
     public void update(boolean translation){
         if(reverse){
             if(value > 0){
-                value -= 360.69f * value/55 * Game.deltaTimeUpdate;;
+                value -= 360.69f * value/55 * Game.deltaTime;;
                 if(value < 0.001f) value = 0;
             }
         } else {
             if(value < 2){
-                value += 0.03f * Game.deltaTimeUpdate;
-                increment += Game.deltaTimeUpdate;
-                value += increment * Game.deltaTimeUpdate;
+                value += 0.03f * Game.deltaTime;
+                increment += Game.deltaTime;
+                value += increment * Game.deltaTime;
             }
             if (translation){
-                value += 0.75f * Game.deltaTimeUpdate;
-                increment += 30f * Game.deltaTimeUpdate;
-                value += increment * Game.deltaTimeUpdate;
+                value += 0.75f * Game.deltaTime;
+                increment += 30f * Game.deltaTime;
+                value += increment * Game.deltaTime;
             }
         }
 /*        if(reverse){

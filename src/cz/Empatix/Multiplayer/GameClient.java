@@ -30,6 +30,10 @@ public class GameClient{
 
     public int serverTick;
     public int interpolationTick;
+
+    public static float deltaTick;
+    public static float lastTime;
+
     public final int ticksBetweenPositionUpdates = 2;
     private final int tickDivergenceTolerance = 1;
 
@@ -323,19 +327,6 @@ public class GameClient{
                         ackCaching.add(ack);
                     }
                 }
-                else if (object instanceof Network.HitEnemyProjectileInstanced){
-                    GameState gameState = gsm.getCurrentGamestate();
-                    Network.HitEnemyProjectileInstanced packet = (Network.HitEnemyProjectileInstanced) object;
-                    Network.PacketACK ack = new Network.PacketACK();
-                    ack.id = packet.idPacket;
-                    connection.sendUDP(ack);
-                    if(!ackCaching.checkDuplicate(packet.idPacket)) {
-                        if (gameState instanceof InGameMP) {
-                            packetHolder.add(object, PacketHolder.iHIT_ENEMYPROJECTILE);
-                        }
-                        ackCaching.add(ack);
-                    }
-                }
 
                 else if(object instanceof Network.PlayerHit){
                     GameState gameState = gsm.getCurrentGamestate();
@@ -462,12 +453,6 @@ public class GameClient{
                     GameState gameState = gsm.getCurrentGamestate();
                     if(gameState instanceof InGameMP) {
                         packetHolder.add(object,PacketHolder.MOVE_ENEMYPROJECTILE);
-                    }
-                }
-                else if (object instanceof Network.MoveEnemyProjectileInstanced){
-                    GameState gameState = gsm.getCurrentGamestate();
-                    if(gameState instanceof InGameMP) {
-                        packetHolder.add(object,PacketHolder.iMOVE_ENEMYPROJECTILE);
                     }
                 }
                 else if (object instanceof Network.TickSync){

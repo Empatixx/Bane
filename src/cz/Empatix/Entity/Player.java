@@ -615,8 +615,4 @@ public class Player extends MapObject {
     public void setMaxArmor(int maxArmor) {
         this.maxArmor = maxArmor;
     }
-    private float lerpSpeed(float oldSpeed, float newSpeed, float deltaTime) {
-        float diff = newSpeed - oldSpeed;
-        return oldSpeed + diff * deltaTime;
-    }
 }

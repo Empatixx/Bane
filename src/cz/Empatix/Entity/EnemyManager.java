@@ -155,22 +155,12 @@ public class EnemyManager {
                     }
                 }
             }
-            Object[] ihitProjectiles = packetHolder.get(PacketHolder.iHIT_ENEMYPROJECTILE);
-            for(Object o : ihitProjectiles){
-                Network.HitEnemyProjectileInstanced hit = (Network.HitEnemyProjectileInstanced) o;
-                for(Enemy e : enemies){
-                    if(e.getId() == hit.idEnemy){
-                        e.handleHitEnemyProjectile(hit);
-                        break;
-                    }
-                }
-            }
             Object[] moveEnemies = packetHolder.get(PacketHolder.MOVEENEMY);
             for(Object o : moveEnemies){
                 Network.MoveEnemy moveEnemyPacket = (Network.MoveEnemy) o;
                 for (Enemy e : enemies) {
                     if (e.id == moveEnemyPacket.id) {
-                        e.setPosition(moveEnemyPacket.x, moveEnemyPacket.y);
+                        e.addInterpolationPosition(moveEnemyPacket);
                         e.setDown(moveEnemyPacket.down);
                         e.setUp(moveEnemyPacket.up);
                         e.setRight(moveEnemyPacket.right);
@@ -183,16 +173,6 @@ public class EnemyManager {
             Object[] moveEnemyProjectiles = packetHolder.get(PacketHolder.MOVE_ENEMYPROJECTILE);
             for(Object o : moveEnemyProjectiles){
                 Network.MoveEnemyProjectile moveProjectile = (Network.MoveEnemyProjectile) o;
-                for(Enemy e : enemies){
-                    if(e.getId() == moveProjectile.idEnemy){
-                        e.handleMoveEnemyProjectile(moveProjectile);
-                        break;
-                    }
-                }
-            }
-            Object[] moveEnemyProjectilesInstanced = packetHolder.get(PacketHolder.iMOVE_ENEMYPROJECTILE);
-            for(Object o : moveEnemyProjectilesInstanced){
-                Network.MoveEnemyProjectileInstanced moveProjectile = (Network.MoveEnemyProjectileInstanced) o;
                 for(Enemy e : enemies){
                     if(e.getId() == moveProjectile.idEnemy){
                         e.handleMoveEnemyProjectile(moveProjectile);
@@ -448,43 +428,43 @@ public class EnemyManager {
         Enemy instance;
         switch (enemy){
             case "slime":{
-                instance = new Slime(tileMap,player);
+                instance = new Slime(tileMap,player[0]);
                 break;
             }
             case "rat":{
-                instance = new Rat(tileMap,player);
+                instance = new Rat(tileMap,player[0]);
                 break;
             }
             case "bat":{
-                instance = new Bat(tileMap,player);
+                instance = new Bat(tileMap,player[0]);
                 break;
             }
             case "demoneye":{
-                instance = new Demoneye(tileMap,player);
+                instance = new Demoneye(tileMap,player[0]);
                 break;
             }
             case "ghost":{
-                instance = new Ghost(tileMap,player);
+                instance = new Ghost(tileMap,player[0]);
                 break;
             }
             case "golem":{
-                instance = new Golem(tileMap,player);
+                instance = new Golem(tileMap,player[0]);
                 break;
             }
             case "kingslime":{
-                instance = new KingSlime(tileMap,player);
+                instance = new KingSlime(tileMap,player[0]);
                 break;
             }
             case "snake":{
-                instance = new Snake(tileMap,player);
+                instance = new Snake(tileMap,player[0]);
                 break;
             }
             case "redslime":{
-                instance = new RedSlime(tileMap,player);
+                instance = new RedSlime(tileMap,player[0]);
                 break;
             }
             case "eyebat":{
-                instance = new EyeBat(tileMap,player);
+                instance = new EyeBat(tileMap,player[0]);
                 break;
             }
             default:{

@@ -98,7 +98,7 @@ public class M4 extends Weapon {
         type = 1;
         bullets = new ArrayList<>();
 
-        speedBullet = 30;
+        speedBullet = 1800;
 
     }
     // resetting stats of gun of new owner of gun
@@ -118,7 +118,7 @@ public class M4 extends Weapon {
             currentMagazineAmmo = maxMagazineAmmo;
         }
         if(numUpgrades >= 2){
-            speedBullet = 36;
+            speedBullet = 2160;
         }
         if(numUpgrades >= 3){
             maxdamage++;
@@ -351,7 +351,7 @@ public class M4 extends Weapon {
     public boolean handleMoveBulletPacket(Network.MoveBullet moveBullet) {
         for(Bullet b : bullets){
             if(b.getId() == moveBullet.id){
-                b.setPosition(moveBullet.x, moveBullet.y);
+                b.addInterpolationPosition(moveBullet);
                 return true;
             }
         }

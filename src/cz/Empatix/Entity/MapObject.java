@@ -4,6 +4,8 @@ package cz.Empatix.Entity;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Multiplayer.GameServer;
+import cz.Empatix.Multiplayer.Interpolator;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
@@ -22,7 +24,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static cz.Empatix.Main.Game.deltaTimeUpdate;
+import static cz.Empatix.Main.Game.deltaTime;
 import static org.lwjgl.opengl.GL20.*;
 
 public abstract class MapObject {
@@ -99,6 +101,8 @@ public abstract class MapObject {
 
     private static final AtomicInteger atomicInteger = new AtomicInteger();
 	public int id;
+	protected Interpolator interpolator;
+
 
 	// constructor
 	public MapObject(TileMap tm) {
@@ -268,7 +272,7 @@ public abstract class MapObject {
 							if (obj.moveable) {
 								int maxObjSpeed = obj.getMovementVelocity();
 
-								speed.x = acceleration.x * deltaTimeUpdate * maxObjSpeed;
+								speed.x = acceleration.x * deltaTime * maxObjSpeed;
 								temp.x = (int)obj.position.x - obj.cwidth/2 - cwidth/2 + speed.x;
 
 								if(acceleration.x > obj.acceleration.x){
@@ -296,7 +300,7 @@ public abstract class MapObject {
 							if (obj.moveable) {
 								int maxObjSpeed = obj.getMovementVelocity();
 
-								speed.x = acceleration.x * deltaTimeUpdate * maxObjSpeed;
+								speed.x = acceleration.x * deltaTime * maxObjSpeed;
 								temp.x = (int)Math.floor(obj.position.x) + obj.cwidth/2 + cwidth/2 + speed.x;
 
 
@@ -337,7 +341,7 @@ public abstract class MapObject {
 							if (obj.moveable) {
 								int maxObjSpeed = obj.getMovementVelocity();
 
-								speed.y = acceleration.y * deltaTimeUpdate * maxObjSpeed;
+								speed.y = acceleration.y * deltaTime * maxObjSpeed;
 								temp.y = (int)obj.position.y - obj.cheight/2 - cheight/2 + speed.y;
 
 								if(acceleration.y > obj.acceleration.y){
@@ -360,7 +364,7 @@ public abstract class MapObject {
 							if (obj.moveable) {
 								int maxObjSpeed = obj.getMovementVelocity();
 
-								speed.y = acceleration.y * deltaTimeUpdate * maxObjSpeed;
+								speed.y = acceleration.y * deltaTime * maxObjSpeed;
 								temp.y = (int)Math.floor(obj.position.y) + obj.cheight/2 + cheight/2 + speed.y;
 
 								if(acceleration.y < obj.acceleration.y){
@@ -677,34 +681,40 @@ public abstract class MapObject {
 	public float getTempX(){return temp.x;}
 	public float getTempY(){return temp.y;}
 	public void getMovementSpeed() {
+		float deltaTime;
+		if(tileMap.isServerSide()){
+			deltaTime = GameServer.deltaTimeServer;
+		} else {
+			deltaTime = Game.deltaTime;
+		}
 		float moveSpeed;
 		// MAKING CHARACTER MOVE
 		if (right){
-			acceleration.x += moveAcceleration * deltaTimeUpdate;
+			acceleration.x += moveAcceleration * deltaTime;
 			if(acceleration.x > 1f) acceleration.x = 1f;
 
-			moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
+			moveSpeed = movementVelocity * acceleration.x * deltaTime;
 			speed.x = moveSpeed;
 		}
 		else if (left){
-			acceleration.x -= moveAcceleration * deltaTimeUpdate;
+			acceleration.x -= moveAcceleration * deltaTime;
 			if(acceleration.x < -1f) acceleration.x = -1f;
 
-			moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
+			moveSpeed = movementVelocity * acceleration.x * deltaTime;
 			speed.x = moveSpeed;
 		}
 		else {
 			if (acceleration.x < 0){
-				acceleration.x += stopAcceleration * deltaTimeUpdate;
-				moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
+				acceleration.x += stopAcceleration * deltaTime;
+				moveSpeed = movementVelocity * acceleration.x * deltaTime;
 				speed.x = moveSpeed;
 				if (speed.x > 0){
 					acceleration.x = 0;
 					speed.x = 0;
 				}
 			} else if (acceleration.x > 0){
-				acceleration.x -= stopAcceleration * deltaTimeUpdate;
-				moveSpeed = movementVelocity * acceleration.x * deltaTimeUpdate;
+				acceleration.x -= stopAcceleration * deltaTime;
+				moveSpeed = movementVelocity * acceleration.x * deltaTime;
 				speed.x = moveSpeed;
 				if (speed.x < 0){
 					acceleration.x = 0;
@@ -714,31 +724,31 @@ public abstract class MapObject {
 		}
 
 		if (up){
-			acceleration.y -= moveAcceleration * deltaTimeUpdate;
+			acceleration.y -= moveAcceleration * deltaTime;
 			if(acceleration.y < -1f) acceleration.y = -1f;
 
-			moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
+			moveSpeed = movementVelocity * acceleration.y * deltaTime;
 			speed.y = moveSpeed;
 		}
 		else if (down){
-			acceleration.y += moveAcceleration * deltaTimeUpdate;
+			acceleration.y += moveAcceleration * deltaTime;
 			if(acceleration.y > 1f) acceleration.y = 1f;
 
-			moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
+			moveSpeed = movementVelocity * acceleration.y * deltaTime;
 			speed.y = moveSpeed;
 		}
 		else {
 			if (acceleration.y < 0){
-				acceleration.y += stopAcceleration * deltaTimeUpdate;
-				moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate;
+				acceleration.y += stopAcceleration * deltaTime;
+				moveSpeed = movementVelocity * acceleration.y * deltaTime;
 				speed.y = moveSpeed;
 				if (speed.y > 0){
 					acceleration.y = 0;
 					speed.y = 0;
 				}
 			} else if (acceleration.y > 0){
-				acceleration.y -= stopAcceleration * deltaTimeUpdate;
-				moveSpeed = movementVelocity * acceleration.y * deltaTimeUpdate; // delty na casy, postupne zrychlovani pomocí nasobení, čas postupného zrychlení a postupné zpomalení odečítání pak
+				acceleration.y -= stopAcceleration * deltaTime;
+				moveSpeed = movementVelocity * acceleration.y * deltaTime; // delty na casy, postupne zrychlovani pomocí nasobení, čas postupného zrychlení a postupné zpomalení odečítání pak
 				speed.y = moveSpeed;
 				if (speed.y < 0){
 					acceleration.y = 0;
@@ -767,4 +777,5 @@ public abstract class MapObject {
 	public float getMoveAcceleration() {
 		return moveAcceleration;
 	}
+
 }

@@ -4,7 +4,6 @@ package cz.Empatix.Gamestates;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.AudioManager.Source;
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
@@ -12,6 +11,7 @@ import cz.Empatix.Main.Settings;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Hud.*;
 import cz.Empatix.Render.Text.TextRender;
+import cz.Empatix.Utility.Loader;
 import org.joml.Vector3f;
 
 import static cz.Empatix.Main.Game.ARROW;
@@ -28,14 +28,6 @@ public class MenuState extends GameState{
     private final static int BEGIN = 0;
     private final static int SETTINGS = 1;
     private final static int EXIT = 2;
-
-    // play menu
-    private final static int SINGLEPLAYER = 14;
-    private final static int MULTIPLAYER = 15;
-
-    private final static int JOINMP = 16;
-    private final static int HOSTMP = 17;
-    private final static int CONFIRMMP = 18;
 
     // settings menu
     private final static int GRAPHICS = 3;
@@ -58,29 +50,10 @@ public class MenuState extends GameState{
     private final static int EFFECTS = 1;
     private final static int MUSIC = 2;
 
-    // multiplayer
-    private final static int MPMENU = 1;
-    private final static int HOSTMENU = 2;
-    private final static int JOINMENU = 3;
-
 
     // main menu
     private MenuBar[] huds;
     private Image title;
-
-    // play huds
-    private MenuBar[] playHuds;
-    private boolean playMenu;
-
-    // multiplayer huds
-    private MenuBar[] mpHuds;
-    private int mpSelectedMenu;
-
-    private InputBar[] mpJoinInputHuds;
-    private MenuBar[] mpJoinHuds;
-
-    private InputBar mpHostInputHud;
-    private MenuBar[] mpHostHuds;
 
     private MenuBar[] settingsHuds;
     //   graphics
@@ -93,7 +66,6 @@ public class MenuState extends GameState{
     // controls
     private SliderBar controlSlider;
     private ControlSettings controlSettings;
-
 
     private Background bg;
     private Background settingsBg;
@@ -193,42 +165,6 @@ public class MenuState extends GameState{
             }
 
 
-        } else if (playMenu){
-            if(mpSelectedMenu == MPMENU) {
-                for (int i = 0; i < playHuds.length; i++) {
-                    mpHuds[i].draw();
-                }
-                textRender[31].draw("Host", new Vector3f(TextRender.getHorizontalCenter(780, 1150, "Host", 5), 415, 0), 5, new Vector3f(0.874f, 0.443f, 0.149f));
-                textRender[32].draw("Join", new Vector3f(TextRender.getHorizontalCenter(780, 1150, "Join", 5), 640, 0), 5, new Vector3f(0.874f, 0.443f, 0.149f));
-                textRender[28].draw("Exit", new Vector3f(TextRender.getHorizontalCenter(780, 1150, "Exit", 5), 865, 0), 5, new Vector3f(0.874f, 0.443f, 0.149f));
-                title.draw();
-            } else if (mpSelectedMenu == JOINMENU){
-                for (InputBar mpJoinInputHud : mpJoinInputHuds) {
-                    mpJoinInputHud.draw();
-                }
-                for(MenuBar hud : mpJoinHuds){
-                    hud.draw();
-                }
-                textRender[32].draw("Join", new Vector3f(TextRender.getHorizontalCenter(1005, 1365, "Join", 5), 865, 0), 5, new Vector3f(0.874f, 0.443f, 0.149f));
-                textRender[33].draw("Return", new Vector3f(TextRender.getHorizontalCenter(555, 915, "Return", 5), 865, 0), 5, new Vector3f(0.874f, 0.443f, 0.149f));
-                title.draw();
-            } else if (mpSelectedMenu == HOSTMENU){
-                mpHostInputHud.draw();
-                for(MenuBar hud : mpHostHuds){
-                    hud.draw();
-                }
-                textRender[34].draw("Host", new Vector3f(TextRender.getHorizontalCenter(1005, 1365, "Host", 5), 865, 0), 5, new Vector3f(0.874f, 0.443f, 0.149f));
-                textRender[33].draw("Return", new Vector3f(TextRender.getHorizontalCenter(555, 915, "Return", 5), 865, 0), 5, new Vector3f(0.874f, 0.443f, 0.149f));
-                title.draw();
-            } else {
-                for (MenuBar playHud : playHuds) {
-                    playHud.draw();
-                }
-                textRender[29].draw("Solo",new Vector3f(TextRender.getHorizontalCenter(780,1150,"Solo",5),415,0),5,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[30].draw("Duo",new Vector3f(TextRender.getHorizontalCenter(780,1150,"Duo",5),640,0),5,new Vector3f(0.874f,0.443f,0.149f));
-                textRender[28].draw("Exit",new Vector3f(TextRender.getHorizontalCenter(780,1150,"Exit",5),865,0),5,new Vector3f(0.874f,0.443f,0.149f));
-                title.draw();
-            }
         } else {
             for (MenuBar hud : huds) {
                 hud.draw();
@@ -252,12 +188,6 @@ public class MenuState extends GameState{
         checkBoxes = new CheckBox[2];
         graphicsSliders = new SliderBar[1];
 
-        playHuds = new MenuBar[3];
-        mpHuds = new MenuBar[3];
-        mpJoinInputHuds = new InputBar[2];
-        mpJoinHuds = new MenuBar[2];
-        mpHostHuds = new MenuBar[2];
-
         audioSliders = new SliderBar[3];
         title = new Image("Textures\\Menu\\logo.tga",new Vector3f(960,150,0),7);
         // main menu
@@ -271,50 +201,9 @@ public class MenuState extends GameState{
         bar.setType(EXIT);
         huds[2] = bar;
 
-        // play menu
-        bar = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(960,400,0),1.8f,200,100,true);
-        bar.setType(SINGLEPLAYER);
-        playHuds[0] = bar;
-        bar = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(960,625,0),1.8f,200,100,true);
-        bar.setType(MULTIPLAYER);
-        playHuds[1] = bar;
-        bar = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(960,850,0),1.8f,200,100,true);
-        bar.setType(EXIT);
-        playHuds[2] = bar;
-
-        // play menu
-        bar = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(960,400,0),1.8f,200,100,true);
-        bar.setType(HOSTMP);
-        mpHuds[0] = bar;
-        bar = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(960,625,0),1.8f,200,100,true);
-        bar.setType(JOINMP);
-        mpHuds[1] = bar;
-        bar = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(960,850,0),1.8f,200,100,true);
-        bar.setType(EXIT);
-        mpHuds[2] = bar;
-
-        mpJoinHuds[0] = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(735,850,0),1.8f,200,100,true);
-        mpJoinHuds[0].setType(EXIT);
-        mpJoinHuds[1] = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(1185,850,0),1.8f,200,100,true);
-        mpJoinHuds[1].setType(CONFIRMMP);
         InputBar inputBar;
         inputBar = new InputBar("Textures\\Menu\\input_bar.tga",new Vector3f(960,400,0),1.8f,300,100,"Your name:");
         inputBar.setType(0);
-        mpJoinInputHuds[0] = inputBar;
-        if(mpJoinInputHuds[1] == null){
-            inputBar = new InputBar("Textures\\Menu\\input_bar.tga",new Vector3f(960,625,0),1.8f,300,100,"IP adress:");
-            inputBar.setType(1);
-            inputBar.setDefaultValue("127.0.0.1");
-            mpJoinInputHuds[1] = inputBar;
-        }
-
-        mpHostHuds[0] = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(735,850,0),1.8f,200,100,true);
-        mpHostHuds[0].setType(EXIT);
-        mpHostHuds[1] = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(1185,850,0),1.8f,200,100,true);
-        mpHostHuds[1].setType(CONFIRMMP);
-        inputBar = new InputBar("Textures\\Menu\\input_bar.tga",new Vector3f(960,525,0),1.8f,300,100,"Your name:");
-        inputBar.setType(0);
-        mpHostInputHud = inputBar;
 
         AudioManager.playSoundtrack(Soundtrack.MENU);
 
@@ -395,7 +284,6 @@ public class MenuState extends GameState{
         audioSliders[2] = sliderBar;
 
         selectedSettings = GRAPHICS;
-        mpSelectedMenu = -1;
 
         controlSlider = new SliderBar(new Vector3f(1560f,630,0),3f);
 
@@ -415,30 +303,10 @@ public class MenuState extends GameState{
     }
     @Override
     public void keyPressed(int k) {
-        if(playMenu) {
-            if(mpSelectedMenu == JOINMENU){
-                for(InputBar inputBar : mpJoinInputHuds){
-                    inputBar.keyPressed(k);
-                }
-            } else if(mpSelectedMenu == HOSTMENU){
-                mpHostInputHud.keyPressed(k);
-            }
-        }
     }
     @Override
     public void keyReleased(int k) {
         controlSettings.keyReleased(k);
-        if(playMenu){
-            if(mpSelectedMenu == JOINMENU){
-                for(InputBar inputBar : mpJoinInputHuds){
-                    inputBar.keyReleased(k);
-                }
-            } else {
-                if(mpSelectedMenu == HOSTMENU){
-                    mpHostInputHud.keyReleased(k);
-                }
-            }
-        }
     }
     @Override
     public void mouseReleased(int button) {
@@ -532,97 +400,6 @@ public class MenuState extends GameState{
                     controlSlider.setLocked(true);
                 }
             }
-        } else if (playMenu){
-            if(mpSelectedMenu == MPMENU) {
-                for (MenuBar hud : mpHuds) {
-                    if (hud.intersects(mouseX, mouseY)) {
-                        source.play(soundMenuClick);
-                        int type = hud.getType();
-                        if (type == HOSTMP) {
-                            mpSelectedMenu = HOSTMENU;
-                            break;
-                        } else if (type == JOINMP) {
-                            mpSelectedMenu = JOINMENU;
-                            break;
-                        } else {
-                            mpSelectedMenu = -1;
-                            break;
-                        }
-                    }
-                }
-            } else if (mpSelectedMenu == JOINMENU) {
-                for(MenuBar bar : mpJoinHuds){
-                    if(bar.intersects(mouseX,mouseY)){
-                        source.play(soundMenuClick);
-                        if(bar.getType() == CONFIRMMP) {
-                            if(!mpJoinInputHuds[0].isEmpty()){
-                                mpJoinInputHuds[0].clearKeys();
-                                mpJoinInputHuds[1].clearKeys();
-                                gsm.setStateInitMP(GameStateManager.PROGRESSROOMMP,false,mpJoinInputHuds[0].getValue(),mpJoinInputHuds[1].getValue());
-                                mpSelectedMenu = -1;
-                                playMenu = false;
-                            }
-                        } else if (bar.getType() == EXIT){
-                            mpSelectedMenu = MPMENU;
-                        }
-                        break;
-                    }
-                }
-                for(InputBar bar : mpJoinInputHuds){
-                    if(bar.intersects(mouseX,mouseY)){
-                        bar.setEnabled(true);
-                        bar.setClick(true);
-                        source.play(soundMenuClick);
-                    } else {
-                        bar.setEnabled(false);
-                        bar.setClick(false);
-                    }
-                }
-            } else if (mpSelectedMenu == HOSTMENU) {
-                for(MenuBar bar : mpHostHuds){
-                    if(bar.intersects(mouseX,mouseY)){
-                        source.play(soundMenuClick);
-                        if(bar.getType() == CONFIRMMP) {
-                            if(!mpHostInputHud.isEmpty()){
-                                mpSelectedMenu = -1;
-                                mpHostInputHud.clearKeys();
-
-                                gsm.setStateInitMP(GameStateManager.PROGRESSROOMMP,true,mpHostInputHud.getValue(),"localhost");
-                                playMenu = false;
-                            }
-                        } else if (bar.getType() == EXIT){
-                            mpSelectedMenu = MPMENU;
-                        }
-                        break;
-                    }
-                }
-                if(mpHostInputHud.intersects(mouseX,mouseY)){
-                    mpHostInputHud.setEnabled(true);
-                    mpHostInputHud.setClick(true);
-                    source.play(soundMenuClick);
-                } else {
-                    mpHostInputHud.setEnabled(false);
-                    mpHostInputHud.setClick(false);
-                }
-            } else {
-                for (MenuBar hud : playHuds) {
-                    if (hud.intersects(mouseX, mouseY)) {
-                        source.play(soundMenuClick);
-                        int type = hud.getType();
-                        if (type == SINGLEPLAYER) {
-                            gsm.setState(GameStateManager.PROGRESSROOM);
-                            playMenu = false;
-                            break;
-                        } else if (type == MULTIPLAYER) {
-                            mpSelectedMenu = MPMENU;
-                            break;
-                        } else if (type == EXIT) {
-                            playMenu = false;
-                            break;
-                        }
-                    }
-                }
-            }
         } else {
 
             for (MenuBar hud : huds) {
@@ -630,7 +407,7 @@ public class MenuState extends GameState{
                     int type = hud.getType();
                     source.play(soundMenuClick);
                     if (type == BEGIN) {
-                        playMenu = true;
+                        gsm.setState(GameStateManager.PROGRESSROOM);
                         break;
                     } else if (type == SETTINGS) {
                         settings = true;
@@ -702,42 +479,6 @@ public class MenuState extends GameState{
                 }
             } else if (selectedSettings == CONTROLS) {
                 controlSettings.update(mouseX, mouseY);
-            }
-        } else if (playMenu){
-            if(mpSelectedMenu == MPMENU) {
-                for (MenuBar bar : mpHuds) {
-                    if (bar.intersects(mouseX, mouseY)) {
-                        bar.setClick(true);
-                    } else {
-                        bar.setClick(false);
-                    }
-                }
-            } else if(mpSelectedMenu == JOINMENU){
-                for (InputBar bar : mpJoinInputHuds) {
-                    bar.update();
-                }
-                for(MenuBar bar: mpJoinHuds){
-                    bar.setClick(false);
-                    if(bar.intersects(mouseX,mouseY)){
-                        bar.setClick(true);
-                    }
-                }
-            } else if(mpSelectedMenu == HOSTMENU){
-                mpHostInputHud.update();
-                for(MenuBar bar: mpHostHuds){
-                    bar.setClick(false);
-                    if(bar.intersects(mouseX,mouseY)){
-                        bar.setClick(true);
-                    }
-                }
-            } else {
-                for (MenuBar bar : playHuds) {
-                    if (bar.intersects(mouseX, mouseY)) {
-                        bar.setClick(true);
-                    } else {
-                        bar.setClick(false);
-                    }
-                }
             }
         } else {
             for (MenuBar bar : huds) {

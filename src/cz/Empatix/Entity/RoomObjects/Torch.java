@@ -1,20 +1,19 @@
-package cz.Empatix.Render.RoomObjects;
+package cz.Empatix.Entity.RoomObjects;
 
-import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
-import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
+import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -23,82 +22,92 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
-public class Spike extends RoomObject {
+public class Torch extends RoomObject {
     public static void load(){
-        Loader.loadImage("Textures\\Sprites\\spike.tga");
+        Loader.loadImage("Textures\\Sprites\\torch.tga");
     }
-    public boolean remove;
-    private boolean damageAnimation;
+    public static final int SIDELEFT = 0;
+    public static final int SIDERIGHT = 1;
+    public static final int TOP = 2;
 
-    private boolean damageDone;
-    public Spike(TileMap tm){
+    private int type;
+
+    public Torch(TileMap tm){
         super(tm);
         if(tm.isServerSide()){
             width = 16;
             height = 16;
-            cwidth = 8;
-            cheight = 8;
-            scale = 8;
-
-            facingRight = true;
-            flinching=false;
-
-            collision = false;
-            moveable=false;
-            preDraw = true;
-            behindCollision = true;
-
-            animation = new Animation(4);
-            animation.setDelay(250);
-
-            width *= scale;
-            height *= scale;
-            cwidth *= scale;
-            cheight *= scale;
-
-            damageAnimation = true;
-            remove = false;
-        } else {
-            width = 16;
-            height = 16;
-            cwidth = 8;
-            cheight = 8;
+            cwidth = 16;
+            cheight = 16;
             scale = 8;
 
             facingRight = true;
             flinching=false;
 
             spriteSheetCols = 4;
-            spriteSheetRows = 1;
+            spriteSheetRows = 2;
 
             collision = false;
             moveable=false;
             preDraw = true;
-            behindCollision = true;
+
+            animation = new Animation(4);
+            animation.setDelay(150);
+
+            width *= scale;
+            height *= scale;
+            cwidth *= scale;
+            cheight *= scale;
+
+            remove = false;
+            // because of light bug - not updated when not seen
+            xmap = -100000000;
+            ymap = -100000000;
+        } else {
+            width = 16;
+            height = 16;
+            cwidth = 16;
+            cheight = 16;
+            scale = 8;
+
+            facingRight = true;
+            flinching=false;
+
+            spriteSheetCols = 4;
+            spriteSheetRows = 2;
+
+            collision = false;
+            moveable=false;
+            preDraw = true;
 
             // try to find spritesheet if it was created once
-            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\spike.tga");
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\torch.tga");
 
             // creating a new spritesheet
             if (spritesheet == null){
-                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\spike.tga");
-                Sprite[] sprites = new Sprite[4];
-                for(int i = 0; i < sprites.length; i++) {
-                    float[] texCoords =
-                            {
-                                    (float) i/spriteSheetCols,0,
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\torch.tga");
+                for(int j = 0;j < spriteSheetRows;j++){
 
-                                    (float)i/spriteSheetCols,1,
+                    Sprite[] sprites = new Sprite[4];
 
-                                    (1.0f+i)/spriteSheetCols,1,
+                    for(int i = 0; i < sprites.length; i++) {
+                        float[] texCoords =
+                                {
+                                        (float) i / spriteSheetCols, (float)j/spriteSheetRows,
 
-                                    (1.0f+i)/spriteSheetCols,0
-                            };
-                    Sprite sprite = new Sprite(texCoords);
-                    sprites[i] = sprite;
+                                        (float) i / spriteSheetCols, (float)(j+1)/spriteSheetRows,
+
+                                        (1.0f + i) / spriteSheetCols, (float)(j+1)/spriteSheetRows,
+
+                                        (1.0f + i) / spriteSheetCols, (float)j/spriteSheetRows
+                                };
+                        Sprite sprite = new Sprite(texCoords);
+                        sprites[i] = sprite;
+                    }
+
+                    spritesheet.addSprites(sprites);
 
                 }
-                spritesheet.addSprites(sprites);
 
             }
             vboVertices = ModelManager.getModel(width,height);
@@ -107,8 +116,7 @@ public class Spike extends RoomObject {
             }
 
             animation = new Animation();
-            animation.setFrames(spritesheet.getSprites(0));
-            animation.setDelay(250);
+            animation.setDelay(150);
 
             shader = ShaderManager.getShader("shaders\\shader");
             if (shader == null){
@@ -120,43 +128,28 @@ public class Spike extends RoomObject {
             cwidth *= scale;
             cheight *= scale;
 
-            damageAnimation = true;
             remove = false;
+
+            light = LightManager.createLight(new Vector3f(0.905f, 0.788f, 0.450f),new Vector2f(0,0),2f,this);
+
+            // because of light bug - not updated when not seen
+            xmap = -100000000;
+            ymap = -100000000;
         }
     }
 
     public void update(){
         setMapPosition();
+
         animation.update();
 
-        if(animation.getIndexOfFrame() >= 2){
-            damageAnimation = false;
-        } else {
-            damageAnimation = true;
-        }
-        if(tileMap.isServerSide()){
-             Server server = MultiplayerManager.getInstance().server.getServer();
-             Network.RoomObjectAnimationSync roomObjectAnimationSync = new Network.RoomObjectAnimationSync();
-             roomObjectAnimationSync.id = id;
-             roomObjectAnimationSync.sprite = (byte)animation.getIndexOfFrame();
-             roomObjectAnimationSync.time = animation.getTime();
-             server.sendToAllUDP(roomObjectAnimationSync);
+        if(!tileMap.isServerSide()){
+            light.setIntensity(1.9f+0.3f*(float)Math.sin(2*Math.PI*((System.currentTimeMillis()%2000)/2000d)));
         }
     }
 
     @Override
     public void touchEvent(MapObject o) {
-        if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
-            if(damageAnimation){
-                if(o instanceof Player) ((Player) o).hit(1);
-                if(o instanceof DestroyableObject && !damageDone){
-                    damageDone = true;
-                    ((DestroyableObject) o).setHit(1);
-                }
-            } else {
-                damageDone = false;
-            }
-        }
     }
 
     @Override
@@ -233,5 +226,22 @@ public class Spike extends RoomObject {
     @Override
     public void keyPress() {
 
+    }
+    public void setType(int type){
+        this.type = type;
+        if(tileMap.isServerSide()) return;
+        animation.setFrames(spritesheet.getSprites(type == TOP ? 1 : 0));
+        if(type == SIDELEFT) facingRight = false;
+        else facingRight = true;
+    }
+
+    @Override
+    public void delete() {
+        super.delete();
+        if(!tileMap.isServerSide())light.remove();
+    }
+
+    public int getType() {
+        return type;
     }
 }

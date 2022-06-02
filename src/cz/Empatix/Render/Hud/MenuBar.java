@@ -1,11 +1,11 @@
 package cz.Empatix.Render.Hud;
 
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Utility.Loader;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -43,7 +43,8 @@ public class MenuBar {
     int[] vboTextures;
     int vboVertices;
 
-    private Matrix4f matrixPos;
+    private Vector3f position;
+    private final float scale;
 
     private boolean click;
 
@@ -60,6 +61,8 @@ public class MenuBar {
      */
     public MenuBar(String file, Vector3f pos, float scale, int width, int height, boolean animated){
         this.animated = animated;
+        this.scale = scale;
+        this.position = pos;
         ByteBufferImage decoder = Loader.getImage(file);
         ByteBuffer spritesheetImage = decoder.getBuffer();
 
@@ -131,14 +134,14 @@ public class MenuBar {
             glBindBuffer(GL_ARRAY_BUFFER,0);
         }
 
-        matrixPos = new Matrix4f()
-                .translate(pos)
-                .scale(scale);
-        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
     }
 
     public void draw(){
         shader.bind();
+        Matrix4f matrixPos = new Matrix4f()
+                .translate(position)
+                .scale(scale);
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
         shader.setUniformm4f("projection",matrixPos);
         shader.setUniformi("sampler",0);
         glActiveTexture(GL_TEXTURE0);
@@ -188,5 +191,9 @@ public class MenuBar {
 
     public boolean isClick() {
         return click;
+    }
+
+    public Vector3f getPosition() {
+        return position;
     }
 }

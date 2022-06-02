@@ -2,14 +2,14 @@ package cz.Empatix.Entity.ItemDrops;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
-import cz.Empatix.Java.Loader;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
+import cz.Empatix.Utility.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 

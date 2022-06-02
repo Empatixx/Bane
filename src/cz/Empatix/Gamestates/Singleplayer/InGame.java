@@ -13,7 +13,6 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameState;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Guns.GunsManager;
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
@@ -34,6 +33,7 @@ import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import cz.Empatix.Utility.Console;
+import cz.Empatix.Utility.Loader;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
@@ -555,16 +555,12 @@ public class InGame extends GameState {
         mouseX = gsm.getMouseX();
         mouseY = gsm.getMouseY();
 
-        // mouse location-moving direction of mouse of tilemap
+        // set tilemap/camera with trying succeeding to center player in camera, this position is also affected my mouse
         tileMap.setPosition(
-                tileMap.getX()-(mouseX-960)/30,
-                tileMap.getY()-(mouseY- 540)/30,
-                false);
-
-        tileMap.setPosition(
-                Camera.getWIDTH()/2f-player.getX(),
-                Camera.getHEIGHT()/2f-player.getY(),
-                false);
+                Camera.getWIDTH() / 2f - player.getX() -(mouseX-960)/30,
+                Camera.getHEIGHT() / 2f - player.getY() -(mouseY- 540)/30,
+                false
+        );
 
 
         artefactManager.update(pause);

@@ -10,11 +10,11 @@ import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Entity.RoomObjects.DestroyableObject;
+import cz.Empatix.Entity.RoomObjects.RoomObject;
 import cz.Empatix.Gamestates.GameState;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Guns.GunsManager;
-import cz.Empatix.Java.Loader;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
@@ -32,12 +32,12 @@ import cz.Empatix.Render.Hud.Minimap.MiniMap;
 import cz.Empatix.Render.Postprocessing.Fade;
 import cz.Empatix.Render.Postprocessing.GaussianBlur;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
-import cz.Empatix.Render.RoomObjects.DestroyableObject;
-import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
 import cz.Empatix.Utility.Console;
+import cz.Empatix.Utility.Loader;
+import cz.Empatix.Utility.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -713,16 +713,10 @@ public class InGameMP extends GameState {
 
             mouseX = gsm.getMouseX();
             mouseY = gsm.getMouseY();
-            // mouse location-moving direction of mouse of tilemap
+            // set tilemap/camera with trying succeeding to center player in camera, this position is also affected my mouse
             tileMap.setPosition(
-                    tileMap.getX()-(mouseX-960)/30,
-                    tileMap.getY()-(mouseY- 540)/30,
-                    false);
-            // updating player
-            // updating tilemap by player position
-            tileMap.setPosition(
-                    Camera.getWIDTH() / 2f - player[0].getX(),
-                    Camera.getHEIGHT() / 2f - player[0].getY(),
+                    Camera.getWIDTH() / 2f - player[0].getX() -(mouseX-960)/30,
+                    Camera.getHEIGHT() / 2f - player[0].getY() -(mouseY- 540)/30,
                     false
             );
             itemManager.update();
@@ -896,17 +890,10 @@ public class InGameMP extends GameState {
             // loc of mouse
             mouseX = gsm.getMouseX();
             mouseY = gsm.getMouseY();
-            // mouse location-moving direction of mouse of tilemap
+            // set tilemap/camera with trying succeeding to center player in camera, this position is also affected my mouse
             tileMap.setPosition(
-                    tileMap.getX()-(mouseX-960)/30,
-                    tileMap.getY()-(mouseY- 540)/30,
-                    false);
-
-            // updating player
-            // updating tilemap by player position
-            tileMap.setPosition(
-                    Camera.getWIDTH() / 2f - player[0].getX(),
-                    Camera.getHEIGHT() / 2f - player[0].getY(),
+                    Camera.getWIDTH() / 2f - player[0].getX() -(mouseX-960)/30,
+                    Camera.getHEIGHT() / 2f - player[0].getY() -(mouseY- 540)/30,
                     false
             );
             player[0].updateOrigin();

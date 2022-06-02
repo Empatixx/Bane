@@ -4,8 +4,6 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
-import cz.Empatix.Java.Loader;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Render.Background;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -14,6 +12,8 @@ import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
+import cz.Empatix.Utility.Random;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 

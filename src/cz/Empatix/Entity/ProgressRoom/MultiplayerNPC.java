@@ -1,52 +1,58 @@
-package cz.Empatix.Entity;
+package cz.Empatix.Entity.ProgressRoom;
 
-import cz.Empatix.Java.Loader;
+import cz.Empatix.Entity.Animation;
+import cz.Empatix.Entity.MapObject;
+import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
-import cz.Empatix.Render.Hud.ProgressNPC.UpgradeMenu;
+import cz.Empatix.Render.Hud.MultiplayerNPC.MultiplayerMenu;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
-public class ProgressNPC extends MapObject {
+public class MultiplayerNPC extends MapObject {
     private static final int IDLE = 0;
 
     private boolean touching;
     private boolean interract;
 
-    private UpgradeMenu upgradeMenu;
+    private MultiplayerMenu multiplayerMenu;
 
     private TextRender textRender;
 
+
     public static void load(){
-        Loader.loadImage("Textures\\ProgressRoom\\upgradenpc.tga");
+        Loader.loadImage("Textures\\ProgressRoom\\multiplayernpc.tga");
+        Loader.loadImage("Textures\\ProgressRoom\\serverfound.tga");
     }
 
-    public ProgressNPC(TileMap tm) {
+    public MultiplayerNPC(TileMap tm, GameStateManager gsm) {
         super(tm);
 
-        width = 64;
-        height = 64;
-        cwidth = 64;
-        cheight = 64;
-        scale = 6;
+        width = 100;
+        height = 100;
+        cwidth = 100;
+        cheight = 100;
+        scale = 4;
 
         facingRight = true;
 
-        spriteSheetCols = 5;
+        spriteSheetCols = 14;
         spriteSheetRows = 1;
 
         // try to find spritesheet if it was created once
-        spritesheet = SpritesheetManager.getSpritesheet("Textures\\ProgressRoom\\upgradenpc.tga");
+        spritesheet = SpritesheetManager.getSpritesheet("Textures\\ProgressRoom\\multiplayernpc.tga");
 
         // creating a new spritesheet
         if (spritesheet == null){
-            spritesheet = SpritesheetManager.createSpritesheet("Textures\\ProgressRoom\\upgradenpc.tga");
-            Sprite[] sprites = new Sprite[10];
+            spritesheet = SpritesheetManager.createSpritesheet("Textures\\ProgressRoom\\multiplayernpc.tga");
+            Sprite[] sprites = new Sprite[14];
             for(int i = 0; i < sprites.length; i++) {
                 //Sprite sprite = new Sprite(texCoords);
                 float[] texCoords =
@@ -85,9 +91,9 @@ public class ProgressNPC extends MapObject {
         cwidth *= scale;
         cheight *= scale;
 
-        upgradeMenu = new UpgradeMenu();
-
         textRender = new TextRender();
+
+        multiplayerMenu = new MultiplayerMenu(gsm);
     }
 
     public void update(float x,float y) {
@@ -95,7 +101,7 @@ public class ProgressNPC extends MapObject {
         touching = false;
         setMapPosition();
         animation.update();
-        upgradeMenu.update(x,y);
+        multiplayerMenu.update(x,y);
         // update position
         checkTileMapCollision();
     }
@@ -106,22 +112,29 @@ public class ProgressNPC extends MapObject {
         if(touching && !interract) {
             float time = (float) Math.sin(System.currentTimeMillis() % 2000 / 600f) + (1 - (float) Math.cos((System.currentTimeMillis() % 2000 / 600f) + 0.5f));
 
-            textRender.drawMap("Press E to talk",new Vector3f(position.x-110,position.y+cheight/2,0),2,
+            float centerX = TextRender.getHorizontalCenter((int)position.x-50,(int)position.x+50,"Press E to talk",2);
+            textRender.drawMap("Press E to talk",new Vector3f(centerX,position.y+cheight/2 + 20,0),2,
                     new Vector3f((float) Math.sin(time), (float) Math.cos(0.5f + time), 1f));
         }
     }
     public void drawHud(){
         if(canShowHud()){
-            upgradeMenu.draw();
+            multiplayerMenu.draw();
         }
     }
 
     public void keyPress(int k) {
-        if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT)){
-            interract = !interract;
-            upgradeMenu.unlockSlider();
+        if(isUsingInputBar()){
+            multiplayerMenu.keyPress(k);
+        } else {
+            if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT)){
+                interract = !interract;
+            }
+            else if(k == GLFW.GLFW_KEY_ESCAPE)interract = false;
         }
-        else if(k == GLFW.GLFW_KEY_ESCAPE)interract = false;
+    }
+    public void keyReleased(int k) {
+        multiplayerMenu.keyReleased(k);
     }
     public void touching(MapObject obj){
         if(this.intersects(obj)){
@@ -134,10 +147,10 @@ public class ProgressNPC extends MapObject {
     }
 
     public void mousePressed(float x, float y, Player p){
-        if(canShowHud()) upgradeMenu.mousePressed(x,y, p);
+        if(canShowHud())multiplayerMenu.mousePressed(x,y,p);
     }
     public void mouseReleased(float x, float y){
-        if(canShowHud()) upgradeMenu.mouseReleased(x,y);
+        multiplayerMenu.mouseReleased(x,y);
     }
 
     public boolean isInteracting(){
@@ -145,10 +158,9 @@ public class ProgressNPC extends MapObject {
     }
 
     public void mouseScroll(double x, double y) {
-        upgradeMenu.mouseScroll(x,y);
+        multiplayerMenu.mouseScroll(x,y);
     }
-    public int getCountAvailableUpgrades(Player p){
-        return upgradeMenu.getCountAvailableUpgrades(p);
+    public boolean isUsingInputBar(){
+        return multiplayerMenu.isUsingInputBar();
     }
 }
-

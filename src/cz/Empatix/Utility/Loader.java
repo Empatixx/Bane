@@ -1,4 +1,4 @@
-package cz.Empatix.Java;
+package cz.Empatix.Utility;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemies.*;
@@ -9,7 +9,12 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Entity.ProgressNPC;
+import cz.Empatix.Entity.ProgressRoom.MultiplayerNPC;
+import cz.Empatix.Entity.ProgressRoom.ProgressNPC;
+import cz.Empatix.Entity.RoomObjects.*;
+import cz.Empatix.Entity.RoomObjects.ProgressRoom.Armorstand;
+import cz.Empatix.Entity.RoomObjects.ProgressRoom.Bookshelf;
+import cz.Empatix.Entity.RoomObjects.ProgressRoom.Portal;
 import cz.Empatix.Entity.Shopkeeper;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.MenuState;
@@ -22,10 +27,6 @@ import cz.Empatix.Render.Hud.Minimap.MiniMap;
 import cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades.UpgradeBar;
 import cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades.UpgradeSideBar;
 import cz.Empatix.Render.Hud.ProgressNPC.UpgradeMenu;
-import cz.Empatix.Render.RoomObjects.*;
-import cz.Empatix.Render.RoomObjects.ProgressRoom.Armorstand;
-import cz.Empatix.Render.RoomObjects.ProgressRoom.Bookshelf;
-import cz.Empatix.Render.RoomObjects.ProgressRoom.Portal;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.lwjgl.stb.STBImage;
@@ -151,6 +152,7 @@ public class Loader {
         Bookshelf.load();
         Crystal.load();
         Armorstand.load();
+        MultiplayerNPC.load();
         // states
         InGame.load();
         MenuState.load();

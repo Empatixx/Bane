@@ -1,7 +1,6 @@
 package cz.Empatix.Render.Alerts;
 
 import cz.Empatix.Gamestates.Singleplayer.InGame;
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -11,6 +10,7 @@ import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Text.TextRender;
+import cz.Empatix.Utility.Loader;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

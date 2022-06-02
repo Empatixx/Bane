@@ -6,12 +6,10 @@ import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Entity.RoomObjects.*;
 import cz.Empatix.Entity.Shopkeeper;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
-import cz.Empatix.Java.Loader;
-import cz.Empatix.Java.Random;
-import cz.Empatix.Java.RomanNumber;
 import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.*;
@@ -24,8 +22,10 @@ import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Hud.Minimap.MMRoom;
 import cz.Empatix.Render.Hud.Minimap.MiniMap;
-import cz.Empatix.Render.RoomObjects.*;
 import cz.Empatix.Render.Text.TextRender;
+import cz.Empatix.Utility.Loader;
+import cz.Empatix.Utility.Random;
+import cz.Empatix.Utility.RomanNumber;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -1827,7 +1827,7 @@ public class TileMap {
 
 		nextFloorEnterTime = System.currentTimeMillis() - InGame.deltaPauseTime();
 
-		DiscordRP.getInstance().update("In-Game","Floor "+RomanNumber.toRoman(floor));
+		DiscordRP.getInstance().update("In-Game","Floor "+ RomanNumber.toRoman(floor));
 	}
 	public void newMapMP(){
 		floor++;

@@ -5,8 +5,8 @@ import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Guns.*;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Random;
 
 import java.util.ArrayList;
 import java.util.Collections;

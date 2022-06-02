@@ -1,7 +1,6 @@
 package cz.Empatix.Render.Hud.Minimap;
 
 import cz.Empatix.Entity.Animation;
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Camera;
@@ -16,6 +15,7 @@ import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Room;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;

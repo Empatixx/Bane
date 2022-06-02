@@ -1,8 +1,8 @@
 package cz.Empatix.Render.Graphics.Sprites;
 
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
+import cz.Empatix.Utility.Loader;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;

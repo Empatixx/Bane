@@ -2,7 +2,7 @@ package cz.Empatix.Entity;
 
 
 import cz.Empatix.AudioManager.Source;
-import cz.Empatix.Java.Loader;
+import cz.Empatix.Entity.RoomObjects.RoomObject;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.GameServer;
 import cz.Empatix.Multiplayer.Interpolator;
@@ -13,9 +13,9 @@ import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.Spritesheet;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.Postprocessing.Lightning.LightPoint;
-import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -24,7 +24,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static cz.Empatix.Main.Game.deltaTime;
 import static org.lwjgl.opengl.GL20.*;
 
 public abstract class MapObject {
@@ -237,155 +236,77 @@ public abstract class MapObject {
 			}
 		}
 	}
+
 	public void checkRoomObjectsCollision(){
 		ArrayList<RoomObject>[] objectsArray = tileMap.getRoomMapObjects();
 		for(ArrayList<RoomObject> objects : objectsArray) {
 			if (objects == null) continue;
-			for (RoomObject obj : objects) {
-				if(this instanceof RoomObject && this == obj) continue;
-				if(!obj.collision && intersects(obj) && this instanceof Player) obj.touchEvent(this);
-				if(obj.collision){
-					dest.x = temp.x;
-					dest.y = temp.y;
-					Rectangle objCollision = new Rectangle(
-							(int) obj.position.x-obj.cwidth/2,
-							(int) obj.position.y-obj.cheight/2,
-							obj.cwidth,
-							obj.cheight
-					);
-					Rectangle xCollision = new Rectangle(
-							(int)dest.x-cwidth/2,
-							(int)position.y-cheight/2,
-							cwidth,
-							cheight
-					);
-					/*boolean xCollision = obj.getX() - obj.getCwidth() / 2 < dest.x + cwidth / 2 - 1f
-							&&
-							obj.getX() + obj.getCwidth() / 2 > dest.x - cwidth / 2 + 1f;
+			for(RoomObject obj : objects) {
+				if (this instanceof RoomObject) {
+					if (this == obj) continue;
+				}
+				if (!obj.collision) {
+					if (intersects(obj)) {
+						if (this instanceof Player) {
+							obj.touchEvent(this);
+						}
+					}
+				} else {
+					dest.x = position.x + speed.x;
+					dest.y = position.y + speed.y;
 
-					boolean yCollision = obj.getY() - obj.getCheight() / 2 < position.y + cheight / 2 - 1f
+					boolean x = obj.getX() - obj.getCwidth() / 2 < dest.x + cwidth / 2 - 1
 							&&
-							obj.getY() + obj.getCheight() / 2 > position.y - cheight / 2 + 1f;
-*/
-					if(objCollision.intersects(xCollision)) {
+							obj.getX() + obj.getCwidth() / 2 > dest.x - cwidth / 2 + 1;
+
+					boolean y = obj.getY() - obj.getCheight() / 2 < position.y + cheight / 2 - 1
+							&&
+							obj.getY() + obj.getCheight() / 2 > position.y - cheight / 2 + 1;
+
+
+					if (x && y) {
 						if (speed.x > 0 && obj.collision) {
 							if (obj.moveable) {
-								int maxObjSpeed = obj.getMovementVelocity();
-
-								speed.x = acceleration.x * deltaTime * maxObjSpeed;
-								temp.x = (int)obj.position.x - obj.cwidth/2 - cwidth/2 + speed.x;
-
-								if(acceleration.x > obj.acceleration.x){
-									obj.acceleration.x = acceleration.x;
-									obj.speed.x = speed.x;
-								}
-								obj.checkTileMapCollision();
-								//position.x = temp.x;
-								obj.checkRoomObjectsCollision();
-								if (obj.acceleration.x == 0) {
-									speed.x = 0;
-									acceleration.x = 0;
-									temp.x = (int)obj.getX() - obj.cwidth / 2 - cwidth / 2;
-									System.out.println("SETX:"+ temp.x);
-								} else {
-									System.out.println("WTF");
-								}
-								//System.out.println("SET: "+temp.x);
 							} else {
 								speed.x = 0;
-								acceleration.x = 0;
 								temp.x = obj.getX() - obj.cwidth / 2 - cwidth / 2;
 							}
 						} else if (speed.x < 0 && obj.collision) {
 							if (obj.moveable) {
-								int maxObjSpeed = obj.getMovementVelocity();
-
-								speed.x = acceleration.x * deltaTime * maxObjSpeed;
-								temp.x = (int)Math.floor(obj.position.x) + obj.cwidth/2 + cwidth/2 + speed.x;
-
-
-								if(acceleration.x < obj.acceleration.x){
-									obj.acceleration.x = acceleration.x;
-									obj.speed.x = speed.x;
-								}
-								obj.checkTileMapCollision();
-								obj.checkRoomObjectsCollision();
-								if (obj.acceleration.x == 0) {
-									speed.x = 0;
-									acceleration.x = 0;
-									temp.x = (int)Math.floor(obj.getX()) + obj.cwidth / 2 + cwidth / 2;
-								}
 							} else {
 								speed.x = 0;
-								acceleration.x = 0;
 								temp.x = obj.getX() + obj.cwidth / 2 + cwidth / 2;
 							}
 						}
 						obj.touchEvent(this);
 					}
-					/*xCollision = obj.getX() - obj.getCwidth() / 2 < position.x + cwidth / 2 - 1f
-							&&
-							obj.getX() + obj.getCwidth() / 2 > position.x - cwidth / 2 + 1f  ;
 
-					yCollision = obj.getY() - obj.getCheight() / 2 < dest.y + cheight / 2 - 1f
+					x = obj.getX() - obj.getCwidth() / 2 < position.x + cwidth / 2 - 1
 							&&
-							obj.getY() + obj.getCheight() / 2 > dest.y - cheight / 2 + 1f ;*/
-					Rectangle yCollision = new Rectangle(
-							(int)position.x-cwidth/2,
-							(int)dest.y-cheight/2,
-							cwidth,
-							cheight
-					);
-					if (objCollision.intersects(yCollision)) {
+							obj.getX() + obj.getCwidth() / 2 > position.x - cwidth / 2 + 1;
+
+					y = obj.getY() - obj.getCheight() / 2 < dest.y + cheight / 2 - 1
+							&&
+							obj.getY() + obj.getCheight() / 2 > dest.y - cheight / 2 + 1;
+
+					if (x && y) {
 						if (speed.y > 0 && obj.collision) {
 							if (obj.moveable) {
-								int maxObjSpeed = obj.getMovementVelocity();
-
-								speed.y = acceleration.y * deltaTime * maxObjSpeed;
-								temp.y = (int)obj.position.y - obj.cheight/2 - cheight/2 + speed.y;
-
-								if(acceleration.y > obj.acceleration.y){
-									obj.acceleration.y = acceleration.y;
-									obj.speed.y = speed.y;
-								}
-								obj.checkTileMapCollision();
-								obj.checkRoomObjectsCollision();
-								if (obj.acceleration.y == 0) {
-									speed.y = 0;
-									acceleration.y = 0;
-									temp.y = (int)obj.getY() - obj.cheight / 2 - cheight / 2;
-								}
 							} else {
 								speed.y = 0;
-								acceleration.y = 0;
 								temp.y = obj.getY() - obj.cheight / 2 - cheight / 2;
 							}
 						} else if (speed.y < 0 && obj.collision) {
 							if (obj.moveable) {
-								int maxObjSpeed = obj.getMovementVelocity();
 
-								speed.y = acceleration.y * deltaTime * maxObjSpeed;
-								temp.y = (int)Math.floor(obj.position.y) + obj.cheight/2 + cheight/2 + speed.y;
-
-								if(acceleration.y < obj.acceleration.y){
-									obj.acceleration.y = acceleration.y;
-									obj.speed.y = speed.y;
-								}
-								obj.checkTileMapCollision();
-								obj.checkRoomObjectsCollision();
-								if (obj.acceleration.y == 0) {
-									speed.y = 0;
-									acceleration.y = 0;
-									temp.y = (int)Math.floor(obj.getY()) + obj.cheight / 2 + cheight / 2;
-								}
 							} else {
 								speed.y = 0;
-								acceleration.y = 0;
 								temp.y = obj.getY() + obj.cheight / 2 + cheight / 2;
 							}
 						}
 						obj.touchEvent(this);
 					}
+
 				}
 			}
 		}

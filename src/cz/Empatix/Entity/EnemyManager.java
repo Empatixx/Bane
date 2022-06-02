@@ -2,15 +2,15 @@ package cz.Empatix.Entity;
 
 import cz.Empatix.Entity.Enemies.*;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
+import cz.Empatix.Entity.RoomObjects.DestroyableObject;
+import cz.Empatix.Entity.RoomObjects.PathWall;
+import cz.Empatix.Entity.RoomObjects.RoomObject;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PacketHolder;
-import cz.Empatix.Render.RoomObjects.DestroyableObject;
-import cz.Empatix.Render.RoomObjects.PathWall;
-import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Random;
 
 import java.util.ArrayList;
 
@@ -268,7 +268,7 @@ public class EnemyManager {
         }
     }
     private static int getRandom(int lower, int upper) {
-        return cz.Empatix.Java.Random.nextInt((upper - lower) + 1) + lower;
+        return Random.nextInt((upper - lower) + 1) + lower;
     }
     public void spawnBoss(int x,int y){
         int randombosses = 1;
@@ -294,7 +294,7 @@ public class EnemyManager {
         if(tileMap.getFloor() >= 2){
             defaultsize+=2;
         }
-        int enemyType = cz.Empatix.Java.Random.nextInt(defaultsize);
+        int enemyType = Random.nextInt(defaultsize);
         Enemy instance = null;
         String enemy = enemiesList.get(enemyType);
         if(MultiplayerManager.multiplayer) {

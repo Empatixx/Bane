@@ -7,9 +7,9 @@ import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Hud.Minimap.MiniMap;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Random;
 
 import java.io.IOException;
 import java.util.*;

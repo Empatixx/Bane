@@ -1,14 +1,14 @@
-package cz.Empatix.Render.RoomObjects;
+package cz.Empatix.Entity.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Java.Loader;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
+import cz.Empatix.Utility.Random;
 
 public class Bones extends RoomObject {
     public static void load(){

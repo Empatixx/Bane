@@ -1,14 +1,14 @@
-package cz.Empatix.Render.RoomObjects.ProgressRoom;
+package cz.Empatix.Entity.RoomObjects.ProgressRoom;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Java.Loader;
+import cz.Empatix.Entity.RoomObjects.RoomObject;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
-import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
 
 public class Armorstand extends RoomObject {
     public static void load(){

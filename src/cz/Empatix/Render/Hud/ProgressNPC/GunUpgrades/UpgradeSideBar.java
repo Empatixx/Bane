@@ -3,11 +3,11 @@ package cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades;
 import cz.Empatix.Database.Database;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Hud.MenuBar;
 import cz.Empatix.Render.Text.TextRender;
+import cz.Empatix.Utility.Loader;
 import org.joml.Vector3f;
 
 public class UpgradeSideBar {

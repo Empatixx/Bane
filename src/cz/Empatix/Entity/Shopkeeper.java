@@ -1,12 +1,12 @@
 package cz.Empatix.Entity;
 
-import cz.Empatix.Java.Loader;
+import cz.Empatix.Entity.RoomObjects.RoomObject;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
-import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
 
 public class Shopkeeper extends RoomObject {
     private static final int IDLE = 0;

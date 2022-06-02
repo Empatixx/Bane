@@ -4,7 +4,8 @@ import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Entity.ProgressNPC;
+import cz.Empatix.Entity.ProgressRoom.ProgressNPC;
+import cz.Empatix.Entity.RoomObjects.ProgressRoom.Portal;
 import cz.Empatix.Gamestates.GameState;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Main.DiscordRP;
@@ -16,7 +17,6 @@ import cz.Empatix.Render.Graphics.Framebuffer;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Postprocessing.Fade;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
-import cz.Empatix.Render.RoomObjects.ProgressRoom.Portal;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
@@ -264,21 +264,13 @@ public class ProgressRoomMP extends GameState {
             mouseX = gsm.getMouseX();
             mouseY = gsm.getMouseY();
 
-            // mouse location-moving direction of mouse of tilemap
+            // set tilemap/camera with trying succeeding to center player in camera, this position is also affected my mouse
             tileMap.setPosition(
-                    tileMap.getX()-(mouseX-960)/30,
-                    tileMap.getY()-(mouseY- 540)/30,
-                    false);
-
-
-
-            // updating player
-            // updating tilemap by player position
-            tileMap.setPosition(
-                    1920 / 2f - player[0].getX(),
-                    1080 / 2f - player[0].getY(),
+                    Camera.getWIDTH() / 2f - player[0].getX() -(mouseX-960)/30,
+                    Camera.getHEIGHT() / 2f - player[0].getY() -(mouseY- 540)/30,
                     false
             );
+
             progressNPC.update(mouseX,mouseY);
             progressNPC.touching(player[0]);
             Object[] AlertPackets = mpManager.packetHolder.get(PacketHolder.ALERT);
@@ -298,17 +290,13 @@ public class ProgressRoomMP extends GameState {
         mouseX = gsm.getMouseX();
         mouseY = gsm.getMouseY();
 
-        // mouse location-moving direction of mouse of tilemap
+        // set tilemap/camera with trying succeeding to center player in camera, this position is also affected my mouse
         tileMap.setPosition(
-                tileMap.getX()-(mouseX-960)/30,
-                tileMap.getY()-(mouseY- 540)/30,
-                false);
-        // updating tilemap by player position
-        tileMap.setPosition(
-                1920 / 2f - player[0].getX(),
-                1080 / 2f - player[0].getY(),
+                Camera.getWIDTH() / 2f - player[0].getX() -(mouseX-960)/30,
+                Camera.getHEIGHT() / 2f - player[0].getY() -(mouseY- 540)/30,
                 false
         );
+
         tileMap.updateObjects();
 
         player[0].updateOrigin();

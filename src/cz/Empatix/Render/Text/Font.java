@@ -1,7 +1,7 @@
 package cz.Empatix.Render.Text;
 
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
+import cz.Empatix.Utility.Loader;
 
 import java.nio.ByteBuffer;
 

@@ -2,7 +2,6 @@ package cz.Empatix.Entity.ItemDrops.Artefacts;
 
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Damageindicator.CombatIndicator;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -10,6 +9,7 @@ import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Random;
 import org.joml.Vector2f;
 
 public abstract class Artefact {

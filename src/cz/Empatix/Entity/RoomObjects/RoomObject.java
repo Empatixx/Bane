@@ -1,4 +1,4 @@
-package cz.Empatix.Render.RoomObjects;
+package cz.Empatix.Entity.RoomObjects;
 
 import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.MapObject;

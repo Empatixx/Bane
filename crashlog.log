@@ -1,24 +1,81 @@
-FPS: 70
+FPS: 3594
 FPS: 1
-FPS: 58
-FPS: 55
-FPS: 60
-00:00  INFO: [kryonet] Server opened.
-00:00  INFO: Connecting: localhost/127.0.0.1:54555/54777
-00:00  INFO: [kryonet] Connection 1 connected: /127.0.0.1
-00:00  INFO: [kryonet] Connection 1 connected: localhost/127.0.0.1
-FPS: 51
-FPS: 60
-FPS: 60
-FPS: 60
-FPS: 60
-00:05  INFO: [kryonet] Closing server connections...
-00:05  INFO: [kryonet] Connection 1 disconnected.
+993.0 379.0
+FPS: 1153
+00:01  INFO: [kryonet] Host discovery timed out.
+FPS: 2627
+FPS: 2642
+FPS: 2638
+FPS: 1881
+FPS: 1971
+FPS: 1674
+990.0 388.0
+FPS: 2018
+00:08  INFO: [kryonet] Host discovery timed out.
+FPS: 2230
+542.0 339.0
+00:09  INFO: [kryonet] Server opened.
+00:09  INFO: Connecting: localhost/127.0.0.1:54555/54777
+00:09  INFO: [kryonet] Connection 1 connected: /127.0.0.1
+00:09  INFO: [kryonet] Connection 1 connected: localhost/127.0.0.1
+529.0 550.0
+FPS: 1609
+FPS: 1997
+FPS: 2256
+FPS: 2277
+FPS: 2304
+FPS: 2198
+FPS: 2628
+FPS: 2741
+FPS: 2729
+FPS: 2477
+FPS: 2272
+FPS: 2590
+FPS: 2627
+00:22  INFO: [kryonet] Closing server connections...
+00:22  INFO: [kryonet] Connection 1 disconnected.
 java.net.SocketException: Connection is closed.
-00:05  INFO: [kryonet] Server closed.
-00:05  INFO: [kryonet] Connection 1 disconnected.
+00:22  INFO: [kryonet] Server closed.
+00:22  INFO: [kryonet] Connection 1 disconnected.
 	at com.esotericsoftware.kryonet.TcpConnection.readObject(TcpConnection.java:109)
 	at com.esotericsoftware.kryonet.Client.update(Client.java:247)
-	at cz.Empatix.Multiplayer.GameClient$1.run(GameClient.java:66)
+	at cz.Empatix.Multiplayer.GameClient$1.run(GameClient.java:70)
+FPS: 2880
+FPS: 2580
 FPS: 60
+1031.0 411.0
+FPS: 58
+00:25  INFO: [kryonet] Host discovery timed out.
+FPS: 60
+FPS: 60
+00:27  INFO: [kryonet] Host discovery timed out.
+FPS: 60
+FPS: 60
+409.0 517.0
+484.0 365.0
+FPS: 60
+00:30  INFO: [kryonet] Server opened.
+00:30  INFO: Connecting: localhost/127.0.0.1:54555/54777
+00:30  INFO: [kryonet] Connection 1 connected: /127.0.0.1
+00:30  INFO: [kryonet] Connection 1 connected: localhost/127.0.0.1
+491.0 534.0
+CLIENT TICK: 3 -> 1
+FPS: 58
+FPS: 60
+FPS: 60
+FPS: 60
+FPS: 60
+CLIENT TICK: 296 -> 300
+FPS: 60
+FPS: 60
+FPS: 60
+FPS: 60
+00:40  INFO: [kryonet] Closing server connections...
+00:40  INFO: [kryonet] Connection 1 disconnected.
+java.net.SocketException: Connection is closed.
+	at com.esotericsoftware.kryonet.TcpConnection.readObject(TcpConnection.java:109)
+	at com.esotericsoftware.kryonet.Client.update(Client.java:247)
+	at cz.Empatix.Multiplayer.GameClient$1.run(GameClient.java:70)
+00:40  INFO: [kryonet] Server closed.
+00:40  INFO: [kryonet] Connection 1 disconnected.
 AL lib: (EE) alc_cleanup: 1 device not closed

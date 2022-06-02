@@ -4,7 +4,6 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.ItemDrops.Coin;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Multiplayer.ItemManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PlayerMP;
@@ -13,6 +12,8 @@ import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
+import cz.Empatix.Utility.Random;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -144,12 +145,12 @@ public class LuckyCoin extends Artefact {
             int xMaxTile = playerX + 150;
             int yMaxTile = playerY + 150;
 
-            int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-            int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+            int x = Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+            int y = Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
 
             while(tm.getType(y/tileSize,x/tileSize) == Tile.BLOCKED){
-                x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                x = Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                y = Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
             }
             double atan = Math.atan2(y-playerY,x-playerX);
             acceleration.x = (float)Math.cos(atan);
@@ -184,12 +185,12 @@ public class LuckyCoin extends Artefact {
                     int xMaxTile = playerX + 150;
                     int yMaxTile = playerY + 150;
 
-                    int x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                    int y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                    int x = Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                    int y = Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
 
                     while(tm.getType(y/tileSize,x/tileSize) == Tile.BLOCKED){
-                        x = cz.Empatix.Java.Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
-                        y = cz.Empatix.Java.Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
+                        x = Random.nextInt(xMaxTile-xMinTile+1)+xMinTile;
+                        y = Random.nextInt(yMaxTile-yMinTile+1)+yMinTile;
                     }
                     double atan = Math.atan2(y-playerY,x-playerX);
                     acceleration.x = (float)Math.cos(atan);

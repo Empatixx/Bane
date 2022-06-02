@@ -49,7 +49,7 @@ public class Interpolator {
         interpolatePosition(timeElapsed / timeToReachTarget);
     }
     private void interpolatePosition(float lerpAmount){
-        GameClient client = MultiplayerManager.getInstance().client;
+        //GameClient client = MultiplayerManager.getInstance().client;
         // interpolation -> smooth trans
         if(true){ // TODO: packets are old, needed to extrapolation
             if(!to.pos.equals(from.pos)){

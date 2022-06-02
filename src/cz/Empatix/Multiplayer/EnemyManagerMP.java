@@ -4,13 +4,13 @@ import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Enemies.*;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Entity.RoomObjects.PathWall;
+import cz.Empatix.Entity.RoomObjects.RoomObject;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Room;
-import cz.Empatix.Render.RoomObjects.PathWall;
-import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Random;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -97,7 +97,7 @@ public class EnemyManagerMP {
     }
 
     private static int getRandom(int lower, int upper) {
-        return cz.Empatix.Java.Random.nextInt((upper - lower) + 1) + lower;
+        return Random.nextInt((upper - lower) + 1) + lower;
     }
 
     public void spawnBoss(int x, int y) {
@@ -148,7 +148,7 @@ public class EnemyManagerMP {
         if (tileMap.getFloor() >= 2) {
             defaultsize += 2;
         }
-        int enemyType = cz.Empatix.Java.Random.nextInt(defaultsize);
+        int enemyType = Random.nextInt(defaultsize);
         Enemy instance = null;
         String enemy = enemiesList.get(enemyType);
         if (MultiplayerManager.multiplayer) {

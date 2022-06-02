@@ -17,13 +17,13 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class GameClient{
 
-    private final PacketHolder packetHolder;
-    private final MultiplayerManager mpManager;
-    private final GameStateManager gsm;
+    private PacketHolder packetHolder;
+    private MultiplayerManager mpManager;
+    private GameStateManager gsm;
     private final Client client;
 
-    private final ACKManager ackManager;
-    private final ACKCaching ackCaching;
+    private ACKManager ackManager;
+    private ACKCaching ackCaching;
 
     private int numPlayers;
     private boolean recon;
@@ -37,6 +37,10 @@ public class GameClient{
     public final int ticksBetweenPositionUpdates = 2;
     private final int tickDivergenceTolerance = 1;
 
+    public GameClient(){
+        client = new Client(16384,2048);
+
+    }
     public GameClient(GameStateManager gsm, String ipAddress){
         this.gsm = gsm;
         numPlayers = 1;

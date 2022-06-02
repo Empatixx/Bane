@@ -4,13 +4,13 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
 
 public class Ghost extends Enemy {
     private static final int IDLE = 0;
@@ -235,5 +235,9 @@ public class Ghost extends Enemy {
 
     }
     public void forceRemove(){
+    }
+    @Override
+    public boolean canDropItem() {
+        return false;
     }
 }

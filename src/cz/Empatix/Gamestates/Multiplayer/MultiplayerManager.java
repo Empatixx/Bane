@@ -32,8 +32,13 @@ public class MultiplayerManager {
             server = new GameServer();
         }
 
-        client = new GameClient(gsm,ip);
+        if(client == null)client = new GameClient(gsm,ip);
 
+    }
+    public MultiplayerManager(){
+        multiplayerManager = this;
+
+        client = new GameClient();
     }
 
     public String getUsername() {

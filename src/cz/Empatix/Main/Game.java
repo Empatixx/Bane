@@ -3,11 +3,11 @@ package cz.Empatix.Main;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
-import cz.Empatix.Java.Loader;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.LoadingScreen;
 import cz.Empatix.Render.Text.TextRender;
+import cz.Empatix.Utility.Loader;
+import cz.Empatix.Utility.Random;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.*;
@@ -85,7 +85,7 @@ public class Game{
 
 
         // Create the window
-        window = glfwCreateWindow(Settings.WIDTH, Settings.HEIGHT, "Bane",/*glfwGetPrimaryMonitor()*/NULL, NULL);
+        window = glfwCreateWindow(Settings.WIDTH, Settings.HEIGHT, "Bane",glfwGetPrimaryMonitor(), NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 

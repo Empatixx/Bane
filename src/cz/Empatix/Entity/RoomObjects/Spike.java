@@ -1,15 +1,19 @@
-package cz.Empatix.Render.RoomObjects;
+package cz.Empatix.Entity.RoomObjects;
 
+import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Java.Loader;
+import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Main.Game;
+import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 import cz.Empatix.Render.Graphics.Sprites.SpritesheetManager;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
 import org.joml.Matrix4f;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -19,43 +23,46 @@ import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
-public class Flag extends RoomObject {
+public class Spike extends RoomObject {
     public static void load(){
-        Loader.loadImage("Textures\\flag.tga");
+        Loader.loadImage("Textures\\Sprites\\spike.tga");
     }
-    public Flag(TileMap tm){
+    public boolean remove;
+    private boolean damageAnimation;
+
+    private boolean damageDone;
+    public Spike(TileMap tm){
         super(tm);
-        if(tm.isServerSide()) {
+        if(tm.isServerSide()){
             width = 16;
             height = 16;
-            cwidth = 16;
-            cheight = 16;
+            cwidth = 8;
+            cheight = 8;
             scale = 8;
 
             facingRight = true;
             flinching=false;
 
-            spriteSheetCols = 4;
-            spriteSheetRows = 1;
-
             collision = false;
             moveable=false;
             preDraw = true;
+            behindCollision = true;
 
             animation = new Animation(4);
-            animation.setDelay(200);
+            animation.setDelay(250);
 
             width *= scale;
             height *= scale;
             cwidth *= scale;
             cheight *= scale;
 
+            damageAnimation = true;
             remove = false;
-        }else{
+        } else {
             width = 16;
             height = 16;
-            cwidth = 16;
-            cheight = 16;
+            cwidth = 8;
+            cheight = 8;
             scale = 8;
 
             facingRight = true;
@@ -67,13 +74,14 @@ public class Flag extends RoomObject {
             collision = false;
             moveable=false;
             preDraw = true;
+            behindCollision = true;
 
             // try to find spritesheet if it was created once
-            spritesheet = SpritesheetManager.getSpritesheet("Textures\\flag.tga");
+            spritesheet = SpritesheetManager.getSpritesheet("Textures\\Sprites\\spike.tga");
 
             // creating a new spritesheet
             if (spritesheet == null){
-                spritesheet = SpritesheetManager.createSpritesheet("Textures\\flag.tga");
+                spritesheet = SpritesheetManager.createSpritesheet("Textures\\Sprites\\spike.tga");
                 Sprite[] sprites = new Sprite[4];
                 for(int i = 0; i < sprites.length; i++) {
                     float[] texCoords =
@@ -100,7 +108,7 @@ public class Flag extends RoomObject {
 
             animation = new Animation();
             animation.setFrames(spritesheet.getSprites(0));
-            animation.setDelay(200);
+            animation.setDelay(250);
 
             shader = ShaderManager.getShader("shaders\\shader");
             if (shader == null){
@@ -112,18 +120,43 @@ public class Flag extends RoomObject {
             cwidth *= scale;
             cheight *= scale;
 
+            damageAnimation = true;
             remove = false;
         }
     }
 
     public void update(){
         setMapPosition();
-
         animation.update();
+
+        if(animation.getIndexOfFrame() >= 2){
+            damageAnimation = false;
+        } else {
+            damageAnimation = true;
+        }
+        if(tileMap.isServerSide()){
+             Server server = MultiplayerManager.getInstance().server.getServer();
+             Network.RoomObjectAnimationSync roomObjectAnimationSync = new Network.RoomObjectAnimationSync();
+             roomObjectAnimationSync.id = id;
+             roomObjectAnimationSync.sprite = (byte)animation.getIndexOfFrame();
+             roomObjectAnimationSync.time = animation.getTime();
+             server.sendToAllUDP(roomObjectAnimationSync);
+        }
     }
 
     @Override
     public void touchEvent(MapObject o) {
+        if(!MultiplayerManager.multiplayer || tileMap.isServerSide()){
+            if(damageAnimation){
+                if(o instanceof Player) ((Player) o).hit(1);
+                if(o instanceof DestroyableObject && !damageDone){
+                    damageDone = true;
+                    ((DestroyableObject) o).setHit(1);
+                }
+            } else {
+                damageDone = false;
+            }
+        }
     }
 
     @Override

@@ -85,7 +85,7 @@ public class Background {
         } else {
             shader.setUniformf("alpha",1f);
         }
-        shader.setUniformi("sampler",0);
+         shader.setUniformi("sampler",0);
         shader.setUniformm4f("projection",matrixPos);
         glActiveTexture(GL_TEXTURE0);
         spritesheet.bindTexture();
@@ -124,5 +124,10 @@ public class Background {
     }
     public void updateFadeTime(){
         time = System.currentTimeMillis()- InGame.deltaPauseTime();
+    }
+
+    public void setOffset(Vector3f offset) {
+        matrixPos = new Matrix4f().translate(new Vector3f((float) Camera.getWIDTH() / 2 + offset.x, (float) Camera.getHEIGHT() / 2 + offset.y, + offset.z));
+        Camera.getInstance().hardProjection().mul(matrixPos,matrixPos);
     }
 }

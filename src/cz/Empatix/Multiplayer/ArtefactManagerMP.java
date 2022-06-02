@@ -10,8 +10,8 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Support.BerserkPot;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.ShieldHorn;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Random;
 
 import java.util.ArrayList;
 

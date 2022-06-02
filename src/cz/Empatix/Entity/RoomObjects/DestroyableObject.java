@@ -1,4 +1,4 @@
-package cz.Empatix.Render.RoomObjects;
+package cz.Empatix.Entity.RoomObjects;
 
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Gamestates.Singleplayer.InGame;

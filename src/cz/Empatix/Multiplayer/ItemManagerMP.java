@@ -5,8 +5,8 @@ import cz.Empatix.Entity.ItemDrops.*;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Guns.Weapon;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Random;
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
@@ -144,7 +144,7 @@ public class ItemManagerMP {
         if (player[randomIndexPlayer].getHealth() == player[randomIndexPlayer].getMaxHealth()) {
             drops--;
         }
-        int random = cz.Empatix.Java.Random.nextInt(drops);
+        int random = Random.nextInt(drops);
 
         ItemDrop drop = null;
         if (random == 0) {

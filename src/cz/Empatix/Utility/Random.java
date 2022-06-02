@@ -1,4 +1,4 @@
-package cz.Empatix.Java;
+package cz.Empatix.Utility;
 
 
 import java.util.SplittableRandom;

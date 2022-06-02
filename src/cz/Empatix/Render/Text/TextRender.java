@@ -1,10 +1,10 @@
 package cz.Empatix.Render.Text;
 
 
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Utility.Loader;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -357,6 +357,14 @@ public class TextRender {
         glBindTexture(GL_TEXTURE_2D,0);
         glActiveTexture(GL_TEXTURE0);
 
+    }
+    // use when we want clear vbos of opengl to release allocated vram in graphics card
+    public void clearVBOs(){
+        glBindBuffer(GL_ARRAY_BUFFER,vboTexCoords);
+        glDeleteBuffers(GL_ARRAY_BUFFER);
+        glBindBuffer(GL_ARRAY_BUFFER,vboVertices);
+        glDeleteBuffers(GL_ARRAY_BUFFER);
+        glBindBuffer(GL_ARRAY_BUFFER,0);
     }
 
 }

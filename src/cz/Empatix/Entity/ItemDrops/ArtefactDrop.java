@@ -134,8 +134,8 @@ public class ArtefactDrop extends ItemDrop {
             cheight*=scale;
 
             double atan = Math.atan2(y,x);
-            speed.x = (float)(Math.cos(atan) * 10);
-            speed.y = (float)(Math.sin(atan) * 10);
+            acceleration.x = (float)(Math.cos(atan));
+            acceleration.y = (float)(Math.sin(atan));
         } else {
             this.artefact = artefact;
             type = ARTEFACT;
@@ -173,8 +173,8 @@ public class ArtefactDrop extends ItemDrop {
             }
 
             double atan = Math.atan2(y,x);
-            speed.x = (float)(Math.cos(atan) * 10);
-            speed.y = (float)(Math.sin(atan) * 10);
+            acceleration.x = (float)(Math.cos(atan));
+            acceleration.y = (float)(Math.sin(atan));
         }
     }
 
@@ -314,7 +314,8 @@ public class ArtefactDrop extends ItemDrop {
     }
 
     public double distance(float px, float py){
-        return Math.sqrt(Math.pow(position.x-px,2)+Math.pow(position.y-py,2));
+        //return Math.sqrt(Math.pow(position.x-px,2)+Math.pow(position.y-py,2));
+        return Math.pow(position.x-px,2)+Math.pow(position.y-py,2); // sqrt not needed, efficiency
     }
 
     public Artefact getArtefact() {

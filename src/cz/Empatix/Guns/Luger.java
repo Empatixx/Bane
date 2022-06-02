@@ -4,17 +4,17 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Entity.RoomObjects.DestroyableObject;
+import cz.Empatix.Entity.RoomObjects.RoomObject;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
-import cz.Empatix.Java.Loader;
-import cz.Empatix.Java.Random;
 import cz.Empatix.Multiplayer.GunsManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Hud.Image;
-import cz.Empatix.Render.RoomObjects.DestroyableObject;
-import cz.Empatix.Render.RoomObjects.RoomObject;
 import cz.Empatix.Render.TileMap;
+import cz.Empatix.Utility.Loader;
+import cz.Empatix.Utility.Random;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -353,7 +353,7 @@ public class Luger extends Weapon {
     @Override
     public void handleAddBulletPacket(Network.AddBullet response) {
         if(response.makeSound) {
-            source.play(soundShoot[cz.Empatix.Java.Random.nextInt(2)]);
+            source.play(soundShoot[Random.nextInt(2)]);
             if(response.idPlayer == MultiplayerManager.getInstance().getIdConnection()){
                 double atan = Math.atan2(response.y, response.x);
                 push = 15;

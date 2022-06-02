@@ -3,7 +3,8 @@ package cz.Empatix.Gamestates.Singleplayer;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Entity.ProgressNPC;
+import cz.Empatix.Entity.ProgressRoom.MultiplayerNPC;
+import cz.Empatix.Entity.ProgressRoom.ProgressNPC;
 import cz.Empatix.Gamestates.GameState;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Main.DiscordRP;
@@ -42,6 +43,7 @@ public class ProgressRoom extends GameState {
     public static boolean enterGame;
 
     private ProgressNPC progressNPC;
+    private MultiplayerNPC multiplayerNPC;
 
     private TextRender textRender;
 
@@ -95,6 +97,10 @@ public class ProgressRoom extends GameState {
         progressNPC = new ProgressNPC(tileMap);
         progressNPC.setPosition(23*tileMap.getTileSize(),9*tileMap.getTileSize()/2);
 
+        multiplayerNPC = new MultiplayerNPC(tileMap,gsm);
+        multiplayerNPC.setPosition(6*tileMap.getTileSize(),8*tileMap.getTileSize()/2);
+
+
         alertManager = new AlertManager();
 
         AudioManager.playSoundtrack(Soundtrack.PROGRESSROOM);
@@ -124,7 +130,7 @@ public class ProgressRoom extends GameState {
             player.draw();
             progressNPC.draw();
         }
-
+        multiplayerNPC.draw();
         // draw objects
         tileMap.drawObjects();
 
@@ -139,6 +145,7 @@ public class ProgressRoom extends GameState {
 
 
         progressNPC.drawHud();
+        multiplayerNPC.drawHud();
 
         coin.draw();
         textRender.draw(""+ player.getCoins(),new Vector3f(145,1019,0),3,new Vector3f(1.0f,0.847f,0.0f));
@@ -161,17 +168,10 @@ public class ProgressRoom extends GameState {
         mouseX = gsm.getMouseX();
         mouseY = gsm.getMouseY();
 
-        // mouse location-moving direction of mouse of tilemap
+        // set tilemap/camera with trying succeeding to center player in camera, this position is also affected my mouse
         tileMap.setPosition(
-                tileMap.getX()-(mouseX-960)/30,
-                tileMap.getY()-(mouseY- 540)/30,
-                false);
-
-        // updating player
-        // updating tilemap by player position
-        tileMap.setPosition(
-                Camera.getWIDTH() / 2f - player.getX(),
-                Camera.getHEIGHT() / 2f - player.getY(),
+                Camera.getWIDTH() / 2f - player.getX() -(mouseX-960)/30,
+                Camera.getHEIGHT() / 2f - player.getY() -(mouseY- 540)/30,
                 false
         );
 
@@ -182,6 +182,9 @@ public class ProgressRoom extends GameState {
 
         progressNPC.update(mouseX,mouseY);
         progressNPC.touching(player);
+
+        multiplayerNPC.update(mouseX,mouseY);
+        multiplayerNPC.touching(player);
 
         alertManager.update();
 
@@ -198,29 +201,35 @@ public class ProgressRoom extends GameState {
             gsm.setState(GameStateManager.MENU);
             transition = false;
         }
-        player.keyPressed(k);
+        if(!multiplayerNPC.isUsingInputBar()) player.keyPressed(k);
         tileMap.keyPressed(k, player);
         progressNPC.keyPress(k);
+        multiplayerNPC.keyPress(k);
     }
 
     @Override
     protected void keyReleased(int k) {
         player.keyReleased(k);
+        multiplayerNPC.keyReleased(k);
     }
 
     @Override
     protected void mousePressed(int button) {
         progressNPC.mousePressed(mouseX,mouseY, player);
+        multiplayerNPC.mousePressed(mouseX,mouseY, player);
+        System.out.println(mouseX+" "+mouseY);
     }
 
     @Override
     protected void mouseReleased(int button) {
         progressNPC.mouseReleased(mouseX,mouseY);
+        multiplayerNPC.mouseReleased(mouseX,mouseY);
     }
 
     @Override
     protected void mouseScroll(double x, double y) {
         progressNPC.mouseScroll(x,y);
+        multiplayerNPC.mouseScroll(x,y);
     }
 
 }

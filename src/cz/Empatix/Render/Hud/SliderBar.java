@@ -1,12 +1,12 @@
 package cz.Empatix.Render.Hud;
 
-import cz.Empatix.Java.Loader;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Utility.Loader;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -59,6 +59,7 @@ public class SliderBar {
     private boolean locked;
 
     private boolean vertical;
+    private boolean disableSliderDraw;
 
     public SliderBar(Vector3f pos, float scale){
         String file = "Textures\\Menu\\volume_slider";
@@ -189,39 +190,44 @@ public class SliderBar {
         glDisableVertexAttribArray(1);
 
 
-        Matrix4f target = new Matrix4f()
-                .translate(pos)
-                .scale(scale)
-                .rotateX(3.14f);
+        if(!disableSliderDraw){
+            Matrix4f target = new Matrix4f()
+                    .translate(pos)
+                    .scale(scale)
+                    .rotateX(3.14f);
 
-        Camera.getInstance().hardProjection().mul(target,target);
-        shader.bind();
-        shader.setUniformi("sampler",0);
-        shader.setUniformm4f("projection",target);
-        glBindTexture(GL_TEXTURE_2D,idTextureSlider);
+            Camera.getInstance().hardProjection().mul(target,target);
+            shader.bind();
+            shader.setUniformi("sampler",0);
+            shader.setUniformm4f("projection",target);
+            glBindTexture(GL_TEXTURE_2D,idTextureSlider);
 
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-
-
-        glBindBuffer(GL_ARRAY_BUFFER, vboVerticesSlider);
-        glVertexAttribPointer(0,2,GL_INT,false,0,0);
-
-        glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
-        glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
-
-        glDrawArrays(GL_QUADS, 0, 4);
-
-        glBindBuffer(GL_ARRAY_BUFFER,0);
-
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-
-        shader.unbind();
-        glBindTexture(GL_TEXTURE_2D,0);
-        glActiveTexture(GL_TEXTURE0);
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
 
 
+            glBindBuffer(GL_ARRAY_BUFFER, vboVerticesSlider);
+            glVertexAttribPointer(0,2,GL_INT,false,0,0);
+
+            glBindBuffer(GL_ARRAY_BUFFER,vboTextures);
+            glVertexAttribPointer(1,2,GL_FLOAT,false,0,0);
+
+            glDrawArrays(GL_QUADS, 0, 4);
+
+            glBindBuffer(GL_ARRAY_BUFFER,0);
+
+            glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(1);
+
+            shader.unbind();
+            glBindTexture(GL_TEXTURE_2D,0);
+            glActiveTexture(GL_TEXTURE0);
+
+        }
+
+    }
+    public void disableSlideDraw(boolean b){
+        disableSliderDraw = b;
     }
     public boolean intersects(float x, float y){
         return (x >= minX && x <= maxX && y >= minY && y <= maxY);

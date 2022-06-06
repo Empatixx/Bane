@@ -2294,6 +2294,7 @@ public class TileMap {
 		public void handleNewMapPacket(Network.NextFloor nextFloor) {
 			choosenAffixes = nextFloor.affixes;
 			Arrays.fill(affixes,false);
+			totalAffixes = 0;
 			for(byte i : choosenAffixes){
 				if(i != -1){
 					affixes[choosenAffixes[totalAffixes]] = true;

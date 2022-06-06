@@ -23,6 +23,8 @@ public class Background {
     private long time;
     private float alpha;
 
+    private float timeFadeTrans;
+
     public Background(String filepath) {
         shader = ShaderManager.getShader("shaders\\background");
         if (shader == null){
@@ -63,6 +65,7 @@ public class Background {
         }
         matrixPos = new Matrix4f().translate(new Vector3f((float) Camera.getWIDTH() / 2, (float) Camera.getHEIGHT() / 2, 0));
         Camera.getInstance().hardProjection().mul(matrixPos, matrixPos);
+
     }
 
     /**
@@ -79,13 +82,14 @@ public class Background {
         vboVertices = vbo;
     }
     public void draw() {
+        if(alpha <= 0 && fadeEffect) return; // wasting time with drawing something we dont see
         shader.bind();
         if(fadeEffect){
             shader.setUniformf("alpha",alpha);
         } else {
             shader.setUniformf("alpha",1f);
         }
-         shader.setUniformi("sampler",0);
+        shader.setUniformi("sampler",0);
         shader.setUniformm4f("projection",matrixPos);
         glActiveTexture(GL_TEXTURE0);
         spritesheet.bindTexture();
@@ -114,14 +118,28 @@ public class Background {
 
     public void setFadeEffect(boolean fadeEffect) {
         this.fadeEffect = fadeEffect;
+        timeFadeTrans = 1600;
     }
     public void update() {
         if (fadeEffect){
             long currentTime = System.currentTimeMillis()- InGame.deltaPauseTime();
-            alpha = 1 - (float) (currentTime-time ) / 1000 / 1.6f;
+            alpha = 1 - (float) (currentTime-time ) / timeFadeTrans;
             if (alpha < 0) alpha = 0;
         }
     }
+
+    public void setTimeFadeTrans(float timeFadeTrans) {
+        this.timeFadeTrans = timeFadeTrans;
+    }
+
+    public void setFadeAlpha(float alpha) {
+        this.alpha = alpha;
+    }
+
+    public boolean isInvisibleByFade(){
+        return alpha <= 0;
+    }
+
     public void updateFadeTime(){
         time = System.currentTimeMillis()- InGame.deltaPauseTime();
     }

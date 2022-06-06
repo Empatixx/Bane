@@ -237,7 +237,7 @@ public class Ghost extends Enemy {
     public void forceRemove(){
     }
     @Override
-    public boolean canDropItem() {
-        return false;
+    public void applyHitEffects(Player hitPlayer) {
+
     }
 }

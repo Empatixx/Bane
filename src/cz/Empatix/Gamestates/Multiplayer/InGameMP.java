@@ -4,6 +4,7 @@ import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.AudioManager.Source;
+import cz.Empatix.Buffs.BuffManagerMP;
 import cz.Empatix.Database.Database;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
@@ -77,8 +78,9 @@ public class InGameMP extends GameState {
     private Image skullPlayerdead;
     private Image[] logos;
 
-    public PlayerMP[] player;
+    private PlayerMP[] player;
     public PlayerReady[] playerReadies;
+    private BuffManagerMP buffManager;
 
     public TileMap tileMap;
 
@@ -312,12 +314,14 @@ public class InGameMP extends GameState {
         // create player object
         player = new PlayerMP[2];
         playerReadies = new PlayerReady[player.length];
+        buffManager = new BuffManagerMP();
 
         String username = mpManager.getUsername();
         player[0] = new PlayerMP(tileMap,username);
         player[0].setOrigin(true);
         player[0].setIdConnection(mpManager.getIdConnection());
         playerReadies[0] = new PlayerReady(username,mpManager.getIdConnection());
+        buffManager.addPlayer(player[0]);
         mpStatistics.addPlayer(username,mpManager.getIdConnection());
 
         tileMap.setPlayer(player[0]);
@@ -446,6 +450,7 @@ public class InGameMP extends GameState {
             barName[index-1] = new TextRender();
 
             miniMap.addPlayerArrow(this.player[index]);
+            buffManager.addPlayer(this.player[index]);
 
             deathIcon = new Image("Textures\\skull.tga",new Vector3f(100,315,0),2f);
 
@@ -461,6 +466,7 @@ public class InGameMP extends GameState {
             int idOrigin = mpManager.getIdConnection();
             player[index].remove();
             miniMap.removePlayerArrow(player[index].getIdConnection());
+            buffManager.removePlayer(this.player[index]);
             player[index] = null;
             playerReadies[index] = null;
             healthBar[index] = null;
@@ -896,6 +902,7 @@ public class InGameMP extends GameState {
                     Camera.getHEIGHT() / 2f - player[0].getY() -(mouseY- 540)/30,
                     false
             );
+            buffManager.update();
             player[0].updateOrigin();
             for(PlayerMP p : player){
                 if(p != null)p.update();
@@ -1036,6 +1043,7 @@ public class InGameMP extends GameState {
                 AlertManager.add(AlertManager.WARNING,player[1].getUsername()+" has left the game!");
             }
             miniMap.removePlayerArrow(this.player[index].getIdConnection());
+            buffManager.removePlayer(this.player[index]);
             player[index] = null;
             playerReadies[index] = null;
             healthBar[index] = null;
@@ -1059,6 +1067,7 @@ public class InGameMP extends GameState {
             barName[index-1] = new TextRender();
 
             miniMap.addPlayerArrow(this.player[index]);
+            buffManager.addPlayer(this.player[index]);
 
             deathIcon = new Image("Textures\\skull.tga",new Vector3f(100,315,0),2f);
 

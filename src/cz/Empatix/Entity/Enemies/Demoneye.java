@@ -193,4 +193,8 @@ public class Demoneye extends Enemy {
     public boolean shouldRemove(){
         return isDead();
     }
+    @Override
+    public void applyHitEffects(Player hitPlayer) {
+
+    }
 }

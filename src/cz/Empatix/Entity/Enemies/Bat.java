@@ -215,4 +215,9 @@ public class Bat extends Enemy {
     }
     public void forceRemove(){
     }
+
+    @Override
+    public void applyHitEffects(Player hitPlayer) {
+
+    }
 }

@@ -32,7 +32,7 @@ public class GameClient{
     public int interpolationTick;
 
     public static float deltaTick;
-    public static float lastTime;
+    public static long lastTime;
 
     public final int ticksBetweenPositionUpdates = 2;
     private final int tickDivergenceTolerance = 1;

@@ -910,4 +910,6 @@ public abstract class Enemy extends MapObject{
     public boolean isRagingActivated() {
         return ragingActivated;
     }
+
+    public abstract void applyHitEffects(Player hitPlayer);
 }

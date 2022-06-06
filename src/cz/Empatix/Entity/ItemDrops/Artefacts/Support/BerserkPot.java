@@ -1,5 +1,8 @@
 package cz.Empatix.Entity.ItemDrops.Artefacts.Support;
 
+import cz.Empatix.Buffs.BerserkBuff;
+import cz.Empatix.Buffs.BuffManager;
+import cz.Empatix.Buffs.BuffManagerMP;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.MapObject;
@@ -30,7 +33,6 @@ import static org.lwjgl.opengl.GL20.*;
 public class BerserkPot extends Artefact {
     public static void load(){
         Loader.loadImage("Textures\\artefacts\\berserkpot.tga");
-        Loader.loadImage("Textures\\artefacts\\artifactcharge.tga");
         Loader.loadImage("Textures\\artefacts\\berserkpot-particle.tga");
     }
     private long time;
@@ -43,7 +45,7 @@ public class BerserkPot extends Artefact {
     private float timeLeft;
 
     private TextRender textRender;
-    private long flichingDelay;
+    private long flinchingDelay;
 
     public BerserkPot(TileMap tm, Player p){
         super(tm,p);
@@ -95,8 +97,6 @@ public class BerserkPot extends Artefact {
 
             if(System.currentTimeMillis() - time - InGame.deltaPauseTime() > 20000){
                 removedSpeed = true;
-                p[0].setMovementVelocity(p[0].getMovementVelocity()-bonusSpeed);
-                p[0].setMoveAcceleration(p[0].getMoveAcceleration() + 0.5f);
             }
             Vector2f acceleration = p[0].getAcceleration();
 
@@ -140,45 +140,42 @@ public class BerserkPot extends Artefact {
 
     @Override
     public void updateMPClient() {
+        if(!removedSpeed) {
+            timeLeft = (System.currentTimeMillis() - this.time - InGame.deltaPauseTime()) / 1000f;
+            timeLeft = 20 - timeLeft;
+        }
         for(Player p : p){
             if(p != null){
-                if(!removedSpeed){
-                    timeLeft = (System.currentTimeMillis() - this.time - InGame.deltaPauseTime() )/ 1000f;
-                    timeLeft = 20 - timeLeft;
+                if(((PlayerMP)p).getIdConnection() == idUser){
+                    if(System.currentTimeMillis() - time - InGame.deltaPauseTime() > 20000){
+                        removedSpeed = true;
+                    }
+                    Vector2f acceleration = p.getAcceleration();
 
-                    if(((PlayerMP)p).getIdConnection() == idUser){
-                        if(System.currentTimeMillis() - time - InGame.deltaPauseTime() > 20000){
-                            removedSpeed = true;
-                            p.setMovementVelocity(p.getMovementVelocity()-bonusSpeed);
-                            p.setMoveAcceleration(p.getMoveAcceleration() + 0.5f);
-                        }
-                        Vector2f acceleration = p.getAcceleration();
+                    if(Math.abs(acceleration.x) >= 1 || Math.abs(acceleration.y) >= 1){
 
-                        if(Math.abs(acceleration.x) >= 1 || Math.abs(acceleration.y) >= 1){
+                        Vector3f position = p.getPosition();
+                        boolean up = p.isMovingUp(), down = p.isMovingDown(), left = p.isMovingLeft(), right = p.isMovingRight();
+                        int height = p.getCheight();
 
-                            Vector3f position = p.getPosition();
-                            boolean up = p.isMovingUp(), down = p.isMovingDown(), left = p.isMovingLeft(), right = p.isMovingRight();
-                            int height = p.getCheight();
+                        float value = Math.abs(acceleration.x);
+                        if(value < Math.abs(acceleration.y)) value = Math.abs(acceleration.y);
+                        if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 500-value*200){
+                            lastTimeSprintParticle = System.currentTimeMillis()- InGame.deltaPauseTime();
+                            SprintParticle sprintParticle = new SprintParticle(tm);
+                            if((up || down) && !left && !right){
+                                sprintParticle.setPosition(
+                                        position.x+16*(float)Math.sin(2*Math.PI*((System.currentTimeMillis()%1000)/1000d)),
+                                        position.y+height/2);
+                            } else if((right || left) && !up && !down){
+                                sprintParticle.setPosition(
+                                        position.x+(right ? -25 : 0)+(left ? 25 : 0),
+                                        position.y+height/2+16*(float)Math.sin(Math.PI*(1+((System.currentTimeMillis()%1000)/1000d))));
+                            } else {
+                                sprintParticle.setPosition(position.x,position.y+height/2);
 
-                            float value = Math.abs(acceleration.x);
-                            if(value < Math.abs(acceleration.y)) value = Math.abs(acceleration.y);
-                            if(System.currentTimeMillis() - InGame.deltaPauseTime() - lastTimeSprintParticle > 500-value*200){
-                                lastTimeSprintParticle = System.currentTimeMillis()- InGame.deltaPauseTime();
-                                SprintParticle sprintParticle = new SprintParticle(tm);
-                                if((up || down) && !left && !right){
-                                    sprintParticle.setPosition(
-                                            position.x+16*(float)Math.sin(2*Math.PI*((System.currentTimeMillis()%1000)/1000d)),
-                                            position.y+height/2);
-                                } else if((right || left) && !up && !down){
-                                    sprintParticle.setPosition(
-                                            position.x+(right ? -25 : 0)+(left ? 25 : 0),
-                                            position.y+height/2+16*(float)Math.sin(Math.PI*(1+((System.currentTimeMillis()%1000)/1000d))));
-                                } else {
-                                    sprintParticle.setPosition(position.x,position.y+height/2);
-
-                                }
-                                sprintParticles.add(sprintParticle);
                             }
+                            sprintParticles.add(sprintParticle);
                         }
                     }
                 }
@@ -204,8 +201,6 @@ public class BerserkPot extends Artefact {
                     if(((PlayerMP)player).getIdConnection() == idUser){
                         if(System.currentTimeMillis() - time > 20000){
                             removedSpeed = true;
-                            player.setMovementVelocity(player.getMovementVelocity()-bonusSpeed);
-                            player.setMoveAcceleration(player.getMoveAcceleration() + 0.5f);
                             idUser = 0; // setting user to no one
                         }
                         break;
@@ -267,10 +262,10 @@ public class BerserkPot extends Artefact {
 
         chargeBar.draw();
         if(!removedSpeed){
-            if(System.currentTimeMillis() - flichingDelay < 150 && time < 3){
+            if(System.currentTimeMillis() - flinchingDelay < 125 && timeLeft < 3){
                 return;
             }
-            flichingDelay = System.currentTimeMillis();
+            flinchingDelay = System.currentTimeMillis();
             float value = timeLeft/20;
             float b = 0f,r,g;
             if (value <= 0.5f){
@@ -310,13 +305,10 @@ public class BerserkPot extends Artefact {
     public void activate() {
         charge = 0;
         removedSpeed = false;
-        // refills player armor to full
-        int movementVelocity = p[0].getMovementVelocity();
-        float moveAcce = p[0].getMoveAcceleration();
 
-        bonusSpeed = (int)(movementVelocity*0.25f);
-        p[0].setMovementVelocity(movementVelocity+bonusSpeed);
-        p[0].setMoveAcceleration(moveAcce - 0.5f);
+        BerserkBuff buff = new BerserkBuff();
+        BuffManager buffManager = BuffManager.getInstance();
+        buffManager.addBuff(buff);
         time = System.currentTimeMillis() - InGame.deltaPauseTime();
     }
     @Override
@@ -327,14 +319,10 @@ public class BerserkPot extends Artefact {
         for(Player player : p){
             if(player == null) continue;
             if(((PlayerMP)player).getIdConnection() == idUser){
-                int movementVelocity = player.getMovementVelocity();
-                float moveAcce = player.getMoveAcceleration();
-
-                bonusSpeed = (int)(movementVelocity*0.25f);
-                player.setMovementVelocity(movementVelocity+bonusSpeed);
-                player.setMoveAcceleration(moveAcce - 0.5f);
-                time = System.currentTimeMillis() - InGame.deltaPauseTime();
-                this.idUser = idUser;
+                BerserkBuff buff = new BerserkBuff(idUser);
+                BuffManagerMP buffManager = BuffManagerMP.getInstance();
+                buffManager.addBuff(buff,idUser);
+                time = System.currentTimeMillis();
                 break;
             }
         }
@@ -347,14 +335,7 @@ public class BerserkPot extends Artefact {
             if(player != null){
                 if(((PlayerMP)player).getIdConnection() == idUser){
                     removedSpeed = false;
-
-                    int movementVelocity = player.getMovementVelocity();
-                    float moveAcce = player.getMoveAcceleration();
-
-                    bonusSpeed = (int)(movementVelocity*0.25f);
-                    player.setMovementVelocity(movementVelocity+bonusSpeed);
-                    player.setMoveAcceleration(moveAcce - 0.5f);
-                    time = System.currentTimeMillis() - InGame.deltaPauseTime();
+                    time = System.currentTimeMillis();
                     break;
                 }
             }

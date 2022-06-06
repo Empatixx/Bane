@@ -405,5 +405,9 @@ public class RedSlime extends Enemy {
             b.forceRemove();
         }
     }
+    @Override
+    public void applyHitEffects(Player hitPlayer) {
+
+    }
 }
 

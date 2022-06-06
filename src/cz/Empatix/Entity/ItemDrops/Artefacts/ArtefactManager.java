@@ -1,5 +1,6 @@
 package cz.Empatix.Entity.ItemDrops.Artefacts;
 
+import cz.Empatix.Entity.ItemDrops.Artefacts.Damage.RagePot;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Damage.RingOfFire;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Special.LuckyCoin;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Special.ReviveBook;
@@ -25,6 +26,7 @@ public class ArtefactManager {
     public static void load(){
         Loader.loadImage("Textures\\Artefacts\\artefacthud.tga");
         Loader.loadImage("Textures\\artefacts\\artifactcharge1.tga");
+        Loader.loadImage("Textures\\artefacts\\artifactcharge.tga");
         RingOfFire.load();
         BerserkPot.load();
         TransportableArmorPot.load();
@@ -32,6 +34,7 @@ public class ArtefactManager {
         Ammobelt.load();
         ReviveBook.load();
         ShieldHorn.load();
+        RagePot.load();
     }
     private ArrayList<Artefact> artefacts;
 
@@ -61,6 +64,7 @@ public class ArtefactManager {
         artefacts.add(new Ammobelt(tm,player));
         artefacts.add(new ReviveBook(tm,player));
         artefacts.add(new ShieldHorn(tm,player));
+        artefacts.add(new RagePot(tm,player));
 
         artefactHud = new Image("Textures\\Artefacts\\artefacthud.tga",new Vector3f(1400,975,0),2.6f);
 

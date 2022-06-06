@@ -97,7 +97,6 @@ public class ShieldHorn extends Artefact {
 
         chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
                 2.6f);
-        rarity = 1;
 
         position = p.getPosition();
     }
@@ -149,7 +148,7 @@ public class ShieldHorn extends Artefact {
 
             vboShield = ModelManager.getModel(64,96);
             if (vboShield == -1){
-                vboShield = ModelManager.getModel(64,96);
+                vboShield = ModelManager.createModel(64,96);
             }
             shader = ShaderManager.getShader("shaders\\shader");
             if (shader == null){
@@ -158,7 +157,6 @@ public class ShieldHorn extends Artefact {
 
             chargeBar = new Image("Textures\\artefacts\\artifactcharge.tga",new Vector3f(1400,1055,0),
                     2.6f);
-            rarity = 1;
         }
     }
     @Override

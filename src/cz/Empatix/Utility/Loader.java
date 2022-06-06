@@ -1,6 +1,7 @@
 package cz.Empatix.Utility;
 
 import cz.Empatix.AudioManager.AudioManager;
+import cz.Empatix.Buffs.BuffManager;
 import cz.Empatix.Entity.Enemies.*;
 import cz.Empatix.Entity.Enemies.Projectiles.KingSlimebullet;
 import cz.Empatix.Entity.Enemies.Projectiles.RedSlimebullet;
@@ -121,6 +122,7 @@ public class Loader {
         // itemdrops
         ItemManager.load();
         ArtefactManager.load();
+        BuffManager.load();
         // GUNS
         GunsManager.load();
         // HUD

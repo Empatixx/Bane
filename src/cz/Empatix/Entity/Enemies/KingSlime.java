@@ -689,4 +689,8 @@ public class KingSlime extends Enemy {
     public boolean canDropItem() {
         return false;
     }
+    @Override
+    public void applyHitEffects(Player hitPlayer) {
+
+    }
 }

@@ -2,6 +2,7 @@ package cz.Empatix.Multiplayer;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Server;
+import cz.Empatix.Buffs.BuffManagerMP;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.ItemDrops.Coin;
 import cz.Empatix.Entity.Player;
@@ -217,7 +218,11 @@ public class PlayerMP extends Player {
     }
 
     public void update() {
-        setMapPosition();
+        // apply buffs to movement speed
+        BuffManagerMP buffManager = BuffManagerMP.getInstance();
+        if(buffManager != null){ // check if player is not in progress room
+            movementVelocity = buffManager.applyMovementBonuses(715,idConnection);
+        }
         // check if player should be still rolling
         if(System.currentTimeMillis() - rollCooldown - InGame.deltaPauseTime() >= 400 && rolling){
             rolling = false;

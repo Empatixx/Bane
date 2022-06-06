@@ -1,9 +1,14 @@
 package cz.Empatix.Entity.Enemies;
 
+import cz.Empatix.Buffs.Blindness;
+import cz.Empatix.Buffs.BuffManager;
+import cz.Empatix.Buffs.BuffManagerMP;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
+import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Multiplayer.Network;
+import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
@@ -156,11 +161,11 @@ public class Snake extends Enemy {
         }
     }
     public void initStats(int floor){
-        movementVelocity = 280;
+        movementVelocity = 400;
         moveAcceleration = 4f;
-        stopAcceleration = 2f;
+        stopAcceleration = 3f;
 
-        health = maxHealth = (int)(9*(1+(Math.pow(floor,1.25)*0.12)));
+        health = maxHealth = (int)(8*(1+(Math.pow(floor,1.25)*0.12)));
         tryBoostHealth();
         damage = 2;
 
@@ -217,5 +222,22 @@ public class Snake extends Enemy {
 
     }
     public void forceRemove(){
+    }
+
+    @Override
+    public void applyHitEffects(Player hitPlayer) {
+        if(tileMap.isServerSide()){
+            if(Math.random() > 0.5){
+                Blindness blindness = new Blindness();
+                BuffManagerMP buffManager = BuffManagerMP.getInstance();
+                buffManager.addBuff(blindness,((PlayerMP)(hitPlayer)).getIdConnection());
+            }
+        } else if(!MultiplayerManager.multiplayer){
+            if(Math.random() > 0.5){
+                Blindness blindness = new Blindness();
+                BuffManager buffManager = BuffManager.getInstance();
+                buffManager.addBuff(blindness);
+            }
+        }
     }
 }

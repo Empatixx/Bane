@@ -154,15 +154,11 @@ public class Revolver extends Weapon {
                     Bullet bullet = new Bullet(tm, x, y, inaccuracy,2400);
                     bullet.setPosition(px, py);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
-                    if(criticalHits){
-                        if(Math.random() > 0.9-nextCritChance){
-                            damage*=increasedCritDamage ? 3 : 2;
-                            nextCritChance=0;
-                            bullet.setCritical(true);
-                        } else if(nextCritChanceEnabled){
-                            nextCritChance+=0.1f;
-                        }
-                    }
+                    if(criticalHit(0.1f+nextCritChance)){
+                        damage*=increasedCritDamage ? 3 : 2;
+                        nextCritChance=0;
+                        bullet.setCritical(true);
+                    } else nextCritChance+=0.1f;
                     bullet.setDamage(damage);
                     bullets.add(bullet);
                     currentMagazineAmmo--;
@@ -217,15 +213,11 @@ public class Revolver extends Weapon {
                         bullet.setPosition(px, py);
                         bullet.setOwner(idPlayer);
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
-                        if(criticalHits){
-                            if(Math.random() > 0.9-nextCritChance){
-                                damage*=increasedCritDamage ? 3 : 2;
-                                nextCritChance=0;
-                                bullet.setCritical(true);
-                            } else if(nextCritChanceEnabled){
-                                nextCritChance+=0.1f;
-                            }
-                        }
+                        if(criticalHit(0.1f+nextCritChance,idPlayer)){
+                            damage*=increasedCritDamage ? 3 : 2;
+                            nextCritChance=0;
+                            bullet.setCritical(true);
+                        } else nextCritChance+=0.1f;
                         bullet.setDamage(damage);
                         bullets.add(bullet);
                         currentMagazineAmmo--;

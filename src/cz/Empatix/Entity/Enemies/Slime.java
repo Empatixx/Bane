@@ -408,5 +408,9 @@ public class Slime extends Enemy {
             b.forceRemove();
         }
     }
+    @Override
+    public void applyHitEffects(Player hitPlayer) {
+
+    }
 }
 

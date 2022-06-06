@@ -85,14 +85,16 @@ public class GameServer {
                 randomInit.set(true);
                 long lastTime = System.nanoTime();
                 long startACK = System.nanoTime();
-                long timer = System.currentTimeMillis();
                 final float ns = MultiplayerManager.ns;
 
+
                 float deltaTick = 0;
-                long lastTimeDelta = System.nanoTime();
-                deltaTimeServer = -1;
+                deltaTimeServer = 1/60f;
 
                 gameState = GameStateManager.PROGRESSROOM;
+
+                int ticks = 0;
+                long showTicks = System.currentTimeMillis();
 
                 boolean apdPacket = false; // all players dead
                 while (MultiplayerManager.multiplayer) {
@@ -106,9 +108,6 @@ public class GameServer {
                         ackManager.update();
                         ackCaching.update();
                     }
-                    long now = System.nanoTime();
-                    deltaTick += (now - lastTime) / ns;
-                    lastTime = now;
                     while (deltaTick >= 1) {
                         tick++;
                         if(tick % 300 == 0){ // every 5sec with default 60 ticks
@@ -120,7 +119,7 @@ public class GameServer {
                         try{
                             for (PlayerMP player : connectedPlayers) {
                                 player.update();
-                                player.newPlayerTickSync(tick); // sends tick sync if player is new
+                                //player.newPlayerTickSync(tick); // sends tick sync if player is new
                                 Network.MovePlayer movePlayer = new Network.MovePlayer();
                                 movePlayer.idPlayer = player.getIdConnection();
                                 movePlayer.x = player.getX();
@@ -282,6 +281,11 @@ public class GameServer {
                                     playerLock.writeLock().unlock();
                                 }
                                 gameState = GameStateManager.INGAME;
+                                itemManager.dropArtefact((int)players[0].getX(),(int)players[0].getY());
+                                itemManager.dropArtefact((int)players[0].getX(),(int)players[0].getY());
+
+                                itemManager.dropArtefact((int)players[0].getX(),(int)players[0].getY());
+
                                 readyLock.writeLock().lock();
                                 try{
                                     for (PlayerReady ready : readyCheckPlayers) {
@@ -292,11 +296,18 @@ public class GameServer {
                                 }
                             }
                         }
-                        deltaTick--;
 
-                        long nowDelta = System.nanoTime();
-                        deltaTimeServer = (float)((nowDelta-lastTimeDelta) * 1E-9);
-                        lastTimeDelta = now;
+                        deltaTimeServer = 1/60f;
+                        deltaTick--;
+                        ticks++;
+
+                    }
+                    long now = System.nanoTime();
+                    deltaTick += (now - lastTime) / ns;
+                    lastTime = now;
+                    if(System.currentTimeMillis() - showTicks > 1000){
+                        showTicks+=1000;
+                        ticks = 0;
                     }
                 }
             }

@@ -150,11 +150,9 @@ public class Pistol extends Weapon {
             Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,1800);
             bullet.setPosition(px, py);
             int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
-            if(criticalHits){
-                if(Math.random() > 0.9){
-                    damage*=2;
-                    bullet.setCritical(true);
-                }
+            if(criticalHit(0.1f)){
+                damage*=2;
+                bullet.setCritical(true);
             }
             bullet.setDamage(damage);
             bullets.add(bullet);
@@ -176,11 +174,9 @@ public class Pistol extends Weapon {
                     Bullet bullet = new Bullet(tm, x, y, inaccuracy,1800);
                     bullet.setPosition(px, py);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
-                    if(criticalHits){
-                        if(Math.random() > 0.9){
-                            damage*=2;
-                            bullet.setCritical(true);
-                        }
+                    if(criticalHit(0.1f)){
+                        damage*=2;
+                        bullet.setCritical(true);
                     }
                     bullet.setDamage(damage);
                     bullets.add(bullet);
@@ -230,11 +226,9 @@ public class Pistol extends Weapon {
                 Bullet bullet = new Bullet(tm, lastX, lastY, inaccuracy,1800);
                 bullet.setPosition(px, py);
                 int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
-                if(criticalHits){
-                    if(Math.random() > 0.9){
-                        damage*=2;
-                        bullet.setCritical(true);
-                    }
+                if(criticalHit(0.1f,idPlayer)){
+                    damage*=2;
+                    bullet.setCritical(true);
                 }
                 bullet.setDamage(damage);
                 bullet.setOwner(idPlayer);

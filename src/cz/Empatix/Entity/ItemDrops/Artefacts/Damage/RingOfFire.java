@@ -29,7 +29,6 @@ import static org.lwjgl.opengl.GL20.*;
 public class RingOfFire extends Artefact {
     public static void load(){
         Loader.loadImage("Textures\\artefacts\\rof.tga");
-        Loader.loadImage("Textures\\artefacts\\artifactcharge.tga");
     }
     private ArrayList<Bullet> bullets;
     public RingOfFire(TileMap tm, Player p){

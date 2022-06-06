@@ -4,6 +4,7 @@ package cz.Empatix.Gamestates.Singleplayer;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Soundtrack;
 import cz.Empatix.AudioManager.Source;
+import cz.Empatix.Buffs.BuffManager;
 import cz.Empatix.Database.Database;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.EnemyManager;
@@ -71,6 +72,7 @@ public class InGame extends GameState {
     private Image[] logos;
 
     private Player player;
+    private BuffManager buffManager;
 
     private TileMap tileMap;
 
@@ -269,6 +271,7 @@ public class InGame extends GameState {
         // create player object
         player = new Player(tileMap);
         tileMap.setPlayer(player);
+        buffManager = new BuffManager();
 
         // weapons
         // load gun manager with tilemap object
@@ -405,6 +408,7 @@ public class InGame extends GameState {
         enemyManager.drawHud();
 
         player.drawVignette();
+        buffManager.draw();
 
         tileMap.drawTitle();
 
@@ -577,6 +581,7 @@ public class InGame extends GameState {
 
             ArrayList<Enemy> enemies = EnemyManager.getInstance().getEnemies();
 
+            buffManager.update();
             player.update();
 
             tileMap.updateObjects();

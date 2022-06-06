@@ -2,6 +2,7 @@ package cz.Empatix.Entity;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
+import cz.Empatix.Buffs.BuffManager;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Main.ControlSettings;
@@ -225,6 +226,12 @@ public class Player extends MapObject {
     }
 
     public void update() {
+        // apply buffs to movement speed
+        BuffManager buffManager = BuffManager.getInstance();
+        if(buffManager != null){ // check if player is not in progress room
+            movementVelocity = buffManager.applyMovementBonuses(715);
+        }
+
         // check if player should be still rolling
         if(System.currentTimeMillis() - rollCooldown - InGame.deltaPauseTime() >= 400 && rolling){
             rolling = false;
@@ -343,6 +350,7 @@ public class Player extends MapObject {
         for (Enemy currentEnemy:enemies){
             // check player X enemy collision
             if (intersects(currentEnemy) && !currentEnemy.isDead() && !currentEnemy.isSpawning()){
+                if(!flinching)currentEnemy.applyHitEffects(this);
                 hit(currentEnemy.getDamage());
             }
         }

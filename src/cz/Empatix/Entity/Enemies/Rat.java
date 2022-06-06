@@ -217,4 +217,8 @@ public class Rat extends Enemy {
     public void forceRemove(){
 
     }
+    @Override
+    public void applyHitEffects(Player hitPlayer) {
+
+    }
 }

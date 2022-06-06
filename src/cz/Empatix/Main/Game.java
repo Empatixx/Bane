@@ -298,14 +298,13 @@ public class Game{
             draw();
             if (System.currentTimeMillis() - timer > 1000){
                 timer += 1000;
-                System.out.print("FPS: "+frames+"\n");
+                //System.out.print("FPS: "+frames+"\n");
                 FPS = frames;
                 frames = 0;
             }
 
             long now = System.nanoTime();
             deltaTime = (float)((now-lastTime) * 1E-9);
-
             lastTime = now;
         }
         MultiplayerManager multiplayerManager = MultiplayerManager.getInstance();
@@ -360,7 +359,6 @@ public class Game{
 
     public static void main(String[] args){
         new Game().run();
-        Thread.currentThread().setPriority(2);
     }
 
     public static void stopGame(){

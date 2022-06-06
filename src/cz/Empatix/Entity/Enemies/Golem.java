@@ -942,4 +942,12 @@ public class Golem extends Enemy {
     }
     public void forceRemove(){
     }
+    @Override
+    public boolean canDropItem() {
+        return false;
+    }
+    @Override
+    public void applyHitEffects(Player hitPlayer) {
+
+    }
 }

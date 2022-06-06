@@ -3,6 +3,8 @@ package cz.Empatix.Guns;
 import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
+import cz.Empatix.Buffs.BuffManager;
+import cz.Empatix.Buffs.BuffManagerMP;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.RoomObjects.DestroyableObject;
@@ -298,4 +300,25 @@ public abstract class Weapon{
         server.sendToAllUDP(response);
     }
     public abstract void restat(int idPlayer, boolean fullAmmo);
+
+    public boolean criticalHit(float gunCritChance){ // singleplayer
+        if(criticalHits){
+            BuffManager buffManager = BuffManager.getInstance();
+            float totalCritChance = buffManager.getCriticalChance(gunCritChance);
+            if(Math.random() > 1 - totalCritChance){
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean criticalHit(float gunCritChance, int idPlayer){ // multiplayer
+        if(criticalHits){
+            BuffManagerMP buffManager = BuffManagerMP.getInstance();
+            float totalCritChance = buffManager.getCriticalChance(gunCritChance,idPlayer);
+            if(Math.random() > 1 - totalCritChance){
+                return true;
+            }
+        }
+        return false;
+    }
 }

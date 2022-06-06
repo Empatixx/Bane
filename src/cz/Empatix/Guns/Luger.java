@@ -178,12 +178,10 @@ public class Luger extends Weapon {
                     bullet.setPosition(px, py);
                     int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                     lastDamageCrit = false;
-                    if(criticalHits){
-                        if(Math.random() > 0.9){
-                            damage*=2;
-                            bullet.setCritical(true);
-                            lastDamageCrit = true;
-                        }
+                    if(criticalHit(0.1f)){
+                        damage*=2;
+                        bullet.setCritical(true);
+                        lastDamageCrit = true;
                     }
                     lastDamage = damage;
                     bullet.setDamage(damage);
@@ -255,12 +253,10 @@ public class Luger extends Weapon {
                         bullet.setPosition(px, py);
                         int damage = Random.nextInt(maxdamage+1-mindamage) + mindamage;
                         lastDamageCrit = false;
-                        if(criticalHits){
-                            if(Math.random() > 0.9){
-                                damage*=2;
-                                bullet.setCritical(true);
-                                lastDamageCrit = true;
-                            }
+                        if(criticalHit(0.1f,idPlayer)){
+                            damage*=2;
+                            bullet.setCritical(true);
+                            lastDamageCrit = true;
                         }
                         lastDamage = damage;
                         bullet.setDamage(damage);

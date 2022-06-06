@@ -23,7 +23,9 @@ public class Interpolator {
     private TransformUpdate previous;
     public Interpolator(MapObject object, float timeToReachTarget){
         this.object = object;
+
         this.constTimeToReachTarget = timeToReachTarget;
+
         this.timeToReachTarget = constTimeToReachTarget;
         futureTransformUpdates = new ArrayList<>();
         GameClient client = MultiplayerManager.getInstance().client;
@@ -55,6 +57,11 @@ public class Interpolator {
             if(!to.pos.equals(from.pos)){
                 Vector3f pos = lerpClamped(from.pos,to.pos,lerpAmount);
                 object.setPosition(pos.x,pos.y);
+                if(object instanceof PlayerMP){
+                    //if(lerpAmount > 1) System.out.print("OVERFLOW ");
+                    //System.out.println("DIFF: "+(pos.x-from.pos.x));
+                    //System.out.println(to.pos.x);
+                }
             }
             return;
         }
@@ -88,6 +95,7 @@ public class Interpolator {
         if(t < 0) t = 0;
         dest.x = x.x + (y.x() - x.x) * t;
         dest.y = x.y + (y.y() - x.y) * t;
+        System.out.println(dest.x);
         return dest;
     }
     private Vector3f lerpUnclamped(Vector3f x, Vector3f y, float t) {

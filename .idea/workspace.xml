@@ -27,53 +27,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="smooth movement - interpolation MP-Client, multiplayer menu rework to progressroom - state">
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Buffs/BerserkBuff.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Buffs/Blindness.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Buffs/Buff.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Buffs/BuffManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Buffs/BuffManagerMP.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Buffs/Poison.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Buffs/RageBuff.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Damage/RagePot.java" afterDir="false" />
+    <list default="true" id="142692e1-27c0-463a-8a02-bc865e67d890" name="Default Changelist" comment="buffs, trying to fix last interpolations bugs like sometimes slutter">
+      <change afterPath="$PROJECT_DIR$/lib/discord-rpc.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/jna-5.8.0.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crashlog.log" beforeDir="false" afterPath="$PROJECT_DIR$/crashlog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Entity/Enemy.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Guns/Pistol.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Main/Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Background.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Game/cz/Empatix/Render/Background.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Bat.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Demoneye.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Demoneye.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/EyeBat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/EyeBat.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Ghost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Ghost.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Golem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Golem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/KingSlime.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/KingSlime.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Rat.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/RedSlime.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/RedSlime.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Slime.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Snake.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemies/Snake.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Enemy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/ArtefactManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/ArtefactManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Damage/RingOfFire.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Damage/RingOfFire.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/BerserkPot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/BerserkPot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/ShieldHorn.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/ShieldHorn.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/TransportableArmorPot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/ItemDrops/Artefacts/Support/TransportableArmorPot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Entity/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Multiplayer/InGameMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Multiplayer/InGameMP.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Singleplayer/InGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Gamestates/Singleplayer/InGame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Luger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Luger.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Pistol.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Revolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Revolver.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Uzi.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Uzi.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Guns/Weapon.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Main/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/GameClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/GameClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/GameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/GameServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/Interpolator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/Interpolator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/PlayerMP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Multiplayer/PlayerMP.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/Background.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/Background.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Render/TileMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cz/Empatix/Utility/Loader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cz/Empatix/Utility/Loader.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -226,13 +184,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1570538926800</updated>
-    </task>
-    <task id="LOCAL-00038" summary="0.8.2">
-      <created>1623600840934</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1623600840934</updated>
     </task>
     <task id="LOCAL-00039" summary="0.8.2">
       <created>1624185765048</created>
@@ -570,7 +521,14 @@
       <option name="project" value="LOCAL" />
       <updated>1654164347951</updated>
     </task>
-    <option name="localTasksCounter" value="87" />
+    <task id="LOCAL-00087" summary="buffs, trying to fix last interpolations bugs like sometimes slutter">
+      <created>1654517235371</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1654517235371</updated>
+    </task>
+    <option name="localTasksCounter" value="88" />
     <servers />
   </component>
   <component name="UpdateCopyrightCheckinHandler">
@@ -605,7 +563,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="barrel mp drops fix, sync timings fixed with udp" />
     <MESSAGE value="shaders optimalization, 200 fps boost, intel integrated gpu support" />
     <MESSAGE value="artefact double updates fix" />
     <MESSAGE value="preparing for UDP with ACK" />
@@ -630,7 +587,8 @@
     <MESSAGE value="removing only deprecated movement vars/funcs that didnt work with delta time" />
     <MESSAGE value="smooth movement - interpolation MP-Client" />
     <MESSAGE value="smooth movement - interpolation MP-Client, multiplayer menu rework to progressroom - state" />
-    <option name="LAST_COMMIT_MESSAGE" value="smooth movement - interpolation MP-Client, multiplayer menu rework to progressroom - state" />
+    <MESSAGE value="buffs, trying to fix last interpolations bugs like sometimes slutter" />
+    <option name="LAST_COMMIT_MESSAGE" value="buffs, trying to fix last interpolations bugs like sometimes slutter" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">

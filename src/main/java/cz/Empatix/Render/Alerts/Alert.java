@@ -96,11 +96,15 @@ public class Alert {
         } else if (delay > 4500){
             alpha = 1f - (delay / 5000f);
             disableText = true;
-            position.y += (370+row*100 - position.y) * 1.5f * Game.deltaTime;;
+            float delta = 1.5f * Game.deltaTime;
+            if(delta > 1) delta = 1;
+            position.y += (370+row*100 - position.y) * delta;
             return;
         }
-        position.x += (1750 - position.x) * 2.75 * Game.deltaTime;
-        position.y += (320+row*100 - position.y) * 2.75 * Game.deltaTime;
+        float delta = 2.75f * Game.deltaTime;
+        if(delta > 1) delta = 1;
+        position.x += (1750 - position.x) * delta;
+        position.y += (320+row*100 - position.y) * delta;
 
     }
     public void draw(){

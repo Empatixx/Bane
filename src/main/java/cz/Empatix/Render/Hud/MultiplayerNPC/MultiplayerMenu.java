@@ -13,9 +13,11 @@ import cz.Empatix.Render.Hud.InputBar;
 import cz.Empatix.Render.Hud.MenuBar;
 import cz.Empatix.Render.Hud.SliderBar;
 import cz.Empatix.Render.Text.TextRender;
+import cz.Empatix.Utility.Loader;
 import org.joml.Vector3f;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +28,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class MultiplayerMenu {
     public static void load(){
+        Loader.loadImage("Textures\\ProgressRoom\\mpmenu-add.tga");
     }
     private Background background;
     private Background addBackground;
@@ -72,7 +75,7 @@ public class MultiplayerMenu {
         background.setDimensions(900,750);
         background.setOffset(new Vector3f(200f,0,0));
 
-        addBackground = new Background("Textures\\ProgressRoom\\upgrademenu-guns.tga");
+        addBackground = new Background("Textures\\ProgressRoom\\mpmenu-add.tga");
         addBackground.setFadeEffect(false);
         addBackground.setDimensions(900,250);
 
@@ -130,9 +133,9 @@ public class MultiplayerMenu {
             mainTextRenders[1].draw("Refresh", new Vector3f(TextRender.getHorizontalCenter(300, 600, "Refresh", 4), 650, 0), 4, new Vector3f(0.874f, 0.443f, 0.149f));
             mainTextRenders[2].draw("Add", new Vector3f(TextRender.getHorizontalCenter(300, 600, "add", 4), 850, 0), 4, new Vector3f(0.874f, 0.443f, 0.149f));
             if(refreshing){
-                String refreshText = "Searching servers";
-                for(int i = 0;i<dots;i++)refreshText += ".";
-                mainTextRenders[2].draw(refreshText, new Vector3f(TextRender.getHorizontalCenter(720, 1600, refreshText, 3), 350, 0), 3, new Vector3f(1, 0.1f, 0.149f));
+                StringBuilder refreshText = new StringBuilder("Searching servers");
+                refreshText.append(".".repeat(Math.max(0, dots)));
+                mainTextRenders[2].draw(refreshText.toString(), new Vector3f(TextRender.getHorizontalCenter(720, 1600, refreshText.toString(), 3), 350, 0), 3, new Vector3f(1, 0.1f, 0.149f));
             } else {
                 float sliderY = sliderBar.getValue() * -(((serverTabs.size()-3) * 250)+50);
                 glEnable(GL_SCISSOR_TEST);
@@ -164,12 +167,10 @@ public class MultiplayerMenu {
                         tab.unload();
                     }
                     serverTabs = new ArrayList<>();
-                    int row = 0;
-                    A: for(InetAddress address : addresses){
+                    for(InetAddress address : addresses){
                         byte[] octets = address.getAddress();
                         if(octets[0] != 127){ // is not localhost
-                            serverTabs.add(new ServerTab(address,row));
-                            row++;
+                            serverTabs.add(new ServerTab(address,serverTabs.size()));
                         }
                     }
                     addresses = null; // set null so we know we updated server tabs by this refresh
@@ -177,8 +178,7 @@ public class MultiplayerMenu {
             } finally {
                 lock.unlock();
             }
-            if(serverTabs.size() >= 3) sliderBar.disableSlideDraw(false);
-            else sliderBar.disableSlideDraw(true);
+            sliderBar.disableSlideDraw(serverTabs.size() < 3);
 
             nameInput.update();
             for (MenuBar bar : menuBars) {
@@ -223,6 +223,26 @@ public class MultiplayerMenu {
                 addInput.setEnabled(false);
                 addInput.setClick(false);
             }
+            if(confirmAdd.intersects(x,y)){
+                if(addInput.getValue().isEmpty()){
+                    if(System.currentTimeMillis() - errorCooldown > 2000){
+                        AlertManager.add(AlertManager.WARNING,"Please fill IP address");
+                        errorCooldown = System.currentTimeMillis();
+                    }
+                } else {
+                    try {
+                        if(!addInput.getValue().startsWith("127.")){
+                            serverTabs.add(new ServerTab(InetAddress.getByName(addInput.getValue()),serverTabs.size()));
+                        } else {
+                            AlertManager.add(AlertManager.WARNING,"Localhost can't be added");
+                        }
+                    } catch (UnknownHostException e) {
+                        e.printStackTrace();
+                        AlertManager.add(AlertManager.WARNING,"IP was not found");
+                    }
+                    adding = false;
+                }
+            }
         } else {
             if(nameInput.intersects(x,y)){
                 nameInput.setEnabled(true);
@@ -249,7 +269,7 @@ public class MultiplayerMenu {
                         }
                     } else if (bar.getType() == REFRESH){
                         refreshServers();
-                    }  else if (bar.getType() == ADD){
+                    } else if (bar.getType() == ADD){
                         adding = true;
                     }
                     source.play(soundMenuClick);
@@ -318,13 +338,15 @@ public class MultiplayerMenu {
 
     public void keyPress(int k) {
         nameInput.keyPressed(k);
+        addInput.keyPressed(k);
     }
 
     public void keyReleased(int k) {
         nameInput.keyReleased(k);
+        addInput.keyReleased(k);
     }
     public boolean isUsingInputBar(){
-        return nameInput.isClick();
+        return nameInput.isClick() || addInput.isClick();
     }
     private static class  ServerTab{
         private TextRender[] textRenders;

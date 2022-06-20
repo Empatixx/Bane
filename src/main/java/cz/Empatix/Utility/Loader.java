@@ -25,6 +25,7 @@ import cz.Empatix.Render.Alerts.Alert;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.Hud.*;
 import cz.Empatix.Render.Hud.Minimap.MiniMap;
+import cz.Empatix.Render.Hud.MultiplayerNPC.MultiplayerMenu;
 import cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades.UpgradeBar;
 import cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades.UpgradeSideBar;
 import cz.Empatix.Render.Hud.ProgressNPC.UpgradeMenu;
@@ -129,6 +130,7 @@ public class Loader {
         MiniMap.load();
         UpgradeBar.load();
         UpgradeSideBar.load();
+        MultiplayerMenu.load();
         ArmorBar.load();
         CheckBox.load();
         HealthBar.load();

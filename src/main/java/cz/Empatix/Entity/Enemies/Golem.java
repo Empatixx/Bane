@@ -10,7 +10,7 @@ import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.RoomObjects.Chest;
 import cz.Empatix.Entity.RoomObjects.DestroyableObject;
 import cz.Empatix.Entity.RoomObjects.RoomObject;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Network;

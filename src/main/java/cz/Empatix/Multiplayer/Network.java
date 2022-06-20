@@ -125,6 +125,7 @@ public class Network {
     }
     public static class TickSync {
         public int tick;
+        public float delta;
     }
     public static class ArtefactEventState {
         public int idPacket;

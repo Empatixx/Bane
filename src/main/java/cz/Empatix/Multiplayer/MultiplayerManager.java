@@ -1,9 +1,6 @@
-package cz.Empatix.Gamestates.Multiplayer;
+package cz.Empatix.Multiplayer;
 
 import cz.Empatix.Gamestates.GameStateManager;
-import cz.Empatix.Multiplayer.GameClient;
-import cz.Empatix.Multiplayer.GameServer;
-import cz.Empatix.Multiplayer.PacketHolder;
 
 public class MultiplayerManager {
 
@@ -20,7 +17,6 @@ public class MultiplayerManager {
     public static boolean multiplayer = false;
 
     public static final int TICKS = 60;
-    public static final float ns = 1000000000f / MultiplayerManager.TICKS;
 
     public static MultiplayerManager getInstance(){ return multiplayerManager;}
     public MultiplayerManager(boolean host, GameStateManager gsm, String ip) {

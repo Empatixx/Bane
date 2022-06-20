@@ -2,7 +2,7 @@ package cz.Empatix.Entity.RoomObjects;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;

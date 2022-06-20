@@ -87,7 +87,7 @@ public class PacketHolder {
             packetArray.packets.clear();
             return packets;
         } finally {
-            packetArray.unlock();
+           packetArray.unlock();
         }
     }
 

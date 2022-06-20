@@ -22,6 +22,7 @@ import org.joml.Vector3f;
 
 import java.awt.*;
 
+import cz.Empatix.Render.Hud.Image;
 import static org.lwjgl.opengl.GL20.*;
 
 public class ArtefactDrop extends ItemDrop {
@@ -70,7 +71,7 @@ public class ArtefactDrop extends ItemDrop {
             liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
             pickedUp = false;
 
-            java.awt.Image imageOfWeapon = artefact.getImageArtefact();
+            Image imageOfWeapon = artefact.getImageArtefact();
 
             width=cwidth=imageOfWeapon.getWidth();
             height=cheight=imageOfWeapon.getHeight();

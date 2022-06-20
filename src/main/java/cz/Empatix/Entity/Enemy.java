@@ -3,7 +3,7 @@ package cz.Empatix.Entity;
 import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.AI.Path;
 import cz.Empatix.Entity.AI.PathNode;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.GameServer;

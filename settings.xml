@@ -5,7 +5,7 @@
 <entry key="effects">1.0</entry>
 <entry key="music">1.0</entry>
 <entry key="brightness">0.0</entry>
-<entry key="vsync">false</entry>
+<entry key="vsync">true</entry>
 <entry key="width">1920</entry>
 <entry key="overall">1.0</entry>
 <entry key="height">1080</entry>

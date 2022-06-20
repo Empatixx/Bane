@@ -477,6 +477,8 @@ public class InGameMP extends GameState {
         }
         mpManager.client.setNumPlayers(index);
         pingTimer = System.currentTimeMillis();
+
+
     }
 
     @Override
@@ -800,17 +802,6 @@ public class InGameMP extends GameState {
             gaussianBlur.update(pause);
             lightManager.update();
             return;
-        }
-        long now = System.nanoTime();
-        GameClient.deltaTick += (now - GameClient.lastTime) / MultiplayerManager.ns;
-        GameClient.lastTime = now;
-        while(GameClient.deltaTick >= 1){
-            GameClient client = mpManager.client;
-            client.serverTick++;
-            client.setServerTick(client.serverTick);
-            client.checkTickSyncs();
-            GameClient.deltaTick--;
-            //System.out.println("CURR TICK: "+client.serverTick+ " INTERPOLATED TICK: "+client.interpolationTick);
         }
         if (postDeath){
             fade.update(transitionContinue);

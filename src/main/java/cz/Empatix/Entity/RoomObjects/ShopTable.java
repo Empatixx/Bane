@@ -3,7 +3,7 @@ package cz.Empatix.Entity.RoomObjects;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Multiplayer.ItemManagerMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PacketHolder;

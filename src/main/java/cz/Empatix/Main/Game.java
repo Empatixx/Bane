@@ -2,7 +2,8 @@ package cz.Empatix.Main;
 
 import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.Gamestates.GameStateManager;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.GameClient;
 import cz.Empatix.Render.Graphics.ByteBufferImage;
 import cz.Empatix.Render.LoadingScreen;
 import cz.Empatix.Render.Text.TextRender;
@@ -223,9 +224,6 @@ public class Game{
      */
     public void run() {
         Configuration.DEBUG_MEMORY_ALLOCATOR.set(false);
-        long timer = System.currentTimeMillis();
-
-        deltaTime = 0;
 
         // UPS/FPS counter
         int frames = 0;
@@ -287,11 +285,26 @@ public class Game{
         deltaTime = -1;
 
         long lastTime = System.nanoTime();
+        long timer = System.currentTimeMillis();
+
         while ( running ) {
             if(glfwWindowShouldClose(window)){
                 running=false;
             }
             if(deltaTime >= 0){
+                if(MultiplayerManager.multiplayer){
+                    GameClient client = MultiplayerManager.getInstance().client;
+
+                    GameClient.deltaTick += deltaTime;
+                    while(GameClient.deltaTick >= 1f/MultiplayerManager.TICKS){
+                        client.serverTick++;
+                        client.setServerTick(client.serverTick);
+
+                        GameClient.deltaTick -= (1f/MultiplayerManager.TICKS);
+                        //System.out.println("CURR TICK: "+client.serverTick+ " INTERPOLATED TICK: "+client.interpolationTick);
+                    }
+                    client.checkTickSyncs();
+                }
                 update();
             }
             frames++;

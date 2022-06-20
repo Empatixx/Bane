@@ -6,7 +6,7 @@ import cz.Empatix.Buffs.BuffManagerMP;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Graphics.Model.ModelManager;

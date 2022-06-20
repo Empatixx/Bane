@@ -6,7 +6,6 @@ import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.RoomObjects.PathWall;
 import cz.Empatix.Entity.RoomObjects.RoomObject;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Render.Room;
 import cz.Empatix.Render.Tile;
 import cz.Empatix.Render.TileMap;

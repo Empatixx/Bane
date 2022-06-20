@@ -1,7 +1,6 @@
 package cz.Empatix.Multiplayer;
 
 import com.esotericsoftware.kryonet.Server;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 
 import java.util.ArrayList;
 

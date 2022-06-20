@@ -346,7 +346,6 @@ public class Player extends MapObject {
         // next sprite of player
         animation.update();
 
-        System.out.println(Game.deltaTime); //
     }
     public void checkCollision(ArrayList<Enemy> enemies){
         for (Enemy currentEnemy:enemies){
@@ -625,4 +624,5 @@ public class Player extends MapObject {
     public void setMaxArmor(int maxArmor) {
         this.maxArmor = maxArmor;
     }
+
 }

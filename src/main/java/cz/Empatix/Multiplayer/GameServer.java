@@ -6,7 +6,6 @@ import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Render.Hud.Minimap.MiniMap;
 import cz.Empatix.Render.TileMap;
 import cz.Empatix.Utility.Random;
@@ -72,53 +71,49 @@ public class GameServer {
         ackManager = new ACKManager();
         ackCaching = new ACKCaching();
 
-        server = new Server(16384, 4096);
+        server = new Server(1_000_000,1_000_000);
 
         Network.register(server);
 
         tick = 0;
 
-        new Thread("Server") {
+        new Thread("Server-Logic") {
             @Override
-            public void run() {
+            public void run(){
                 Random.init();
                 randomInit.set(true);
-                long lastTime = System.nanoTime();
-                long startACK = System.nanoTime();
-                final float ns = MultiplayerManager.ns;
-
 
                 float deltaTick = 0;
-                deltaTimeServer = 1/60f;
-
+                deltaTimeServer = 1f/MultiplayerManager.TICKS;
                 gameState = GameStateManager.PROGRESSROOM;
 
-                int ticks = 0;
-                long showTicks = System.currentTimeMillis();
-
+                long lastTime = System.nanoTime();
+                long startACK = lastTime;
                 boolean apdPacket = false; // all players dead
                 while (MultiplayerManager.multiplayer) {
-                    try {
-                        server.update(250);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                     if(System.nanoTime() - startACK > 10_000_000){
                         startACK+=10_000_000L;
                         ackManager.update();
                         ackCaching.update();
                     }
-                    while (deltaTick >= 1) {
+                    boolean shouldSync = false;
+                    while (deltaTick >= 1f/MultiplayerManager.TICKS) {
                         tick++;
-                        if(tick % 300 == 0){ // every 5sec with default 60 ticks
-                            Network.TickSync tickSync = new Network.TickSync();
-                            tickSync.tick = tick;
-                            server.sendToAllUDP(tickSync);
+                        if(tick % MultiplayerManager.TICKS * 5 == 0 || shouldSync){ // every 5sec with default 60 ticks
+                            shouldSync = true;
+                            if(deltaTick < 2f/MultiplayerManager.TICKS){
+                                Network.TickSync tickSync = new Network.TickSync();
+                                tickSync.tick = tick;
+                                tickSync.delta = deltaTick - (1f/MultiplayerManager.TICKS);
+                                server.sendToAllUDP(tickSync);
+                                shouldSync = false;
+                            }
                         }
                         playerLock.readLock().lock();
                         try{
                             for (PlayerMP player : connectedPlayers) {
                                 player.update();
+                                //System.out.println(player.getX());
                                 //player.newPlayerTickSync(tick); // sends tick sync if player is new
                                 Network.MovePlayer movePlayer = new Network.MovePlayer();
                                 movePlayer.idPlayer = player.getIdConnection();
@@ -293,22 +288,15 @@ public class GameServer {
                                 }
                             }
                         }
-
-                        deltaTimeServer = 1/60f;
-                        deltaTick--;
-                        ticks++;
-
+                        deltaTick -= (1f/MultiplayerManager.TICKS);
                     }
                     long now = System.nanoTime();
-                    deltaTick += (now - lastTime) / ns;
+                    deltaTick += (float)((now-lastTime) * 1E-9);
                     lastTime = now;
-                    if(System.currentTimeMillis() - showTicks > 1000){
-                        showTicks+=1000;
-                        ticks = 0;
-                    }
                 }
             }
         }.start();
+        server.start();
         connectedPlayers = new ArrayList<>();
         readyCheckPlayers = new ArrayList<>();
         playerLock = new ReentrantReadWriteLock();

@@ -6,7 +6,6 @@ import com.esotericsoftware.kryonet.Listener;
 import cz.Empatix.Gamestates.GameState;
 import cz.Empatix.Gamestates.GameStateManager;
 import cz.Empatix.Gamestates.Multiplayer.InGameMP;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
 
 import java.io.IOException;
@@ -34,8 +33,8 @@ public class GameClient{
     public static float deltaTick;
     public static long lastTime;
 
-    public final int ticksBetweenPositionUpdates = 2;
-    private final int tickDivergenceTolerance = 0;
+    public static final int ticksBetweenPositionUpdates = 6;
+    private final int tickDivergenceTolerance = 1;
 
     public GameClient(){
         client = new Client(16384,2048);
@@ -48,7 +47,7 @@ public class GameClient{
         mpManager = MultiplayerManager.getInstance();
         packetHolder = mpManager.packetHolder;
 
-        client = new Client(16384,2048);
+        client = new Client(1_000_000,1_000_000);
         //client.setTimeout(250);
         //client.setKeepAliveTCP(20000);
 
@@ -61,16 +60,11 @@ public class GameClient{
         serverTick = ticksBetweenPositionUpdates;
         interpolationTick = 0;
 
-        new Thread("Client") {
+        new Thread("Client-ACK") {
             @Override
             public void run() {
                 long start = System.nanoTime();
                 while(MultiplayerManager.multiplayer){
-                    try {
-                        client.update(250);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                     if(System.nanoTime() - start > 10_000_000){
                         start+=10_000_000L;
                         ackManager.update();
@@ -576,6 +570,7 @@ public class GameClient{
                 }
             }
         });
+        client.start();
         try {
             client.connect(5000, ipAddress, 54555, 54777);
         } catch (IOException e) {
@@ -585,13 +580,13 @@ public class GameClient{
 
     public void checkTickSyncs() {
         Object[] objects = packetHolder.get(PacketHolder.TICKSYNC);
-        int recent;
+        Network.TickSync recent;
         if(0<objects.length){
             Network.TickSync sync = (Network.TickSync) objects[0];
-            recent = sync.tick;
+            recent = sync;
             for(int i = 1;i<objects.length;i++){
                 sync = (Network.TickSync) objects[i];
-                if(sync.tick > recent) recent = sync.tick;
+                if(sync.tick > recent.tick) recent = sync;
             }
             mpManager.client.setTick(recent);
         }
@@ -601,10 +596,11 @@ public class GameClient{
         this.serverTick = serverTick;
         this.interpolationTick = serverTick - ticksBetweenPositionUpdates;
     }
-    public void setTick(int serverTick){
-        if(Math.abs(this.serverTick - serverTick) > tickDivergenceTolerance){
-            System.out.println("CLIENT TICK: "+this.serverTick+" -> "+serverTick);
-            setServerTick(serverTick);
+    public void setTick(Network.TickSync recentSync){
+        if(Math.abs(this.serverTick - recentSync.tick) > tickDivergenceTolerance){
+            System.out.println("CLIENT TICK: "+this.serverTick+" -> "+recentSync.tick);
+            setServerTick(recentSync.tick);
+            //GameClient.deltaTick = recentSync.delta;
         }
     }
     public void requestACK(Object packet, int idPacket){

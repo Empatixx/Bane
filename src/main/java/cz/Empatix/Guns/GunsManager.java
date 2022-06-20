@@ -6,7 +6,7 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Multiplayer.Network;

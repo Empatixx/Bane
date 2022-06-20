@@ -6,7 +6,6 @@ import cz.Empatix.Buffs.BuffManagerMP;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.ItemDrops.Coin;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
@@ -46,7 +45,9 @@ public class PlayerMP extends Player {
     private int vboGhostVertices;
 
     private Room deathRoom;
-    private int moveId;
+
+    private int lastTickSent;
+    private boolean lastUp, lastDown, lastRight, lastLeft;
 
     public PlayerMP(TileMap tm, String username){
         super(tm);
@@ -99,7 +100,6 @@ public class PlayerMP extends Player {
             }
             interpolator = new Interpolator(this,1/60f); // every tick
         }
-        moveId = 0;
     }
 
     public void setOrigin(boolean origin) {
@@ -199,14 +199,14 @@ public class PlayerMP extends Player {
             super.draw();
         }
         if(textRender == null) textRender = new TextRender();
-        float centerX = TextRender.getHorizontalCenter((int)(position.x),(int)(position.x),username,2);
+        float centerX = TextRender.getHorizontalCenter(position.x,position.x,username,2);
         Vector3f color = new Vector3f();
         if(isGhost()){
             color.set(0.760f);
         } else {
             color.set(0.874f,0.443f,0.149f);
         }
-        textRender.drawMap(username,new Vector3f(centerX,position.y-cheight/2-10,0),2,color);
+        textRender.draw(username,new Vector3f(centerX+xmap,position.y+ymap-cheight/2-10,0),2,color);
     }
 
     public String getUsername() {
@@ -350,7 +350,9 @@ public class PlayerMP extends Player {
                 flinching = false;
             }
         }
-        if(isOrigin()){
+        if(isOrigin() && directionChanged()){
+            lastTickSent = mpManager.client.serverTick;
+
             Client client = mpManager.client.getClient();
             Network.MovePlayerInput movePlayer = new Network.MovePlayerInput();
             movePlayer.idPlayer = idConnection;
@@ -548,10 +550,6 @@ public class PlayerMP extends Player {
         return idConnection;
     }
 
-    public int getMoveId() {
-        return moveId++;
-    }
-
     @Override
     public void hit(int damage){
         if (flinching ||dead || rolling) return;
@@ -605,14 +603,14 @@ public class PlayerMP extends Player {
 
         if(health <= 0) setDead();
     }
-
-    public void newPlayerTickSync(int tick) {
-        if(newCreated){
-            newCreated = false;
-            Server server = MultiplayerManager.getInstance().server.getServer();
-            Network.TickSync tickSync = new Network.TickSync();
-            tickSync.tick = tick;
-            server.sendToAllUDP(tickSync);
+    private boolean directionChanged(){
+        boolean changed = lastDown != down || lastRight != right || lastUp != up || lastLeft != left;
+        if(changed){
+            lastDown = down;
+            lastRight = right;
+            lastUp = up;
+            lastLeft = left;
         }
+        return changed;
     }
 }

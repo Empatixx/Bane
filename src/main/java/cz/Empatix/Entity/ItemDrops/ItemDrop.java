@@ -2,7 +2,7 @@ package cz.Empatix.Entity.ItemDrops;
 
 import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Multiplayer.GameServer;
 import cz.Empatix.Multiplayer.Interpolator;
 import cz.Empatix.Multiplayer.Network;

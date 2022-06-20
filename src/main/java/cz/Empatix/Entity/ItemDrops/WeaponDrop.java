@@ -7,6 +7,7 @@ import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Shaders.Shader;
 import cz.Empatix.Render.Graphics.Shaders.ShaderManager;
+import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.Postprocessing.Lightning.LightManager;
 import cz.Empatix.Render.TileMap;
 import org.joml.Matrix4f;
@@ -89,7 +90,7 @@ public class WeaponDrop extends ItemDrop {
             liveTime = System.currentTimeMillis()-InGame.deltaPauseTime();
             pickedUp = false;
 
-            java.awt.Image imageOfWeapon = weapon.getWeaponHud();
+            Image imageOfWeapon = weapon.getWeaponHud();
 
             width=cwidth=imageOfWeapon.getWidth();
             height=cheight=imageOfWeapon.getHeight();

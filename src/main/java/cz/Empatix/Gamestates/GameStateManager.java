@@ -3,7 +3,7 @@ package cz.Empatix.Gamestates;
 import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Database.Database;
 import cz.Empatix.Gamestates.Multiplayer.InGameMP;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Gamestates.Singleplayer.ProgressRoom;

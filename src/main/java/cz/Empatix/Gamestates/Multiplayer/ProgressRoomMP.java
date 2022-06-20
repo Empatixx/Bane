@@ -236,18 +236,7 @@ public class ProgressRoomMP extends GameState {
     }
     @Override
     protected void update() {
-        long now = System.nanoTime();
-        GameClient.deltaTick += (now - GameClient.lastTime) / MultiplayerManager.ns;
-        GameClient.lastTime = now;
         GameClient client = mpManager.client;
-        while(GameClient.deltaTick >= 1){
-            client.serverTick++;
-            client.setServerTick(client.serverTick);
-            GameClient.deltaTick--;
-            //System.out.println("CURR TICK: "+client.serverTick+ " INTERPOLATED TICK: "+client.interpolationTick);
-        }
-        client.checkTickSyncs();
-
         if(mpManager.isNotConnected()) {
             if (System.currentTimeMillis() - connectionAlert > 5000) {
                 connectionAlert = System.currentTimeMillis();
@@ -294,6 +283,21 @@ public class ProgressRoomMP extends GameState {
 
         player[0].updateOrigin();
         // updating player
+        Object[] objects = mpManager.packetHolder.get(PacketHolder.MOVEPLAYER);
+        for(int i = 1;i<player.length;i++) {
+            PlayerMP p = player[i];
+            if(p == null) continue;
+            for (Object o : objects) {
+                Network.MovePlayer move = (Network.MovePlayer) o;
+                if (p.getIdConnection() == move.idPlayer) {
+                    p.addInterpolationPosition(move);
+                    p.setUp(move.up);
+                    p.setDown(move.down);
+                    p.setRight(move.right);
+                    p.setLeft(move.left);
+                }
+            }
+        }
         for(PlayerMP p : player){
             if(p != null)p.update();
         }
@@ -325,23 +329,6 @@ public class ProgressRoomMP extends GameState {
             return;
 
         }
-
-        Object[] objects = mpManager.packetHolder.get(PacketHolder.MOVEPLAYER);
-        for(int i = 1;i<player.length;i++) {
-            PlayerMP p = player[i];
-            if(p == null) continue;
-            for (Object o : objects) {
-                Network.MovePlayer move = (Network.MovePlayer) o;
-                if (p.getIdConnection() == move.idPlayer) {
-                    p.addInterpolationPosition(move);
-                    p.setUp(move.up);
-                    p.setDown(move.down);
-                    p.setRight(move.right);
-                    p.setLeft(move.left);
-                }
-            }
-        }
-
         progressNPC.update(mouseX,mouseY);
         progressNPC.touching(player[0]);
         Object[] AlertPackets = mpManager.packetHolder.get(PacketHolder.ALERT);

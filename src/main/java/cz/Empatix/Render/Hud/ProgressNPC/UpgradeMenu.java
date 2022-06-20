@@ -2,7 +2,7 @@ package cz.Empatix.Render.Hud.ProgressNPC;
 
 import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Background;

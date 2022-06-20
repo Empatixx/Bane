@@ -1,6 +1,6 @@
 package cz.Empatix.Entity;
 
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Render.Graphics.Sprites.Sprite;
 

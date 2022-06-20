@@ -5,7 +5,7 @@ import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.RoomObjects.RoomObject;
 import cz.Empatix.Gamestates.GameStateManager;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Multiplayer.ProgressRoomMP;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PlayerMP;

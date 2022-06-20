@@ -10,7 +10,7 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Support.ShieldHorn;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Support.TransportableArmorPot;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Render.Alerts.AlertManager;

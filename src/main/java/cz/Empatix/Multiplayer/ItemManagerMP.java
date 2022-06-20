@@ -3,7 +3,6 @@ package cz.Empatix.Multiplayer;
 import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.ItemDrops.*;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Guns.Weapon;
 import cz.Empatix.Render.TileMap;
 import cz.Empatix.Utility.Random;

@@ -1,7 +1,6 @@
 package cz.Empatix.Multiplayer;
 
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Main.Game;
 import org.joml.Vector3f;
 
@@ -24,7 +23,7 @@ public class Interpolator {
     public Interpolator(MapObject object, float timeToReachTarget){
         this.object = object;
 
-        this.constTimeToReachTarget = 1/60f;
+        this.constTimeToReachTarget = 1f/MultiplayerManager.TICKS;
         //this.constTimeToReachTarget = timeToReachTarget;
 
         this.timeToReachTarget = constTimeToReachTarget;
@@ -37,11 +36,10 @@ public class Interpolator {
     public void update(float x, float y){
         GameClient client = MultiplayerManager.getInstance().client;
         for(int i = 0;i<futureTransformUpdates.size();i++){
-            if(client.serverTick >= futureTransformUpdates.get(i).tick && to.tick < futureTransformUpdates.get(i).tick){
+            if(client.serverTick-GameClient.ticksBetweenPositionUpdates/2 >= futureTransformUpdates.get(i).tick && to.tick < futureTransformUpdates.get(i).tick){
                 previous = to;
                 to = futureTransformUpdates.get(i);
                 from = new TransformUpdate(client.interpolationTick,x,y);
-
                 futureTransformUpdates.remove(i);
                 i--;
                 timeElapsed = 0;
@@ -52,26 +50,21 @@ public class Interpolator {
         interpolatePosition(timeElapsed / timeToReachTarget);
     }
     private void interpolatePosition(float lerpAmount){
-        //GameClient client = MultiplayerManager.getInstance().client;
-        // interpolation -> smooth trans
-        if(true){ // TODO: packets are old, needed to extrapolation
+        // player shouldn't be moving but we we interpolate him to correct position
+        Vector3f old = new Vector3f();
+        to.pos.sub(previous.pos,old);
+        if(old.lengthSquared() < constTimeToReachTarget * constTimeToReachTarget){
             if(!to.pos.equals(from.pos)){
                 Vector3f pos = lerpClamped(from.pos,to.pos,lerpAmount);
                 object.setPosition(pos.x,pos.y);
-                if(object instanceof PlayerMP){
-                    //if(lerpAmount > 1) System.out.print("OVERFLOW ");
-                    //System.out.println("DIFF: "+(pos.x-from.pos.x));
-                    //System.out.println(to.pos.x);
-                }
             }
             return;
         }
-        if(lerpAmount < 3){ // too much predicting => false predict
-            // extrapolation -> predicting movement
-            Vector3f pos = lerpUnclamped(from.pos,to.pos,lerpAmount); // extrapolation
+        // extrapolation
+        if(lerpAmount < 3){ // lerp above 3 will be error
+            Vector3f pos = lerpUnclamped(from.pos,to.pos,lerpAmount);
             object.setPosition(pos.x,pos.y);
         }
-
 
 
     }
@@ -81,7 +74,7 @@ public class Interpolator {
         if(tick <= client.interpolationTick){
             return;
         }
-        // checking if packet is older then some packets
+        // checking if packet is older than some packets
         for(int i = 0;i<futureTransformUpdates.size();i++){
             if(tick < futureTransformUpdates.get(i).tick){
                 futureTransformUpdates.add(i,new TransformUpdate(tick,pos.x,pos.y));
@@ -96,13 +89,12 @@ public class Interpolator {
         if(t < 0) t = 0;
         dest.x = x.x + (y.x() - x.x) * t;
         dest.y = x.y + (y.y() - x.y) * t;
-        System.out.println(Game.deltaTime);
         return dest;
     }
     private Vector3f lerpUnclamped(Vector3f x, Vector3f y, float t) {
+        ///if(t > 1 && object instanceof PlayerMP) System.out.println("CLAMP: "+t);
         Vector3f dest = new Vector3f();
-        dest.x = x.x + (y.x() - x.x) * t;
-        dest.y = x.y + (y.y() - x.y) * t;
+        x.lerp(y,t,dest);
         return dest;
     }
 }

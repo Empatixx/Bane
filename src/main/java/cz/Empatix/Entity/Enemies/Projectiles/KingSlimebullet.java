@@ -2,7 +2,7 @@ package cz.Empatix.Entity.Enemies.Projectiles;
 
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Multiplayer.Interpolator;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Graphics.Model.ModelManager;

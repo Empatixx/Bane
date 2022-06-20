@@ -8,7 +8,7 @@ import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.RoomObjects.*;
 import cz.Empatix.Entity.Shopkeeper;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Main.DiscordRP;
 import cz.Empatix.Main.Game;
@@ -1515,8 +1515,6 @@ public class TileMap {
 			float delta = tween * Game.deltaTime;
 			if(delta > 1) delta = 1;
 			position.lerp(toPos,delta);
-			/*position.x += (x - position.x) * tween * Game.deltaTime;
-			position.y += (y - position.y) * tween * Game.deltaTime;*/
 		}
 
 		fixBounds();

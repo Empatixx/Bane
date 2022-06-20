@@ -4,7 +4,7 @@ import cz.Empatix.AudioManager.AudioManager;
 import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Alerts.AlertManager;
 import cz.Empatix.Render.Background;
@@ -28,6 +28,7 @@ public class MultiplayerMenu {
     public static void load(){
     }
     private Background background;
+    private Background addBackground;
 
     private InputBar nameInput;
     private MenuBar[] menuBars;
@@ -37,6 +38,8 @@ public class MultiplayerMenu {
 
     private static final int CREATE = 0;
     private static final int REFRESH = 1;
+    private static final int ADD = 2;
+    private static final int ADDCONFIRM = 3;
 
     private TextRender[] mainTextRenders;
     private ArrayList<ServerTab> serverTabs;
@@ -48,6 +51,10 @@ public class MultiplayerMenu {
 
     private SliderBar sliderBar;
     private float scrollY;
+
+    private InputBar addInput;
+    private MenuBar confirmAdd;
+    private boolean adding;
 
     private static long errorCooldown;
     private final static int NO_NAME = 0;
@@ -65,15 +72,26 @@ public class MultiplayerMenu {
         background.setDimensions(900,750);
         background.setOffset(new Vector3f(200f,0,0));
 
-        nameInput = new InputBar("Textures\\Menu\\input_bar.tga",new Vector3f(450,300,0),1.5f,300,100,"Your name:");
+        addBackground = new Background("Textures\\ProgressRoom\\upgrademenu-guns.tga");
+        addBackground.setFadeEffect(false);
+        addBackground.setDimensions(900,250);
+
+        nameInput = new InputBar("Textures\\Menu\\input_bar.tga",new Vector3f(450,250,0),1.5f,300,100,"Your name:");
         nameInput.setType(0);
 
-        menuBars = new MenuBar[2];
+        addInput = new InputBar("Textures\\Menu\\input_bar.tga",new Vector3f(800,550,0),1.5f,300,100,"IP address:");
+        addInput.setType(1);
+        confirmAdd = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(1200,550,0),1.5f,200,100,true);
+        confirmAdd.setType(ADDCONFIRM);
 
-        menuBars[0] = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(450,500,0),1.5f,200,100,true);
+        menuBars = new MenuBar[3];
+
+        menuBars[0] = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(450,450,0),1.5f,200,100,true);
         menuBars[0].setType(CREATE);
-        menuBars[1] = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(450,700,0),1.5f,200,100,true);
+        menuBars[1] = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(450,650,0),1.5f,200,100,true);
         menuBars[1].setType(REFRESH);
+        menuBars[2] = new MenuBar("Textures\\Menu\\menu_bar.tga",new Vector3f(450,850,0),1.5f,200,100,true);
+        menuBars[2].setType(ADD);
 
         sliderBar = new SliderBar(new Vector3f(1591,540,0),3);
         sliderBar.setLength(730);
@@ -86,10 +104,8 @@ public class MultiplayerMenu {
 
         serverTabs = new ArrayList<>();
 
-        mainTextRenders = new TextRender[3];
-        mainTextRenders[0] = new TextRender();
-        mainTextRenders[1] = new TextRender();
-        mainTextRenders[2] = new TextRender();
+        mainTextRenders = new TextRender[4];
+        for(int i = 0;i<mainTextRenders.length;i++) mainTextRenders[i] = new TextRender();
 
         MultiplayerManager mpmanager = new MultiplayerManager();
         refreshServers();
@@ -98,125 +114,151 @@ public class MultiplayerMenu {
 
     }
     public void draw(){
-        background.draw();
-        nameInput.draw();
-        for(MenuBar bar : menuBars){
-            bar.draw();
-        }
-
-        mainTextRenders[0].draw("Create", new Vector3f(TextRender.getHorizontalCenter(300, 600, "Create", 4), 500, 0), 4, new Vector3f(0.874f, 0.443f, 0.149f));
-        mainTextRenders[1].draw("Refresh", new Vector3f(TextRender.getHorizontalCenter(300, 600, "Refresh", 4), 700, 0), 4, new Vector3f(0.874f, 0.443f, 0.149f));
-
-        if(refreshing){
-            String refreshText = "Searching servers";
-            for(int i = 0;i<dots;i++)refreshText += ".";
-            mainTextRenders[2].draw(refreshText, new Vector3f(TextRender.getHorizontalCenter(720, 1600, refreshText, 3), 350, 0), 3, new Vector3f(1, 0.1f, 0.149f));
+        if(adding){
+            addBackground.draw();
+            addInput.draw();
+            confirmAdd.draw();
+            mainTextRenders[2].draw("Add", new Vector3f(TextRender.getHorizontalCenter(1050, 1350, "add", 4), 550, 0), 4, new Vector3f(0.874f, 0.443f, 0.149f));
         } else {
-            float sliderY = sliderBar.getValue() * -(((serverTabs.size()-3) * 250)+50);
-            glEnable(GL_SCISSOR_TEST);
-            glScissor(720,177,880,726);
-            for(ServerTab tab : serverTabs) {
-                tab.draw((int)sliderY);
+            background.draw();
+            nameInput.draw();
+            for(MenuBar bar : menuBars){
+                bar.draw();
             }
-            glDisable(GL_SCISSOR_TEST);
 
-            if(serverTabs.size() == 0){
-                mainTextRenders[2].draw("No servers found..", new Vector3f(TextRender.getHorizontalCenter(720, 1600, "No servers found..", 3), 350, 0), 3, new Vector3f(1, 0.1f, 0.149f));
+            mainTextRenders[0].draw("Create", new Vector3f(TextRender.getHorizontalCenter(300, 600, "Create", 4), 450, 0), 4, new Vector3f(0.874f, 0.443f, 0.149f));
+            mainTextRenders[1].draw("Refresh", new Vector3f(TextRender.getHorizontalCenter(300, 600, "Refresh", 4), 650, 0), 4, new Vector3f(0.874f, 0.443f, 0.149f));
+            mainTextRenders[2].draw("Add", new Vector3f(TextRender.getHorizontalCenter(300, 600, "add", 4), 850, 0), 4, new Vector3f(0.874f, 0.443f, 0.149f));
+            if(refreshing){
+                String refreshText = "Searching servers";
+                for(int i = 0;i<dots;i++)refreshText += ".";
+                mainTextRenders[2].draw(refreshText, new Vector3f(TextRender.getHorizontalCenter(720, 1600, refreshText, 3), 350, 0), 3, new Vector3f(1, 0.1f, 0.149f));
+            } else {
+                float sliderY = sliderBar.getValue() * -(((serverTabs.size()-3) * 250)+50);
+                glEnable(GL_SCISSOR_TEST);
+                glScissor(720,177,880,726);
+                for(ServerTab tab : serverTabs) {
+                    tab.draw((int)sliderY);
+                }
+                glDisable(GL_SCISSOR_TEST);
+
+                if(serverTabs.size() == 0){
+                    mainTextRenders[3].draw("No servers found..", new Vector3f(TextRender.getHorizontalCenter(720, 1600, "No servers found..", 3), 350, 0), 3, new Vector3f(1, 0.1f, 0.149f));
+                }
             }
+            sliderBar.draw();
         }
-        sliderBar.draw();
 
     }
     public void update(float x, float y){
-        // check if there was any refresh
-        lock.lock();
-        try{
-            if(addresses != null){ // there was refresh
-                for(ServerTab tab: serverTabs){
-                    tab.unload();
-                }
-                serverTabs = new ArrayList<>();
-                int row = 0;
-                A: for(InetAddress address : addresses){
-                   byte[] octets = address.getAddress();
-                   if(octets[0] != 127){ // is not localhost
-                       serverTabs.add(new ServerTab(address,row));
-                       row++;
-                    }
-                }
-                addresses = null; // set null so we know we updated server tabs by this refresh
-            }
-        } finally {
-            lock.unlock();
-        }
-        if(serverTabs.size() >= 3) sliderBar.disableSlideDraw(false);
-        else sliderBar.disableSlideDraw(true);
-
-        nameInput.update();
-        for (MenuBar bar : menuBars) {
-            bar.setClick(false);
-            if (bar.intersects(x, y)) {
-                bar.setClick(true);
-            }
-        }
-        if(refreshing){
-            if((System.nanoTime() - lastTime)/1_000_000 > 100){
-                dots++;
-                lastTime = System.nanoTime();
-            }
-            if(dots >= 4) dots = 1;
+        if(adding){
+            addInput.update();
+            confirmAdd.setClick(false);
+            if(confirmAdd.intersects(x,y)) confirmAdd.setClick(true);
         } else {
-            if(sliderBar.isLocked()){
-                sliderBar.update(x,y);
-                scrollY = sliderBar.getValue();
+            // check if there was any refresh
+            lock.lock();
+            try{
+                if(addresses != null){ // there was refresh
+                    for(ServerTab tab: serverTabs){
+                        tab.unload();
+                    }
+                    serverTabs = new ArrayList<>();
+                    int row = 0;
+                    A: for(InetAddress address : addresses){
+                        byte[] octets = address.getAddress();
+                        if(octets[0] != 127){ // is not localhost
+                            serverTabs.add(new ServerTab(address,row));
+                            row++;
+                        }
+                    }
+                    addresses = null; // set null so we know we updated server tabs by this refresh
+                }
+            } finally {
+                lock.unlock();
             }
-            float value = sliderBar.getValue();
-            value += (scrollY - value) * Game.deltaTime * 10;
-            if(value > 1) value = 1;
-            else if (value < 0) value = 0;
-            sliderBar.setValue(value);
-            float sliderY = sliderBar.getValue() * -(((serverTabs.size()-3) * 250)+50);
-            for(ServerTab tab : serverTabs){
-                tab.updatePosition((int)sliderY);
-                tab.update(x,y-sliderY);
+            if(serverTabs.size() >= 3) sliderBar.disableSlideDraw(false);
+            else sliderBar.disableSlideDraw(true);
+
+            nameInput.update();
+            for (MenuBar bar : menuBars) {
+                bar.setClick(false);
+                if (bar.intersects(x, y)) {
+                    bar.setClick(true);
+                }
+            }
+            if(refreshing){
+                if((System.nanoTime() - lastTime)/1_000_000 > 100){
+                    dots++;
+                    lastTime = System.nanoTime();
+                }
+                if(dots >= 4) dots = 1;
+            } else {
+                if(sliderBar.isLocked()){
+                    sliderBar.update(x,y);
+                    scrollY = sliderBar.getValue();
+                }
+                float value = sliderBar.getValue();
+                value += (scrollY - value) * Game.deltaTime * 10;
+                if(value > 1) value = 1;
+                else if (value < 0) value = 0;
+                sliderBar.setValue(value);
+                float sliderY = sliderBar.getValue() * -(((serverTabs.size()-3) * 250)+50);
+                for(ServerTab tab : serverTabs){
+                    tab.updatePosition((int)sliderY);
+                    tab.update(x,y-sliderY);
+                }
             }
         }
 
     }
 
     public void mousePressed(float x, float y, Player p){
-        if(nameInput.intersects(x,y)){
-            nameInput.setEnabled(true);
-            nameInput.setClick(true);
-            source.play(soundMenuClick);
-        } else {
-            nameInput.setEnabled(false);
-            nameInput.setClick(false);
-        }
-        float sliderY = sliderBar.getValue() * -(((serverTabs.size()-3) * 250)+50);
-        for(ServerTab tab : serverTabs){
-            tab.mousePressed(x,y-sliderY,nameInput);
-        }
-        for(MenuBar bar : menuBars){
-            if(bar.intersects(x,y)){
+        if(adding){
+            if (addInput.intersects(x,y)) {
+                addInput.setEnabled(true);
+                addInput.setClick(true);
                 source.play(soundMenuClick);
-                if(bar.getType() == CREATE){
-                    if(!nameInput.isEmpty()){
-                        gsm.setStateInitMP(GameStateManager.PROGRESSROOMMP,true,nameInput.getValue(),"localhost");
-                    } else if(System.currentTimeMillis() - errorCooldown > 2000){
-                        AlertManager.add(AlertManager.WARNING,"Please fill your name");
-                        errorCooldown = System.currentTimeMillis();
-                        error_type = NO_NAME;
-                    }
-                } else if (bar.getType() == REFRESH){
-                    refreshServers();
-                }
-                source.play(soundMenuClick);
-                break;
+            } else{
+                addInput.setEnabled(false);
+                addInput.setClick(false);
             }
-        }
-        if(sliderBar.intersects(x,y) && serverTabs.size() >= 3){
-            sliderBar.setLocked(true);
+        } else {
+            if(nameInput.intersects(x,y)){
+                nameInput.setEnabled(true);
+                nameInput.setClick(true);
+                source.play(soundMenuClick);
+            } else {
+                nameInput.setEnabled(false);
+                nameInput.setClick(false);
+            }
+            float sliderY = sliderBar.getValue() * -(((serverTabs.size()-3) * 250)+50);
+            for(ServerTab tab : serverTabs){
+                tab.mousePressed(x,y-sliderY,nameInput);
+            }
+            for(MenuBar bar : menuBars){
+                if(bar.intersects(x,y)){
+                    source.play(soundMenuClick);
+                    if(bar.getType() == CREATE){
+                        if(!nameInput.isEmpty()){
+                            gsm.setStateInitMP(GameStateManager.PROGRESSROOMMP,true,nameInput.getValue(),"localhost");
+                        } else if(System.currentTimeMillis() - errorCooldown > 2000){
+                            AlertManager.add(AlertManager.WARNING,"Please fill your name");
+                            errorCooldown = System.currentTimeMillis();
+                            error_type = NO_NAME;
+                        }
+                    } else if (bar.getType() == REFRESH){
+                        refreshServers();
+                    }  else if (bar.getType() == ADD){
+                        adding = true;
+                    }
+                    source.play(soundMenuClick);
+                    break;
+                }
+            }
+            if(sliderBar.intersects(x,y) && serverTabs.size() >= 3){
+                sliderBar.setLocked(true);
+            }
         }
     }
     private void refreshServers(){
@@ -351,6 +393,13 @@ public class MultiplayerMenu {
             Vector3f posSelector = selector.getPosition();
             posSelector.y = 307+row*250+sliderY;
         }
+    }
+    public void playerAbandonedInteraction(){
+        adding = false;
+        nameInput.setEnabled(false);
+        nameInput.setClick(false);
+        addInput.setEnabled(false);
+        addInput.setClick(false);
     }
 }
 

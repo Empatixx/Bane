@@ -6,7 +6,7 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Animation;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.RoomObjects.RoomObject;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Multiplayer.GameServer;
 import cz.Empatix.Multiplayer.Interpolator;
 import cz.Empatix.Multiplayer.MPStatistics;

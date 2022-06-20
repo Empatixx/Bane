@@ -13,7 +13,7 @@ import cz.Empatix.Entity.RoomObjects.ProgressRoom.Armorstand;
 import cz.Empatix.Entity.RoomObjects.ProgressRoom.Bookshelf;
 import cz.Empatix.Entity.RoomObjects.ProgressRoom.Portal;
 import cz.Empatix.Entity.Shopkeeper;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Multiplayer.ArtefactManagerMP;
 import cz.Empatix.Multiplayer.EnemyManagerMP;

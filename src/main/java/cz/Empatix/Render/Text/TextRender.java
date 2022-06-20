@@ -119,7 +119,7 @@ public class TextRender {
             shader = ShaderManager.createShader("shaders\\text");
         }
     }
-    public static float getHorizontalCenter(int min, int max,String text,int scale){
+    public static float getHorizontalCenter(float min, float max,String text,int scale){
         int totalWidth = 0;
 
         Font font = fonts.get(0);
@@ -133,9 +133,9 @@ public class TextRender {
         }
 
 
-        int center = min+(max-min)/2;
+        float center = min+(max-min)/2;
         totalWidth*=scale;
-        return center-totalWidth/2;
+        return center-totalWidth/2f;
     }
 
     public void draw(String text, Vector3f pos, int scale, Vector3f color){

@@ -5,7 +5,7 @@ import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.RoomObjects.DestroyableObject;
 import cz.Empatix.Entity.RoomObjects.PathWall;
 import cz.Empatix.Entity.RoomObjects.RoomObject;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Multiplayer.PacketHolder;
 import cz.Empatix.Render.Tile;

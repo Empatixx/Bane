@@ -8,7 +8,7 @@ import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Entity.RoomObjects.DestroyableObject;
 import cz.Empatix.Entity.RoomObjects.RoomObject;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Guns.Bullet;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Multiplayer.ArtefactManagerMP;

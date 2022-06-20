@@ -97,7 +97,10 @@ public class MultiplayerNPC extends MapObject {
     }
 
     public void update(float x,float y) {
-        if(!touching) interract = false;
+        if(!touching){
+            interract = false;
+            multiplayerMenu.playerAbandonedInteraction();
+        }
         touching = false;
         setMapPosition();
         animation.update();
@@ -129,8 +132,14 @@ public class MultiplayerNPC extends MapObject {
         } else {
             if(k == ControlSettings.getValue(ControlSettings.OBJECT_INTERACT)){
                 interract = !interract;
+                if(!interract){
+                    multiplayerMenu.playerAbandonedInteraction();
+                }
             }
-            else if(k == GLFW.GLFW_KEY_ESCAPE)interract = false;
+            else if(k == GLFW.GLFW_KEY_ESCAPE){
+                interract = false;
+                multiplayerMenu.playerAbandonedInteraction();
+            }
         }
     }
     public void keyReleased(int k) {

@@ -3,7 +3,7 @@ package cz.Empatix.Render.Hud.ProgressNPC.GunUpgrades;
 import com.esotericsoftware.kryonet.Client;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.GameStateManager;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Multiplayer.Network;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;

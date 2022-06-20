@@ -5,7 +5,7 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.ItemDrops.Artefacts.Artefact;
 import cz.Empatix.Entity.ItemDrops.Artefacts.ArtefactManager;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Guns.GunsManager;
 import cz.Empatix.Guns.Weapon;
 import cz.Empatix.Main.ControlSettings;

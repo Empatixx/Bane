@@ -2,7 +2,6 @@ package cz.Empatix.Multiplayer;
 
 import com.esotericsoftware.kryonet.Server;
 import cz.Empatix.Entity.Enemy;
-import cz.Empatix.Gamestates.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Guns.*;
 import cz.Empatix.Render.TileMap;

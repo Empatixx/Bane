@@ -33,8 +33,11 @@ import cz.Empatix.Render.Text.TextRender;
 import cz.Empatix.Render.TileMap;
 import org.lwjgl.stb.STBImage;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 
 public class Loader {
@@ -100,7 +103,7 @@ public class Loader {
     }
 
     private static void loadUp(){
-        // ENEMIES
+        /*MIES
         Player.load();
         Slime.load();
         Bat.load();
@@ -160,6 +163,8 @@ public class Loader {
         // states
         InGame.load();
         MenuState.load();
+         */
+        loadTextures();
 
     }
     public static void unload(){
@@ -172,5 +177,38 @@ public class Loader {
         byteBufferImage.decodeImage(file);
         images.put(file,byteBufferImage);
         TextRender.init();
+    }
+
+    private static void loadTextures(){
+        File mainFolder = new File("Textures");
+        listTextures(mainFolder);
+    }
+    private static void listTextures(File folder){
+        for(File file : Objects.requireNonNull(folder.listFiles())){
+            if(file.isDirectory()){
+                listTextures(file);
+            } else {
+                if(getFileExtension(file.getName()).equalsIgnoreCase("tga")
+                 || getFileExtension(file.getName()).equalsIgnoreCase("png")){ // is tga/png file
+                    if(getFileExtension(file.getName()).equalsIgnoreCase("png")) System.out.println("PNG");
+                    queue.add(file.getAbsolutePath());
+                }
+            }
+        }
+    }
+    public static String getFileExtension(String fileName) {
+        char ch;
+        int len;
+        if(fileName==null ||
+                (len = fileName.length())==0 ||
+                (ch = fileName.charAt(len-1))=='/' || ch=='\\' || //in the case of a directory
+                ch=='.' ) //in the case of . or ..
+            return "";
+        int dotInd = fileName.lastIndexOf('.'),
+                sepInd = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
+        if( dotInd<=sepInd )
+            return "";
+        else
+            return fileName.substring(dotInd+1).toLowerCase();
     }
 }

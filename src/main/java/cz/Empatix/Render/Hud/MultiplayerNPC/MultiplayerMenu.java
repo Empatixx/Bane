@@ -134,7 +134,7 @@ public class MultiplayerMenu {
             mainTextRenders[2].draw("Add", new Vector3f(TextRender.getHorizontalCenter(300, 600, "add", 4), 850, 0), 4, new Vector3f(0.874f, 0.443f, 0.149f));
             if(refreshing){
                 StringBuilder refreshText = new StringBuilder("Searching servers");
-                refreshText.append(".".repeat(Math.max(0, dots)));
+                for(int i = 0;i<dots;i++) refreshText.append(".");
                 mainTextRenders[2].draw(refreshText.toString(), new Vector3f(TextRender.getHorizontalCenter(720, 1600, refreshText.toString(), 3), 350, 0), 3, new Vector3f(1, 0.1f, 0.149f));
             } else {
                 float sliderY = sliderBar.getValue() * -(((serverTabs.size()-3) * 250)+50);

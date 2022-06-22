@@ -47,16 +47,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 
 public class InGame extends GameState {
-    public static void load(){
-        Loader.loadImage("Textures\\Menu\\pausemenu.tga");
-        Loader.loadImage("Textures\\Menu\\bg.png");
-        Loader.loadImage("Textures\\skull.tga");
-        Loader.loadImage("Textures\\killslogo.tga");
-        Loader.loadImage("Textures\\coinlogo.tga");
-        Loader.loadImage("Textures\\accuracylogo.tga");
-        Loader.loadImage("Textures\\timelogo.tga");
-
-    }
 
     private boolean pause;
     private boolean endRewardEarned;

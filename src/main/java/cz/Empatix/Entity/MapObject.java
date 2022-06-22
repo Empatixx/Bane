@@ -27,11 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.lwjgl.opengl.GL20.*;
 
 public abstract class MapObject {
-
-	public static void load(){
-		Loader.loadImage("Textures\\shadow.tga");
-	}
-	
 	// tile stuff
 	protected final TileMap tileMap;
 	protected int tileSize;

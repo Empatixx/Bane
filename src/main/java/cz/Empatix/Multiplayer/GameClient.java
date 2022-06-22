@@ -27,8 +27,8 @@ public class GameClient{
     private int numPlayers;
     private boolean recon;
 
-    public int serverTick;
-    public int interpolationTick;
+    public static int serverTick;
+    public static int interpolationTick;
 
     public static float deltaTick;
     public static long lastTime;

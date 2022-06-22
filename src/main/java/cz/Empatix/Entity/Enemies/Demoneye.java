@@ -14,9 +14,6 @@ import cz.Empatix.Utility.Loader;
 public class Demoneye extends Enemy {
     private static final int IDLE = 0;
     private static final int DEAD = 1;
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\demoneye.tga");
-    }
     public Demoneye(TileMap tm, Player player) {
         super(tm,player);
         initStats(tm.getFloor());

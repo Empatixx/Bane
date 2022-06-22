@@ -16,9 +16,6 @@ import java.nio.FloatBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class CheckBox {
-    public static void load(){
-        Loader.loadImage("Textures\\Menu\\checkbox.tga");
-    }
 
     private final float minX;
     private final float maxX;

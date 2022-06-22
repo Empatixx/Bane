@@ -41,11 +41,6 @@ import java.util.List;
 import static org.lwjgl.opengl.GL45.*;
 
 public class TileMap {
-	public static void load(){
-		Loader.loadImage("Textures\\tileset64.tga");
-		Loader.loadImage("Textures\\affixes.tga");
-
-	}
 	// affixes
 	private FloorAffixes floorAffixes;
 

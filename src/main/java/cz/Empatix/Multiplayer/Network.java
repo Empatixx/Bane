@@ -228,6 +228,7 @@ public class Network {
         public int id;
         public int idHit;
         public int idPacket;
+        public int tick;
         public HitBullet(){
             idPacket = getIdPacketS();
         }
@@ -308,6 +309,7 @@ public class Network {
         public byte currSlot;
         public int idPacket;
         public int idPlayer;
+        public int tick;
         public WeaponInfo(){
             slots = new byte[2];
             idPacket = getIdPacketS();
@@ -317,6 +319,7 @@ public class Network {
         public byte slot;
         public int idPlayer;
         public int idPacket;
+        public int tick;
         public ArtefactInfo(){
             slot = -1;
             idPacket = getIdPacketS();

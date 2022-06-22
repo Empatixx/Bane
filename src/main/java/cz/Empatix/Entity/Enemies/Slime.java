@@ -33,9 +33,6 @@ public class Slime extends Enemy {
 
     private ArrayList<Slimebullet> bullets;
 
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\slime.tga");
-    }
     public Slime(TileMap tm, Player player) {
         super(tm,player);
         initStats(tm.getFloor());

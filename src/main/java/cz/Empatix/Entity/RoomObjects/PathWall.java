@@ -14,9 +14,6 @@ import cz.Empatix.Utility.Loader;
 import static org.lwjgl.opengl.GL11.*;
 
 public class PathWall extends RoomObject {
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\wall.tga");
-    }
     public static final int TOP = 0;
     public static final int LEFT = 1;
     public static final int BOTTOM = 2;

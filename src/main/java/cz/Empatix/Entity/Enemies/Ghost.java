@@ -21,9 +21,6 @@ public class Ghost extends Enemy {
 
     private int defaultSpeed;
 
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\ghost.tga");
-    }
     public Ghost(TileMap tm, Player player) {
         super(tm,player);
         initStats(tm.getFloor());

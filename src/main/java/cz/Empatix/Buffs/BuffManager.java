@@ -6,9 +6,6 @@ import cz.Empatix.Utility.Loader;
 import java.util.ArrayList;
 
 public class BuffManager {
-    public static void load(){
-        Loader.loadImage("Textures\\blind-vignette.tga");
-    }
     protected float bonusDamagePercent;
     protected int bonusDamage;
 

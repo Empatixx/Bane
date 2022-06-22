@@ -17,10 +17,6 @@ import java.nio.FloatBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class SliderBar {
-    public static void load(){
-        Loader.loadImage("Textures\\Menu\\volume_slider.tga");
-        Loader.loadImage("Textures\\Menu\\volume_slider_rail.tga");
-    }
     // value that is affected by slider
     private float value;
 

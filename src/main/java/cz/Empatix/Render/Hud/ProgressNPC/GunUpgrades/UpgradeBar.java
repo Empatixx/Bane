@@ -30,13 +30,6 @@ import static org.lwjgl.opengl.GL20.*;
 
 public abstract class UpgradeBar {
 
-    public static void load(){
-        Loader.loadImage("Textures\\ProgressRoom\\upgradetab-guns.tga");
-        Loader.loadImage("Textures\\ProgressRoom\\upgradetab-guns-clicked.tga");
-        Loader.loadImage("Textures\\ProgressRoom\\upgradeicons.tga");
-        Loader.loadImage("Textures\\ProgressRoom\\statsshow.tga");
-
-    }
     private Spritesheet iconset;
     private Shader shader;
     private int vboVerticles;

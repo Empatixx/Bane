@@ -27,9 +27,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 
 public class MultiplayerMenu {
-    public static void load(){
-        Loader.loadImage("Textures\\ProgressRoom\\mpmenu-add.tga");
-    }
     private Background background;
     private Background addBackground;
 
@@ -58,6 +55,8 @@ public class MultiplayerMenu {
     private InputBar addInput;
     private MenuBar confirmAdd;
     private boolean adding;
+    private ServerTab recentAddedTab;
+    private boolean errorAdding;
 
     private static long errorCooldown;
     private final static int NO_NAME = 0;
@@ -115,6 +114,8 @@ public class MultiplayerMenu {
         lock = new ReentrantLock();
         dots = 0;
 
+        recentAddedTab = null;
+        errorAdding = false;
     }
     public void draw(){
         if(adding){
@@ -160,23 +161,31 @@ public class MultiplayerMenu {
             if(confirmAdd.intersects(x,y)) confirmAdd.setClick(true);
         } else {
             // check if there was any refresh
-            lock.lock();
-            try{
-                if(addresses != null){ // there was refresh
-                    for(ServerTab tab: serverTabs){
-                        tab.unload();
-                    }
-                    serverTabs = new ArrayList<>();
-                    for(InetAddress address : addresses){
-                        byte[] octets = address.getAddress();
-                        if(octets[0] != 127){ // is not localhost
-                            serverTabs.add(new ServerTab(address,serverTabs.size()));
+            if(lock.tryLock()){
+                try{
+                    if(addresses != null){ // there was refresh
+                        for(ServerTab tab: serverTabs){
+                            tab.unload();
                         }
+                        serverTabs = new ArrayList<>();
+                        for(InetAddress address : addresses){
+                            byte[] octets = address.getAddress();
+                            if(octets[0] != 127){ // is not localhost
+                                serverTabs.add(new ServerTab(address,serverTabs.size()));
+                            }
+                        }
+                        addresses = null; // set null so we know we updated server tabs by this refresh
                     }
-                    addresses = null; // set null so we know we updated server tabs by this refresh
+                    if(recentAddedTab != null){
+                        serverTabs.add(recentAddedTab);
+                        recentAddedTab = null;
+                    } else if (errorAdding){
+                        errorAdding = false;
+                        AlertManager.add(AlertManager.WARNING,"Entered IP was not found");
+                    }
+                } finally {
+                    lock.unlock();
                 }
-            } finally {
-                lock.unlock();
             }
             sliderBar.disableSlideDraw(serverTabs.size() < 3);
 
@@ -230,16 +239,25 @@ public class MultiplayerMenu {
                         errorCooldown = System.currentTimeMillis();
                     }
                 } else {
-                    try {
                         if(!addInput.getValue().startsWith("127.")){
-                            serverTabs.add(new ServerTab(InetAddress.getByName(addInput.getValue()),serverTabs.size()));
+                            new Thread("MPMENU - Adding server"){
+                                @Override
+                                public void run() {
+                                    super.run();
+                                    lock.lock();
+                                    try {
+                                        recentAddedTab = new ServerTab(InetAddress.getByName(addInput.getValue()),serverTabs.size());
+                                    } catch (UnknownHostException e) {
+                                        e.printStackTrace();
+                                        errorAdding = true;
+                                    } finally {
+                                        lock.unlock();
+                                    }
+                                }
+                            }.start();
                         } else {
                             AlertManager.add(AlertManager.WARNING,"Localhost can't be added");
                         }
-                    } catch (UnknownHostException e) {
-                        e.printStackTrace();
-                        AlertManager.add(AlertManager.WARNING,"IP was not found");
-                    }
                     adding = false;
                 }
             }
@@ -287,14 +305,13 @@ public class MultiplayerMenu {
         scrollY = 0;
         sliderBar.setLocked(false);
         sliderBar.setValue(0);
-        new Thread("Servers search"){
+        new Thread("MPMENU - Servers search"){
             @Override
             public void run() {
                 List<InetAddress> newAddreses = MultiplayerManager.getInstance().client.getClient().discoverHosts(54777,1000);
                 String[] hostnames = new String[newAddreses.size()];
                 for(int i = 0;i<hostnames.length;i++){
                     hostnames[i] = newAddreses.get(i).getHostName();
-                    System.out.println(hostnames[i]);
                 }
                 boolean[] duplicate = new boolean[hostnames.length];
                 Arrays.fill(duplicate,false);

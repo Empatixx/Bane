@@ -304,6 +304,7 @@ public class Bullet extends MapObject {
             mpManager.server.requestACK(hitBullet,hitBullet.idPacket);
             hitBullet.type = type;
             hitBullet.id = id;
+            hitBullet.tick = GameServer.tick;
             server.sendToAllUDP(hitBullet);
         } else {
             if(type == TypeHit.WALL){
@@ -337,6 +338,7 @@ public class Bullet extends MapObject {
             hitBullet.type = type;
             hitBullet.id = id;
             hitBullet.idHit = idHit;
+            hitBullet.tick = GameServer.tick;
             server.sendToAllUDP(hitBullet);
             // increasing statistic of hit bullet so we can calculate accuracy
             if(owner != 0 && type != TypeHit.WALL){
@@ -397,14 +399,12 @@ public class Bullet extends MapObject {
             }
 
             Server server = MultiplayerManager.getInstance().server.getServer();
-            if(GameServer.tick % 2 == 0){
-                Network.MoveBullet moveBullet = new Network.MoveBullet();
-                moveBullet.x = position.x;
-                moveBullet.y = position.y;
-                moveBullet.id = id;
-                moveBullet.tick = GameServer.tick;
-                server.sendToAllUDP(moveBullet);
-            }
+            Network.MoveBullet moveBullet = new Network.MoveBullet();
+            moveBullet.x = position.x;
+            moveBullet.y = position.y;
+            moveBullet.id = id;
+            moveBullet.tick = GameServer.tick;
+            server.sendToAllUDP(moveBullet);
 
         } else {
             setMapPosition();
@@ -423,7 +423,7 @@ public class Bullet extends MapObject {
                 checkTileMapCollision();
                 setPosition(temp.x, temp.y);
             } else {
-                interpolator.update(position.x,position.y);
+                if(!hit)interpolator.update(position.x,position.y);
             }
             if((speed.x == 0 || speed.y == 0) && !hit) {
                 source.play(soundWallhit);

@@ -15,12 +15,6 @@ import org.joml.Vector3f;
 import static org.lwjgl.opengl.GL20.*;
 
 public class HealthBar extends HUD{
-    public static void load(){
-        Loader.loadImage("Textures\\bosshealthbar.tga");
-        Loader.loadImage("Textures\\healthBar.tga");
-        Loader.loadImage("Textures\\mphealthBar.tga");
-        Loader.loadImage("Textures\\mparmorBar.tga");
-    }
     private int health;
     private int maxHealth;
 

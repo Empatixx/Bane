@@ -11,9 +11,6 @@ import cz.Empatix.Utility.Loader;
 import cz.Empatix.Utility.Random;
 
 public class Bones extends RoomObject {
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\bones.tga");
-    }
     public Bones(TileMap tm){
         super(tm);
         if(tm.isServerSide()){

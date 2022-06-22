@@ -16,9 +16,6 @@ import org.joml.Vector3f;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Torch extends RoomObject {
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\torch.tga");
-    }
     public static final int SIDELEFT = 0;
     public static final int SIDERIGHT = 1;
     public static final int TOP = 2;

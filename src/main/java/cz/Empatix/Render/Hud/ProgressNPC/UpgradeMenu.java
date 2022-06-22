@@ -16,9 +16,6 @@ import java.util.ArrayList;
 import static org.lwjgl.opengl.GL11.*;
 
 public class UpgradeMenu {
-    public static void load(){
-        Loader.loadImage("Textures\\ProgressRoom\\upgrademenu-guns.tga");
-    }
     private Background background;
     private ArrayList<UpgradeBar> bars;
 

@@ -78,6 +78,7 @@ public class ArtefactManagerMP {
                 Network.ArtefactInfo info = new Network.ArtefactInfo();
                 info.slot = (byte)getArtefactSlot(pa.currentArtefact);
                 info.idPlayer = pa.idPlayer;
+                info.tick = GameServer.tick;
                 MultiplayerManager.getInstance().server.getServer().sendToUDP(pa.idPlayer, info);
             }
         }

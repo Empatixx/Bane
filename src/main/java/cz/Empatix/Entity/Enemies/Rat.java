@@ -14,9 +14,7 @@ import cz.Empatix.Utility.Loader;
 public class Rat extends Enemy {
     private static final int IDLE = 0;
     private static final int DEAD = 1;
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\rat.tga");
-    }
+
     public Rat(TileMap tm, Player player) {
         super(tm,player);
         initStats(tm.getFloor());

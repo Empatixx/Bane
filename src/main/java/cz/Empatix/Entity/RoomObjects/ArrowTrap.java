@@ -17,10 +17,6 @@ import cz.Empatix.Utility.Loader;
 import java.util.ArrayList;
 
 public class ArrowTrap extends RoomObject {
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\arrowtrap.tga");
-        Loader.loadImage("Textures\\Sprites\\arrow.tga");
-    }
     public final static int TOP = 0;
     public final static int RIGHT = 1;
     public final static int LEFT = 2;

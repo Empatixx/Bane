@@ -6,12 +6,9 @@ import cz.Empatix.AudioManager.Source;
 import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.ItemDrops.ItemManager;
 import cz.Empatix.Entity.Player;
-import cz.Empatix.Multiplayer.MultiplayerManager;
+import cz.Empatix.Multiplayer.*;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Main.ControlSettings;
-import cz.Empatix.Multiplayer.Network;
-import cz.Empatix.Multiplayer.PacketHolder;
-import cz.Empatix.Multiplayer.PlayerMP;
 import cz.Empatix.Render.Hud.Image;
 import cz.Empatix.Render.TileMap;
 import cz.Empatix.Utility.Loader;
@@ -21,22 +18,6 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 
 public class GunsManager {
-
-    public static void load(){
-        Loader.loadImage("Textures\\weapon_hud.tga");
-        Bullet.load();
-        Grenadebullet.load();
-
-        Luger.load();
-        Grenadelauncher.load();
-        M4.load();
-        Pistol.load();
-        Revolver.load();
-        Shotgun.load();
-        Uzi.load();
-        Thompson.load();
-        ModernShotgun.load();
-    }
     private static GunsManager gunsManager;
     public static void init(GunsManager gunsManager
     ){
@@ -95,7 +76,7 @@ public class GunsManager {
         hitBullets = 0;
 
     }
-
+    private ArrayList<Network.HitBullet> hitPackets;
     public GunsManager(TileMap tileMap, PlayerMP[] p){
         weapons = new ArrayList<>();
         weapons.add(new Pistol(tileMap,p[0]));
@@ -107,7 +88,6 @@ public class GunsManager {
         weapons.add(new M4(tileMap,p[0]));
         weapons.add(new Thompson(tileMap,p[0]));
         weapons.add(new ModernShotgun(tileMap,p[0]));
-
 
         weaponBorder_hud = new Image("Textures\\weapon_hud.tga",new Vector3f(1675,975,0),2.6f);
 
@@ -125,6 +105,7 @@ public class GunsManager {
         hitBullets = 0;
 
         this.players = p;
+        hitPackets = new ArrayList<>();
     }
     // singleplayer
     public void shoot(float x, float y, float px, float py){
@@ -161,7 +142,7 @@ public class GunsManager {
         if(MultiplayerManager.multiplayer) {
             PacketHolder packetHolder = MultiplayerManager.getInstance().packetHolder;
             Object[] infoPackets = packetHolder.get(PacketHolder.WEAPONINFO);
-            for(Object o : infoPackets){
+            for (Object o : infoPackets) {
                 handleWeaponInfoPacket((Network.WeaponInfo) o);
             }
             Object[] addPackets = packetHolder.get(PacketHolder.ADDBULLET);
@@ -171,10 +152,18 @@ public class GunsManager {
                 weapons.get(slot).handleAddBulletPacket(addBullet);
             }
             for (Object o : hitPackets) {
-                for (Weapon w : weapons) {
-                    w.handleHitBulletPacket((Network.HitBullet) o);
+                this.hitPackets.add((Network.HitBullet) o);
+            }
+
+            for (Weapon w : weapons) {
+                for (Network.HitBullet hitBullet : this.hitPackets) {
+                    if (hitBullet.tick <= GameClient.interpolationTick) {
+                        w.handleHitBulletPacket(hitBullet);
+                    }
                 }
             }
+            this.hitPackets.removeIf(hitBullet -> hitBullet.tick <= GameClient.interpolationTick);
+
         }
         for(Weapon weapon : weapons){
             weapon.updateAmmo();
@@ -410,22 +399,26 @@ public class GunsManager {
         }
     }
 
+    private int lastWeaponInfoTick = 0;
     public void handleWeaponInfoPacket(Network.WeaponInfo weaponInfo){
         int currentslot = 0;
         int idPlayer = MultiplayerManager.getInstance().getIdConnection();
         if(idPlayer == weaponInfo.idPlayer) {
-            for (byte slot : weaponInfo.slots) {
-                if(slot == -1){
-                    // slot is null
-                    equipedweapons[currentslot++] = null;
-                } else {
-                    int clientSlot = translateSlot(slot);
-                    equipedweapons[currentslot++] = weapons.get(clientSlot);
+            if(lastWeaponInfoTick < weaponInfo.tick){
+                lastWeaponInfoTick = weaponInfo.tick;
+                for (byte slot : weaponInfo.slots) {
+                    if(slot == -1){
+                        // slot is null
+                        equipedweapons[currentslot++] = null;
+                    } else {
+                        int clientSlot = translateSlot(slot);
+                        equipedweapons[currentslot++] = weapons.get(clientSlot);
+                    }
                 }
+                if(equipedweapons[weaponInfo.currSlot] != null) equipedweapons[weaponInfo.currSlot].handleWeaponInfoPacket(weaponInfo);
+                this.currentslot = weaponInfo.currSlot;
+                current = equipedweapons[weaponInfo.currSlot];
             }
-            if(equipedweapons[weaponInfo.currSlot] != null) equipedweapons[weaponInfo.currSlot].handleWeaponInfoPacket(weaponInfo);
-            this.currentslot = weaponInfo.currSlot;
-            current = equipedweapons[weaponInfo.currSlot];
         }
     }
 

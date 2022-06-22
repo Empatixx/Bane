@@ -11,9 +11,6 @@ import cz.Empatix.Render.TileMap;
 import cz.Empatix.Utility.Loader;
 
 public class Barrel extends DestroyableObject {
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\barrel.tga");
-    }
     private static final int NORMAL = 0;
     private static final int HIT = 1;
     private static final int DESTROY = 2;

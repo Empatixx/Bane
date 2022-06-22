@@ -47,9 +47,6 @@ public class KingSlime extends Enemy {
     private long directionChangeCooldown;
     private boolean invertDirection;
 
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\slimeking.tga");
-    }
     public KingSlime(TileMap tm, Player player) {
         super(tm,player);
         initStats(tm.getFloor());

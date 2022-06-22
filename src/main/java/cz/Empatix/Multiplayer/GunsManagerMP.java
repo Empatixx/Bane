@@ -213,6 +213,7 @@ public class GunsManagerMP {
             weaponInfo.slots[0] = (byte)getWeaponSlot(equipedweapons[0]);
             weaponInfo.slots[1] = (byte)getWeaponSlot(equipedweapons[1]);
             weaponInfo.currSlot = (byte)currentslot;
+            weaponInfo.tick = GameServer.tick;
             weaponInfo.idPlayer = idPlayer;
 
             server.sendToUDP(idPlayer,weaponInfo); // sends ammo info only to specified player

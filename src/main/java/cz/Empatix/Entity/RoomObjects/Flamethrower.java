@@ -15,9 +15,6 @@ import cz.Empatix.Render.TileMap;
 import cz.Empatix.Utility.Loader;
 
 public class Flamethrower extends RoomObject {
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\flamethrower.tga");
-    }
     public boolean remove;
     private Player[] player;
     private boolean damageAnimation;

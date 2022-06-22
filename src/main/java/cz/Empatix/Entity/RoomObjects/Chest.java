@@ -17,9 +17,6 @@ import cz.Empatix.Utility.Random;
 import org.joml.Vector2f;
 
 public class Chest extends RoomObject {
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\chest.tga");
-    }
     private static final int IDLE = 0;
     private static final int OPEN = 1;
 

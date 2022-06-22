@@ -20,9 +20,6 @@ public class Snake extends Enemy {
     private static final int IDLE = 0;
     private static final int DEAD = 1;
 
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\snake.tga");
-    }
     public Snake(TileMap tm, Player player) {
         super(tm,player);
         initStats(tm.getFloor());

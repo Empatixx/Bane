@@ -58,10 +58,6 @@ public class Golem extends Enemy {
 
     private int shieldStacks;
 
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\golem.png");
-        Loader.loadImage("Textures\\Sprites\\Enemies\\laserbeam.tga");
-    }
     public Golem(TileMap tm, Player player) {
         super(tm,player);
         initStats(tm.getFloor());

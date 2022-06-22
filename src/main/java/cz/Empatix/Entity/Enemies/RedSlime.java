@@ -34,9 +34,6 @@ public class RedSlime extends Enemy {
 
     private ArrayList<RedSlimebullet> bullets;
 
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\redslime.tga");
-    }
     public RedSlime(TileMap tm, Player player) {
         super(tm,player);
         initStats(tm.getFloor());

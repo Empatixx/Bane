@@ -301,8 +301,8 @@ public class PlayerMP extends Player {
         if(!ghost) checkRoomObjectsCollision();
         else checkGhostRestrictions();
         checkTileMapCollision();
-        if(tileMap.isServerSide())setPosition(temp.x, temp.y);
-        else interpolator.update(position.x,position.y);
+        if(tileMap.isServerSide()) setPosition(temp.x, temp.y);
+        else interpolator.update(position.x, position.y);
 
         if(!tileMap.isServerSide()){
             if(!ghost){
@@ -350,8 +350,8 @@ public class PlayerMP extends Player {
                 flinching = false;
             }
         }
-        if(isOrigin() && directionChanged()){
-            lastTickSent = mpManager.client.serverTick;
+        if(isOrigin()){
+            lastTickSent = GameClient.serverTick;
 
             Client client = mpManager.client.getClient();
             Network.MovePlayerInput movePlayer = new Network.MovePlayerInput();

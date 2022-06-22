@@ -17,9 +17,6 @@ import org.joml.Vector3f;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Alert {
-    public static void load(){
-        Loader.loadImage("Textures\\alerts.tga");
-    }
 
     private final int type;
     private final String mess;

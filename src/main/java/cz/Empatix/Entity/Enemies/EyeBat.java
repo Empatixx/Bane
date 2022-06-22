@@ -40,10 +40,6 @@ public class EyeBat extends Enemy {
     private static final int BEAM = 2;
     private static final int DEAD = 1;
 
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\eyebat.tga");
-        Loader.loadImage("Textures\\Sprites\\Enemies\\laserbeam-eyebat.tga");
-    }
 
     private long beamCooldown;
 

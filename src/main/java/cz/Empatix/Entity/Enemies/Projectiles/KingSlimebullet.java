@@ -16,9 +16,6 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class KingSlimebullet extends MapObject {
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\kingslimebullet.tga");
-    }
     // SPRITE VARS
     private final static int sprites = 0;
     private final static int hitSprites = 1;

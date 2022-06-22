@@ -16,19 +16,6 @@ import java.nio.FloatBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class MenuBar {
-    public static void load(){
-        Loader.loadImage("Textures\\Menu\\input_bar.tga");
-        Loader.loadImage("Textures\\Menu\\menu_bar_exit.tga");
-        Loader.loadImage("Textures\\Menu\\menu_bar.tga");
-        Loader.loadImage("Textures\\Menu\\menu_bar.tga");
-        Loader.loadImage("Textures\\Menu\\settings_exit.tga");
-        Loader.loadImage("Textures\\Menu\\arrow_left.tga");
-        Loader.loadImage("Textures\\Menu\\arrow_right.tga");
-        Loader.loadImage("Textures\\ProgressRoom\\bought-bar.tga");
-        Loader.loadImage("Textures\\ProgressRoom\\lockedbar.tga");
-
-    }
-
     private final float minX;
     private final float maxX;
 

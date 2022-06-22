@@ -9,6 +9,7 @@ import cz.Empatix.Entity.EnemyManager;
 import cz.Empatix.Entity.MapObject;
 import cz.Empatix.Entity.RoomObjects.DestroyableObject;
 import cz.Empatix.Entity.RoomObjects.RoomObject;
+import cz.Empatix.Multiplayer.GameServer;
 import cz.Empatix.Multiplayer.MultiplayerManager;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
 import cz.Empatix.Main.Game;
@@ -287,6 +288,7 @@ public class Grenadebullet extends MapObject {
             mpManager.server.requestACK(hitBullet,hitBullet.idPacket);
             hitBullet.type = null;
             hitBullet.id = id;
+            hitBullet.tick = GameServer.tick;
             server.sendToAllUDP(hitBullet);
             setPosition(position.x,position.y-100);
             explosion();

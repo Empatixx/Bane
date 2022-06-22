@@ -239,7 +239,7 @@ public class GameServer {
                             } finally {
                                 readyLock.readLock().unlock();
                             }
-                            if (size <= 1) allReady = false;
+                            if (size < 1) allReady = false; //todo: redo to <=
                             if (allReady) {
                                 PlayerMP[] players;
                                 playerLock.writeLock().lock();
@@ -273,11 +273,6 @@ public class GameServer {
                                     playerLock.writeLock().unlock();
                                 }
                                 gameState = GameStateManager.INGAME;
-                                itemManager.dropArtefact((int)players[0].getX(),(int)players[0].getY());
-                                itemManager.dropArtefact((int)players[0].getX(),(int)players[0].getY());
-
-                                itemManager.dropArtefact((int)players[0].getX(),(int)players[0].getY());
-
                                 readyLock.writeLock().lock();
                                 try{
                                     for (PlayerReady ready : readyCheckPlayers) {

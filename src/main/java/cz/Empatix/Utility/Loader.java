@@ -35,21 +35,18 @@ import org.lwjgl.stb.STBImage;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.Queue;
+import java.nio.file.Path;
+import java.util.*;
 
 public class Loader {
-    private static int maxTextures;
-    private static int currentTextures;
-
     private final static HashMap<String, ByteBufferImage> images = new HashMap<>();
     private static Queue<String> queue = new LinkedList<>();
 
     private static boolean done;
     private static boolean doneDatabase;
     private static boolean doneAudio;
+
+    private static float percentLoading = 0;
 
     public static void init(){
         //text render init
@@ -60,112 +57,54 @@ public class Loader {
         doneAudio = false;
         new Thread(() -> {
             loadUp();
-            maxTextures = queue.size();
-            currentTextures = 0;
+            int maxTextures = queue.size();
             while(!queue.isEmpty()){
-                currentTextures++;
                 String file = queue.poll();
                 if(images.containsKey(file)) continue;
                 ByteBufferImage byteBufferImage = new ByteBufferImage();
                 byteBufferImage.decodeImage(file);
                 images.put(file,byteBufferImage);
+                addPercentLoad(0.5f/maxTextures);
+
             }
             done = true;
         }).start();
         new Thread(() -> {
             GameStateManager.loadDatabase();
+            addPercentLoad(0.25f);
             doneDatabase = true;
         }).start();
         new Thread(() -> {
             AudioManager.init();
             AudioManager.setListenerData(0,0);
+            addPercentLoad(0.25f);
             doneAudio = true;
         }).start();
     }
     public static String rendering(){
-        if(!done){
-            return "Loading textures "+currentTextures+"/"+maxTextures;
-        } else if (!doneDatabase) {
-            return "Loading database...";
+        if(!isDone()){
+            return "Loading "+String.format("%d%%",(int)(percentLoading*100));
         } else {
-            return "Loading audio...";
+            return "";
         }
+    }
+    private static synchronized void addPercentLoad(float x){
+        percentLoading+=x;
     }
     public static boolean isDone(){
         return done && doneDatabase && doneAudio;
     }
 
     public static ByteBufferImage getImage(String file){
-        return images.get(file);
+        return images.get(file.toLowerCase());
     }
     public static void loadImage(String file){
-        queue.add(file);
+        queue.add(file.toLowerCase());
     }
 
     private static void loadUp(){
-        /*MIES
-        Player.load();
-        Slime.load();
-        Bat.load();
-        Demoneye.load();
-        Ghost.load();
-        KingSlime.load();
-        Rat.load();
-        Slime.load();
-        Slimebullet.load();
-        KingSlimebullet.load();
-        RedSlimebullet.load();
-        MapObject.load();
-        Golem.load();
-        Snake.load();
-        RedSlime.load();
-        EyeBat.load();
-        // ENTITIES
-        Shopkeeper.load();
-        ProgressNPC.load();
-        // itemdrops
-        ItemManager.load();
-        ArtefactManager.load();
-        BuffManager.load();
-        // GUNS
-        GunsManager.load();
-        // HUD
-        MiniMap.load();
-        UpgradeBar.load();
-        UpgradeSideBar.load();
-        MultiplayerMenu.load();
-        ArmorBar.load();
-        CheckBox.load();
-        HealthBar.load();
-        MenuBar.load();
-        SliderBar.load();
-        UpgradeMenu.load();
-        Alert.load();
-        // others
-        Portal.load();
-        ArrowTrap.load();
-        Barrel.load();
-        Pot.load();
-        Bones.load();
-        Chest.load();
-        Flag.load();
-        Flamethrower.load();
-        Ladder.load();
-        PathWall.load();
-        ShopTable.load();
-        Spike.load();
-        Torch.load();
-        TileMap.load();
-        Bookshelf.load();
-        Crystal.load();
-        Armorstand.load();
-        MultiplayerNPC.load();
-        // states
-        InGame.load();
-        MenuState.load();
-         */
-        loadTextures();
-
+        File mainFolder = new File("Textures");
+        listTextures(mainFolder);
     }
     public static void unload(){
         images.forEach((k,v) -> STBImage.stbi_image_free(v.getBuffer()));
@@ -178,11 +117,6 @@ public class Loader {
         images.put(file,byteBufferImage);
         TextRender.init();
     }
-
-    private static void loadTextures(){
-        File mainFolder = new File("Textures");
-        listTextures(mainFolder);
-    }
     private static void listTextures(File folder){
         for(File file : Objects.requireNonNull(folder.listFiles())){
             if(file.isDirectory()){
@@ -190,8 +124,7 @@ public class Loader {
             } else {
                 if(getFileExtension(file.getName()).equalsIgnoreCase("tga")
                  || getFileExtension(file.getName()).equalsIgnoreCase("png")){ // is tga/png file
-                    if(getFileExtension(file.getName()).equalsIgnoreCase("png")) System.out.println("PNG");
-                    queue.add(file.getAbsolutePath());
+                    queue.add(file.getPath().toLowerCase());
                 }
             }
         }

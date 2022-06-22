@@ -24,14 +24,6 @@ import java.util.ArrayList;
 import static cz.Empatix.Main.Game.window;
 import static org.lwjgl.glfw.GLFW.*;
 public class Player extends MapObject {
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Player\\player64.tga");
-        Loader.loadImage("Textures\\vignette.tga");
-        Loader.loadImage("Textures\\armorvignette.tga");
-        Loader.loadImage("Textures\\Sprites\\Player\\sprint_particle.tga");
-        Loader.loadImage("Textures\\shadow.tga");
-        Loader.loadImage("Textures\\Sprites\\Player\\p_ghost.tga");
-    }
     // roll
     protected long rollCooldown;
     protected boolean rolling;

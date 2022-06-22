@@ -21,9 +21,6 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class Portal extends RoomObject {
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\portal.tga");
-    }
     private static final int IDLE = 0;
     private boolean message;
 

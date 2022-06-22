@@ -23,10 +23,6 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Ladder extends RoomObject {
-    public static void load(){
-        Loader.loadImage("Textures\\ladder.tga");
-        Loader.loadImage("Textures\\arrowpointer.tga");
-    }
     transient private Spritesheet spritesheetArrowPointer;
     transient private Animation animationPointer;
 

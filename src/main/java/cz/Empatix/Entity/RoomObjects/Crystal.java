@@ -15,10 +15,6 @@ import org.joml.Matrix4f;
 import static org.lwjgl.opengl.GL20.*;
 
 public class Crystal extends RoomObject {
-    public static void load() {
-        Loader.loadImage("Textures\\Sprites\\crystal.tga");
-    }
-
     public Crystal(TileMap tm) {
         super(tm);
         if (tm.isServerSide()) {

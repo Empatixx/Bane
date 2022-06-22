@@ -30,17 +30,6 @@ public class ItemManager {
         ItemManager.itemManager = itemManager;
     }
     public static ItemManager getInstance(){return itemManager;}
-    public static void load(){
-        Loader.loadImage("Textures\\shophud.tga");
-        ArmorPot.load();
-        Coin.load();
-        ExplosiveAmmo.load();
-        HealingPot.load();
-        ShotgunAmmo.load();
-        PistolAmmo.load();
-        AmmoBox.load();
-        StatUpgradeDrop.load();
-    }
     private ArrayList<ItemDrop> itemDrops;
     private TileMap tm;
     private GunsManager gm;

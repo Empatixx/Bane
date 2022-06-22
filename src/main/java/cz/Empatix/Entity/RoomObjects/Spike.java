@@ -17,9 +17,6 @@ import cz.Empatix.Utility.Loader;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Spike extends RoomObject {
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\spike.tga");
-    }
     public boolean remove;
     private boolean damageAnimation;
 

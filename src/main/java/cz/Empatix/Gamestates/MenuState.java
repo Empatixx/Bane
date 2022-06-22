@@ -19,11 +19,6 @@ import static cz.Empatix.Main.Game.setCursor;
 
 public class MenuState extends GameState{
 
-    public static void load(){
-        Loader.loadImage("Textures\\Menu\\logo.tga");
-        Loader.loadImage("Textures\\Menu\\bg.png");
-        Loader.loadImage("Textures\\Menu\\settings.tga");
-    }
     // main menu
     private final static int BEGIN = 0;
     private final static int SETTINGS = 1;

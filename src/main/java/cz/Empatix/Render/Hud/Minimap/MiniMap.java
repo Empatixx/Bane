@@ -28,13 +28,6 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 
 public class MiniMap {
-    public static void load(){
-        Loader.loadImage("Textures\\minimap.tga");
-        Loader.loadImage("Textures\\player-icon.tga");
-        Loader.loadImage("Textures\\minimap-icons.tga");
-        Loader.loadImage("Textures\\minimap-trans.tga");
-        Loader.loadImage("Textures\\mmparrow.tga");
-    }
     private Image minimapBorders;
     private int idTexture;
     private int[] vboTextures;

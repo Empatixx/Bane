@@ -10,9 +10,6 @@ import cz.Empatix.Render.TileMap;
 import cz.Empatix.Utility.Loader;
 
 public class Flag extends RoomObject {
-    public static void load(){
-        Loader.loadImage("Textures\\flag.tga");
-    }
     public Flag(TileMap tm){
         super(tm);
         if(tm.isServerSide()) {

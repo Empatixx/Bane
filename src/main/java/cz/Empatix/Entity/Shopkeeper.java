@@ -12,10 +12,6 @@ public class Shopkeeper extends RoomObject {
     private static final int IDLE = 0;
 
     private boolean reverse;
-    public static void load(){
-        Loader.loadImage("Textures\\Sprites\\Enemies\\shopkeeper.tga");
-    }
-
     public Shopkeeper(TileMap tm) {
         super(tm);
         if(tm.isServerSide()){

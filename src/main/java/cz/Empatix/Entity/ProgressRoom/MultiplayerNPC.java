@@ -26,12 +26,6 @@ public class MultiplayerNPC extends MapObject {
 
     private TextRender textRender;
 
-
-    public static void load(){
-        Loader.loadImage("Textures\\ProgressRoom\\multiplayernpc.tga");
-        Loader.loadImage("Textures\\ProgressRoom\\serverfound.tga");
-    }
-
     public MultiplayerNPC(TileMap tm, GameStateManager gsm) {
         super(tm);
 

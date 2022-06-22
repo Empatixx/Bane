@@ -19,9 +19,6 @@ import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL20.*;
 
 public class ArmorBar extends HUD{
-    public static void load(){
-        Loader.loadImage("Textures\\armorbar.tga");
-    }
     private int armor;
     private int maxArmor;
 

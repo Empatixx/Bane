@@ -16,9 +16,6 @@ import cz.Empatix.Utility.Loader;
 
 public class ShopTable extends RoomObject{
     private boolean itemCreated;
-    public static void load(){
-        Loader.loadImage("Textures\\table.tga");
-    }
     public ShopTable(TileMap tm){
         super(tm);
         if(tm.isServerSide()){

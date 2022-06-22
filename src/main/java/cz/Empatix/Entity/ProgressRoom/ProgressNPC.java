@@ -25,10 +25,6 @@ public class ProgressNPC extends MapObject {
 
     private TextRender textRender;
 
-    public static void load(){
-        Loader.loadImage("Textures\\ProgressRoom\\upgradenpc.tga");
-    }
-
     public ProgressNPC(TileMap tm) {
         super(tm);
 

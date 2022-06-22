@@ -11,9 +11,6 @@ import cz.Empatix.Render.TileMap;
 import cz.Empatix.Utility.Loader;
 
 public class Armorstand extends RoomObject {
-    public static void load(){
-        Loader.loadImage("Textures\\armorstand.tga");
-    }
     private static final int IDLE = 0;
 
     public Armorstand(TileMap tm){

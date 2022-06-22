@@ -23,19 +23,6 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 
 public class ArtefactManager {
-    public static void load(){
-        Loader.loadImage("Textures\\Artefacts\\artefacthud.tga");
-        Loader.loadImage("Textures\\artefacts\\artifactcharge1.tga");
-        Loader.loadImage("Textures\\artefacts\\artifactcharge.tga");
-        RingOfFire.load();
-        BerserkPot.load();
-        TransportableArmorPot.load();
-        LuckyCoin.load();
-        Ammobelt.load();
-        ReviveBook.load();
-        ShieldHorn.load();
-        RagePot.load();
-    }
     private ArrayList<Artefact> artefacts;
 
     private Image artefactHud;
@@ -131,6 +118,7 @@ public class ArtefactManager {
         }
     }
     // multiplayer
+    private int lastArtefactInfoTick = 0;
     public void  update(Object[] hitBullets){
         // receive packet, that player used artefact sucessfully
         MultiplayerManager mpManager = MultiplayerManager.getInstance();
@@ -139,8 +127,11 @@ public class ArtefactManager {
         for(Object o : packets) {
             Network.ArtefactInfo p = (Network.ArtefactInfo)o;
             if(idPlayer == p.idPlayer){
-                if(p.slot != -1){
-                    currentArtefact = artefacts.get(p.slot);
+                if(lastArtefactInfoTick < p.tick){
+                    lastArtefactInfoTick = p.tick;
+                    if(p.slot != -1){
+                        currentArtefact = artefacts.get(p.slot);
+                    }
                 }
             }
         }

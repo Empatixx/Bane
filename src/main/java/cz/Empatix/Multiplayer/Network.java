@@ -87,6 +87,7 @@ public class Network {
         kryo.register(TrapRoomObjectDamage.class);
         kryo.register(ArtefactInfo.class);
         kryo.register(TickSync.class);
+        kryo.register(InputCommand.class);
 
     }
     // MAIN
@@ -610,6 +611,10 @@ public class Network {
         public EnemyHealthHeal(){
             idPacket = getIdPacketS();
         }
+    }
+    public static class InputCommand{
+        public byte[] commands;
+        public int tick;
     }
     // WHEN UDP PACKET WAS RECEIVED BY SERVER or CLIENT
     // IT WILL BE SEND AS ACKNOWLEDGE PACKET IN TCP, BUT WITHOUT WAITING FOR CORRECTION

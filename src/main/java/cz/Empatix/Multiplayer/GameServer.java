@@ -12,6 +12,9 @@ import cz.Empatix.Utility.Random;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -49,6 +52,8 @@ public class GameServer {
 
     public static float deltaTimeServer;
 
+    private ArrayList<Network.InputCommand> inputCommands;
+    private Lock inputLock;
 
     public static class PlayerReady{
         private int id;
@@ -70,6 +75,9 @@ public class GameServer {
 
         ackManager = new ACKManager();
         ackCaching = new ACKCaching();
+
+        inputCommands = new ArrayList<>();
+        inputLock = new ReentrantLock();
 
         server = new Server(1_000_000,1_000_000);
 

@@ -57,6 +57,7 @@ public class ProgressRoomMP extends GameState {
     private AlertManager alertManager;
 
     private MultiplayerManager mpManager;
+    private InputHandler inputHandler;
 
     private long connectionAlert;
 
@@ -95,6 +96,7 @@ public class ProgressRoomMP extends GameState {
 
         lightManager = new LightManager(tileMap);
 
+        inputHandler = new InputHandler();
         // player
         // create player object
         player = new PlayerMP[2];
@@ -278,6 +280,7 @@ public class ProgressRoomMP extends GameState {
         mouseX = gsm.getMouseX();
         mouseY = gsm.getMouseY();
 
+        inputHandler.sendCommand(); // checks if can send inputs to server
 
         tileMap.updateObjects();
 
@@ -408,14 +411,14 @@ public class ProgressRoomMP extends GameState {
             gsm.setState(GameStateManager.MENU);
             mpManager.close();
         }
-        player[0].keyPressed(k);
+        player[0].keyPressed(k,inputHandler);
         tileMap.keyPressed(k, player[0]);
         progressNPC.keyPress(k);
     }
 
     @Override
     protected void keyReleased(int k) {
-        player[0].keyReleased(k);
+        player[0].keyReleased(k,inputHandler);
     }
 
     @Override

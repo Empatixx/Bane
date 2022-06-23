@@ -7,6 +7,7 @@ import cz.Empatix.Entity.Enemy;
 import cz.Empatix.Entity.ItemDrops.Coin;
 import cz.Empatix.Entity.Player;
 import cz.Empatix.Gamestates.Singleplayer.InGame;
+import cz.Empatix.Main.ControlSettings;
 import cz.Empatix.Main.Game;
 import cz.Empatix.Render.Camera;
 import cz.Empatix.Render.Graphics.Model.ModelManager;
@@ -350,7 +351,7 @@ public class PlayerMP extends Player {
                 flinching = false;
             }
         }
-        if(isOrigin()){
+        /*if(isOrigin()){
             lastTickSent = GameClient.serverTick;
 
             Client client = mpManager.client.getClient();
@@ -361,7 +362,7 @@ public class PlayerMP extends Player {
             movePlayer.left = left;
             movePlayer.right = right;
             client.sendUDP(movePlayer);
-        }
+        }*/
     }
 
     public void fakeHit(Network.PlayerHit playerHit){
@@ -612,5 +613,35 @@ public class PlayerMP extends Player {
             lastLeft = left;
         }
         return changed;
+    }
+
+    public void keyPressed(int key,InputHandler inputHandler) {
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_UP)){
+            inputHandler.addCommand(InputHandler.MOVE_UP,true);
+        }
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_RIGHT)){
+            inputHandler.addCommand(InputHandler.MOVE_RIGHT,true);
+        }
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_LEFT)){
+            inputHandler.addCommand(InputHandler.MOVE_LEFT,true);
+        }
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_DOWN)){
+            inputHandler.addCommand(InputHandler.MOVE_DOWN,true);
+        }
+    }
+
+    public void keyReleased(int key, InputHandler inputHandler) {
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_UP)){
+            inputHandler.addCommand(InputHandler.MOVE_UP,false);
+        }
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_RIGHT)){
+            inputHandler.addCommand(InputHandler.MOVE_RIGHT,false);
+        }
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_LEFT)){
+            inputHandler.addCommand(InputHandler.MOVE_LEFT,false);
+        }
+        if (key == ControlSettings.getValue(ControlSettings.MOVE_DOWN)){
+            inputHandler.addCommand(InputHandler.MOVE_DOWN,false);
+        }
     }
 }

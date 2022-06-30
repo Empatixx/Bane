@@ -96,7 +96,6 @@ public class ProgressRoomMP extends GameState {
 
         lightManager = new LightManager(tileMap);
 
-        inputHandler = new InputHandler();
         // player
         // create player object
         player = new PlayerMP[2];
@@ -107,6 +106,7 @@ public class ProgressRoomMP extends GameState {
         player[0].setOrigin(true);
         player[0].setIdConnection(mpManager.getIdConnection());
         playerReadies[0] = new PlayerReady(username,mpManager.getIdConnection());
+        inputHandler = new InputHandler(player[0].getIdConnection());
 
         player[0].setCoins(GameStateManager.getDb().getValue("money","general"));
 

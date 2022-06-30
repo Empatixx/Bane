@@ -117,6 +117,7 @@ public class GameServer {
                                 shouldSync = false;
                             }
                         }
+                        handleInputCommands();
                         playerLock.readLock().lock();
                         try{
                             for (PlayerMP player : connectedPlayers) {
@@ -406,8 +407,13 @@ public class GameServer {
                     } finally {
                         playerLock.readLock().unlock();
                     }
-                } else if (object instanceof Network.MovePlayerInput) {
-                    handleMove((Network.MovePlayerInput) object);
+                } else if (object instanceof Network.InputCommand) {
+                    inputLock.lock();
+                    try{
+                        inputCommands.add((Network.InputCommand)object);
+                    } finally {
+                        inputLock.unlock();
+                    }
                 } else if (object instanceof Network.NumUpgrades) {
                     upgrades.handleNumUpgradesPacket((Network.NumUpgrades) object);
                 } else if (object instanceof Network.NumUpgradesUpdate) {
@@ -559,21 +565,37 @@ public class GameServer {
             }
         }
     }
-    private void handleMove(Network.MovePlayerInput movePlayer) {
+    private void handleInputCommands() {
         // player is already connceted
-        playerLock.writeLock().lock();
+        inputLock.lock();
         try{
-            for (PlayerMP player : connectedPlayers) {
-                if (player.getIdConnection() == movePlayer.idPlayer) {
-                    player.setUp(movePlayer.up);
-                    player.setDown(movePlayer.down);
-                    player.setRight(movePlayer.right);
-                    player.setLeft(movePlayer.left);
-                    break;
+            for(Network.InputCommand command : inputCommands){
+                playerLock.writeLock().lock();
+                try{
+                    for (PlayerMP player : connectedPlayers) {
+                        if (player.getIdConnection() == command.idPlayer) {
+                            for(byte c : command.commands){
+                                if(c == InputHandler.MOVE_DOWN) player.setDown(true);
+                                else if (c == -InputHandler.MOVE_DOWN) player.setDown(false);
+
+                                if(c == InputHandler.MOVE_UP) player.setUp(true);
+                                else if (c == -InputHandler.MOVE_UP) player.setUp(false);
+
+                                if(c == InputHandler.MOVE_RIGHT) player.setRight(true);
+                                else if (c == -InputHandler.MOVE_RIGHT) player.setRight(false);
+
+                                if(c == InputHandler.MOVE_LEFT) player.setLeft(true);
+                                else if (c == -InputHandler.MOVE_LEFT) player.setLeft(false);
+                            }
+                            break;
+                        }
+                    }
+                } finally {
+                    playerLock.writeLock().unlock();
                 }
             }
         } finally {
-            playerLock.writeLock().unlock();
+            inputLock.unlock();
         }
 
     }

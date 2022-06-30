@@ -17,7 +17,6 @@ public class Network {
         kryo.register(Join.class);
         kryo.register(AddPlayer.class);
         kryo.register(MovePlayer.class);
-        kryo.register(MovePlayerInput.class);
         kryo.register(Disconnect.class);
         kryo.register(Ready.class);
         kryo.register(int[][].class);
@@ -120,10 +119,10 @@ public class Network {
         }
 
     }
-    public static class MovePlayerInput {
+    /*public static class MovePlayerInput {
         public int idPlayer;
         public boolean up,down,left,right;
-    }
+    }*/
     public static class TickSync {
         public int tick;
         public float delta;
@@ -614,10 +613,11 @@ public class Network {
     }
     public static class InputCommand{
         public byte[] commands;
+        public int idPlayer;
         public int tick;
     }
     // WHEN UDP PACKET WAS RECEIVED BY SERVER or CLIENT
-    // IT WILL BE SEND AS ACKNOWLEDGE PACKET IN TCP, BUT WITHOUT WAITING FOR CORRECTION
+    // IT WILL SEND AN ACKNOWLEDGE PACKET AS IN TCP, BUT WITHOUT WAITING FOR CORRECTION
     public static class PacketACK{
         int id;
     }

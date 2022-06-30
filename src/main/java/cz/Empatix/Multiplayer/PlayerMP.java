@@ -618,30 +618,38 @@ public class PlayerMP extends Player {
     public void keyPressed(int key,InputHandler inputHandler) {
         if (key == ControlSettings.getValue(ControlSettings.MOVE_UP)){
             inputHandler.addCommand(InputHandler.MOVE_UP,true);
+            up = true;
         }
         if (key == ControlSettings.getValue(ControlSettings.MOVE_RIGHT)){
             inputHandler.addCommand(InputHandler.MOVE_RIGHT,true);
+            right = true;
         }
         if (key == ControlSettings.getValue(ControlSettings.MOVE_LEFT)){
             inputHandler.addCommand(InputHandler.MOVE_LEFT,true);
+            left = true;
         }
         if (key == ControlSettings.getValue(ControlSettings.MOVE_DOWN)){
             inputHandler.addCommand(InputHandler.MOVE_DOWN,true);
+            down = true;
         }
     }
 
     public void keyReleased(int key, InputHandler inputHandler) {
         if (key == ControlSettings.getValue(ControlSettings.MOVE_UP)){
             inputHandler.addCommand(InputHandler.MOVE_UP,false);
+            up = false;
         }
         if (key == ControlSettings.getValue(ControlSettings.MOVE_RIGHT)){
             inputHandler.addCommand(InputHandler.MOVE_RIGHT,false);
+            right = false;
         }
         if (key == ControlSettings.getValue(ControlSettings.MOVE_LEFT)){
             inputHandler.addCommand(InputHandler.MOVE_LEFT,false);
+            left = false;
         }
         if (key == ControlSettings.getValue(ControlSettings.MOVE_DOWN)){
             inputHandler.addCommand(InputHandler.MOVE_DOWN,false);
+            down = false;
         }
     }
 }

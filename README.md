@@ -2,8 +2,6 @@
 > **This repository is archived. Bane has been replaced by a new version, rebuilt in Rust: [Bane Remastered](https://github.com/Empatixx/Bane-remastered).**
 > It has 17 guns, 7 bosses, 7 biomes and much more. Please play and follow the new version.
 > This Java version will not get any more updates.
->
-> **Toto repozitář je archivovaný. Bane nahradila nová verze přestavěná v Rustu: [Bane Remastered](https://github.com/Empatixx/Bane-remastered).** Tahle Java verze už nebude aktualizovaná.
 
 <div align="center">
 
